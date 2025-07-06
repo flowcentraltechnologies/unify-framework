@@ -23,5 +23,5 @@ package com.tcdng.unify.core.data;
  */
 public interface XmlConfig {
 
-	boolean isIncludeXmlDeclaration();
+	boolean includeXmlDeclaration();
 }

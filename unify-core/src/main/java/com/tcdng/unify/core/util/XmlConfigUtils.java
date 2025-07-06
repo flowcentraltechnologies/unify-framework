@@ -93,7 +93,7 @@ public final class XmlConfigUtils {
 	private static void writeXmlConfig(XmlConfig configObject, OutputStream outputStream, boolean noEscape)
 			throws UnifyException {
 		try {
-			if (configObject.isIncludeXmlDeclaration()) {
+			if (configObject.includeXmlDeclaration()) {
 				outputStream.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n".getBytes(StandardCharsets.UTF_8));
 			}
 
@@ -109,7 +109,7 @@ public final class XmlConfigUtils {
 
     private static void writeXmlConfig(XmlConfig configObject, Writer writer, boolean noEscape) throws UnifyException {
         try {
-			if (configObject.isIncludeXmlDeclaration()) {
+			if (configObject.includeXmlDeclaration()) {
 				writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
 			}
 
