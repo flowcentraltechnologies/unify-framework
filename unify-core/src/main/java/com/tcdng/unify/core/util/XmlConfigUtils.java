@@ -22,12 +22,14 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.UnifyOperationException;
+import com.tcdng.unify.core.data.XmlConfig;
 
 /**
  * Provides utility methods for XML configuration.
@@ -60,48 +62,57 @@ public final class XmlConfigUtils {
         }
     }
 
-    public static void writeXmlConfig(Object configObject, OutputStream outputStream) throws UnifyException {
+    public static void writeXmlConfig(XmlConfig configObject, OutputStream outputStream) throws UnifyException {
     	XmlConfigUtils.writeXmlConfig(configObject, outputStream, false);
     }
 
-    public static void writeXmlConfigNoEscape(Object configObject, OutputStream outputStream) throws UnifyException {
+    public static void writeXmlConfigNoEscape(XmlConfig configObject, OutputStream outputStream) throws UnifyException {
     	XmlConfigUtils.writeXmlConfig(configObject, outputStream, true);
     }
 
-    public static void writeXmlConfig(Object configObject, Writer writer) throws UnifyException {
+    public static void writeXmlConfig(XmlConfig configObject, Writer writer) throws UnifyException {
     	XmlConfigUtils.writeXmlConfig(configObject, writer, false);
     }
 
-    public static void writeXmlConfigNoEscape(Object configObject, Writer writer) throws UnifyException {
+    public static void writeXmlConfigNoEscape(XmlConfig configObject, Writer writer) throws UnifyException {
     	XmlConfigUtils.writeXmlConfig(configObject, writer, true);
     }
 
-    public static String getXmlConfigAsString(Object configObject) throws UnifyException {
+    public static String getXmlConfigAsString(XmlConfig configObject) throws UnifyException {
     	StringWriter writer = new StringWriter();
     	XmlConfigUtils.writeXmlConfig(configObject, writer, false);
     	return writer.toString();
     }
 
-    public static String getXmlConfigAsStringNoEscape(Object configObject) throws UnifyException {
+    public static String getXmlConfigAsStringNoEscape(XmlConfig configObject) throws UnifyException {
     	StringWriter writer = new StringWriter();
     	XmlConfigUtils.writeXmlConfig(configObject, writer, true);
     	return writer.toString();
     }
 
-    private static void writeXmlConfig(Object configObject, OutputStream outputStream, boolean noEscape) throws UnifyException {
-        try {
-            XmlMapper marshaller = new XmlMapper();
+	private static void writeXmlConfig(XmlConfig configObject, OutputStream outputStream, boolean noEscape)
+			throws UnifyException {
+		try {
+			if (configObject.includeXmlDeclaration()) {
+				outputStream.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n".getBytes(StandardCharsets.UTF_8));
+			}
+
+			XmlMapper marshaller = new XmlMapper();
 			marshaller.enable(SerializationFeature.INDENT_OUTPUT);
 			marshaller.disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
 			marshaller.writeValue(outputStream, configObject);
-            outputStream.flush();
-        } catch (Exception e) {
-            throw new UnifyOperationException(e, XmlConfigUtils.class.getName());
-        }
-    }
+			outputStream.flush();
+		} catch (Exception e) {
+			throw new UnifyOperationException(e, XmlConfigUtils.class.getName());
+		}
+	}
 
-    private static void writeXmlConfig(Object configObject, Writer writer, boolean noEscape) throws UnifyException {
+    private static void writeXmlConfig(XmlConfig configObject, Writer writer, boolean noEscape) throws UnifyException {
         try {
+			if (configObject.includeXmlDeclaration()) {
+				writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+			}
+
             XmlMapper marshaller = new XmlMapper();
 			marshaller.enable(SerializationFeature.INDENT_OUTPUT);
 			marshaller.disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
