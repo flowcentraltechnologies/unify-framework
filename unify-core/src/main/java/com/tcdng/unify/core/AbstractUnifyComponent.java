@@ -103,7 +103,7 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	public final boolean isInitialized() {
 		return unifyComponentContext != null;
 	}
-
+	
 	/**
 	 * Gets the component context.
 	 *
@@ -113,6 +113,15 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	@Override
 	public UnifyComponentContext getUnifyComponentContext() throws UnifyException {
 		return unifyComponentContext;
+	}
+
+	/**
+	 * Current thread sleep in milliseconds.
+	 * 
+	 * @param milliSeconds the time in milliseconds
+	 */
+	protected void sleep(long milliSeconds) {
+		ThreadUtils.sleep(milliSeconds);
 	}
 
 	/**
