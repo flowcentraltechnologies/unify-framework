@@ -17,6 +17,8 @@ package com.tcdng.unify.core.security;
 
 import java.util.List;
 
+import com.tcdng.unify.core.util.DataUtils;
+
 /**
  * User profile.
  * 
@@ -25,16 +27,22 @@ import java.util.List;
  */
 public class UserProfile {
 
+	public static final UserProfile EMPTY = new UserProfile();
+
 	private String branchCode;
 
 	private String departmentCode;
-	
+
 	private List<String> roles;
 
 	public UserProfile(String branchCode, String departmentCode, List<String> roles) {
 		this.branchCode = branchCode;
 		this.departmentCode = departmentCode;
 		this.roles = roles;
+	}
+
+	private UserProfile() {
+
 	}
 
 	public String getBranchCode() {
@@ -47,5 +55,9 @@ public class UserProfile {
 
 	public List<String> getRoles() {
 		return roles;
+	}
+
+	public boolean isEmpty() {
+		return branchCode == null && departmentCode == null && DataUtils.isBlank(roles);
 	}
 }
