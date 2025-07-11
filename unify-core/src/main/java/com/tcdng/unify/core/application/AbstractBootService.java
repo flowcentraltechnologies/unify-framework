@@ -181,11 +181,12 @@ public abstract class AbstractBootService<T extends FeatureDefinition> extends A
 						auxVersionToDeploy, lastAuxiliaryVersion);
 			}
 
+			InstallationContext ictx = new InstallationContext();
 			BootInstallationInfo<T> bootInstallationInfo = prepareBootInstallation();
 			if (bootInstallationInfo.isInstallers() && bootInstallationInfo.isFeatures()) {
 				for (String installerName : bootInstallationInfo.getFeatureInstallerNames()) {
 					FeatureInstaller<T> installer = (FeatureInstaller<T>) getComponent(installerName);
-					installer.installFeatures(bootInstallationInfo.getFeatures());
+					installer.installFeatures(ictx, bootInstallationInfo.getFeatures());
 				}
 			}
 
