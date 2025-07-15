@@ -342,6 +342,10 @@ public abstract class AbstractPanel extends AbstractContainer implements Panel {
 		setCommandResultMapping("showapplicationmessage");
 	}
 
+	protected void commandShowPopupByShortName(String panelShortName) throws UnifyException {
+        commandShowPopup(getWidgetByShortName(panelShortName).getLongName());
+	}
+
 	protected MessageResult getMessageResult() throws UnifyException {
 		return getRequestTarget(MessageResult.class);
 	}
