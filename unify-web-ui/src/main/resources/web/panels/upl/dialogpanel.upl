@@ -17,10 +17,10 @@
     eventHandler:$d{!ui-event event:onclick action:$c{closeDialogAct}}
 
 // Body panel
-!ui-panel:bodyPanel layout:$f{dialogBodyLayout} components:$g{dialogBodyComponents}
+!ui-panel:bodyPanel layout:$f{dialogBodyLayout} components:$f{dialogBodyComponents}
 
 // Action panel
-!ui-panel:actionPanel layout:$f{dialogActionLayout} components:$g{dialogActionComponents}
+!ui-panel:actionPanel layout:$f{dialogActionLayout} components:$f{dialogActionComponents}
      
 //Actions
 !ui-post:closeDialogAct path:$f{closeDialogPath}

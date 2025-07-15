@@ -1,0 +1,16 @@
+// UPL template for apply-cancel dialog panel
+// Copyright 2018-2025 The Code Department.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+!ui-applycanceldialogpanel 
+	dialogCaption:$m{applycanceldialogpanel.applyaction}
+	dialogCaptionBinding:dialogCaption
+	dialogActionComponents:$c{applyBtn cancelBtn}
+
+// Action buttons
+!ui-button:applyBtn caption:$m{button.apply} captionBinding:applyCaption
+	styleClass:$f{applyStyleClass}
+    eventHandler:$f{applyEventHandler}
+!ui-button:cancelBtn caption:$m{button.cancel}
+    eventHandler:$d{!ui-event event:onclick action:$c{closeDialogAct}}
+    
