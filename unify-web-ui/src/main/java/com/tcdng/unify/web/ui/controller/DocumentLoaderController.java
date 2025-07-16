@@ -25,6 +25,7 @@ import com.tcdng.unify.web.constant.Secured;
 import com.tcdng.unify.web.constant.UnifyWebRequestAttributeConstants;
 import com.tcdng.unify.web.ui.AbstractDocumentController;
 import com.tcdng.unify.web.ui.widget.ResponseWriter;
+import com.tcdng.unify.web.util.WebPathUtils;
 
 /**
  * Document loader controller.
@@ -43,10 +44,10 @@ public class DocumentLoaderController extends AbstractDocumentController {
 	protected void writeDocument(ResponseWriter writer, String docPath, String section, String queryString) throws UnifyException {
 		final String contextPath = getSessionAttribute(String.class,
 				UnifyWebRequestAttributeConstants.LOADER_FORWARD_PATH);
-		final String tempParam = RandomUtils.generateRandomLetters(8);
+		final String tempParam = RandomUtils.generateRandomLetters(8) + "__";
 		setSessionAttribute(UnifyWebSessionAttributeConstants.TEMP_CLIENT_ID_PARAM, tempParam);
 		
-		writer.write("<html>\n<head>\n");
+		writer.write("<!DOCTYPE html>\n<html>\n<head>\n");
 		writer.write("<meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\"/>\n");
 		writer.write("<title>Loading...</title>\n");
 		writer.write("</head>\n<body></body>\n</html>\n");
@@ -65,7 +66,7 @@ public class DocumentLoaderController extends AbstractDocumentController {
 		writer.write("?").write(tempParam).write("=");
 		writer.write("\" + cid");
 		if (!StringUtils.isBlank(queryString)) {
-			writer.write(" + \"&").write(queryString).write("\"");
+			writer.write(" + \"&").write(WebPathUtils.stripOffCID(queryString)).write("\"");
 		}
 		
 		writer.write(";\n");	    

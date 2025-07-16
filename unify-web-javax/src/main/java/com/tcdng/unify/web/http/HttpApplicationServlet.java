@@ -136,7 +136,7 @@ public class HttpApplicationServlet extends HttpServlet {
 			try {
 				resp.setContentType(MimeType.TEXT_HTML.template());
 				pw = resp.getWriter();
-				pw.write("<html>\n<head>\n");
+				pw.write("<!DOCTYPE html><html>\n<head>\n");
 				pw.write("<meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\"/>\n");
 				pw.write("<title>ErrorPart 500</title>\n");
 				pw.write("</head>\n<body>");

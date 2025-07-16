@@ -808,6 +808,10 @@ public abstract class AbstractWidget extends AbstractUplComponent implements Wid
 		setCommandResultMapping(ResultMappingConstants.REFRESH_PANELS);
 	}
 
+	protected void commandRefreshPanelAndHidePopup() throws UnifyException {
+		setCommandResultMapping(ResultMappingConstants.REFRESH_HIDE_POPUP);
+	}
+
 	protected void commandRefreshPanelsAndHidePopup(String... panelLongName) throws UnifyException {
 		getRequestContextUtil().setResponseRefreshPanels(panelLongName);
 		setCommandResultMapping(ResultMappingConstants.REFRESH_HIDE_POPUP);
