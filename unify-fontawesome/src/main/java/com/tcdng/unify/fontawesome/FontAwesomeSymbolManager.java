@@ -55,7 +55,6 @@ public class FontAwesomeSymbolManager extends AbstractFontSymbolManager {
         registerSymbol("angle-left", "f104");
         registerSymbol("angle-right", "f105");
         registerSymbol("angle-up", "f106");
-        registerSymbol("angle-up", "f106");
         registerSymbol("application", "f3fa");
         registerSymbol("archive", "f187");
         registerSymbol("arrow-down", "f063");

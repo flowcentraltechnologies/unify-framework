@@ -240,7 +240,7 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 							exit = false;
 						} else {
 							clientResponse.setContentType(MimeType.TEXT_HTML.template());
-							clientResponse.getWriter().write("<html>\n<head>\n");
+							clientResponse.getWriter().write("<!DOCTYPE html><html>\n<head>\n");
 							clientResponse.getWriter()
 									.write("<meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\"/>\n");
 							clientResponse.getWriter().write("<title>ErrorPart 404</title>\n");

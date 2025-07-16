@@ -3,7 +3,7 @@
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 !ui-dialogpanel components:$c{basePanel} dialogBaseStyleClass:$e{ui-dialogpanel-base}
-    dialogBodyLayout:$d{!ui-vertical style:$s{width:100%;}} dialogActionLayout:$d{!ui-horizontal style:$s{width:100%;}}
+    dialogBodyLayout:$d{!ui-vertical style:$s{width:100%;}} dialogActionLayout:$d{!ui-horizontal}
     closeDialogPath:$n{/hidePopup}
 
 // Base panel
@@ -17,10 +17,10 @@
     eventHandler:$d{!ui-event event:onclick action:$c{closeDialogAct}}
 
 // Body panel
-!ui-panel:bodyPanel layout:$f{dialogBodyLayout} components:$g{dialogBodyComponents}
+!ui-panel:bodyPanel layout:$f{dialogBodyLayout} components:$f{dialogBodyComponents}
 
 // Action panel
-!ui-panel:actionPanel layout:$f{dialogActionLayout} components:$g{dialogActionComponents}
+!ui-panel:actionPanel layout:$f{dialogActionLayout} components:$f{dialogActionComponents}
      
 //Actions
 !ui-post:closeDialogAct path:$f{closeDialogPath}

@@ -89,6 +89,7 @@ public class ReportHtml {
 	    public ReportHtml build() {
 	    	if (!StringUtils.isBlank(bodyContent)) {
 	    		StringBuilder sb = new StringBuilder();
+	    		sb.append("<!DOCTYPE html>");
 	    		sb.append("<html>");
 	    		sb.append("<head>");
 	    		sb.append("<style>");
