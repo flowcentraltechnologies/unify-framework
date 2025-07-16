@@ -65,8 +65,10 @@ public class DocumentLoaderController extends AbstractDocumentController {
 		writer.writeContextURL(contextPath);
 		writer.write("?").write(tempParam).write("=");
 		writer.write("\" + cid");
-		if (!StringUtils.isBlank(queryString)) {
-			writer.write(" + \"&").write(WebPathUtils.stripOffCID(queryString)).write("\"");
+		
+		final String _queryString = WebPathUtils.stripOffCID(queryString);
+		if (!StringUtils.isBlank(_queryString)) {
+			writer.write(" + \"&").write(_queryString).write("\"");
 		}
 		
 		writer.write(";\n");	    
