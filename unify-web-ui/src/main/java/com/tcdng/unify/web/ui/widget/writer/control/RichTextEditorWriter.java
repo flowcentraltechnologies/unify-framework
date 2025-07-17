@@ -95,13 +95,22 @@ public class RichTextEditorWriter extends AbstractControlWriter {
 		writer.writeParam("pBldId", editor.getBoldCtrl().getId());
 		writer.writeParam("pItlId", editor.getItalicCtrl().getId());
 		writer.writeParam("pUndId", editor.getUnderlineCtrl().getId());
-		writer.writeParam("pSFnsId", editor.getSetFontSizeCtrl().getId());
-		writer.writeParam("pSFncId", editor.getSetFontColorCtrl().getId());
-		writer.writeParam("pFnsId", editor.getFontSizeCtrl().getId());
-		writer.writeParam("pFncId", editor.getFontColorCtrl().getId());
-		writer.writeParam("pLfaId", editor.getLeftAlignCtrl().getId());
-		writer.writeParam("pCnaId", editor.getCenterAlignCtrl().getId());
-		writer.writeParam("pRtaId", editor.getRightAlignCtrl().getId());
+		if (editor.isSizeCtrl()) {
+			writer.writeParam("pSFnsId", editor.getSetFontSizeCtrl().getId());
+			writer.writeParam("pFnsId", editor.getFontSizeCtrl().getId());
+		}
+
+		if (editor.isColorCtrl()) {
+			writer.writeParam("pSFncId", editor.getSetFontColorCtrl().getId());
+			writer.writeParam("pFncId", editor.getFontColorCtrl().getId());
+		}
+
+		if (editor.isAlignCtrl()) {
+			writer.writeParam("pLfaId", editor.getLeftAlignCtrl().getId());
+			writer.writeParam("pCnaId", editor.getCenterAlignCtrl().getId());
+			writer.writeParam("pRtaId", editor.getRightAlignCtrl().getId());
+		}
+
 		writer.writeParam("pEdtId", editor.getEditorId());
 		writer.writeParam("pValId", editor.getValueCtrl().getId());
 		writer.writeParam("pEditable", editor.isContainerEditable());

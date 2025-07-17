@@ -15,6 +15,10 @@
  */
 package com.tcdng.unify.web.ui.widget.control;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.annotation.UplAttribute;
@@ -29,7 +33,11 @@ import com.tcdng.unify.web.ui.widget.Control;
  * @since 4.1
  */
 @Component("ui-richtexteditor")
-@UplAttributes({ @UplAttribute(name = "rows", type = int.class),
+@UplAttributes({
+		@UplAttribute(name = "rows", type = int.class),
+		@UplAttribute(name = "colorCtrl", type = boolean.class, defaultVal = "true"),
+		@UplAttribute(name = "sizeCtrl", type = boolean.class, defaultVal = "true"),
+		@UplAttribute(name = "alignCtrl", type = boolean.class, defaultVal = "true"),
 		@UplAttribute(name = "spellCheck", type = boolean.class) })
 public class RichTextEditor extends AbstractMultiControl {
 
@@ -47,7 +55,7 @@ public class RichTextEditor extends AbstractMultiControl {
 
 	private Control setFontSizeCtrl;
 
-	private Control setFontColorCtrl;
+	private Control setFontColorCtrl; 
 
 	private Control fontSizeCtrl;
 
@@ -61,7 +69,7 @@ public class RichTextEditor extends AbstractMultiControl {
 
 	private Control valueCtrl;
 
-	private Control[] controls;
+	private List<Control> controls;
 
 	private String fontSize;
 
@@ -82,6 +90,18 @@ public class RichTextEditor extends AbstractMultiControl {
 	public int getRows() throws UnifyException {
 		int rows = getUplAttribute(int.class, "rows");
 		return rows < MIN_ROWS ? MIN_ROWS : rows;
+	}
+
+	public boolean isColorCtrl() throws UnifyException {
+		return getUplAttribute(boolean.class, "colorCtrl");
+	}
+
+	public boolean isSizeCtrl() throws UnifyException {
+		return getUplAttribute(boolean.class, "sizeCtrl");
+	}
+
+	public boolean isAlignCtrl() throws UnifyException {
+		return getUplAttribute(boolean.class, "alignCtrl");
 	}
 
 	public boolean isSpellCheck() throws UnifyException {
@@ -148,7 +168,7 @@ public class RichTextEditor extends AbstractMultiControl {
 		return valueCtrl;
 	}
 
-	public Control[] getControls() {
+	public List<Control> getControls() {
 		return controls;
 	}
 
@@ -186,8 +206,27 @@ public class RichTextEditor extends AbstractMultiControl {
 
 		valueCtrl = (Control) addInternalChildWidget("!ui-hidden binding:content");
 
-		controls = new Control[] { boldCtrl, italicCtrl, underlineCtrl, fontSizeCtrl, setFontSizeCtrl, fontColorCtrl,
-				setFontColorCtrl, leftAlignCtrl, centerAlignCtrl, rightAlignCtrl };
+		controls = new ArrayList<Control>();
+		controls.add(boldCtrl);
+		controls.add(italicCtrl);
+		controls.add(underlineCtrl);
+		if (isSizeCtrl()) {
+			controls.add(fontSizeCtrl);
+			controls.add(setFontSizeCtrl);
+		}
+		
+		if (isColorCtrl()) {
+			controls.add(fontColorCtrl);
+			controls.add(setFontColorCtrl);
+		}
+		
+		if (isAlignCtrl()) {
+			controls.add(leftAlignCtrl);
+			controls.add(centerAlignCtrl);
+			controls.add(rightAlignCtrl);
+		}
+		
+		controls = Collections.unmodifiableList(controls);
 	}
 
 }
