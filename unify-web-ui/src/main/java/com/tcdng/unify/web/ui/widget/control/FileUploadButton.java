@@ -21,6 +21,7 @@ import com.tcdng.unify.core.annotation.UplAttribute;
 import com.tcdng.unify.core.annotation.UplAttributes;
 import com.tcdng.unify.core.constant.FileAttachmentType;
 import com.tcdng.unify.core.data.UploadedFile;
+import com.tcdng.unify.core.util.DataUtils;
 import com.tcdng.unify.web.ui.DataTransferBlock;
 import com.tcdng.unify.web.ui.widget.AbstractAutoRefreshMultiControl;
 import com.tcdng.unify.web.ui.widget.Control;
@@ -61,8 +62,11 @@ public class FileUploadButton extends AbstractAutoRefreshMultiControl implements
 			}
 		}
 
-		uploadedFile = null;		
-		commandRefreshPanels(getUplAttribute(String[].class, "refresh"));
+		uploadedFile = null;
+		String[] panels = getUplAttribute(String[].class, "refresh");
+		if (!DataUtils.isBlank(panels)) {
+			commandRefreshPanels(panels);
+		}
 	}
 
 	@Override

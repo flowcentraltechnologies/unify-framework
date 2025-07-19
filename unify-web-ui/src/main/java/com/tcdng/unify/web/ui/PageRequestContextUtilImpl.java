@@ -393,8 +393,12 @@ public class PageRequestContextUtilImpl extends AbstractUnifyComponent implement
 
     @Override
     public void setResponseRefreshPanels(String... longNames) throws UnifyException {
-    	List<String> list = new ArrayList<String>(Arrays.asList(longNames));
-        setRequestAttribute(REFRESH_PANEL_LONGNAMES, list);
+    	if (longNames != null) {
+        	List<String> list = new ArrayList<String>(Arrays.asList(longNames));
+            if (!list.isEmpty()) {
+            	setRequestAttribute(REFRESH_PANEL_LONGNAMES, list);
+            }
+    	}
     }
 
     @Override

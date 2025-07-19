@@ -864,6 +864,10 @@ public abstract class AbstractWidget extends AbstractUplComponent implements Wid
 		getRequestContextUtil().setCommandResultMapping(resultMappingName);
 	}
 
+	protected boolean isWithCommandResultMapping() throws UnifyException {
+		return getRequestContextUtil().isWithCommandResultMapping();
+	}
+
 	protected void setCommandResponsePath(TargetPath targetPath) throws UnifyException {
 		getRequestContextUtil().setCommandResponsePath(targetPath);
 	}
