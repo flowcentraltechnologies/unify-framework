@@ -3139,10 +3139,9 @@ ux.rigRichTextEditor = function(rgp) {
 	ux.richWrapSet({rc:rc, id:rgp.pUndId, tag:'u'});
 	ux.richStyleSet({rc:rc, id:rgp.pFnsId, prop:'fontSize'});
 	ux.richStyleSet({rc:rc, id:rgp.pFncId, prop:'color'});
-
-//	ux.richCmdHdl(rgp.pLfaId, 'justifyLeft', 'click');
-//	ux.richCmdHdl(rgp.pCnaId, 'justifyCenter', 'click');
-//	ux.richCmdHdl(rgp.pRtaId, 'justifyRight', 'click');
+	ux.richAlignSet({rc:rc, id:rgp.pLfaId, align:'left'});
+	ux.richAlignSet({rc:rc, id:rgp.pCnaId, align:'center'});
+	ux.richAlignSet({rc:rc, id:rgp.pRtaId, align:'right'});
 
 	const prm = {rc:rc};
 	ux.addHdl(_id(eid), 'focusout', ux.richRangeHdl, prm);
@@ -3170,6 +3169,10 @@ ux.richStyleSet = function(prm) {
  	ux.addHdl(_id(prm.id), 'change', ux.richStyleHdl, prm);
 }
 
+ux.richAlignSet = function(prm) {
+ 	ux.addHdl(_id(prm.id), 'click', ux.richAlignHdl, prm);
+}
+
 ux.richWrapHdl = function(uEv) {
 	const evp = uEv.evp;
 	const rc = evp.rc;
@@ -3190,6 +3193,16 @@ ux.richStyleHdl = function(uEv) {
 		}
 	}
  }
+
+ ux.richAlignHdl = function(uEv) {
+ 	const evp = uEv.evp;
+ 	const rc = evp.rc;
+    	if (rc.range) {
+			const div = document.createElement("div");
+			div.style.textAlign = evp.align;
+			ux.richSet(rc, div);
+		}
+  }
 
 ux.richLinkHdl = function(uEv) {
 	const rc = uEv.evp.rc;
