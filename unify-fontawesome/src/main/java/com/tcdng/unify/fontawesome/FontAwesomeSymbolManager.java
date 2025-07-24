@@ -31,7 +31,6 @@ import com.tcdng.unify.web.font.AbstractFontSymbolManager;
  */
 @Component(FontAwesomeApplicationComponents.FONTAWESOME_FONTSYMBOLMANAGER)
 public class FontAwesomeSymbolManager extends AbstractFontSymbolManager {
-
     @Override
     public List<String> getFontResources() throws UnifyException {
         // Currently uses font awesome 5.14.1
@@ -158,6 +157,8 @@ public class FontAwesomeSymbolManager extends AbstractFontSymbolManager {
         registerSymbol("laugh", "f599");
         registerSymbol("link", "f0c1");
         registerSymbol("list", "f03a");
+        registerSymbol("list-unordered", "f0ca");
+        registerSymbol("list-ordered", "f0cb");
         registerSymbol("lock", "f023");
         registerSymbol("logs", "f46d");
         registerSymbol("man", "f183");

@@ -35,9 +35,11 @@ import com.tcdng.unify.web.ui.widget.Control;
 @Component("ui-richtexteditor")
 @UplAttributes({
 		@UplAttribute(name = "rows", type = int.class),
-		@UplAttribute(name = "colorCtrl", type = boolean.class, defaultVal = "true"),
-		@UplAttribute(name = "sizeCtrl", type = boolean.class, defaultVal = "true"),
-		@UplAttribute(name = "alignCtrl", type = boolean.class, defaultVal = "true"),
+		@UplAttribute(name = "link", type = boolean.class, defaultVal = "true"),
+		@UplAttribute(name = "list", type = boolean.class, defaultVal = "true"),
+		@UplAttribute(name = "color", type = boolean.class, defaultVal = "true"),
+		@UplAttribute(name = "size", type = boolean.class, defaultVal = "true"),
+		@UplAttribute(name = "align", type = boolean.class, defaultVal = "true"),
 		@UplAttribute(name = "spellCheck", type = boolean.class) })
 public class RichTextEditor extends AbstractMultiControl {
 
@@ -63,9 +65,19 @@ public class RichTextEditor extends AbstractMultiControl {
 
 	private Control rightAlignCtrl;
 
+	private Control ulistCtrl;
+
+	private Control olistCtrl;
+
+	private Control linkCtrl;
+
+	private Control urlCtrl;
+
 	private Control valueCtrl;
 
-	private List<Control> controls;
+	private List<Control> acontrols;
+
+	private List<Control> bcontrols;
 
 	private String fontSize;
 
@@ -88,24 +100,28 @@ public class RichTextEditor extends AbstractMultiControl {
 		return rows < MIN_ROWS ? MIN_ROWS : rows;
 	}
 
-	public boolean isColorCtrl() throws UnifyException {
-		return getUplAttribute(boolean.class, "colorCtrl");
+	public boolean isColor() throws UnifyException {
+		return getUplAttribute(boolean.class, "color");
 	}
 
-	public boolean isSizeCtrl() throws UnifyException {
-		return getUplAttribute(boolean.class, "sizeCtrl");
+	public boolean isSize() throws UnifyException {
+		return getUplAttribute(boolean.class, "size");
 	}
 
-	public boolean isAlignCtrl() throws UnifyException {
-		return getUplAttribute(boolean.class, "alignCtrl");
+	public boolean isAlign() throws UnifyException {
+		return getUplAttribute(boolean.class, "align");
 	}
 
 	public boolean isSpellCheck() throws UnifyException {
 		return getUplAttribute(boolean.class, "spellCheck");
 	}
 
-	public String getToolBarId() throws UnifyException {
-		return getPrefixedId("tbr_");
+	public boolean isLink() throws UnifyException {
+		return getUplAttribute(boolean.class, "link");
+	}
+
+	public boolean isList() throws UnifyException {
+		return getUplAttribute(boolean.class, "list");
 	}
 
 	public String getEditorId() throws UnifyException {
@@ -152,12 +168,32 @@ public class RichTextEditor extends AbstractMultiControl {
 		return rightAlignCtrl;
 	}
 
+	public Control getUlistCtrl() {
+		return ulistCtrl;
+	}
+
+	public Control getOlistCtrl() {
+		return olistCtrl;
+	}
+
+	public Control getLinkCtrl() {
+		return linkCtrl;
+	}
+
+	public Control getUrlCtrl() {
+		return urlCtrl;
+	}
+
 	public Control getValueCtrl() {
 		return valueCtrl;
 	}
 
-	public List<Control> getControls() {
-		return controls;
+	public List<Control> getRowAControls() {
+		return acontrols;
+	}
+
+	public List<Control> getRowBControls() {
+		return bcontrols;
 	}
 
 	public String getFontSize() {
@@ -178,38 +214,54 @@ public class RichTextEditor extends AbstractMultiControl {
 
 	@Override
 	protected void doOnPageConstruct() throws UnifyException {
+		acontrols = new ArrayList<Control>();
+		bcontrols = new ArrayList<Control>();
+		
 		boldCtrl = (Control) addInternalChildWidget("!ui-button symbol:$s{bold} styleClass:$e{btn}");
 		italicCtrl = (Control) addInternalChildWidget("!ui-button symbol:$s{italic} styleClass:$e{btn}");
 		underlineCtrl = (Control) addInternalChildWidget("!ui-button symbol:$s{underline} styleClass:$e{btn}");
-		fontSizeCtrl = (Control) addInternalChildWidget(
-				"!ui-select list:$s{richtextfontsizelist} blankOption:$s{} styleClass:$e{sel} binding:fontSize");
-		fontColorCtrl = (Control) addInternalChildWidget(
-				"!ui-select list:$s{richtextfontcolorlist} blankOption:$s{} styleClass:$e{sel} binding:fontColor");
-		leftAlignCtrl = (Control) addInternalChildWidget("!ui-button symbol:$s{align-left} styleClass:$e{btn}");
-		centerAlignCtrl = (Control) addInternalChildWidget("!ui-button symbol:$s{align-center} styleClass:$e{btn}");
-		rightAlignCtrl = (Control) addInternalChildWidget("!ui-button symbol:$s{align-right} styleClass:$e{btn}");
-
+		
 		valueCtrl = (Control) addInternalChildWidget("!ui-hidden binding:content");
 
-		controls = new ArrayList<Control>();
-		controls.add(boldCtrl);
-		controls.add(italicCtrl);
-		controls.add(underlineCtrl);
-		if (isSizeCtrl()) {
-			controls.add(fontSizeCtrl);
+		acontrols.add(boldCtrl);
+		acontrols.add(italicCtrl);
+		acontrols.add(underlineCtrl);
+		if (isSize()) {
+			fontSizeCtrl = (Control) addInternalChildWidget(
+					"!ui-select list:$s{richtextfontsizelist} blankOption:$s{} styleClass:$e{sel} binding:fontSize");
+			acontrols.add(fontSizeCtrl);
 		}
 		
-		if (isColorCtrl()) {
-			controls.add(fontColorCtrl);
+		if (isColor()) {
+			fontColorCtrl = (Control) addInternalChildWidget(
+					"!ui-select list:$s{richtextfontcolorlist} blankOption:$s{} styleClass:$e{sel} binding:fontColor");
+			acontrols.add(fontColorCtrl);
 		}
 		
-		if (isAlignCtrl()) {
-			controls.add(leftAlignCtrl);
-			controls.add(centerAlignCtrl);
-			controls.add(rightAlignCtrl);
+		if (isAlign()) {
+			leftAlignCtrl = (Control) addInternalChildWidget("!ui-button symbol:$s{align-left} styleClass:$e{btn}");
+			centerAlignCtrl = (Control) addInternalChildWidget("!ui-button symbol:$s{align-center} styleClass:$e{btn}");
+			rightAlignCtrl = (Control) addInternalChildWidget("!ui-button symbol:$s{align-right} styleClass:$e{btn}");
+			acontrols.add(leftAlignCtrl);
+			acontrols.add(centerAlignCtrl);
+			acontrols.add(rightAlignCtrl);
 		}
 		
-		controls = Collections.unmodifiableList(controls);
+		if (isLink()) {
+			urlCtrl = (Control) addInternalChildWidget("!ui-text size:48");
+			linkCtrl = (Control) addInternalChildWidget("!ui-button symbol:$s{link} styleClass:$e{btn}");
+			bcontrols.add(urlCtrl);
+			bcontrols.add(linkCtrl);
+		}
+		
+		if (isList()) {
+			ulistCtrl = (Control) addInternalChildWidget("!ui-button symbol:$s{list-unordered} styleClass:$e{btn}");
+			olistCtrl = (Control) addInternalChildWidget("!ui-button symbol:$s{list-ordered} styleClass:$e{btn}");
+			bcontrols.add(ulistCtrl);
+			bcontrols.add(olistCtrl);
+		}
+		
+		acontrols = Collections.unmodifiableList(acontrols);
 	}
 
 }

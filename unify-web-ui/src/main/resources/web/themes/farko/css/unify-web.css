@@ -839,6 +839,7 @@ overflow-x:hidden;overflow-y:scroll;border-top: solid 1px #A0A0A0;border-left: s
 .ui-richtexteditor .ctrl {padding:2px;}
 .ui-richtexteditor .btn {padding: 0px 7px;min-height: 24px;font-size: 8pt;cursor: pointer;}
 .ui-richtexteditor .tread {height: 24px;font-size:7pt;}
+.ui-richtexteditor .ui-text {height: 24px;font-size:8pt;}
 .ui-richtexteditor .ui-text-popup .tpbutton {height: 24px;}
 .ui-richtexteditor .sel {width: 96px;font-size:7pt;}
 

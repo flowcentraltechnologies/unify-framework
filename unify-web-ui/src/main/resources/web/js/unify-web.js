@@ -3137,11 +3137,18 @@ ux.rigRichTextEditor = function(rgp) {
 	ux.richWrapSet({rc:rc, id:rgp.pBldId, tag:'b'});
 	ux.richWrapSet({rc:rc, id:rgp.pItlId, tag:'i'});
 	ux.richWrapSet({rc:rc, id:rgp.pUndId, tag:'u'});
+
 	ux.richStyleSet({rc:rc, id:rgp.pFnsId, prop:'fontSize'});
 	ux.richStyleSet({rc:rc, id:rgp.pFncId, prop:'color'});
+
 	ux.richAlignSet({rc:rc, id:rgp.pLfaId, align:'left'});
 	ux.richAlignSet({rc:rc, id:rgp.pCnaId, align:'center'});
 	ux.richAlignSet({rc:rc, id:rgp.pRtaId, align:'right'});
+
+	ux.richListSet({rc:rc, id:rgp.pLsuId, tag:'ul'});
+	ux.richListSet({rc:rc, id:rgp.pLsoId, tag:'ol'});
+
+	ux.richLinkSet({rc:rc, id:rgp.pLnkId, uid:rgp.pUrlId});
 
 	const prm = {rc:rc};
 	ux.addHdl(_id(eid), 'focusout', ux.richRangeHdl, prm);
@@ -3173,12 +3180,23 @@ ux.richAlignSet = function(prm) {
  	ux.addHdl(_id(prm.id), 'click', ux.richAlignHdl, prm);
 }
 
+ux.richListSet = function(prm) {
+ 	ux.addHdl(_id(prm.id), 'click', ux.richListHdl, prm);
+}
+
+ux.richLinkSet = function(prm) {
+ 	ux.addHdl(_id(prm.id), 'click', ux.richLinkHdl, prm);
+}
+
 ux.richWrapHdl = function(uEv) {
 	const evp = uEv.evp;
 	const rc = evp.rc;
 	if (rc.range) {
 		ux.richSet(rc, document.createElement(evp.tag));
+		return;
 	}
+
+	ux.richOut(rc);
 }
 
 ux.richStyleHdl = function(uEv) {
@@ -3190,46 +3208,59 @@ ux.richStyleHdl = function(uEv) {
 			const span = document.createElement("span");
 			span.style[evp.prop] = val;
 			ux.richSet(rc, span);
+			return;
 		}
 	}
- }
+
+	ux.richOut(rc);
+}
 
  ux.richAlignHdl = function(uEv) {
  	const evp = uEv.evp;
  	const rc = evp.rc;
-    	if (rc.range) {
-			const div = document.createElement("div");
-			div.style.textAlign = evp.align;
-			ux.richSet(rc, div);
-		}
-  }
+	if (rc.range) {
+		const div = document.createElement("div");
+		div.style.textAlign = evp.align;
+		ux.richSet(rc, div);
+		return;
+	}
+
+	ux.richOut(rc);
+}
 
 ux.richLinkHdl = function(uEv) {
 	const rc = uEv.evp.rc;
-   	const url = null;// TODO prompt("Enter URL:");
+   	const url = _id(uEv.evp.uid).value;
    	if (url && rc.range) {
-		const anchor = document.createElement("a");
-		anchor.href = url;
-		anchor.target = "_blank";
-		anchor.rel = "noopener noreferrer";
-		ux.richSet(rc, anchor);
+		if (ux.richIsRangeTextOnly(rc.range)) {
+			_id(uEv.evp.uid).value = null;
+			const anchor = document.createElement("a");
+			anchor.href = url;
+			anchor.target = "_blank";
+			anchor.rel = "noopener noreferrer";
+			ux.richSet(rc, anchor);
+			return;
+		}		
 	}
- }
+
+	ux.richOut(rc);
+}
 
 ux.richListHdl = function (uEv) {
 	const evp = uEv.evp;
 	const rc = evp.rc;
    	if (rc.range) {
 		const sel = window.getSelection();
-		const list = document.createElement(evp.type);
+		const list = document.createElement(evp.tag);
 		const li = document.createElement('li');
 		li.textContent = 'Item';
 		list.appendChild(li);
 		rc.range.insertNode(list);
 		sel.removeAllRanges();
 		sel.selectAllChildren(li);
-		ux.richOut(rc);
 	}
+
+	ux.richOut(rc);
  }
 
 ux.richSet = function(rc, wrap) {
@@ -3239,12 +3270,36 @@ ux.richSet = function(rc, wrap) {
 		rc.range.insertNode(wrap);
 		sel.removeAllRanges();
 		sel.addRange(rc.range);
-		ux.richOut(rc);
 	}
+	
+	ux.richOut(rc);
 }
  
 ux.richOut = function(rc) {
 	_id(rc.vid).value = _id(rc.eid).innerHTML;
+	rc.range = null;
+}
+
+ux.richIsRangeTextOnly = function(range) {
+	if (range.collapsed) {
+	    return false;
+	}
+	
+	return ux.richIsNodeTextOnly(range.cloneContents());
+}
+
+ux.richIsNodeTextOnly = function(frag) {
+	if (frag.nodeType === Node.ELEMENT_NODE) {
+	    return false;
+	}
+	
+	for (let child of frag.childNodes) {
+	    if (!ux.richIsNodeTextOnly(child)) {
+	        return false;
+	    }
+	}
+	
+	return true;
 }
 
 /** Single Select */
