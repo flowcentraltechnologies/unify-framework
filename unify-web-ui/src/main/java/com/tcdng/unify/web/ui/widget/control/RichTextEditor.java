@@ -53,10 +53,6 @@ public class RichTextEditor extends AbstractMultiControl {
 
 	private Control underlineCtrl;
 
-	private Control setFontSizeCtrl;
-
-	private Control setFontColorCtrl; 
-
 	private Control fontSizeCtrl;
 
 	private Control fontColorCtrl;
@@ -136,14 +132,6 @@ public class RichTextEditor extends AbstractMultiControl {
 		return underlineCtrl;
 	}
 
-	public Control getSetFontSizeCtrl() {
-		return setFontSizeCtrl;
-	}
-
-	public Control getSetFontColorCtrl() {
-		return setFontColorCtrl;
-	}
-
 	public Control getFontSizeCtrl() {
 		return fontSizeCtrl;
 	}
@@ -194,15 +182,12 @@ public class RichTextEditor extends AbstractMultiControl {
 		italicCtrl = (Control) addInternalChildWidget("!ui-button symbol:$s{italic} styleClass:$e{btn}");
 		underlineCtrl = (Control) addInternalChildWidget("!ui-button symbol:$s{underline} styleClass:$e{btn}");
 		fontSizeCtrl = (Control) addInternalChildWidget(
-				"!ui-select list:$s{richtextfontsizelist} styleClass:$e{sel} binding:fontSize");
+				"!ui-select list:$s{richtextfontsizelist} blankOption:$s{} styleClass:$e{sel} binding:fontSize");
 		fontColorCtrl = (Control) addInternalChildWidget(
-				"!ui-select list:$s{richtextfontcolorlist} styleClass:$e{sel} binding:fontColor");
+				"!ui-select list:$s{richtextfontcolorlist} blankOption:$s{} styleClass:$e{sel} binding:fontColor");
 		leftAlignCtrl = (Control) addInternalChildWidget("!ui-button symbol:$s{align-left} styleClass:$e{btn}");
 		centerAlignCtrl = (Control) addInternalChildWidget("!ui-button symbol:$s{align-center} styleClass:$e{btn}");
 		rightAlignCtrl = (Control) addInternalChildWidget("!ui-button symbol:$s{align-right} styleClass:$e{btn}");
-
-		setFontSizeCtrl = (Control) addInternalChildWidget("!ui-button symbol:$s{text-size} styleClass:$e{btn}");
-		setFontColorCtrl = (Control) addInternalChildWidget("!ui-button symbol:$s{paint-brush} styleClass:$e{btn}");
 
 		valueCtrl = (Control) addInternalChildWidget("!ui-hidden binding:content");
 
@@ -212,12 +197,10 @@ public class RichTextEditor extends AbstractMultiControl {
 		controls.add(underlineCtrl);
 		if (isSizeCtrl()) {
 			controls.add(fontSizeCtrl);
-			controls.add(setFontSizeCtrl);
 		}
 		
 		if (isColorCtrl()) {
 			controls.add(fontColorCtrl);
-			controls.add(setFontColorCtrl);
 		}
 		
 		if (isAlignCtrl()) {

@@ -96,12 +96,10 @@ public class RichTextEditorWriter extends AbstractControlWriter {
 		writer.writeParam("pItlId", editor.getItalicCtrl().getId());
 		writer.writeParam("pUndId", editor.getUnderlineCtrl().getId());
 		if (editor.isSizeCtrl()) {
-			writer.writeParam("pSFnsId", editor.getSetFontSizeCtrl().getId());
 			writer.writeParam("pFnsId", editor.getFontSizeCtrl().getId());
 		}
 
 		if (editor.isColorCtrl()) {
-			writer.writeParam("pSFncId", editor.getSetFontColorCtrl().getId());
 			writer.writeParam("pFncId", editor.getFontColorCtrl().getId());
 		}
 
