@@ -141,13 +141,16 @@ ux.registerExtension = function(extLiteral, extObj) {
 }
 
 /** Basic * */
-ux.setupDocument = function(docPath, docPopupBaseId, docPopupId, docSysInfoId, docLatencyId, docSessionId) {
+ux.setupDocument = function(docPath, docPopupBaseId, docPopupId, docSysInfoId, docLatencyId, docSessionId, tempc) {
 	ux.docPath = docPath;
 	ux.docPopupBaseId = docPopupBaseId;
 	ux.docPopupId = docPopupId;
 	ux.docSysInfoId = docSysInfoId;
 	ux.busyIndicator = docLatencyId;
 	ux.docSessionId = docSessionId;
+	if (tempc) {
+		document.cookie = tempc + "=;Max-Age=0;path=/;";
+	}
 }
 
 ux.getPageId = function() {

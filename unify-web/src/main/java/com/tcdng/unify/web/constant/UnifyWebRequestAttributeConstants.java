@@ -43,5 +43,7 @@ public interface UnifyWebRequestAttributeConstants {
 
     String LOADER_FORWARD_PATH = "WR.LOADERFORWARDPATH";
 
+    String TEMP_COOKIE = "WR.TEMPCOOKIE";
+
     String TIMESTAMP_VARIABLE = ":TV";
 }

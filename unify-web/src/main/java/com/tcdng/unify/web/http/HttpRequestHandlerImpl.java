@@ -171,6 +171,7 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 					Optional<ClientCookie> optional = httpRequest.getCookie(tempCookieName);
 					if (optional.isPresent()) {
 						pid = optional.get().getVal();
+						setRequestAttribute(UnifyWebRequestAttributeConstants.TEMP_COOKIE, tempCookieName);
 					}
 				}
 			}
