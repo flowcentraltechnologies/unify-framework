@@ -42,7 +42,7 @@ public class DocumentLoaderController extends AbstractDocumentController {
 	@Override
 	protected void writeDocument(ResponseWriter writer, String docPath, String section, String queryString)
 			throws UnifyException {
-		final String contextPath = getSessionAttribute(String.class,
+		final String contextPath = getRequestAttribute(String.class,
 				UnifyWebRequestAttributeConstants.LOADER_FORWARD_PATH);
 		final String tempCookieName = HttpRequestCookieConstants.UNIFY_PID_PREFIX
 				+ RandomUtils.generateRandomLetters(8);
@@ -64,7 +64,7 @@ public class DocumentLoaderController extends AbstractDocumentController {
 		writer.write("sessionStorage.setItem(\"page_id\", pid);\n");
 		writer.write("localStorage.setItem(\"uxp_store\", JSON.stringify(_uxp_store));\n");
 		writer.write("}\n");
-		writer.write("document.cookie = \"").write(tempCookieName).write("=${pid}; max-age=30; path=/\"\n");
+		writer.write("document.cookie = \"").write(tempCookieName).write("=\" + pid +\"; max-age=30; path=/\"\n");
 		writer.write("let path=\"");
 		writer.writeContextURL(contextPath);
 		writer.write("\";\n");

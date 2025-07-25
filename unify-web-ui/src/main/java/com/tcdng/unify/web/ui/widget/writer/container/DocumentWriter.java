@@ -278,13 +278,24 @@ public class DocumentWriter extends AbstractPageWriter {
 		if (isWithFontSymbolManager()) {
 			StringBuilder fsb = new StringBuilder();
 			int i = 0;
-			fsb.append(".g_fsm {font-family: ").append(document.getFontFamily());
+			boolean appendSym = false;
+			fsb.append(".g_fsm {font-family: ");
 			for (String fontResource : getFontResources()) {
 				writeFont(writer, "FontSymbolMngr" + i, fontResource);
-				fsb.append(", 'FontSymbolMngr").append(i).append('\'');
+				if (appendSym) {
+					fsb.append(',');
+				} else {
+					appendSym = true;
+				}
+				fsb.append("'FontSymbolMngr").append(i).append('\'');
 				i++;
 			}
-
+			
+			if (appendSym) {
+				fsb.append(',');
+			}
+			
+			fsb.append(document.getFontFamily());
 			fsb.append(";}");
 			writer.write(fsb);
 		}
@@ -322,16 +333,16 @@ public class DocumentWriter extends AbstractPageWriter {
 
 	private void writeFont(ResponseWriter writer, String family, String fontResource) throws UnifyException {
 		writer.write("@font-face {font-family: '").write(family).write("'; src: url(");
-		writer.writeContextResourceURL("/resource/file", MimeType.APPLICATION_OCTETSTREAM.template(), fontResource);
-		writer.write(");} ");
+		writer.writeContextResourceURL("/resource/file", MimeType.FONT_WOFF.template(), fontResource);
+		writer.write(")  format(\"woff\");} ");
 	}
 
 	private void writeFont(ResponseWriter writer, String family, String weight, String stretch, String style,
 			String fontResource) throws UnifyException {
 		writer.write("@font-face {font-family: '").write(family).write("'; font-weight:").write(weight)
 				.write("; font-stretch:").write(stretch).write("; font-style:").write(style).write("; src: url(");
-		writer.writeContextResourceURL("/resource/file", MimeType.APPLICATION_OCTETSTREAM.template(), fontResource);
-		writer.write(");} ");
+		writer.writeContextResourceURL("/resource/file", MimeType.FONT_WOFF.template(), fontResource);
+		writer.write(") format(\"woff\");} ");
 	}
 
 	private void writeResourcesStyleSheet(ResponseWriter writer) throws UnifyException {
