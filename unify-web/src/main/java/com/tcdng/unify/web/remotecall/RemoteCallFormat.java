@@ -18,7 +18,6 @@ package com.tcdng.unify.web.remotecall;
 import com.tcdng.unify.common.constants.EnumConst;
 import com.tcdng.unify.core.constant.MimeType;
 import com.tcdng.unify.core.util.EnumUtils;
-import com.tcdng.unify.web.constant.UnifyRequestHeaderConstants;
 
 /**
  * Supported remote call messaging formats.
@@ -80,18 +79,10 @@ public enum RemoteCallFormat implements EnumConst {
             }
 
             if (contentType.startsWith(XML.mimeType.template())) {
-                if (UnifyRequestHeaderConstants.REMOTE_TAGGED_MESSAGE_TYPE.equals(header)) {
-                    return TAGGED_XMLMESSAGE;
-                }
-                
                 return XML;
             }
 
             if (contentType.equals(OCTETSTREAM.mimeType.template())) {
-                if (UnifyRequestHeaderConstants.REMOTE_TAGGED_MESSAGE_TYPE.equals(header)) {
-                    return TAGGED_BINARYMESSAGE;
-                }
-                
                 return OCTETSTREAM;
             }
         }

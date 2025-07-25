@@ -887,10 +887,6 @@ public abstract class AbstractWidget extends AbstractUplComponent implements Wid
 	protected final String getContextURL(String path) throws UnifyException {
 		RequestContext requestContext = getRequestContext();
 		StringBuilder sb = new StringBuilder();
-		if (getRequestContextUtil().isRemoteViewer()) {
-			sb.append(getSessionContext().getUriBase());
-		}
-
 		sb.append(requestContext.getContextPath());
 		if (requestContext.isWithTenantPath()) {
 			sb.append(requestContext.getTenantPath());

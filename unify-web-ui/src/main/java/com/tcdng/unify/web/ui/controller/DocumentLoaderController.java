@@ -18,14 +18,13 @@ package com.tcdng.unify.web.ui.controller;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.util.RandomUtils;
-import com.tcdng.unify.core.util.StringUtils;
 import com.tcdng.unify.web.UnifyWebSessionAttributeConstants;
 import com.tcdng.unify.web.WebApplicationComponents;
 import com.tcdng.unify.web.constant.Secured;
 import com.tcdng.unify.web.constant.UnifyWebRequestAttributeConstants;
+import com.tcdng.unify.web.http.HttpRequestCookieConstants;
 import com.tcdng.unify.web.ui.AbstractDocumentController;
 import com.tcdng.unify.web.ui.widget.ResponseWriter;
-import com.tcdng.unify.web.util.WebPathUtils;
 
 /**
  * Document loader controller.
@@ -41,38 +40,35 @@ public class DocumentLoaderController extends AbstractDocumentController {
 	}
 
 	@Override
-	protected void writeDocument(ResponseWriter writer, String docPath, String section, String queryString) throws UnifyException {
+	protected void writeDocument(ResponseWriter writer, String docPath, String section, String queryString)
+			throws UnifyException {
 		final String contextPath = getSessionAttribute(String.class,
 				UnifyWebRequestAttributeConstants.LOADER_FORWARD_PATH);
-		final String tempParam = RandomUtils.generateRandomLetters(8) + "__";
-		setSessionAttribute(UnifyWebSessionAttributeConstants.TEMP_CLIENT_ID_PARAM, tempParam);
-		
+		final String tempCookieName = HttpRequestCookieConstants.UNIFY_PID_PREFIX
+				+ RandomUtils.generateRandomLetters(8);
+		setSessionAttribute(UnifyWebSessionAttributeConstants.TEMP_COOKIE, tempCookieName);
+
 		writer.write("<!DOCTYPE html>\n<html>\n<head>\n");
 		writer.write("<meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\"/>\n");
-		writer.write("<title>Loading...</title>\n");
+		writer.write("<title>");
+		writer.write(getUnifyComponentContext().getInstanceName());
+		writer.write("...</title>\n");
 		writer.write("</head>\n<body></body>\n</html>\n");
 		writer.write("<script>\n");
-		writer.write("let cid = sessionStorage.getItem(\"page_cid\");\n");
-		writer.write("if (cid === null) {\n");
-		writer.write("let uxstore = localStorage.getItem(\"ux_store\");\n");
-		writer.write("let _uxstore = uxstore !== null ? JSON.parse(uxstore): {cid:0};\n");
-		writer.write("_uxstore.cid++;\n");
-	    writer.write("cid = \"cid\" + _uxstore.cid.toString(16);\n");
-	    writer.write("sessionStorage.setItem(\"page_cid\", cid);\n");
-	    writer.write("localStorage.setItem(\"ux_store\", JSON.stringify(_uxstore));\n");
-	    writer.write("}\n");
-	    writer.write("let path=\"");
+		writer.write("let pid = sessionStorage.getItem(\"page_id\");\n");
+		writer.write("if (pid === null) {\n");
+		writer.write("let uxp_store = localStorage.getItem(\"uxp_store\");\n");
+		writer.write("let _uxp_store = uxp_store !== null ? JSON.parse(uxp_store): {pid:0};\n");
+		writer.write("_uxp_store.pid++;\n");
+		writer.write("pid = \"pid\" + _uxp_store.pid.toString(16);\n");
+		writer.write("sessionStorage.setItem(\"page_id\", pid);\n");
+		writer.write("localStorage.setItem(\"uxp_store\", JSON.stringify(_uxp_store));\n");
+		writer.write("}\n");
+		writer.write("document.cookie = \"").write(tempCookieName).write("=${pid}; max-age=30; path=/\"\n");
+		writer.write("let path=\"");
 		writer.writeContextURL(contextPath);
-		writer.write("?").write(tempParam).write("=");
-		writer.write("\" + cid");
-		
-		final String _queryString = WebPathUtils.stripOffCID(queryString);
-		if (!StringUtils.isBlank(_queryString)) {
-			writer.write(" + \"&").write(_queryString).write("\"");
-		}
-		
-		writer.write(";\n");	    
-		writer.write("window.location.assign(path);\n");	
+		writer.write("\";\n");
+		writer.write("window.location.assign(path);\n");
 		writer.write("</script>\n");
 	}
 

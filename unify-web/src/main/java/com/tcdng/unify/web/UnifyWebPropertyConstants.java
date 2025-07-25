@@ -51,12 +51,6 @@ public interface UnifyWebPropertyConstants {
 
     String APPLICATION_WEB_FRIENDLY_REDIRECT = "application.web.friendlyredirect";
 
-    String APPLICATION_REMOTE_VIEWING_ENABLED = "application.web.remote.viewing";
-
-    String APPLICATION_REMOTE_VIEWERS = "application.web.remote.viewers";
-
-    String APPLICATION_REMOTE_VIEWERS_STRICT = "application.web.remote.viewers.strict";
-
     String APPLICATION_TENANT_PATH_ENABLED = "application.web.tenantpath.enabled";
 
     String APPLICATION_WEB_BROWSER_LOCALE = "application.web.browser.locale";

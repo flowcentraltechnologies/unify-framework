@@ -37,7 +37,6 @@ import com.tcdng.unify.core.util.IOUtils;
 import com.tcdng.unify.core.util.NetworkUtils;
 import com.tcdng.unify.web.UnifyWebErrorConstants;
 import com.tcdng.unify.web.WebApplicationComponents;
-import com.tcdng.unify.web.constant.UnifyRequestHeaderConstants;
 import com.tcdng.unify.web.discovery.gem.APIDiscoveryPathConstants;
 import com.tcdng.unify.web.discovery.gem.APIDiscoveryRemoteCallCodeConstants;
 import com.tcdng.unify.web.discovery.gem.data.DiscoverRemoteCallParams;
@@ -52,7 +51,7 @@ import com.tcdng.unify.web.discovery.gem.data.DiscoverRemoteCallResult;
 @Component(WebApplicationComponents.APPLICATION_WEBCLIENT)
 public class WebClientImpl extends AbstractUnifyComponent implements WebClient {
 
-	@Configurable("10000")
+	@Configurable("20000")
 	private int connectTimeout;
 
 	@Configurable("30000")
@@ -190,11 +189,6 @@ public class WebClientImpl extends AbstractUnifyComponent implements WebClient {
             conn.setReadTimeout(readTimeout);
             if (charset != null) {
                 conn.setRequestProperty("Accept-Charset", charset.name());
-            }
-            
-            if (format.isTagged()) {
-                conn.setRequestProperty(UnifyRequestHeaderConstants.REMOTE_MESSAGE_TYPE_HEADER,
-                		UnifyRequestHeaderConstants.REMOTE_TAGGED_MESSAGE_TYPE);
             }
             
             conn.connect();

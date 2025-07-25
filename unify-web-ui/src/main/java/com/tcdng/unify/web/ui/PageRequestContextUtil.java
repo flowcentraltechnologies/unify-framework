@@ -107,6 +107,14 @@ public interface PageRequestContextUtil extends UnifyComponent {
 	 */
 	void setRequestAttribute(String name, Object value) throws UnifyException;
 	
+	/**
+	 * Sets request client page ID
+	 * 
+	 * @param pid the page ID
+	 * @throws UnifyException if an error occurs
+	 */
+	void setRequestClientPageId(String pid) throws UnifyException;
+	
     /**
      * Sets current request context's popup long name.
      * 
@@ -306,14 +314,6 @@ public interface PageRequestContextUtil extends UnifyComponent {
     String getRequestConfirmParam() throws UnifyException;
 
     /**
-     * Returns the request context remote viewer.
-     * 
-     * @throws UnifyException
-     *             if an error occurs
-     */
-    String getRemoteViewer() throws UnifyException;
-
-    /**
      * Gets the request nonce.
      * 
      * @return the nonce
@@ -329,14 +329,6 @@ public interface PageRequestContextUtil extends UnifyComponent {
      *                        if an error occurs
      */
     boolean isWithNonce() throws UnifyException;
-    
-    /**
-     * Returns true if request is from a remote viewer.
-     * 
-     * @throws UnifyException
-     *             if an error occurs
-     */
-    boolean isRemoteViewer() throws UnifyException;
 
     /**
      * Sets the request path parts information for current request context.

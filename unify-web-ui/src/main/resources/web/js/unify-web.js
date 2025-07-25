@@ -150,17 +150,17 @@ ux.setupDocument = function(docPath, docPopupBaseId, docPopupId, docSysInfoId, d
 	ux.docSessionId = docSessionId;
 }
 
-ux.getClientId = function() {
-	let cid = sessionStorage.getItem("page_cid");
-	if (cid === null) {
-		let uxstore = localStorage.getItem("ux_store");
-		let _uxstore = uxstore !== null ? JSON.parse(uxstore): {cid:0};
-		cid = "cid" + (++_uxstore.cid).toString(16);
-		sessionStorage.setItem("page_cid", cid);
-		localStorage.setItem("ux_store", JSON.stringify(_uxstore));
+ux.getPageId = function() {
+	let pid = sessionStorage.getItem("page_id");
+	if (pid === null) {
+		let uxstore = localStorage.getItem("uxp_store");
+		let _uxstore = uxstore !== null ? JSON.parse(uxstore): {pid:0};
+		pid = "pid" + (++_uxstore.pid).toString(16);
+		sessionStorage.setItem("page_id", pid);
+		localStorage.setItem("uxp_store", JSON.stringify(_uxstore));
 	}
 	
-	return cid;
+	return pid;
 }
 
 ux.wsPushUpdate = function(wsSyncPath) {
@@ -171,7 +171,7 @@ ux.wsPushUpdate = function(wsSyncPath) {
 
 	ux.wsSocket = new WebSocket(ux.wsUrl);
 	ux.wsSocket.addEventListener('open', function (event) {
-	    ux.wsSend("open", ux.getClientId());
+	    ux.wsSend("open", ux.getPageId());
 	});
 	ux.wsSocket.addEventListener('message', function (event) {
 	    ux.wsReceive(event.data);
@@ -666,6 +666,7 @@ ux.ajaxCall = function(ajaxPrms) {
 	try {
 		ux.saveContentScroll();
 		uAjaxReq.open("POST", url, true);
+		uAjaxReq.setRequestHeader("Unify-Pid", ux.getPageId());
 		if (ajaxPrms.uEncoded) {
 			uAjaxReq.setRequestHeader("Content-Type",
 					"application/x-www-form-urlencoded");
@@ -698,8 +699,6 @@ ux.ajaxCall = function(ajaxPrms) {
 				if (param !== null) {
 					ajaxPrms.uParam += ("&" + param);
 				}
-				
-				ajaxPrms.uParam += ("&req_cid=" + _enc(ux.getClientId()));
 			} else {
 				if (param !== null) {
 					let params = new URLSearchParams(param);
@@ -707,8 +706,6 @@ ux.ajaxCall = function(ajaxPrms) {
 					    ajaxPrms.uParam.append(key, val);
 					}
 				}
-				
-				ajaxPrms.uParam.append("req_cid", ux.getClientId());
 			}
 			
 			uAjaxReq.send(ajaxPrms.uParam);

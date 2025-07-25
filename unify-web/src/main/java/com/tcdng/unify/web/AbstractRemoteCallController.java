@@ -27,7 +27,6 @@ import com.tcdng.unify.core.stream.JsonObjectStreamer;
 import com.tcdng.unify.core.stream.ObjectStreamer;
 import com.tcdng.unify.core.stream.XmlObjectStreamer;
 import com.tcdng.unify.core.util.ReflectUtils;
-import com.tcdng.unify.web.constant.RequestParameterConstants;
 import com.tcdng.unify.web.constant.Secured;
 import com.tcdng.unify.web.remotecall.RemoteCallBinaryMessageStreamer;
 import com.tcdng.unify.web.remotecall.RemoteCallError;
@@ -73,8 +72,7 @@ public abstract class AbstractRemoteCallController extends AbstractController im
 	public final void process(ClientRequest request, ClientResponse response) throws UnifyException {
 		try {
 			final ControllerPathParts reqPathParts = request.getRequestPathParts().getControllerPathParts();
-			RemoteCallFormat remoteCallFormat = (RemoteCallFormat) request.getParameters()
-					.getParam(RequestParameterConstants.REMOTE_CALL_FORMAT);
+			RemoteCallFormat remoteCallFormat = RemoteCallFormat.JSON;
 			Object reqBody = remoteCallFormat.mimeType().isTextable() ? request.getText() : request.getBytes();
 			Object respBody = executeRemoteCall(remoteCallFormat, reqPathParts.getControllerPath(), reqBody);
 			response.setContentType(remoteCallFormat.mimeType().template());

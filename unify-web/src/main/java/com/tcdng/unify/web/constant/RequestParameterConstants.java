@@ -25,28 +25,6 @@ public interface RequestParameterConstants {
 
     String MORSIC = "morsic";
 
-    String CLIENT_ID = "req_cid";
-
-    String REMOTE_VIEWER = "req_rv";
-
-    String REMOTE_SESSION_ID = "req_rsi";
-
-    String REMOTE_USERLOGINID = "req_uid";
-
-    String REMOTE_USERNAME = "req_unm";
-
-    String REMOTE_ROLECD = "req_rcd";
-
-    String REMOTE_BRANCH_CODE = "req_bcd";
-
-    String REMOTE_ZONE_CODE = "req_zcd";
-
-    String REMOTE_GLOBAL_ACCESS = "req_gac";
-
-    String REMOTE_TENANT_CODE = "req_tnc";
-
-    String REMOTE_COLOR_SCHEME = "req_csm";
-
     String REMOTE_CALL_FORMAT = "req_rcf";
 
     String EXTERNAL_FORWARD = "req_fwd";

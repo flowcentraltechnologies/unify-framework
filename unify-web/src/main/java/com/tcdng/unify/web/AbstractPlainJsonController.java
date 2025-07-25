@@ -22,7 +22,6 @@ import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Configurable;
 import com.tcdng.unify.core.stream.JsonObjectStreamer;
 import com.tcdng.unify.core.util.json.JsonUtils;
-import com.tcdng.unify.web.constant.RequestParameterConstants;
 import com.tcdng.unify.web.remotecall.RemoteCallFormat;
 
 /**
@@ -44,14 +43,6 @@ public abstract class AbstractPlainJsonController extends AbstractPlainControlle
 		try {
 			final String actionName = request.getRequestPathParts().getControllerPathParts().getActionName();
 			logDebug("Processing plain JSON request with action [{0}]...", actionName);
-
-			RemoteCallFormat remoteCallFormat = (RemoteCallFormat) request.getParameters()
-					.getParam(RequestParameterConstants.REMOTE_CALL_FORMAT);
-			if (!RemoteCallFormat.JSON.equals(remoteCallFormat)) {
-				throw new UnifyException(UnifyWebErrorConstants.CONTROLLER_MESSAGE_FORMAT_NOT_MATCH_EXPECTED,
-						remoteCallFormat, RemoteCallFormat.JSON, getName());
-			}
-
 			jsonResponse = doExecute(actionName, request.getText());
 		} catch (Exception e) {
 			StringBuilder sb = new StringBuilder();

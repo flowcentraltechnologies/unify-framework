@@ -24,17 +24,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
+import java.util.Optional;
 
 import com.tcdng.unify.core.AbstractUnifyComponent;
 import com.tcdng.unify.core.SessionAttributeProvider;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.UserSession;
-import com.tcdng.unify.core.UserToken;
 import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.annotation.Configurable;
 import com.tcdng.unify.core.constant.ClientPlatform;
@@ -42,7 +40,6 @@ import com.tcdng.unify.core.constant.MimeType;
 import com.tcdng.unify.core.data.FactoryMap;
 import com.tcdng.unify.core.data.UploadedFile;
 import com.tcdng.unify.core.util.CalendarUtils;
-import com.tcdng.unify.core.util.ColorUtils;
 import com.tcdng.unify.core.util.DataUtils;
 import com.tcdng.unify.core.util.IOUtils;
 import com.tcdng.unify.core.util.StringUtils;
@@ -61,9 +58,7 @@ import com.tcdng.unify.web.UnifyWebSessionAttributeConstants;
 import com.tcdng.unify.web.WebApplicationComponents;
 import com.tcdng.unify.web.constant.RequestParameterConstants;
 import com.tcdng.unify.web.constant.ReservedPageControllerConstants;
-import com.tcdng.unify.web.constant.UnifyRequestHeaderConstants;
 import com.tcdng.unify.web.constant.UnifyWebRequestAttributeConstants;
-import com.tcdng.unify.web.remotecall.RemoteCallFormat;
 
 /**
  * Default application HTTP request handler.
@@ -79,10 +74,10 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 	private static final String DISPOSITION_CREATIONDATE = "creation-date";
 	private static final String DISPOSITION_MODIFICATIONDATE = "modification-date";
 
-	private static final int BUFFER_SIZE = 4096;
-
 	private static final String BODY_TEXT = "__bodyText";
 	private static final String BODY_BYTES = "__bodyBytes";
+
+	private static final int BUFFER_SIZE = 4096;
 
 	@Configurable
 	private ControllerFinder controllerFinder;
@@ -100,10 +95,6 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 	private LongUserSessionManager longUserSessionManager;
 
 	private FactoryMap<String, RequestPathParts> requestPathParts;
-
-	private Set<String> remoteViewerList;
-
-	private boolean isRemoteViewStrict;
 
 	private boolean isTenantPathEnabled;
 
@@ -172,39 +163,39 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 							: getApplicationLocale();
 			getSessionContext().setLocale(reqLocale);
 
+			String pid = httpRequest.getHeader(HttpRequestHeaderConstants.UNIFY_PID);
+			if (StringUtils.isBlank(pid)) {
+				final String tempCookieName = getSessionAttribute(String.class,
+						UnifyWebSessionAttributeConstants.TEMP_COOKIE);
+				if (!StringUtils.isBlank(tempCookieName)) {
+					Optional<ClientCookie> optional = httpRequest.getCookie(tempCookieName);
+					if (optional.isPresent()) {
+						pid = optional.get().getVal();
+					}
+				}
+			}
+
+			setRequestClientPageId(pid);
 			setRequestAttribute(UnifyWebRequestAttributeConstants.HEADERS, httpRequest);
 			setRequestAttribute(UnifyWebRequestAttributeConstants.PARAMETERS, httpRequest);
 
 			final Map<String, Object> parameters = extractRequestParameters(httpRequest, charset);
-			final String tempClientPrm = removeSessionAttribute(String.class,
-					UnifyWebSessionAttributeConstants.TEMP_CLIENT_ID_PARAM);
-			final String cid = !StringUtils.isBlank(tempClientPrm) ? (String) parameters.remove(tempClientPrm) : null;
-			final String text = (String) parameters.remove(BODY_TEXT);
-			final byte[] bytes = (byte[]) parameters.remove(BODY_BYTES);
 			ClientRequest clientRequest = new HttpClientRequest(detectClientPlatform(httpRequest), methodType,
 					requestPathParts, charset, httpRequest, httpRequest.getQueryString(), parameters,
-					extractCookies(httpRequest), text, bytes);
+					extractCookies(httpRequest), (String) parameters.remove(BODY_TEXT),
+					(byte[]) parameters.remove(BODY_BYTES));
 			ClientResponse clientResponse = new HttpClientResponse(httpResponse);
 
 			String origin = httpRequest.getHeader("origin");
 			origin = origin != null ? origin : httpRequest.getHeader(HttpRequestHeaderConstants.ORIGIN);
 			if (!StringUtils.isBlank(origin)) {
-				if (remoteViewerList.isEmpty() || remoteViewerList.contains(origin)) {
-					httpResponse.setHeader(HttpResponseHeaderConstants.ACCESS_CONTROL_ALLOW_ORIGIN, origin);
-					httpResponse.setHeader(HttpResponseHeaderConstants.ACCESS_CONTROL_ALLOW_METHODS,
-							"POST, GET, PUT, OPTIONS");
-					httpResponse.setHeader(HttpResponseHeaderConstants.ACCESS_CONTROL_ALLOW_HEADERS, "Content-Type");
-					httpResponse.setHeader(HttpResponseHeaderConstants.ACCESS_CONTROL_MAX_AGE, "600");
-				} else {
-					if (isRemoteViewStrict) {
-						clientResponse.setStatusForbidden();
-						return;
-					}
-				}
+				httpResponse.setHeader(HttpResponseHeaderConstants.ACCESS_CONTROL_ALLOW_ORIGIN, origin);
+				httpResponse.setHeader(HttpResponseHeaderConstants.ACCESS_CONTROL_ALLOW_METHODS,
+						"POST, GET, PUT, OPTIONS");
+				httpResponse.setHeader(HttpResponseHeaderConstants.ACCESS_CONTROL_ALLOW_HEADERS,
+						"Content-Type,Unify-Pid");
+				httpResponse.setHeader(HttpResponseHeaderConstants.ACCESS_CONTROL_MAX_AGE, "600");
 			}
-
-			setRequestAttribute(UnifyWebRequestAttributeConstants.CLIENT_ID, !StringUtils.isBlank(cid) ? cid
-					: clientRequest.getParameters().getParam(RequestParameterConstants.CLIENT_ID));
 
 			Controller controller = null;
 			try {
@@ -274,57 +265,23 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 			RequestPathParts reqPathParts) throws UnifyException {
 		HttpUserSession userSession = null;
 		if (reqPathParts.isSessionless()) {
-			// Non-UI controllers are session less. Handle sessionless remote call
 			httpRequest.invalidateSession();
-
-			// Create single use session object
 			userSession = createHttpUserSession(httpModule, httpRequest, reqPathParts, null);
 		} else {
-			if (StringUtils.isNotBlank(httpRequest.getParameter(RequestParameterConstants.REMOTE_VIEWER))) {
-				// Handle remote view
-				httpRequest.invalidateSession();
+			userSession = (HttpUserSession) httpRequest.getSessionAttribute(HttpConstants.USER_SESSION);
+			if (httpModule.isTenantPathEnabled() && userSession != null
+					&& !DataUtils.equals(reqPathParts.getTenantPath(), userSession.getTenantPath())) {
+				httpRequest.removeSessionAttribute(HttpConstants.USER_SESSION);
+				userSession.invalidate();
+				userSession = null;
+			}
 
-				String sessionId = (String) httpRequest.getParameter(RequestParameterConstants.REMOTE_SESSION_ID);
-				userSession = (AbstractHttpUserSession) httpModule.getUserSessionManager().getUserSession(sessionId);
-				if (userSession == null) {
-					userSession = createHttpUserSession(httpModule, httpRequest, reqPathParts, sessionId);
-					httpModule.getUserSessionManager().addUserSession(userSession);
-
-					String userLoginId = httpRequest.getParameter(RequestParameterConstants.REMOTE_USERLOGINID);
-					String userName = httpRequest.getParameter(RequestParameterConstants.REMOTE_USERNAME);
-					String roleCode = httpRequest.getParameter(RequestParameterConstants.REMOTE_ROLECD);
-					String branchCode = httpRequest.getParameter(RequestParameterConstants.REMOTE_BRANCH_CODE);
-					String zoneCode = httpRequest.getParameter(RequestParameterConstants.REMOTE_ZONE_CODE);
-					String tenantCode = httpRequest.getParameter(RequestParameterConstants.REMOTE_TENANT_CODE);
-					String colorScheme = ColorUtils.getConformingColorSchemeCode(
-							httpRequest.getParameter(RequestParameterConstants.REMOTE_COLOR_SCHEME));
-					boolean globalAccess = Boolean
-							.valueOf(httpRequest.getParameter(RequestParameterConstants.REMOTE_GLOBAL_ACCESS));
-
-					UserToken userToken = UserToken.newBuilder().userLoginId(userLoginId).userName(userName)
-							.ipAddress(userSession.getRemoteAddress()).branchCode(branchCode).zoneCode(zoneCode)
-							.tenantCode(tenantCode).colorScheme(colorScheme).globalAccess(globalAccess)
-							.allowMultipleLogin(true).remote(true).build();
-					userToken.setRoleCode(roleCode);
-					userSession.getSessionContext().setUserToken(userToken);
-				}
-			} else {
-				// Handle document request
-				userSession = (HttpUserSession) httpRequest.getSessionAttribute(HttpConstants.USER_SESSION);
-				if (httpModule.isTenantPathEnabled() && userSession != null
-						&& !DataUtils.equals(reqPathParts.getTenantPath(), userSession.getTenantPath())) {
-					httpRequest.removeSessionAttribute(HttpConstants.USER_SESSION);
-					userSession.invalidate();
-					userSession = null;
-				}
-
-				if (userSession == null) {
-					synchronized (httpRequest.getSessionSychObject()) {
-						userSession = (HttpUserSession) httpRequest.getSessionAttribute(HttpConstants.USER_SESSION);
-						if (userSession == null) {
-							userSession = createHttpUserSession(httpModule, httpRequest, reqPathParts, null);
-							httpRequest.setSessionAttribute(HttpConstants.USER_SESSION, userSession);
-						}
+			if (userSession == null) {
+				synchronized (httpRequest.getSessionSychObject()) {
+					userSession = (HttpUserSession) httpRequest.getSessionAttribute(HttpConstants.USER_SESSION);
+					if (userSession == null) {
+						userSession = createHttpUserSession(httpModule, httpRequest, reqPathParts, null);
+						httpRequest.setSessionAttribute(HttpConstants.USER_SESSION, userSession);
 					}
 				}
 			}
@@ -370,20 +327,10 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 		return userSession;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	protected void onInitialize() throws UnifyException {
-		isRemoteViewStrict = getContainerSetting(boolean.class,
-				UnifyWebPropertyConstants.APPLICATION_REMOTE_VIEWERS_STRICT, false);
 		isTenantPathEnabled = getContainerSetting(boolean.class,
 				UnifyWebPropertyConstants.APPLICATION_TENANT_PATH_ENABLED, false);
-		List<String> viewersList = DataUtils.convert(ArrayList.class, String.class,
-				getContainerSetting(Object.class, UnifyWebPropertyConstants.APPLICATION_REMOTE_VIEWERS));
-		if (!DataUtils.isBlank(viewersList)) {
-			remoteViewerList = new HashSet<String>(viewersList);
-		} else {
-			remoteViewerList = Collections.emptySet();
-		}
 	}
 
 	@Override
@@ -419,84 +366,46 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 		Map<String, Object> result = new HashMap<String, Object>();
 		final String contentType = httpRequest.getContentType() == null ? null
 				: httpRequest.getContentType().toLowerCase();
-		RemoteCallFormat remoteCallFormat = RemoteCallFormat.fromContentType(
-				httpRequest.getHeader(UnifyRequestHeaderConstants.REMOTE_MESSAGE_TYPE_HEADER), contentType);
-		if (remoteCallFormat != null) {
-			result.put(RequestParameterConstants.REMOTE_CALL_FORMAT, remoteCallFormat);
-			Map<String, String[]> httpRequestParamMap = httpRequest.getParameterMap();
-			for (Map.Entry<String, String[]> entry : httpRequestParamMap.entrySet()) {
-				String key = entry.getKey();
-				String[] values = entry.getValue();
-				if (values.length == 1) {
-					if (!values[0].isEmpty()) {
-						result.put(key, values[0]);
-					} else {
-						result.put(key, null);
-					}
-				} else {
-					result.put(key, values);
-				}
-			}
-
+		boolean isFormData = contentType != null && contentType.indexOf("multipart/form-data") >= 0;
+		if (isFormData) {
+			processParts(result, httpRequest);
+		} else {
 			try {
-				switch (remoteCallFormat) {
-				case OCTETSTREAM:
-				case TAGGED_BINARYMESSAGE:
-					result.put(BODY_BYTES, IOUtils.readAll(httpRequest.getInputStream()));
-					break;
-				case JSON:
-				case TAGGED_XMLMESSAGE:
-				case XML:
-					result.put(BODY_TEXT, IOUtils.readAll(httpRequest.getReader()));
-					break;
-				default:
-					break;
+				boolean chkMorsic = true;
+				Map<String, String[]> httpRequestParamMap = httpRequest.getParameterMap();
+				for (Map.Entry<String, String[]> entry : httpRequestParamMap.entrySet()) {
+					String key = entry.getKey();
+					if (chkMorsic && RequestParameterConstants.MORSIC.equals(key)) {
+						chkMorsic = false;
+						continue;
+					}
+
+					String[] values = entry.getValue();
+					if (values.length == 1) {
+						if (!values[0].isEmpty()) {
+							if (RequestParameterConstants.EXTERNAL_FORWARD.equals(key)) {
+								getSessionContext().setExternalForward(values[0]);
+							}
+
+							result.put(key, values[0]);
+						} else {
+							result.put(key, null);
+						}
+					} else {
+						result.put(key, values);
+					}
 				}
+
+				final MimeType mimeType = contentType != null ? MimeType.fromTemplate(contentType) : null;
+				if (mimeType == null || !mimeType.isTextable()) {
+					result.put(BODY_BYTES, IOUtils.readAll(httpRequest.getInputStream()));
+				} else {
+					result.put(BODY_TEXT, IOUtils.readAll(httpRequest.getReader()));
+				}
+			} catch (UnifyException e) {
+				throw e;
 			} catch (IOException e) {
 				throwOperationErrorException(e);
-			}
-		} else {
-			boolean isFormData = contentType != null && contentType.indexOf("multipart/form-data") >= 0;
-			if (isFormData) {
-				processParts(result, httpRequest);
-			} else {
-				try {
-					boolean chkMorsic = true;
-					Map<String, String[]> httpRequestParamMap = httpRequest.getParameterMap();
-					for (Map.Entry<String, String[]> entry : httpRequestParamMap.entrySet()) {
-						String key = entry.getKey();
-						if (chkMorsic && RequestParameterConstants.MORSIC.equals(key)) {
-							chkMorsic = false;
-							continue;
-						}
-
-						String[] values = entry.getValue();
-						if (values.length == 1) {
-							if (!values[0].isEmpty()) {
-								if (RequestParameterConstants.EXTERNAL_FORWARD.equals(key)) {
-									getSessionContext().setExternalForward(values[0]);
-								}
-
-								result.put(key, values[0]);
-							} else {
-								result.put(key, null);
-							}
-						} else {
-							result.put(key, values);
-						}
-					}
-
-					final MimeType mimeType = contentType != null ? MimeType.fromTemplate(contentType) : null;
-					if (mimeType == null || !mimeType.isTextable()) {
-						result.put(BODY_BYTES, IOUtils.readAll(httpRequest.getInputStream()));
-					} else {
-						result.put(BODY_TEXT, IOUtils.readAll(httpRequest.getReader()));
-					}
-				} catch (UnifyException e) {
-					throw e;
-				} catch (IOException e) {
-					throwOperationErrorException(e);
-				}
 			}
 		}
 

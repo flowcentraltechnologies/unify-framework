@@ -13,18 +13,16 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
-package com.tcdng.unify.web.constant;
+package com.tcdng.unify.web.http;
 
 /**
- * Unify request header constants.
+ * HTTP request cookie constants.
  * 
  * @author The Code Department
  * @since 4.1
  */
-public interface UnifyRequestHeaderConstants {
+public interface HttpRequestCookieConstants {
+	
+	String UNIFY_PID_PREFIX = "unify-pid";
 
-    String REMOTE_MESSAGE_TYPE_HEADER = "Unify-Web-Message-Type";
-
-    String REMOTE_TAGGED_MESSAGE_TYPE = "tagged";
 }
