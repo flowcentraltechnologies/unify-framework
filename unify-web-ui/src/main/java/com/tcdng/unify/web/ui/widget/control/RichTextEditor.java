@@ -55,6 +55,10 @@ public class RichTextEditor extends AbstractMultiControl {
 
 	private Control underlineCtrl;
 
+	private Control setFontSizeCtrl;
+
+	private Control setFontColorCtrl;
+
 	private Control fontSizeCtrl;
 
 	private Control fontColorCtrl;
@@ -148,6 +152,14 @@ public class RichTextEditor extends AbstractMultiControl {
 		return underlineCtrl;
 	}
 
+	public Control getSetFontSizeCtrl() {
+		return setFontSizeCtrl;
+	}
+
+	public Control getSetFontColorCtrl() {
+		return setFontColorCtrl;
+	}
+
 	public Control getFontSizeCtrl() {
 		return fontSizeCtrl;
 	}
@@ -229,13 +241,17 @@ public class RichTextEditor extends AbstractMultiControl {
 		if (isSize()) {
 			fontSizeCtrl = (Control) addInternalChildWidget(
 					"!ui-select list:$s{richtextfontsizelist} blankOption:$s{} styleClass:$e{sel} binding:fontSize");
+			setFontSizeCtrl = (Control) addInternalChildWidget("!ui-button symbol:$s{text-size} styleClass:$e{btn}");
 			acontrols.add(fontSizeCtrl);
+			acontrols.add(setFontSizeCtrl);
 		}
 		
 		if (isColor()) {
 			fontColorCtrl = (Control) addInternalChildWidget(
 					"!ui-select list:$s{richtextfontcolorlist} blankOption:$s{} styleClass:$e{sel} binding:fontColor");
+			setFontColorCtrl = (Control) addInternalChildWidget("!ui-button symbol:$s{paint-brush} styleClass:$e{btn}");
 			acontrols.add(fontColorCtrl);
+			acontrols.add(setFontColorCtrl);
 		}
 		
 		if (isAlign()) {

@@ -3135,8 +3135,8 @@ ux.rigRichTextEditor = function(rgp) {
 	ux.richWrapSet({rc:rc, id:rgp.pItlId, tag:'i'});
 	ux.richWrapSet({rc:rc, id:rgp.pUndId, tag:'u'});
 
-	ux.richStyleSet({rc:rc, id:rgp.pFnsId, prop:'fontSize'});
-	ux.richStyleSet({rc:rc, id:rgp.pFncId, prop:'color'});
+	ux.richStyleSet({rc:rc, id:rgp.pFnsId, sid:rgp.pSFnsId, prop:'fontSize'});
+	ux.richStyleSet({rc:rc, id:rgp.pFncId, sid:rgp.pSFncId, prop:'color'});
 
 	ux.richAlignSet({rc:rc, id:rgp.pLfaId, align:'left'});
 	ux.richAlignSet({rc:rc, id:rgp.pCnaId, align:'center'});
@@ -3170,7 +3170,8 @@ ux.richWrapSet = function(prm) {
 }
 
 ux.richStyleSet = function(prm) {
- 	ux.addHdl(_id(prm.id), 'change', ux.richStyleHdl, prm);
+	ux.addHdl(_id(prm.id), 'change', ux.richStyleHdl, prm);
+	ux.addHdl(_id(prm.sid), 'click', ux.richStyleHdl, prm);
 }
 
 ux.richAlignSet = function(prm) {
