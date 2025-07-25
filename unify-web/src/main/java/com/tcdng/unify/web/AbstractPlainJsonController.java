@@ -20,9 +20,9 @@ import java.io.StringWriter;
 
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Configurable;
+import com.tcdng.unify.core.constant.MimeType;
 import com.tcdng.unify.core.stream.JsonObjectStreamer;
 import com.tcdng.unify.core.util.json.JsonUtils;
-import com.tcdng.unify.web.remotecall.RemoteCallFormat;
 
 /**
  * Abstract plain JSON controller.
@@ -37,7 +37,7 @@ public abstract class AbstractPlainJsonController extends AbstractPlainControlle
 
 	@Override
 	public void doProcess(ClientRequest request, ClientResponse response) throws UnifyException {
-		response.setContentType(RemoteCallFormat.JSON.mimeType().template());
+		response.setContentType(MimeType.APPLICATION_JSON.template());
 		String jsonResponse = null;
 
 		try {

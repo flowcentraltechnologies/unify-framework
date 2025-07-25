@@ -20,8 +20,8 @@ import java.io.StringWriter;
 
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Configurable;
+import com.tcdng.unify.core.constant.MimeType;
 import com.tcdng.unify.core.stream.XmlObjectStreamer;
-import com.tcdng.unify.web.remotecall.RemoteCallFormat;
 
 /**
  * Abstract plain XML controller.
@@ -36,7 +36,7 @@ public abstract class AbstractPlainXmlController extends AbstractPlainController
 
 	@Override
 	public void doProcess(ClientRequest request, ClientResponse response) throws UnifyException {
-		response.setContentType(RemoteCallFormat.XML.mimeType().template());
+		response.setContentType(MimeType.APPLICATION_XML.template());
 		String xmlResponse = null;
 		try {
 			final String actionName = request.getRequestPathParts().getControllerPathParts().getActionName();
