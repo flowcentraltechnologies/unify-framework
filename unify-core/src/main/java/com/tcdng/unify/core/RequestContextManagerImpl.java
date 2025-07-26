@@ -52,10 +52,11 @@ public class RequestContextManagerImpl extends AbstractUnifyComponent implements
     }
 
     @Override
-    public void loadRequestContext(UserSession userSession, String requestPath) throws UnifyException {
-        requestContextThreadLocal.get().setRequestContext(
-                new RequestContext(requestPath != null ? requestPath : "", userSession.getSessionContext()));
-    }
+	public void loadRequestContext(UserSession userSession, String requestPath, String requestTarget)
+			throws UnifyException {
+		requestContextThreadLocal.get().setRequestContext(
+				new RequestContext(requestPath != null ? requestPath : "", requestTarget, userSession.getSessionContext()));
+	}
 
     @Override
     public void loadRequestContext(RequestContext requestContext) throws UnifyException {
@@ -91,7 +92,7 @@ public class RequestContextManagerImpl extends AbstractUnifyComponent implements
     private static RequestContext newDefaultContext() {
         try {
             InetAddress inetAddress = InetAddress.getLocalHost();
-            return new RequestContext(null,
+            return new RequestContext(null, null,
                     new SessionContext(null, ApplicationUtils.generateSessionContextId(), applicationLocale,
                             applicationTimeZone, "http://localhost", "", null, inetAddress.getHostName(),
                             inetAddress.getHostAddress(), null));

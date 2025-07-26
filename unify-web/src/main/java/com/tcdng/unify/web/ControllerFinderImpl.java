@@ -109,8 +109,8 @@ public class ControllerFinderImpl extends AbstractUnifyComponent implements Cont
 			logDebug("Forcing document loading with controller [{0}] and path [{1}]...",
 					WebApplicationComponents.APPLICATION_DOCUMENTLOADERCONTROLLER,
 					controllerPathParts.getControllerPath());
-			setRequestAttribute(UnifyWebRequestAttributeConstants.LOADER_FORWARD_PATH,
-					controllerPathParts.getControllerPath());
+			setRequestAttribute(UnifyWebRequestAttributeConstants.LOADER_FORWARD_TARGET,
+					getClientRequestTarget());
 			controller = (Controller) getComponent(WebApplicationComponents.APPLICATION_DOCUMENTLOADERCONTROLLER);
 		}
 

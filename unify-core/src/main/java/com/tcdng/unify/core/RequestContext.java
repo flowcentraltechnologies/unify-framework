@@ -33,10 +33,13 @@ public class RequestContext extends Context {
 
     private String requestPath;
 
+    private String requestTarget;
+
     private String pid;
     
-    public RequestContext(String requestPath, SessionContext sessionContext) {
+    public RequestContext(String requestPath, String requestTarget, SessionContext sessionContext) {
         this.requestPath = requestPath;
+        this.requestTarget = requestTarget;
         this.sessionContext = sessionContext;
     }
 
@@ -56,7 +59,11 @@ public class RequestContext extends Context {
         return requestPath;
     }
 
-    public SessionContext getSessionContext() {
+    public String getRequestTarget() {
+		return requestTarget;
+	}
+
+	public SessionContext getSessionContext() {
         return sessionContext;
     }
 

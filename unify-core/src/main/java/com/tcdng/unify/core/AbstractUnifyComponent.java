@@ -1156,6 +1156,16 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	}
 	
 	/**
+	 * Gets client request target
+	 * 
+	 * @return the request target
+	 * @throws UnifyException if an error occurs
+	 */
+	protected String getClientRequestTarget() throws UnifyException {
+		return unifyComponentContext.getRequestContext().getRequestTarget();
+	}
+	
+	/**
 	 * Sets an attribute in current request.
 	 * 
 	 * @param name  the attribute name

@@ -95,6 +95,17 @@ public class HttpRequestImpl implements HttpRequest {
 		return request.getReader();
 	}
 
+    @Override
+	public String getRequestURI() {
+		return request.getRequestURI();
+	}
+
+	@Override
+	public String getRequestTarget() {
+		final String queryString = request.getQueryString();
+		return queryString == null ? request.getRequestURI() : request.getRequestURI() + "?" + queryString;
+	}
+
 	@Override
 	public InputStream getInputStream() throws IOException {
 		return request.getInputStream();
