@@ -47,8 +47,6 @@ public interface ResultMappingConstants {
 
     String SAVE = "resrv.save";
 
-    String REMOTE_VIEW = "resrv.remoteview";
-
     String SHOW_POPUP = "resrv.showpopup";
 
     String DOWNLOAD_FILE = "resrv.downloadfile";

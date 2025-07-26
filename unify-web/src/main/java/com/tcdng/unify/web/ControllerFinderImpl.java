@@ -105,12 +105,11 @@ public class ControllerFinderImpl extends AbstractUnifyComponent implements Cont
 		Controller controller = (Controller) getComponent(_actualControllerName);
 		if (controller.isPageController()
 				&& getContainerSetting(boolean.class, UnifyWebPropertyConstants.APPLICATION_LOADING_PATH_ENABLED, true)
-				&& StringUtils
-						.isBlank(getRequestAttribute(String.class, UnifyWebRequestAttributeConstants.CLIENT_ID))) {
-			logDebug("Forcing document loading with controller [{0}] and path [{0}]...",
+				&& StringUtils.isBlank(getRequestClientPageId())) {
+			logDebug("Forcing document loading with controller [{0}] and path [{1}]...",
 					WebApplicationComponents.APPLICATION_DOCUMENTLOADERCONTROLLER,
 					controllerPathParts.getControllerPath());
-			setSessionAttribute(UnifyWebRequestAttributeConstants.LOADER_FORWARD_PATH,
+			setRequestAttribute(UnifyWebRequestAttributeConstants.LOADER_FORWARD_PATH,
 					controllerPathParts.getControllerPath());
 			controller = (Controller) getComponent(WebApplicationComponents.APPLICATION_DOCUMENTLOADERCONTROLLER);
 		}

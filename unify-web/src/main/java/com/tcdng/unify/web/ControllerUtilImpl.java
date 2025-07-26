@@ -24,9 +24,6 @@ import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.annotation.Configurable;
 import com.tcdng.unify.core.data.FactoryMap;
-import com.tcdng.unify.web.annotation.Gateway;
-import com.tcdng.unify.web.remotecall.RemoteCallParams;
-import com.tcdng.unify.web.remotecall.RemoteCallResult;
 
 /**
  * Default implementation of application controller utilities.
@@ -45,8 +42,6 @@ public class ControllerUtilImpl extends AbstractUnifyComponent implements Contro
 
 	private FactoryMap<String, PlainControllerInfo> plainControllerInfoMap;
 
-	private FactoryMap<String, RemoteCallControllerInfo> remoteCallControllerInfoMap;
-
 	public ControllerUtilImpl() {
 		plainControllerInfoMap = new FactoryMap<String, PlainControllerInfo>() {
 			@Override
@@ -54,23 +49,11 @@ public class ControllerUtilImpl extends AbstractUnifyComponent implements Contro
 				return createPlainControllerInfo(controllerName);
 			}
 		};
-
-		remoteCallControllerInfoMap = new FactoryMap<String, RemoteCallControllerInfo>() {
-			@Override
-			protected RemoteCallControllerInfo create(String controllerName, Object... params) throws Exception {
-				return createRemoteCallControllerInfo(controllerName);
-			}
-		};
 	}
 
 	@Override
 	public PlainControllerInfo getPlainControllerInfo(String controllerName) throws UnifyException {
 		return plainControllerInfoMap.get(controllerName);
-	}
-
-	@Override
-	public RemoteCallControllerInfo getRemoteCallControllerInfo(String controllerName) throws UnifyException {
-		return remoteCallControllerInfoMap.get(controllerName);
 	}
 
 	@Override
@@ -102,35 +85,4 @@ public class ControllerUtilImpl extends AbstractUnifyComponent implements Contro
 		return new PlainControllerInfo(controllerName, actionHandlerMap);
 	}
 
-	private RemoteCallControllerInfo createRemoteCallControllerInfo(String controllerName) throws UnifyException {
-		Class<? extends RemoteCallController> typeClass = getComponentType(RemoteCallController.class, controllerName);
-
-		// Get gate if present
-		String gateName = null;
-		Gateway ga = typeClass.getAnnotation(Gateway.class);
-		if (ga != null) {
-			gateName = ga.value();
-		}
-
-		// Process remote call handlers
-		Map<String, RemoteAction> remoteCallHandlerMap = new HashMap<String, RemoteAction>();
-		Method[] methods = typeClass.getMethods();
-		for (Method method : methods) {
-			com.tcdng.unify.web.annotation.RemoteAction goa = method
-					.getAnnotation(com.tcdng.unify.web.annotation.RemoteAction.class);
-			if (goa != null) {
-				if (RemoteCallResult.class.isAssignableFrom(method.getReturnType())
-						&& method.getParameterTypes().length == 1
-						&& RemoteCallParams.class.isAssignableFrom(method.getParameterTypes()[0])) {
-					remoteCallHandlerMap.put(controllerName + '/' + method.getName(),
-							new RemoteAction(goa.name(), method, goa.restricted()));
-				} else {
-					throw new UnifyException(UnifyWebErrorConstants.CONTROLLER_INVALID_REMOTECALL_HANDLER_SIGNATURE,
-							controllerName, method.getName());
-				}
-			}
-		}
-
-		return new RemoteCallControllerInfo(controllerName, gateName, remoteCallHandlerMap);
-	}
 }

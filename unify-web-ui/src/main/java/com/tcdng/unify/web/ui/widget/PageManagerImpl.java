@@ -45,7 +45,6 @@ import com.tcdng.unify.core.util.IOUtils;
 import com.tcdng.unify.core.util.StringUtils;
 import com.tcdng.unify.web.ControllerPathParts;
 import com.tcdng.unify.web.UnifyWebPropertyConstants;
-import com.tcdng.unify.web.constant.UnifyWebRequestAttributeConstants;
 import com.tcdng.unify.web.ui.UnifyWebUIErrorConstants;
 import com.tcdng.unify.web.ui.WebUIApplicationComponents;
 import com.tcdng.unify.web.ui.widget.panel.StandalonePanel;
@@ -61,8 +60,6 @@ import com.tcdng.unify.web.util.WebPathUtils;
 public class PageManagerImpl extends AbstractUnifyComponent implements PageManager {
 
 	private static final String PAGENAME_PREFIX = "p";
-
-	private static final String REMOTE_WEBVIEWER_PAGENAME_PREFIX = "rp";
 
 	@Configurable
 	private UplCompiler uplCompiler;
@@ -286,13 +283,12 @@ public class PageManagerImpl extends AbstractUnifyComponent implements PageManag
 
 	@Override
 	public String getCurrentRequestClientId() throws UnifyException {
-		return getRequestAttribute(String.class, UnifyWebRequestAttributeConstants.CLIENT_ID);
+		return getRequestClientPageId();
 	}
 
 	@Override
 	public String getCurrentRequestPageId(ControllerPathParts controllerPathParts) throws UnifyException {
-		final String clientId = getRequestAttribute(String.class, UnifyWebRequestAttributeConstants.CLIENT_ID);
-		return WebPathUtils.getPageId(controllerPathParts.getControllerPathId(), clientId);
+		return WebPathUtils.getPageId(controllerPathParts.getControllerPathId(), getRequestClientPageId());
 	}
 
 	@Override
@@ -482,10 +478,6 @@ public class PageManagerImpl extends AbstractUnifyComponent implements PageManag
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void onInitialize() throws UnifyException {
-		if (getContainerSetting(boolean.class, UnifyWebPropertyConstants.APPLICATION_REMOTE_VIEWING_ENABLED, false)) {
-			pageNamePrefix = REMOTE_WEBVIEWER_PAGENAME_PREFIX;
-		}
-
 		List<String> styleSheets = DataUtils.convert(ArrayList.class, String.class,
 				getContainerSetting(Object.class, UnifyWebPropertyConstants.APPLICATION_DOCUMENT_STYLESHEET));
 		if (styleSheets != null) {

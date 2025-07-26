@@ -190,7 +190,7 @@ public abstract class AbstractWidgetWriter extends AbstractDhtmlWriter implement
 
 	protected String getContextURL(String path, String... pathElement) throws UnifyException {
 		RequestContext requestContext = getRequestContext();
-		return WebUtils.getContextURL(requestContext, getRequestContextUtil().isRemoteViewer(), path, pathElement);
+		return WebUtils.getContextURL(requestContext, false, path, pathElement);
 	}
 
     protected String getUserColorStyleClass(String classBase) throws UnifyException {

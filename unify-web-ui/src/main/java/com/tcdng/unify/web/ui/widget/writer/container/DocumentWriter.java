@@ -28,6 +28,7 @@ import com.tcdng.unify.core.data.WebStringWriter;
 import com.tcdng.unify.core.util.StringUtils;
 import com.tcdng.unify.web.ControllerPathParts;
 import com.tcdng.unify.web.constant.ClientSyncNameConstants;
+import com.tcdng.unify.web.constant.UnifyWebRequestAttributeConstants;
 import com.tcdng.unify.web.ui.PagePathInfoRepository;
 import com.tcdng.unify.web.ui.widget.Document;
 import com.tcdng.unify.web.ui.widget.DocumentLayout;
@@ -202,10 +203,18 @@ public class DocumentWriter extends AbstractPageWriter {
 		writer.write(">");
 		// Set document properties
 		ControllerPathParts controllerPathParts = pathInfoRepository.getControllerPathParts(document);
+		final String tempCookieName = getRequestAttribute(String.class, UnifyWebRequestAttributeConstants.TEMP_COOKIE);
 		writer.write("ux.setupDocument(\"").write(controllerPathParts.getControllerPathId()).write("\", \"")
 				.write(document.getPopupBaseId()).write("\", \"").write(document.getPopupWinId()).write("\", \"")
 				.write(document.getPopupSysId()).write("\", \"").write(document.getLatencyPanelId()).write("\", \"")
-				.write(getSessionContext().getId()).write("\");");
+				.write(getSessionContext().getId()).write("\",");
+		if (!StringUtils.isBlank(tempCookieName)) {
+			writer.write("\"").write(tempCookieName).write("\"");
+		} else {
+			writer.write("null");
+		}
+
+		writer.write(");");
 
 		if (document.isPushUpdate()
 				&& getContainerSetting(boolean.class, UnifyCorePropertyConstants.APPLICATION_BROADCAST_ENTITY_CHANGE)) {
@@ -258,6 +267,7 @@ public class DocumentWriter extends AbstractPageWriter {
 					.write("\"});");
 			getRequestContextUtil().clearFocusOnWidget();
 		}
+
 		writer.write("</script>");
 	}
 
@@ -278,13 +288,24 @@ public class DocumentWriter extends AbstractPageWriter {
 		if (isWithFontSymbolManager()) {
 			StringBuilder fsb = new StringBuilder();
 			int i = 0;
-			fsb.append(".g_fsm {font-family: ").append(document.getFontFamily());
+			boolean appendSym = false;
+			fsb.append(".g_fsm {font-family: ");
 			for (String fontResource : getFontResources()) {
 				writeFont(writer, "FontSymbolMngr" + i, fontResource);
-				fsb.append(", 'FontSymbolMngr").append(i).append('\'');
+				if (appendSym) {
+					fsb.append(',');
+				} else {
+					appendSym = true;
+				}
+				fsb.append("'FontSymbolMngr").append(i).append('\'');
 				i++;
 			}
-
+			
+			if (appendSym) {
+				fsb.append(',');
+			}
+			
+			fsb.append(document.getFontFamily());
 			fsb.append(";}");
 			writer.write(fsb);
 		}
@@ -322,16 +343,16 @@ public class DocumentWriter extends AbstractPageWriter {
 
 	private void writeFont(ResponseWriter writer, String family, String fontResource) throws UnifyException {
 		writer.write("@font-face {font-family: '").write(family).write("'; src: url(");
-		writer.writeContextResourceURL("/resource/file", MimeType.APPLICATION_OCTETSTREAM.template(), fontResource);
-		writer.write(");} ");
+		writer.writeContextResourceURL("/resource/file", MimeType.FONT_WOFF.template(), fontResource);
+		writer.write(")  format(\"woff\");} ");
 	}
 
 	private void writeFont(ResponseWriter writer, String family, String weight, String stretch, String style,
 			String fontResource) throws UnifyException {
 		writer.write("@font-face {font-family: '").write(family).write("'; font-weight:").write(weight)
 				.write("; font-stretch:").write(stretch).write("; font-style:").write(style).write("; src: url(");
-		writer.writeContextResourceURL("/resource/file", MimeType.APPLICATION_OCTETSTREAM.template(), fontResource);
-		writer.write(");} ");
+		writer.writeContextResourceURL("/resource/file", MimeType.FONT_WOFF.template(), fontResource);
+		writer.write(") format(\"woff\");} ");
 	}
 
 	private void writeResourcesStyleSheet(ResponseWriter writer) throws UnifyException {

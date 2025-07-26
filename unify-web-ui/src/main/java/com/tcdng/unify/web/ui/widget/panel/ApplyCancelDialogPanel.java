@@ -15,7 +15,10 @@
  */
 package com.tcdng.unify.web.ui.widget.panel;
 
+import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
+import com.tcdng.unify.core.annotation.UplAttribute;
+import com.tcdng.unify.core.annotation.UplAttributes;
 import com.tcdng.unify.core.annotation.UplBinding;
 
 /**
@@ -26,6 +29,15 @@ import com.tcdng.unify.core.annotation.UplBinding;
  */
 @Component("ui-applycanceldialogpanel")
 @UplBinding("web/panels/upl/applycanceldialogpanel.upl")
+@UplAttributes({
+	@UplAttribute(name = "showApply", type = boolean.class, defaultVal = "true") })
 public class ApplyCancelDialogPanel extends AbstractDialogPanel {
 
+	@Override
+	public void onPageConstruct() throws UnifyException {
+		super.onPageConstruct();
+		setVisible("applyBtn", getUplAttribute(boolean.class, "showApply"));
+	}
+
+	
 }

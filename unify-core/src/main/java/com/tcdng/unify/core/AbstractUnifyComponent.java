@@ -1136,6 +1136,26 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	}
 
 	/**
+	 * Sets request page ID (pid)
+	 * 
+	 * @param pid the page ID
+	 * @throws UnifyException if an error occurs
+	 */
+	protected void setRequestClientPageId(String pid) throws UnifyException {
+		unifyComponentContext.getRequestContext().setPid(pid);
+	}
+	
+	/**
+	 * Gets request page ID (pid)
+	 * 
+	 * @return the page ID
+	 * @throws UnifyException if an error occurs
+	 */
+	protected String getRequestClientPageId() throws UnifyException {
+		return unifyComponentContext.getRequestContext().getPid();
+	}
+	
+	/**
 	 * Sets an attribute in current request.
 	 * 
 	 * @param name  the attribute name

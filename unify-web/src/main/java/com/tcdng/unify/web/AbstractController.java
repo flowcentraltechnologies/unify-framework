@@ -82,7 +82,7 @@ public abstract class AbstractController extends AbstractUnifyComponent implemen
 		return (HttpRequestHeaders) getRequestAttribute(UnifyWebRequestAttributeConstants.HEADERS);
 	}
 
-	protected final <T> T getRequestParameter(Class<T> dataType, String paramName) throws UnifyException {
+	protected final <T> T getHttpRequestParameter(Class<T> dataType, String paramName) throws UnifyException {
 		return DataUtils.convert(dataType, getHttpRequestParameter(paramName));
 	}
 

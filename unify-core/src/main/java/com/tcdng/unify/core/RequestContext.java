@@ -27,11 +27,13 @@ import com.tcdng.unify.core.data.Context;
  */
 public class RequestContext extends Context {
 
-    private String requestPath;
-
     private SessionContext sessionContext;
 
     private Object quickReference;
+
+    private String requestPath;
+
+    private String pid;
     
     public RequestContext(String requestPath, SessionContext sessionContext) {
         this.requestPath = requestPath;
@@ -69,5 +71,13 @@ public class RequestContext extends Context {
     public void setQuickReference(Object quickReference) {
         this.quickReference = quickReference;
     }
+
+	public String getPid() {
+		return pid;
+	}
+
+	public void setPid(String pid) {
+		this.pid = pid;
+	}
 
 }

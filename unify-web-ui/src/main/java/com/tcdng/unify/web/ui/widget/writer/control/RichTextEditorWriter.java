@@ -18,6 +18,7 @@ package com.tcdng.unify.web.ui.widget.writer.control;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.annotation.Writes;
+import com.tcdng.unify.core.util.DataUtils;
 import com.tcdng.unify.web.ui.widget.Control;
 import com.tcdng.unify.web.ui.widget.EventHandler;
 import com.tcdng.unify.web.ui.widget.ResponseWriter;
@@ -46,12 +47,9 @@ public class RichTextEditorWriter extends AbstractControlWriter {
 		writeTagStyle(writer, editor);
 		writer.write(">");
 
-		writer.write("<div ");
-		writeTagId(writer, editor.getToolBarId());
-		writeTagStyleClass(writer, "toolbar");
-		writer.write(" style=\"display:table;\">");
+		writer.write("<div class=\"toolbar\" style=\"display:table;\">");
 		writer.write("<div style=\"display:table-row;\">");
-		for (Control ctrl : editor.getControls()) {
+		for (Control ctrl : editor.getRowAControls()) {
 			writer.write("<div class=\"ctrl\" style=\"display:table-cell;\">");
 			writer.writeStructureAndContent(ctrl);
 			writer.write("</div>");
@@ -59,6 +57,18 @@ public class RichTextEditorWriter extends AbstractControlWriter {
 		writer.write("</div>");
 		writer.write("</div>");
 
+		if (!DataUtils.isBlank(editor.getRowBControls())) {
+			writer.write("<div class=\"toolbar\" style=\"display:table;\">");
+			writer.write("<div style=\"display:table-row;\">");
+			for (Control ctrl : editor.getRowBControls()) {
+				writer.write("<div class=\"ctrl\" style=\"display:table-cell;\">");
+				writer.writeStructureAndContent(ctrl);
+				writer.write("</div>");
+			}
+			writer.write("</div>");
+			writer.write("</div>");
+		}
+		
 		writer.write("<div ");
 		writeTagId(writer, editor.getEditorId());
 		writeTagStyleClass(writer, "editor");
@@ -83,7 +93,11 @@ public class RichTextEditorWriter extends AbstractControlWriter {
 		super.doWriteBehavior(writer, widget, handlers);
 
 		RichTextEditor editor = (RichTextEditor) widget;
-		for (Control ctrl : editor.getControls()) {
+		for (Control ctrl : editor.getRowAControls()) {
+			writer.writeBehavior(ctrl);
+		}
+
+		for (Control ctrl : editor.getRowBControls()) {
 			writer.writeBehavior(ctrl);
 		}
 
@@ -95,13 +109,32 @@ public class RichTextEditorWriter extends AbstractControlWriter {
 		writer.writeParam("pBldId", editor.getBoldCtrl().getId());
 		writer.writeParam("pItlId", editor.getItalicCtrl().getId());
 		writer.writeParam("pUndId", editor.getUnderlineCtrl().getId());
-		writer.writeParam("pSFnsId", editor.getSetFontSizeCtrl().getId());
-		writer.writeParam("pSFncId", editor.getSetFontColorCtrl().getId());
-		writer.writeParam("pFnsId", editor.getFontSizeCtrl().getId());
-		writer.writeParam("pFncId", editor.getFontColorCtrl().getId());
-		writer.writeParam("pLfaId", editor.getLeftAlignCtrl().getId());
-		writer.writeParam("pCnaId", editor.getCenterAlignCtrl().getId());
-		writer.writeParam("pRtaId", editor.getRightAlignCtrl().getId());
+		if (editor.isSize()) {
+			writer.writeParam("pFnsId", editor.getFontSizeCtrl().getId());
+			writer.writeParam("pSFnsId", editor.getSetFontSizeCtrl().getId());
+		}
+
+		if (editor.isColor()) {
+			writer.writeParam("pFncId", editor.getFontColorCtrl().getId());
+			writer.writeParam("pSFncId", editor.getSetFontColorCtrl().getId());
+		}
+
+		if (editor.isAlign()) {
+			writer.writeParam("pLfaId", editor.getLeftAlignCtrl().getId());
+			writer.writeParam("pCnaId", editor.getCenterAlignCtrl().getId());
+			writer.writeParam("pRtaId", editor.getRightAlignCtrl().getId());
+		}
+
+		if (editor.isList()) {
+			writer.writeParam("pLsuId", editor.getUlistCtrl().getId());
+			writer.writeParam("pLsoId", editor.getOlistCtrl().getId());
+		}
+
+		if (editor.isLink()) {
+			writer.writeParam("pLnkId", editor.getLinkCtrl().getId());
+			writer.writeParam("pUrlId", editor.getUrlCtrl().getId());
+		}
+		
 		writer.writeParam("pEdtId", editor.getEditorId());
 		writer.writeParam("pValId", editor.getValueCtrl().getId());
 		writer.writeParam("pEditable", editor.isContainerEditable());

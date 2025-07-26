@@ -120,9 +120,6 @@ function _name(name) {
 function _name_0(name) {
 	return document.getElementsByName(name)[0];
 }
-function _execCmd(name, arg) {
-	document.execCommand(name, false, arg);
-}
 function _enc(val) {
 	return encodeURIComponent(val);
 }
@@ -144,26 +141,29 @@ ux.registerExtension = function(extLiteral, extObj) {
 }
 
 /** Basic * */
-ux.setupDocument = function(docPath, docPopupBaseId, docPopupId, docSysInfoId, docLatencyId, docSessionId) {
+ux.setupDocument = function(docPath, docPopupBaseId, docPopupId, docSysInfoId, docLatencyId, docSessionId, tempc) {
 	ux.docPath = docPath;
 	ux.docPopupBaseId = docPopupBaseId;
 	ux.docPopupId = docPopupId;
 	ux.docSysInfoId = docSysInfoId;
 	ux.busyIndicator = docLatencyId;
 	ux.docSessionId = docSessionId;
+	if (tempc) {
+		document.cookie = tempc + "=;Max-Age=0;path=/;";
+	}
 }
 
-ux.getClientId = function() {
-	let cid = sessionStorage.getItem("page_cid");
-	if (cid === null) {
-		let uxstore = localStorage.getItem("ux_store");
-		let _uxstore = uxstore !== null ? JSON.parse(uxstore): {cid:0};
-		cid = "cid" + (++_uxstore.cid).toString(16);
-		sessionStorage.setItem("page_cid", cid);
-		localStorage.setItem("ux_store", JSON.stringify(_uxstore));
+ux.getPageId = function() {
+	let pid = sessionStorage.getItem("page_id");
+	if (pid === null) {
+		let uxstore = localStorage.getItem("uxp_store");
+		let _uxstore = uxstore !== null ? JSON.parse(uxstore): {pid:0};
+		pid = "pid" + (++_uxstore.pid).toString(16);
+		sessionStorage.setItem("page_id", pid);
+		localStorage.setItem("uxp_store", JSON.stringify(_uxstore));
 	}
 	
-	return cid;
+	return pid;
 }
 
 ux.wsPushUpdate = function(wsSyncPath) {
@@ -174,7 +174,7 @@ ux.wsPushUpdate = function(wsSyncPath) {
 
 	ux.wsSocket = new WebSocket(ux.wsUrl);
 	ux.wsSocket.addEventListener('open', function (event) {
-	    ux.wsSend("open", ux.getClientId());
+	    ux.wsSend("open", ux.getPageId());
 	});
 	ux.wsSocket.addEventListener('message', function (event) {
 	    ux.wsReceive(event.data);
@@ -201,7 +201,7 @@ ux.processJSON = function(jsonstring) {
 		ux.allpush = fullResp.allPush;
 		for (var j = 0; j < fullResp.jsonResp.length; j++) {
 			var resp = fullResp.jsonResp[j];
-			ux.respHandler[resp.handler](resp);
+			ux.respHdl[resp.handler](resp);
 			if (resp.focusOnWidget) {
 				ux.setFocus({wdgid: resp.focusOnWidget});
 			}
@@ -266,7 +266,7 @@ ux.newEvPrm = function(rgp) {
 }
 
 /** Response handlers */
-ux.respHandler = {
+ux.respHdl = {
 	commandPostHdl : function(resp) {
 		ux.postPath(resp);
 	},
@@ -669,6 +669,7 @@ ux.ajaxCall = function(ajaxPrms) {
 	try {
 		ux.saveContentScroll();
 		uAjaxReq.open("POST", url, true);
+		uAjaxReq.setRequestHeader("Unify-Pid", ux.getPageId());
 		if (ajaxPrms.uEncoded) {
 			uAjaxReq.setRequestHeader("Content-Type",
 					"application/x-www-form-urlencoded");
@@ -701,8 +702,6 @@ ux.ajaxCall = function(ajaxPrms) {
 				if (param !== null) {
 					ajaxPrms.uParam += ("&" + param);
 				}
-				
-				ajaxPrms.uParam += ("&req_cid=" + _enc(ux.getClientId()));
 			} else {
 				if (param !== null) {
 					let params = new URLSearchParams(param);
@@ -710,8 +709,6 @@ ux.ajaxCall = function(ajaxPrms) {
 					    ajaxPrms.uParam.append(key, val);
 					}
 				}
-				
-				ajaxPrms.uParam.append("req_cid", ux.getClientId());
 			}
 			
 			uAjaxReq.send(ajaxPrms.uParam);
@@ -1105,12 +1102,12 @@ ux.rigDesktopType2 = function(rgp) {
 	var gripToRig = _id(rgp.pGripId);
 	if (gripToRig) {
 		const evp = {uRigMenu:_id(rgp.pMenuId), uOpen:rgp.pOpen};
-		ux.addHdl(gripToRig, "click", ux.collapseGripClickHandler,
+		ux.addHdl(gripToRig, "click", ux.collapseGripClickHdl,
 				evp);
 	}
 }
 
-ux.collapseGripClickHandler = function(uEv) {
+ux.collapseGripClickHdl = function(uEv) {
 	var evp = uEv.evp;
 	if (evp.uOpen) {
 		evp.uRigMenu.className = "menuclosed";
@@ -1150,7 +1147,7 @@ ux.rigFlyoutMenu = function(rgp) {
 		evp.uPanels = [ id ];
 		evp.uRef = [ rgp.pCurSelId ];
 		ux.addHdl(_id(rgp.pSelId), "change",
-				ux.menuSelectChgHandler, evp);
+				ux.menuSelectChgHdl, evp);
 	}
 }
 
@@ -1163,7 +1160,7 @@ ux.menuOpenPath = function(uEv) {
 	ux.contentOpen(uEv);
 }
 
-ux.menuSelectChgHandler = function(uEv) {
+ux.menuSelectChgHdl = function(uEv) {
 	var evp = uEv.evp;
 	var currSelCtrl = _id(evp.uCurSelId);
 	if (currSelCtrl) {
@@ -1510,13 +1507,13 @@ ux.rigTabbedPanel = function(rgp) {
 				evp.uRef = refList;
 
 				ux.addHdl(_id(rgp.pTabCapIdList[i]), "click",
-						ux.tabbedPanelTabClickHandler, evp);
+						ux.tabbedPanelTabClickHdl, evp);
 			}
 		}
 	}
 }
 
-ux.tabbedPanelTabClickHandler = function(uEv) {
+ux.tabbedPanelTabClickHdl = function(uEv) {
 	var evp = uEv.evp;
 	var selCtrl = _id(evp.uSelId);
 	if (selCtrl) {
@@ -1558,12 +1555,12 @@ ux.rigAccordion = function(rgp) {
 			evp.uSelIdx = i;
 
 			ux.addHdl(_id(rgp.pHeaderIdBase + i), "click",
-					ux.accordionClickHandler, evp);
+					ux.accordionClickHdl, evp);
 		}
 	}
 }
 
-ux.accordionClickHandler = function(uEv) {
+ux.accordionClickHdl = function(uEv) {
 	var evp = uEv.evp;
 	var currSelCtrl = _id(evp.uCurrSelCtrlId);
 	if (currSelCtrl) {
@@ -1947,7 +1944,7 @@ ux.rigDateField = function(rgp) {
 											dayClass = this._todayClass;
 										}
 										calendarHtml += "<span class=\"" + dayClass
-												+ "\" onclick=\"ux.dfDayHandler('" + this.id
+												+ "\" onclick=\"ux.dfDayHdl('" + this.id
 												+ "'," + dayCount + ");\">" + dayCount + "</span>";
 									}
 
@@ -1977,7 +1974,7 @@ ux.rigDateField = function(rgp) {
 								}
 
 								calendarHtml += "<span class=\"" + dayClass
-										+ "\" onclick=\"ux.dfDayHandler('" + this.id
+										+ "\" onclick=\"ux.dfDayHdl('" + this.id
 										+ "'," + dayCount + ");\">" + dayCount + "</span>";
 								dayCount++;
 							} else {
@@ -1997,7 +1994,7 @@ ux.rigDateField = function(rgp) {
 		df.setupScroll = function(scrIdPrefix, target, step) {
 			const evp = {uId:this.id, uTarget:target, uStep:step};
 			ux.addHdl(_id(scrIdPrefix + this.id), "click",
-					ux.dfScrollHandler, evp);
+					ux.dfScrollHdl, evp);
 		};
 		
 		df.setDay = function(val) {
@@ -2044,7 +2041,7 @@ ux.rigDateField = function(rgp) {
 
 		if (df._supportYear) {
 			const evp = {uId:id};
-			ux.addHdl(_id("btnt_" + id), "click", ux.dfTodayHandler, evp);
+			ux.addHdl(_id("btnt_" + id), "click", ux.dfTodayHdl, evp);
 		}
 
 		df.setDay(rgp.pDay);
@@ -2113,7 +2110,7 @@ ux.dfYearSelect = function(uEv) {
 	}
 }
 
-ux.dfTodayHandler = function(uEv) {
+ux.dfTodayHdl = function(uEv) {
 	const evp = uEv.evp;
 	const df = _id(uEv.evp.uId);
 	const val = new Date();
@@ -2126,7 +2123,7 @@ ux.dfTodayHandler = function(uEv) {
 	df.setActual(true);
 }
 
-ux.dfDayHandler = function(id, dayCount) {
+ux.dfDayHdl = function(id, dayCount) {
 	const df = _id(id);
 	df.setDay(dayCount);
 	df.setMonth(df._scrollMonth);
@@ -2137,7 +2134,7 @@ ux.dfDayHandler = function(id, dayCount) {
 	df.setActual(true);
 }
 
-ux.dfScrollHandler = function(uEv) {
+ux.dfScrollHdl = function(uEv) {
 	const evp = uEv.evp;
 	const df = _id(uEv.evp.uId);
 	if (evp.uTarget == "mon_") {
@@ -2299,7 +2296,7 @@ ux.rigFileAttachment = function(rgp) {
 			// Attach
 			evp = {fileId:fileElem.id};
 			ux.addHdl(_id(attachId + idx), "click",
-					ux.attachFileClickHandler, evp);
+					ux.attachFileClickHdl, evp);
 
 			// View
 			if (rgp.pViewURL) {
@@ -2343,7 +2340,7 @@ ux.rigFileUploadView = function(rgp) {
 		// Attach
 		evp = {fileId:fileElem.id};
 		ux.addHdl(_id(attachId), "click",
-				ux.attachFileClickHandler, evp);
+				ux.attachFileClickHdl, evp);
 
 		// View
 		if (rgp.pViewURL) {
@@ -2366,7 +2363,7 @@ ux.rigFileUploadView = function(rgp) {
 	}
 }
 
-ux.attachFileClickHandler = function(uEv) {
+ux.attachFileClickHdl = function(uEv) {
 	_id(uEv.evp.fileId).click();
 }
 
@@ -2647,7 +2644,7 @@ ux.rigMultiSelect = function(rgp) {
 			}
 		};
 		
-		const evp = {uId:id, uHitHandler:ux.msKeydownHit};
+		const evp = {uId:id, uHitHdl:ux.msKeydownHit};
 		ux.addHdl(ms._frm, "click", ux.focusOnClick, evp);
 		ux.addHdl(ms._frm, "keydown", ux.listSearchKeydown, evp);
 		for (var i = 0; i < ms._selectIds.length; i++) {
@@ -3037,7 +3034,7 @@ ux.rigOptionsTextArea = function(rgp) {
 		evp.popupId=rgp.pPopupId;
 		evp.frameId=rgp.pId;
 		evp.stayOpenForMillSec = 0;
-		evp.showHandler = "ux42";
+		evp.showHdl = "ux42";
 		evp.showParam=rgp.pFrmId;
 		ux.addHdl(ota, "keypress", ux.otaTxtKeypress, evp);
 		ux.addHdl(ota, "keydown", ux.otaTxtKeydown, evp);	
@@ -3134,47 +3131,176 @@ ux.optionsTextAreaOnShow = function(frmId) {
 
 /** Rich Text Editor */
 ux.rigRichTextEditor = function(rgp) {
-	ux.richCmdHdl(rgp.pBldId, 'bold');
-	ux.richCmdHdl(rgp.pItlId, 'italic');
-	ux.richCmdHdl(rgp.pUndId, 'underline');
-	ux.richCmdHdl(rgp.pLfaId, 'justifyLeft');
-	ux.richCmdHdl(rgp.pCnaId, 'justifyCenter');
-	ux.richCmdHdl(rgp.pRtaId, 'justifyRight');
+	const eid = rgp.pEdtId;
+	const vid = rgp.pValId;
+	const rc = {eid:eid, vid:vid, range:null};
+	ux.richWrapSet({rc:rc, id:rgp.pBldId, tag:'b'});
+	ux.richWrapSet({rc:rc, id:rgp.pItlId, tag:'i'});
+	ux.richWrapSet({rc:rc, id:rgp.pUndId, tag:'u'});
 
-	ux.addHdl(_id(rgp.pSFnsId), "click", ux.richTxtFontSize, {srcId:rgp.pFnsId,uId:rgp.pId});
-	ux.addHdl(_id(rgp.pSFncId), "click", ux.richTxtFontColor, {srcId:rgp.pFncId});
-			
-	if (_id(rgp.pValId).value) {
-		_id(rgp.pEdtId).innerHTML = _id(rgp.pValId).value;
+	ux.richStyleSet({rc:rc, id:rgp.pFnsId, sid:rgp.pSFnsId, prop:'fontSize'});
+	ux.richStyleSet({rc:rc, id:rgp.pFncId, sid:rgp.pSFncId, prop:'color'});
+
+	ux.richAlignSet({rc:rc, id:rgp.pLfaId, align:'left'});
+	ux.richAlignSet({rc:rc, id:rgp.pCnaId, align:'center'});
+	ux.richAlignSet({rc:rc, id:rgp.pRtaId, align:'right'});
+
+	ux.richListSet({rc:rc, id:rgp.pLsuId, tag:'ul'});
+	ux.richListSet({rc:rc, id:rgp.pLsoId, tag:'ol'});
+
+	ux.richLinkSet({rc:rc, id:rgp.pLnkId, uid:rgp.pUrlId});
+
+	const prm = {rc:rc};
+	ux.addHdl(_id(eid), 'focusout', ux.richRangeHdl, prm);
+	ux.addHdl(_id(eid), 'input', ux.richInpHdl, prm);
+
+	if (_id(vid).value) {
+		_id(eid).innerHTML = _id(vid).value;
+	}
+}
+
+ux.richInpHdl = function(uEv) {
+   	ux.richOut(uEv.evp.rc);
+}
+
+ux.richRangeHdl = function(uEv) {
+   	const sel = window.getSelection();
+   	uEv.evp.rc.range = sel.rangeCount ? sel.getRangeAt(0) : null;
+}
+
+ux.richWrapSet = function(prm) {
+	ux.addHdl(_id(prm.id), 'click', ux.richWrapHdl, prm);
+}
+
+ux.richStyleSet = function(prm) {
+	ux.addHdl(_id(prm.id), 'change', ux.richStyleHdl, prm);
+	ux.addHdl(_id(prm.sid), 'click', ux.richStyleHdl, prm);
+}
+
+ux.richAlignSet = function(prm) {
+ 	ux.addHdl(_id(prm.id), 'click', ux.richAlignHdl, prm);
+}
+
+ux.richListSet = function(prm) {
+ 	ux.addHdl(_id(prm.id), 'click', ux.richListHdl, prm);
+}
+
+ux.richLinkSet = function(prm) {
+ 	ux.addHdl(_id(prm.id), 'click', ux.richLinkHdl, prm);
+}
+
+ux.richWrapHdl = function(uEv) {
+	const evp = uEv.evp;
+	const rc = evp.rc;
+	if (rc.range) {
+		ux.richSet(rc, document.createElement(evp.tag));
+		return;
 	}
 
-	_id(rgp.pEdtId).uValId = rgp.pValId;
-	_id(rgp.pEdtId).addEventListener('input', function() {
-	    _id(this.uValId).value = this.innerHTML;
-	});
+	ux.richOut(rc);
 }
 
+ux.richStyleHdl = function(uEv) {
+	const evp = uEv.evp;
+	const rc = evp.rc;
+   	if (rc.range) {
+		const val = _id(evp.id).value;
+		if (val) {
+			const span = document.createElement("span");
+			span.style[evp.prop] = val;
+			ux.richSet(rc, span);
+			return;
+		}
+	}
 
-ux.richTxtFontSize = function(uEv) {
-	const size = _id(uEv.evp.srcId).value;
-	_execCmd('fontSize', 7);	
-	let elems = _id(uEv.evp.uId).querySelectorAll(".editor font[size='7']");
-	elems.forEach(function(m) {
-	    m.removeAttribute("size");
-	    m.style.fontSize = size;
-	});
+	ux.richOut(rc);
 }
 
-ux.richTxtFontColor = function(uEv) {
-	_execCmd('foreColor', _id(uEv.evp.srcId).value);
+ ux.richAlignHdl = function(uEv) {
+ 	const evp = uEv.evp;
+ 	const rc = evp.rc;
+	if (rc.range) {
+		const div = document.createElement("div");
+		div.style.textAlign = evp.align;
+		ux.richSet(rc, div);
+		return;
+	}
+
+	ux.richOut(rc);
 }
 
-ux.richCmdHdl = function(id, name) {
-	ux.addHdl(_id(id), "click", ux.execCmdHdl, {cmd:name});
+ux.richLinkHdl = function(uEv) {
+	const rc = uEv.evp.rc;
+   	const url = _id(uEv.evp.uid).value;
+   	if (url && rc.range) {
+		if (ux.richIsRangeTextOnly(rc.range)) {
+			_id(uEv.evp.uid).value = null;
+			const anchor = document.createElement("a");
+			anchor.href = url;
+			anchor.target = "_blank";
+			anchor.rel = "noopener noreferrer";
+			ux.richSet(rc, anchor);
+			return;
+		}		
+	}
+
+	ux.richOut(rc);
 }
 
-ux.execCmdHdl = function(uEv) {
-	_execCmd(uEv.evp.cmd, uEv.evp.prm);
+ux.richListHdl = function (uEv) {
+	const evp = uEv.evp;
+	const rc = evp.rc;
+   	if (rc.range) {
+		const sel = window.getSelection();
+		const list = document.createElement(evp.tag);
+		const li = document.createElement('li');
+		li.textContent = 'Item';
+		list.appendChild(li);
+		rc.range.insertNode(list);
+		sel.removeAllRanges();
+		sel.selectAllChildren(li);
+	}
+
+	ux.richOut(rc);
+ }
+
+ux.richSet = function(rc, wrap) {
+	if (rc.range) {
+		const sel = window.getSelection();
+		wrap.appendChild(rc.range.extractContents());
+		rc.range.insertNode(wrap);
+		sel.removeAllRanges();
+		sel.addRange(rc.range);
+	}
+	
+	ux.richOut(rc);
+}
+ 
+ux.richOut = function(rc) {
+	_id(rc.vid).value = _id(rc.eid).innerHTML;
+	rc.range = null;
+}
+
+ux.richIsRangeTextOnly = function(range) {
+	if (range.collapsed) {
+	    return false;
+	}
+	
+	return ux.richIsNodeTextOnly(range.cloneContents());
+}
+
+ux.richIsNodeTextOnly = function(frag) {
+	if (frag.nodeType === Node.ELEMENT_NODE) {
+	    return false;
+	}
+	
+	for (let child of frag.childNodes) {
+	    if (!ux.richIsNodeTextOnly(child)) {
+	        return false;
+	    }
+	}
+	
+	return true;
 }
 
 /** Single Select */
@@ -3350,7 +3476,7 @@ ux.rigTable = function(rgp) {
 				tRow.uIndex = i - startIndex;
 				tRow.uClassName = tRow.className;
 				const evp = {uRigTbl:tblToRig, uRigRow:tRow};
-				ux.addHdl(tRow, "click", ux.tableRowClickHandler,
+				ux.addHdl(tRow, "click", ux.tableRowClickHdl,
 						evp);
 			}
 		}
@@ -3447,7 +3573,7 @@ ux.rigTable = function(rgp) {
 					evp);
 			if (!rgp.pShiftable) {
 				const evpRw = {uRigTbl:tblToRig, uSelBox:selBox};
-				ux.addHdl(tRow, "click", ux.tableMultiRowClickHandler,
+				ux.addHdl(tRow, "click", ux.tableMultiRowClickHdl,
 						evpRw);
 			}
 			
@@ -3481,7 +3607,7 @@ ux.rigTable = function(rgp) {
 					imgId = colInfo.field + '_' + rgp.pSortDescId;
 				}
 				ux.addHdl(_id(imgId), "click",
-						ux.tableSortClickHandler, evp);
+						ux.tableSortClickHdl, evp);
 			}
 		}
 	}
@@ -3492,31 +3618,31 @@ ux.rigTable = function(rgp) {
 			if (rgp.pShiftTopId) {
 				evp = ux.getTableShiftParams(rgp, 0);
 				ux.addHdlMany(rgp.pShiftTopId, "click",
-						ux.tableShiftClickHandler, evp);
+						ux.tableShiftClickHdl, evp);
 			}
 
 			if (rgp.pShiftUpId) {
 				evp = ux.getTableShiftParams(rgp, 1);
 				ux.addHdlMany(rgp.pShiftUpId, "click",
-						ux.tableShiftClickHandler, evp);
+						ux.tableShiftClickHdl, evp);
 			}
 
 			if (rgp.pShiftDownId) {
 				evp = ux.getTableShiftParams(rgp, 2);
 				ux.addHdlMany(rgp.pShiftDownId, "click",
-						ux.tableShiftClickHandler, evp);
+						ux.tableShiftClickHdl, evp);
 			}
 
 			if (rgp.pShiftBottomId) {
 				evp = ux.getTableShiftParams(rgp, 3);
 				ux.addHdlMany(rgp.pShiftBottomId, "click",
-						ux.tableShiftClickHandler, evp);
+						ux.tableShiftClickHdl, evp);
 			}
 
 			if (rgp.pDeleteId) {
 				evp = ux.getTableDeleteParams(rgp);
 				ux.addHdlMany(rgp.pDeleteId, "click",
-						ux.tableDeleteClickHandler, evp);
+						ux.tableDeleteClickHdl, evp);
 			}
 
 			var viewIndex = 1 + parseInt(_id(rgp.pIdxCtrlId).value);
@@ -3537,7 +3663,7 @@ ux.rigTable = function(rgp) {
 	}
 }
 
-ux.tableShiftClickHandler = function(uEv) {
+ux.tableShiftClickHdl = function(uEv) {
 	var evp = uEv.evp;
 	const shiftDirCtrl = _id(evp.uShiftDirId);
 	if (shiftDirCtrl) {
@@ -3560,7 +3686,7 @@ ux.tableShiftClickHandler = function(uEv) {
 	ux.post(uEv);
 }
 
-ux.tableDeleteClickHandler = function(uEv) {
+ux.tableDeleteClickHdl = function(uEv) {
 	var rowElem = ux.findParent(uEv.uTrg, "tr");
 	if (rowElem) {
 		ux.fireEvent(rowElem, "click");
@@ -3569,7 +3695,7 @@ ux.tableDeleteClickHandler = function(uEv) {
 	ux.post(uEv);
 }
 
-ux.tableSortClickHandler = function(uEv) {
+ux.tableSortClickHdl = function(uEv) {
 	var evp = uEv.evp;
 	var colIdxCtrl = _id(evp.uColIdxId);
 	if (colIdxCtrl) {
@@ -3649,7 +3775,7 @@ ux.tableMultiSelClick = function(uEv) {
 	}
 }
 
-ux.tableMultiRowClickHandler =  function(uEv) {
+ux.tableMultiRowClickHdl =  function(uEv) {
 	if (!uEv.uSelClick) {
 		var tRow = uEv.uTrg;
 		if (tRow) {
@@ -3842,10 +3968,10 @@ ux.tableAttachPageNavClick = function(id, pageSel, rgp) {
 		evp.uRef = [ rgp.pCurrPgCtrlId ];
 	}
 	evp.uPanels = [ rgp.pContId ];
-	ux.addHdl(_id(id), "click", ux.tablePageNavClickHandler, evp);
+	ux.addHdl(_id(id), "click", ux.tablePageNavClickHdl, evp);
 }
 
-ux.tablePageNavClickHandler = function(uEv) {
+ux.tablePageNavClickHdl = function(uEv) {
 	var evp = uEv.evp;
 	evp.uIsDebounce = true;
 	var currPgCtrl = _id(evp.uRef[0]);
@@ -3855,7 +3981,7 @@ ux.tablePageNavClickHandler = function(uEv) {
 	ux.post(uEv);
 }
 
-ux.tableRowClickHandler = function(uEv) {
+ux.tableRowClickHdl = function(uEv) {
 	var evp = uEv.evp;
 	var rigTbl = evp.uRigTbl;
 	var tRow = evp.uRigRow;
@@ -4039,7 +4165,7 @@ ux.rigTimeField = function(rgp) {
 		};
 		
 		if (tf._pop) {
-			ux.addHdl(_id("btns_" + id), "click", ux.tfSetHandler,
+			ux.addHdl(_id("btns_" + id), "click", ux.tfSetHdl,
 					{uId:id});
 			ux.popupWireClear(rgp, "btncl_" + id, [ id ]);
 			ux.popupWireCancel("btncn_" + id);
@@ -4048,11 +4174,11 @@ ux.rigTimeField = function(rgp) {
 				if (list) {
 					const evppos = {uId:id, uIndex:i, uStep:1};
 					ux.addHdl(_id("btnpos_" + id  + i), "click",
-							ux.tfScrollHandler, evppos);
+							ux.tfScrollHdl, evppos);
 
 					const evpneg = {uId:id, uIndex:i, uStep:-1};
 					ux.addHdl(_id("btnneg_" + id + i), "click",
-							ux.tfScrollHandler, evpneg);
+							ux.tfScrollHdl, evpneg);
 				}
 			}
 		}
@@ -4066,12 +4192,12 @@ ux.rigTimeField = function(rgp) {
 }
 
 
-ux.tfSetHandler = function(uEv) {
+ux.tfSetHdl = function(uEv) {
 	ux.hidePopup(uEv);
 	_id(uEv.evp.uId).setActual(true);
 }
 
-ux.tfScrollHandler = function(uEv) {
+ux.tfScrollHdl = function(uEv) {
 	const tf = _id(uEv.evp.uId);
 	const index = uEv.evp.uIndex;
 	const step = uEv.evp.uStep;
@@ -4183,7 +4309,7 @@ ux.rigTreeExplorer = function(rgp) {
 				evp.uIconIndex = menuItem.pIconIndex;
 			}
 			
-			ux.addHdl(_id(menuItem.id), "click", ux.treeMenuClickHandler, evp);
+			ux.addHdl(_id(menuItem.id), "click", ux.treeMenuClickHdl, evp);
 		}
 	}
 	
@@ -4218,7 +4344,7 @@ ux.rigTreeExplorer = function(rgp) {
 						evp.uCmd = rgp.pId + "->expand";
 					}
 					ux.addHdl(_id(rgp.pCtrlBase + tItem.idx),
-							"click", ux.treeCtrlImageClickHandler, evp);
+							"click", ux.treeCtrlImageClickHdl, evp);
 				}
 
 				var evp = ux.newTreeEvPrm(rgp);
@@ -4227,28 +4353,28 @@ ux.rigTreeExplorer = function(rgp) {
 				var flags = tItem.typeInfo.flags;
 				var elm = _id(tItem.frmId);
 				if ((flags & TREEITEM_CLICK.mask) > 0) {
-					ux.addHdl(elm, "click", ux.treeItemClickHandler, evp);
+					ux.addHdl(elm, "click", ux.treeItemClickHdl, evp);
 				}
 				
 				if ((flags & TREEITEM_DBCLICK.mask) > 0) {
-					ux.addHdl(elm, "dblclick", ux.treeItemDbClickHandler, evp);
+					ux.addHdl(elm, "dblclick", ux.treeItemDbClickHdl, evp);
 				}
 
 				if ((flags & TREEITEM_RIGHTCLICK.mask) > 0) {
 					evp.uDoMenu = true;
 				}
-				ux.addHdl(elm, "rtclick", ux.treeItemRightClickHandler, evp);
+				ux.addHdl(elm, "rtclick", ux.treeItemRightClickHdl, evp);
 
 				if ((flags & TREEITEM_DRAG.mask) > 0) {
-					ux.addHdl(elm, "dragstart", ux.treeItemDragStartHandler, evp);
-					ux.addHdl(elm, "dragexit", ux.treeItemDragExitHandler, evp);
+					ux.addHdl(elm, "dragstart", ux.treeItemDragStartHdl, evp);
+					ux.addHdl(elm, "dragexit", ux.treeItemDragExitHdl, evp);
 				}
 
 				if ((flags & TREEITEM_DROP.mask) > 0) {
-					ux.addHdl(elm, "dragenter", ux.treeItemDragEnterHandler, evp);
-					ux.addHdl(elm, "dragover", ux.treeItemDragOverHandler, evp);
-					ux.addHdl(elm, "drop", ux.treeItemDropHandler, evp);
-					ux.addHdl(elm, "dragleave", ux.treeItemDragLeaveHandler, evp);
+					ux.addHdl(elm, "dragenter", ux.treeItemDragEnterHdl, evp);
+					ux.addHdl(elm, "dragover", ux.treeItemDragOverHdl, evp);
+					ux.addHdl(elm, "drop", ux.treeItemDropHdl, evp);
+					ux.addHdl(elm, "dragleave", ux.treeItemDragLeaveHdl, evp);
 				}
 
 				if (selObj.options[i].selected) {
@@ -4261,7 +4387,7 @@ ux.rigTreeExplorer = function(rgp) {
 	tdat.selList = selList;
 }
 
-ux.treeMenuClickHandler = function(uEv) {
+ux.treeMenuClickHdl = function(uEv) {
 	var tdat = ux.getTreeDat(uEv.evp);
 	var elem = _id(tdat.uEventTypeId);
 	if(elem) {
@@ -4277,19 +4403,19 @@ ux.treeMenuClickHandler = function(uEv) {
 	ux.post(uEv);
 }
 
-ux.treeItemClickHandler = function(uEv) {
-	ux.treeItemClickEventHandler(uEv, TREEITEM_CLICK.code, true);
+ux.treeItemClickHdl = function(uEv) {
+	ux.treeItemClickEventHdl(uEv, TREEITEM_CLICK.code, true);
 }
 
-ux.treeItemDbClickHandler = function(uEv) {
-	ux.treeItemClickEventHandler(uEv, TREEITEM_DBCLICK.code, false);
+ux.treeItemDbClickHdl = function(uEv) {
+	ux.treeItemClickEventHdl(uEv, TREEITEM_DBCLICK.code, false);
 }
 
-ux.treeItemRightClickHandler = function(uEv) {
-	ux.treeItemClickEventHandler(uEv, TREEITEM_RIGHTCLICK.code, false);
+ux.treeItemRightClickHdl = function(uEv) {
+	ux.treeItemClickEventHdl(uEv, TREEITEM_RIGHTCLICK.code, false);
 }
 
-ux.treeItemDragStartHandler = function(uEv) {
+ux.treeItemDragStartHdl = function(uEv) {
 	var srctdat = ux.getTreeDat(uEv.evp);
 	if (srctdat.timeoutId) {
 		window.clearTimeout(srctdat.timeoutId);
@@ -4313,17 +4439,17 @@ ux.treeItemDragStartHandler = function(uEv) {
 	uEv.dataTransfer.dropEffect = "move";
 }
 
-ux.treeItemDragExitHandler = function(uEv) {
+ux.treeItemDragExitHdl = function(uEv) {
 	ux.srcTreeId = null;
 }
 
-ux.treeItemDragEnterHandler = function(uEv) {
+ux.treeItemDragEnterHdl = function(uEv) {
 	if (ux.treeItemAcceptDropLoad(uEv)) {
 
 	}
 }
 
-ux.treeItemDragOverHandler = function(uEv) {
+ux.treeItemDragOverHdl = function(uEv) {
 	if (ux.treeItemAcceptDropLoad(uEv)) {
 		// Show indicator
 		var trgtdat = ux.getTreeDat(uEv.evp);
@@ -4333,7 +4459,7 @@ ux.treeItemDragOverHandler = function(uEv) {
 	}
 }
 
-ux.treeItemDragLeaveHandler = function(uEv) {
+ux.treeItemDragLeaveHdl = function(uEv) {
 	if (ux.treeItemAcceptDropLoad(uEv)) {
 		// Hide indicator
 		var trgtdat = ux.getTreeDat(uEv.evp);
@@ -4342,7 +4468,7 @@ ux.treeItemDragLeaveHandler = function(uEv) {
 	}
 }
 
-ux.treeItemDropHandler = function(uEv) {
+ux.treeItemDropHdl= function(uEv) {
 	var srctdat = ux.treeItemAcceptDropLoad(uEv);
 	if (srctdat) {
 		var trgtdat = ux.getTreeDat(uEv.evp);
@@ -4402,7 +4528,7 @@ ux.treeItemAcceptDropLoad = function(uEv) {
 	return null;
 }
 
-ux.treeItemClickEventHandler = function(uEv, eventCode, delay) {
+ux.treeItemClickEventHdl = function(uEv, eventCode, delay) {
 	var tdat = ux.getTreeDat(uEv.evp);
 	if (tdat.timeoutId) {
 		window.clearTimeout(tdat.timeoutId);
@@ -4506,7 +4632,7 @@ ux.treeItemProcessEvent = function(treeId) {
 	tdat.evp = null;
 }
 
-ux.treeCtrlImageClickHandler = function(uEv) {
+ux.treeCtrlImageClickHdl = function(uEv) {
 	var evp = uEv.evp;
 	var tSelCtrlElem = _id(evp.uSelCtrlId);
 	if (tSelCtrlElem) {
@@ -4981,8 +5107,8 @@ ux.listWirePopFrame = function(sel) {
 	if (sel._pop) {
 		var evp = {};
 		evp.uId = sel.id;
-		evp.uHitHandler = ux.listKeydownHit;
-		evp.uEnterHandler = ux.listKeydownEnter;
+		evp.uHitHdl = ux.listKeydownHit;
+		evp.uEnterHdl = ux.listKeydownEnter;
 		ux.addHdl(sel._frm, "click", ux.focusOnClick, evp);
 		ux.addHdl(sel._frm, "keydown", ux.listSearchKeydown, evp);
 		
@@ -5054,7 +5180,7 @@ ux.listSearchKeydown = function(uEv) {
 
 		ux.listSearchLabel(sel, uEv.uChar);
 		if (sel._indexes && sel._indexes.length > 0) {
-			evp.uHitHandler(sel);
+			evp.uHitHdl(sel);
 		}
 	
 		sel._lastKeyHit = Date.now(); 
@@ -5066,8 +5192,8 @@ ux.listSearchKeydown = function(uEv) {
 			ux.listKeydownSkip(sel, false);
 			uEv.uStop();
 		} else if (uEv.uKeyCode == UNIFY_KEY_ENTER || (uEv.uKey && "ENTER" == uEv.uKey.toUpperCase())) {
-			if (evp.uEnterHandler) {
-				evp.uEnterHandler(sel);
+			if (evp.uEnterHdl) {
+				evp.uEnterHdl(sel);
 				uEv.uStop();
 			}
 		}
@@ -5547,7 +5673,7 @@ ux.setTextActionValidation = function(name, validation, validationRefArray,
 	evp.sPassMessage = passMessage;
 	evp.sFailMessage = failMessage;
 	evp.sRequired = required;
-	ux.addHdlMany(name, "blur", ux.textValidationOnBlurHandler,
+	ux.addHdlMany(name, "blur", ux.textValidateOnBlurHdl,
 			evp);
 }
 
@@ -5558,7 +5684,7 @@ ux.setTextRegexValidation = function(name, validation, validationRefArray,
 	evp.sPassMessage = passMessage;
 	evp.sFailMessage = failMessage;
 	evp.sRequired = required;
-	ux.addHdlMany(name, "blur", ux.textValidationOnBlurHandler,
+	ux.addHdlMany(name, "blur", ux.textValidateOnBlurHdl,
 			evp);
 }
 
@@ -5570,11 +5696,11 @@ ux.setTextJSValidation = function(name, validation, validationRefArray,
 	evp.sPassMessage = passMessage;
 	evp.sFailMessage = failMessage;
 	evp.sRequired = required;
-	ux.addHdlMany(name, "blur", ux.textValidationOnBlurHandler,
+	ux.addHdlMany(name, "blur", ux.textValidateOnBlurHdl,
 			evp);
 }
 
-ux.textValidationOnBlurHandler = function(uEv) {
+ux.textValidateOnBlurHdl = function(uEv) {
 	var evp = uEv.evp;
 	var trgObj = uEv.uTrg;
 
@@ -5628,30 +5754,30 @@ ux.padRight = function(text, ch, length) {
 
 /** Mouse */
 ux.actRightClick = false;
-ux.wireRightClickHandler = function(evp, handler) {
-	evp.uRightHandler = handler;
-	return ux.onRightClickHandler;
+ux.wireRightClickHdl = function(evp, handler) {
+	evp.uRightHdl = handler;
+	return ux.onRightClickHdl;
 }
 
-ux.onRightClickHandler = function(uEv) {
+ux.onRightClickHdl = function(uEv) {
 	if (uEv.mButton == UNIFY_RIGHT_BUTTON) {
 		ux.actRightClick = true;
-		uEv.evp.uRightHandler(uEv);
+		uEv.evp.uRightHdl(uEv);
 	}
 }
 
 /** Keys */
-ux.wireSpecialKeyHandler = function(evp, handler, key, keyCode) {
+ux.wireSpecialKeyHdl = function(evp, handler, key, keyCode) {
 	evp.uSpecialKey = key.toUpperCase();
 	evp.uSpecialKeyCode = keyCode;
-	evp.uSpecialKeyHandler = handler;
-	return ux.onSpecialKeyHandler;
+	evp.uSpecialKeyHdl = handler;
+	return ux.onSpecialKeyHdl;
 }
 
-ux.onSpecialKeyHandler = function(uEv) {
+ux.onSpecialKeyHdl= function(uEv) {
 	if (uEv.uKey) {
 		if (uEv.uKey.toUpperCase() == uEv.evp.uSpecialKey) {
-			uEv.evp.uSpecialKeyHandler(uEv);
+			uEv.evp.uSpecialKeyHdl(uEv);
 		}
 	} else {
 		if (uEv.uKeyCode == uEv.evp.uSpecialKeyCode) {
@@ -5660,7 +5786,7 @@ ux.onSpecialKeyHandler = function(uEv) {
 				return;
 			}
 			
-			uEv.evp.uSpecialKeyHandler(uEv);
+			uEv.evp.uSpecialKeyHdl(uEv);
 		}
 	}
 }
@@ -5767,7 +5893,7 @@ ux.setHiddenValues = function(references, hiddenValues) {
 ux.init = function() {
 	ux.resizeTimeout = null;
 	// Set document keydown handler
-	ux.addHdl(document, "keydown", ux.documentKeydownHandler,
+	ux.addHdl(document, "keydown", ux.documentKeydownHdl,
 					{});
 	
 	// Window handler
@@ -5883,7 +6009,7 @@ ux.windowUnload = function(uEv) {
 }
 
 
-ux.documentKeydownHandler = function(uEv) {
+ux.documentKeydownHdl = function(uEv) {
 	// Hide popup on tab
 	if (uEv.uKeyCode == UNIFY_KEY_TAB) {
 		ux.hidePopup(null);
@@ -6085,10 +6211,10 @@ ux.addHdl = function(domObject, eventName, handler, evp) {
 	if (domObject) {
 		if ("enter" == eventName) {
 			eventName = "keydown";
-			handler = ux.wireSpecialKeyHandler(evp, handler, "Enter", UNIFY_KEY_ENTER);
+			handler = ux.wireSpecialKeyHdl(evp, handler, "Enter", UNIFY_KEY_ENTER);
 		} else if ("rtclick" == eventName) {
 			eventName = "mouseup";
-			handler = ux.wireRightClickHandler(evp, handler);
+			handler = ux.wireRightClickHdl(evp, handler);
 		}
 
 		if (domObject.addEventListener) {
@@ -6316,8 +6442,8 @@ ux.doOpenPopup = function(openPrm) {
 		ux.popCurr.style.visibility = 'visible';
 
 		ux.openPrm = openPrm;
-		if (openPrm.showHandler) {
-			ux.getfn(openPrm.showHandler)(openPrm.showParam);
+		if (openPrm.showHdl) {
+			ux.getfn(openPrm.showHdl)(openPrm.showParam);
 		}
 	}
 }
@@ -6356,8 +6482,8 @@ ux.hidePopup = function(uEv) {
 		
 		ux.popCurr.style.visibility = 'hidden';
 		ux.popCurr = null;
-		if (openPrm && openPrm.hideHandler) {
-			ux.getfn(openPrm.hideHandler)(openPrm.hideParam);
+		if (openPrm && openPrm.hideHdl) {
+			ux.getfn(openPrm.hideHdl)(openPrm.hideParam);
 		}
 	}
 	

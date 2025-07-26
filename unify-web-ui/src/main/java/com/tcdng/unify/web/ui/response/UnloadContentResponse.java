@@ -40,16 +40,12 @@ public class UnloadContentResponse extends AbstractJsonPageControllerResponse {
     @Override
     protected void doGenerate(ResponseWriter writer, Page page) throws UnifyException {
         logDebug("Preparing unload content response: path ID = [{0}]", page.getPathId());
-        if (getRequestContextUtil().isRemoteViewer()) {
-            writer.write(",\"closeRemoteTab\":true");
-        } else {
-            ContentPanel contentPanel = getRequestContextUtil().getRequestDocument().getContentPanel();
-            appendRefreshPageJSON(writer, contentPanel, page);
-            writer.write(",");
-            appendRefreshAttributesJson(writer, true);
-            appendRegisteredDebounceWidgets(writer, false);
-            writer.write(",\"scrollToTop\":true");
-        }
+        ContentPanel contentPanel = getRequestContextUtil().getRequestDocument().getContentPanel();
+        appendRefreshPageJSON(writer, contentPanel, page);
+        writer.write(",");
+        appendRefreshAttributesJson(writer, true);
+        appendRegisteredDebounceWidgets(writer, false);
+        writer.write(",\"scrollToTop\":true");
     }
 
     private void appendRefreshPageJSON(ResponseWriter writer, ContentPanel contentPanel, Page page)

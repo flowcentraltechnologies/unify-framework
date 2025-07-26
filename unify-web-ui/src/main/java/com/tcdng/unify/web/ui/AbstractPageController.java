@@ -168,10 +168,6 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 	public final String openPage() throws UnifyException {
 		onOpenPage();
 		onReloadPage();
-		if (getPageRequestContextUtil().isRemoteViewer()) {
-			return ResultMappingConstants.REMOTE_VIEW;
-		}
-
 		return getPageRequestContextUtil().isWithCommandResultMapping()
 				? getPageRequestContextUtil().getCommandResultMapping()
 				: ResultMappingConstants.OPEN;
@@ -271,8 +267,8 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 		try {
 			final PageRequestContextUtil ctxUtil = getPageRequestContextUtil();
 			if ("/openPage".equals(actionName)) {
-				ContentPanel contentPanel = !ctxUtil.isRemoteViewer()
-						? (ctxUtil.getRequestDocument() != null ? ctxUtil.getRequestDocument().getContentPanel() : null)
+				ContentPanel contentPanel = ctxUtil.getRequestDocument() != null
+						? ctxUtil.getRequestDocument().getContentPanel()
 						: null;
 				getPage().setAttribute(PageAttributeConstants.IN_DETACHED_WINDOW,
 						contentPanel != null ? contentPanel.isDetachedWindow() : false);
@@ -292,13 +288,11 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 				return resultName;
 			} else if ("/replacePage".equals(actionName)) {
 				String resultName = openPage();
-				if (!ctxUtil.isRemoteViewer()) {
-					ContentPanel contentPanel = ctxUtil.getRequestDocument().getContentPanel();
-					Page currentPage = ctxUtil.getRequestPage();
-					String pathToReplaceId = contentPanel.insertContent(currentPage);
-					if (!StringUtils.isBlank(pathToReplaceId)) {
-						performClosePages(contentPanel, Arrays.asList(pathToReplaceId), true);
-					}
+				ContentPanel contentPanel = ctxUtil.getRequestDocument().getContentPanel();
+				Page currentPage = ctxUtil.getRequestPage();
+				String pathToReplaceId = contentPanel.insertContent(currentPage);
+				if (!StringUtils.isBlank(pathToReplaceId)) {
+					performClosePages(contentPanel, Arrays.asList(pathToReplaceId), true);
 				}
 
 				return resultName;
@@ -1152,16 +1146,6 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 	private void performClosePage(ClosePageMode closePageMode, boolean isFireClose) throws UnifyException {
 		PageRequestContextUtil pageRequestContextUtil = getPageRequestContextUtil();
 		Page currentPage = pageRequestContextUtil.getRequestPage();
-		if (pageRequestContextUtil.isRemoteViewer()) {
-			// Fire closePage()
-			ControllerPathParts controllerPathParts = getPathInfoRepository()
-					.getControllerPathParts(currentPage.getPathId());
-			getUIControllerUtil().loadRequestPage(controllerPathParts);
-			((PageController<?>) getComponent(controllerPathParts.getControllerName())).closePage();
-			pageRequestContextUtil.setClosedPagePaths(Arrays.asList(currentPage.getPageId()));
-			return;
-		}
-
 		ContentPanel contentPanel = pageRequestContextUtil.getRequestDocument().getContentPanel();
 		List<String> toClosePathIdList = contentPanel.evaluateRemoveContent(currentPage, closePageMode);
 		performClosePages(contentPanel, toClosePathIdList, isFireClose);

@@ -29,7 +29,6 @@ import com.tcdng.unify.web.TestClientRequest;
 import com.tcdng.unify.web.TestClientResponse;
 import com.tcdng.unify.web.UnifyWebPropertyConstants;
 import com.tcdng.unify.web.WebApplicationComponents;
-import com.tcdng.unify.web.constant.UnifyWebRequestAttributeConstants;
 import com.tcdng.unify.web.ui.controller.DocumentLoaderController;
 import com.tcdng.unify.web.ui.widget.Widget;
 
@@ -52,7 +51,7 @@ public class PageControllerTest extends AbstractUnifyWebTest {
 		PathInfoRepository pathInfoRepository = (PathInfoRepository) getComponent(
 				WebApplicationComponents.APPLICATION_PATHINFOREPOSITORY);
 
-		prcu.setRequestAttribute(UnifyWebRequestAttributeConstants.CLIENT_ID, "cid1");
+		prcu.setRequestClientPageId("cid1");
 		// Create page controller and load page to request context
 		AuthorPageController controller = (AuthorPageController) controllerFinder
 				.findController(pathInfoRepository.getControllerPathParts("/testauthor"));
@@ -82,7 +81,7 @@ public class PageControllerTest extends AbstractUnifyWebTest {
 				new RequestPathParts(pir.getControllerPathParts("/testauthor/createAuthor")));
 		Date birthDt = new Date();
 
-		prcu.setRequestAttribute(UnifyWebRequestAttributeConstants.CLIENT_ID, "cid1");
+		prcu.setRequestClientPageId("cid1");
 		AuthorPageController controller = (AuthorPageController) controllerFinder
 				.findController(pir.getControllerPathParts("/testauthor"));
 		Widget uic1 = controller.getPageWidgetByLongName(Widget.class, "/testauthor.fullName");

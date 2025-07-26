@@ -44,7 +44,6 @@ import com.tcdng.unify.core.util.QueryUtils;
 import com.tcdng.unify.core.util.StringUtils;
 import com.tcdng.unify.core.util.json.JsonUtils;
 import com.tcdng.unify.core.util.json.JsonWriter;
-import com.tcdng.unify.web.constant.RequestParameterConstants;
 import com.tcdng.unify.web.ui.PageRequestContextUtil;
 import com.tcdng.unify.web.ui.UnifyWebUIErrorConstants;
 import com.tcdng.unify.web.ui.WebUIApplicationComponents;
@@ -490,10 +489,6 @@ public class ResponseWriterImpl extends AbstractUnifyComponent implements Respon
 	@Override
 	public ResponseWriter writeContextURL(String path, String... pathElement) throws UnifyException {
 		RequestContext requestContext = getRequestContext();
-		if (pageRequestContextUtil.isRemoteViewer()) {
-			buf.append(getSessionContext().getUriBase());
-		}
-
 		buf.append(requestContext.getContextPath());
 		if (requestContext.isWithTenantPath()) {
 			buf.append(requestContext.getTenantPath());
@@ -509,10 +504,6 @@ public class ResponseWriterImpl extends AbstractUnifyComponent implements Respon
 	@Override
 	public ResponseWriter writeContextURL(StringBuilder sb, String path, String... pathElement) throws UnifyException {
 		RequestContext requestContext = getRequestContext();
-		if (pageRequestContextUtil.isRemoteViewer()) {
-			sb.append(getSessionContext().getUriBase());
-		}
-
 		sb.append(requestContext.getContextPath());
 		if (requestContext.isWithTenantPath()) {
 			sb.append(requestContext.getTenantPath());
@@ -561,12 +552,6 @@ public class ResponseWriterImpl extends AbstractUnifyComponent implements Respon
 					.append(clearOnRead);
 		}
 
-		if (pageRequestContextUtil.isRemoteViewer()) {
-			buf.append('&').append(RequestParameterConstants.REMOTE_VIEWER).append("=")
-					.append(pageRequestContextUtil.getRemoteViewer());
-			buf.append('&').append(RequestParameterConstants.REMOTE_SESSION_ID).append("=")
-					.append(getRequestContext().getAttribute(RequestParameterConstants.REMOTE_SESSION_ID));
-		}
 		return this;
 	}
 

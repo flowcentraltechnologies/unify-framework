@@ -107,7 +107,7 @@ public abstract class AbstractUIController extends AbstractHttpClientController 
 
 			pageRequestContextUtil.extractRequestParameters(request);
 
-			ensureSecureAccess(reqPathParts, pageRequestContextUtil.isRemoteViewer());
+			ensureSecureAccess(reqPathParts, false);
 			setAdditionalResponseHeaders(response);
 			doProcess(request, response, docPageController, docPathParts);
 		} catch (Exception e) {
@@ -366,11 +366,6 @@ public abstract class AbstractUIController extends AbstractHttpClientController 
 				writer.write(",\"allPush\":").writeJsonArray(_alwaysPush);
 			}
 
-			if (pageRequestContextUtil.isRemoteViewer()) {
-				writer.write(",\"remoteView\":{");
-				writer.write("\"view\":\"").write(pageRequestContextUtil.getRemoteViewer()).write("\"}");
-			}
-
 			writer.write(",\"scrollReset\":").write(pageRequestContextUtil.isContentScrollReset());
 			writer.write("}");
 		} else {
@@ -443,8 +438,7 @@ public abstract class AbstractUIController extends AbstractHttpClientController 
 				result = uiControllerUtil.getPageControllerInfo(pageController.getName()).getResult(resultName);
 			} else {
 				if (StringUtils
-						.isBlank((String) request.getParameters().getParam(PageRequestParameterConstants.DOCUMENT))
-						&& !pageRequestContextUtil.isRemoteViewer()) {
+						.isBlank((String) request.getParameters().getParam(PageRequestParameterConstants.DOCUMENT))) {
 					if (getContainerSetting(boolean.class, UnifyWebPropertyConstants.APPLICATION_WEB_FRIENDLY_REDIRECT,
 							true)) {
 						respPathParts = pathInfoRepository

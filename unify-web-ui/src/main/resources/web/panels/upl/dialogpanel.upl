@@ -20,7 +20,9 @@
 !ui-panel:bodyPanel layout:$f{dialogBodyLayout} components:$f{dialogBodyComponents}
 
 // Action panel
-!ui-panel:actionPanel layout:$f{dialogActionLayout} components:$f{dialogActionComponents}
+!ui-panel:actionPanel layout:$f{dialogActionLayout}
+	components:$f{additionalDialogActionComponents}
+	components:$f{dialogActionComponents}
      
 //Actions
 !ui-post:closeDialogAct path:$f{closeDialogPath}

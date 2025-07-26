@@ -49,7 +49,7 @@ public class LoadContentResponse extends AbstractJsonPageControllerResponse {
 		writer.write(",");
 		appendRefreshAttributesJson(writer, true);
 		appendRegisteredDebounceWidgets(writer, true);
-		final String reloadURL = WebUtils.getContextURL(getRequestContext(), getRequestContextUtil().isRemoteViewer(),
+		final String reloadURL = WebUtils.getContextURL(getRequestContext(), false,
 				pathInfoRepository.getPagePathInfo(page).getReloadPagePath());
 		writer.write(",\"reloadURL\":").writeJsonQuote(reloadURL);
 		writer.write(",\"scrollToTop\":").write(scrollToTop());

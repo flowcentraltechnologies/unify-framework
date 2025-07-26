@@ -35,12 +35,10 @@ import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.constant.TopicEventType;
 import com.tcdng.unify.core.data.Parameters;
 import com.tcdng.unify.core.util.DataUtils;
-import com.tcdng.unify.core.util.StringUtils;
 import com.tcdng.unify.web.ClientRequest;
 import com.tcdng.unify.web.ClientResponse;
 import com.tcdng.unify.web.ControllerPathParts;
 import com.tcdng.unify.web.TargetPath;
-import com.tcdng.unify.web.constant.RequestParameterConstants;
 import com.tcdng.unify.web.constant.UnifyWebRequestAttributeConstants;
 import com.tcdng.unify.web.data.TopicEvent;
 import com.tcdng.unify.web.ui.constant.PageRequestParameterConstants;
@@ -169,6 +167,11 @@ public class PageRequestContextUtilImpl extends AbstractUnifyComponent implement
 	public void setRequestAttribute(String name, Object value) throws UnifyException {
 		super.setRequestAttribute(name, value);
 	}
+	
+	@Override
+	public void setRequestClientPageId(String pid) throws UnifyException {
+		getRequestContext().setPid(pid);
+	}
 
 	@Override
     public void setRequestPopupPanel(Panel panel) throws UnifyException {
@@ -282,11 +285,6 @@ public class PageRequestContextUtilImpl extends AbstractUnifyComponent implement
     }
 
     @Override
-    public String getRemoteViewer() throws UnifyException {
-        return DataUtils.convert(String.class, getRequestAttribute(RequestParameterConstants.REMOTE_VIEWER));
-    }
-
-    @Override
     public String getNonce() throws UnifyException {
         String nonce = (String) getRequestAttribute(REQUEST_NONCE);
         if (nonce == null) {
@@ -301,11 +299,6 @@ public class PageRequestContextUtilImpl extends AbstractUnifyComponent implement
     @Override
     public boolean isWithNonce() throws UnifyException {
         return getRequestAttribute(REQUEST_NONCE) != null;
-    }
-
-    @Override
-    public boolean isRemoteViewer() throws UnifyException {
-        return StringUtils.isNotBlank(getRemoteViewer());
     }
 
     @Override
@@ -393,8 +386,12 @@ public class PageRequestContextUtilImpl extends AbstractUnifyComponent implement
 
     @Override
     public void setResponseRefreshPanels(String... longNames) throws UnifyException {
-    	List<String> list = new ArrayList<String>(Arrays.asList(longNames));
-        setRequestAttribute(REFRESH_PANEL_LONGNAMES, list);
+    	if (longNames != null) {
+        	List<String> list = new ArrayList<String>(Arrays.asList(longNames));
+            if (!list.isEmpty()) {
+            	setRequestAttribute(REFRESH_PANEL_LONGNAMES, list);
+            }
+    	}
     }
 
     @Override
@@ -795,10 +792,6 @@ public class PageRequestContextUtilImpl extends AbstractUnifyComponent implement
         		parameters.getParam(PageRequestParameterConstants.CONFIRM_MSGICON));
         setRequestAttribute(PageRequestParameterConstants.CONFIRM_PARAM,
         		parameters.getParam(PageRequestParameterConstants.CONFIRM_PARAM));
-        setRequestAttribute(RequestParameterConstants.REMOTE_VIEWER,
-        		parameters.getParam(RequestParameterConstants.REMOTE_VIEWER));
-        setRequestAttribute(RequestParameterConstants.REMOTE_SESSION_ID,
-        		parameters.getParam(RequestParameterConstants.REMOTE_SESSION_ID));
     }
 
     @Override

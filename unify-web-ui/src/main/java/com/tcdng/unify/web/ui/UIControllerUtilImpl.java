@@ -278,9 +278,6 @@ public class UIControllerUtilImpl extends AbstractUnifyComponent implements UICo
                 new Result(new PageControllerResponse[] {
                         (PageControllerResponse) getUplComponent(defaultLocale, "!closewindowresponse", false)}));
 
-        defaultResultMap.put(ResultMappingConstants.REMOTE_VIEW, new Result(new PageControllerResponse[] {
-                (PageControllerResponse) getUplComponent(defaultLocale, "!docviewresponse", false) }));
-
         defaultResultMap.put(ResultMappingConstants.POST_RESPONSE,
                 new Result(new PageControllerResponse[] {
                         (PageControllerResponse) getUplComponent(defaultLocale, "!hidepopupresponse", false),
