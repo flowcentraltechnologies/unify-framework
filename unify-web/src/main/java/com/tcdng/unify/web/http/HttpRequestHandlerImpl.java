@@ -140,12 +140,14 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 
 	@Override
 	public RequestPathParts resolveRequestPath(HttpRequest httpRequest) throws UnifyException {
-		String resolvedPath = httpRequest.getPathInfo();
+		final String resolvedPath = httpRequest.getPathInfo();
+		logDebug("Resolving request path [{0}]...", resolvedPath);
 		return requestPathParts.get(resolvedPath == null ? "" : resolvedPath);
 	}
 
 	@Override
 	public RequestPathParts getRequestPathParts(String requestPath) throws UnifyException {
+		logDebug("Get request path parts for path [{0}]...", requestPath);
 		return requestPathParts.get(requestPath);
 	}
 
