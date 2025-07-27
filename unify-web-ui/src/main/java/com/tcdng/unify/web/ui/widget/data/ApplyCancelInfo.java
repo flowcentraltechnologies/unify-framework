@@ -32,12 +32,24 @@ public class ApplyCancelInfo {
 		this.applyCaption = applyCaption;
 	}
 
+	public ApplyCancelInfo() {
+
+	}
+
 	public String getDialogCaption() {
 		return dialogCaption;
 	}
 
 	public String getApplyCaption() {
 		return applyCaption;
+	}
+
+	public void setDialogCaption(String dialogCaption) {
+		this.dialogCaption = dialogCaption;
+	}
+
+	public void setApplyCaption(String applyCaption) {
+		this.applyCaption = applyCaption;
 	}
 		
 }
