@@ -108,7 +108,7 @@ public abstract class AbstractDhtmlWriter extends AbstractUplComponentWriter {
 			writer.write(" name=\"").write(groupId).write("\"");
 		}
 
-		writer.write(" class=\"").write(styleClass);
+		writer.write(" class=\"").write(styleClass == null ?  widget.getName()  : styleClass);
 		String valStyleClass = widget.getStyleClassValue();
 		if (valStyleClass != null) {
 			writer.write(" ").write(valStyleClass);
