@@ -90,10 +90,10 @@ public abstract class AbstractControlWriter extends AbstractWidgetWriter impleme
 			throws UnifyException {
 		writer.write("<button type=\"button\"");
 		writeTagId(writer, id);
-		writeTagStyleClass(writer, styleClass != null ? styleClass + " g_fsm" : "g_fsm");
+		writeTagStyleClass(writer, styleClass != null ? styleClass : "");
 		writeTagTitle(writer, hint);
 		writer.write(">");
-		writer.write(resolveSymbolHtmlHexCode(symbol));
+		writeFontIcon(writer, symbol);
 		writer.write("</button>");
 	}
 

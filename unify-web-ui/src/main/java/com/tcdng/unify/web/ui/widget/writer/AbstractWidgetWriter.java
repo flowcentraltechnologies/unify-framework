@@ -105,6 +105,12 @@ public abstract class AbstractWidgetWriter extends AbstractDhtmlWriter implement
 
     protected abstract void doWriteStructureAndContent(ResponseWriter writer, Widget widget) throws UnifyException;
 
+    protected void writeFontIcon(ResponseWriter writer, String symbol) throws UnifyException {
+		writer.write("<span class=\"g_fsm\">");
+		writer.write(resolveSymbolHtmlHexCode(symbol));
+		writer.write("</span>");
+    }
+    
     protected final boolean isWithFontSymbolManager() {
         return fontSymbolManager != null;
     }

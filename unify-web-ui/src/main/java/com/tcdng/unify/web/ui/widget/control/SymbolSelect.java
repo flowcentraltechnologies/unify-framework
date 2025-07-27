@@ -32,8 +32,7 @@ import com.tcdng.unify.core.annotation.UplAttributes;
 public class SymbolSelect extends SingleSelect {
 
 	public String getExtStyleClass() throws UnifyException {
-		return isHtmlEscape() ? getUplAttribute(String.class, "extStyleClass")
-				: getUplAttribute(String.class, "extStyleClass") + " g_fsm";
+		return getUplAttribute(String.class, "extStyleClass");
 	}
 
 }

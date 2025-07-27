@@ -67,15 +67,10 @@ public class SingleSelectWriter extends AbstractPopupTextFieldWriter {
 				writer.write("</a>");
 			}
 
-			final boolean htmlescape = singleSelect.isHtmlEscape();
 			for (int i = 0; i < length; i++) {
 				writer.write("<a");
 				writeTagId(writer, singleSelect.getNamingIndexedId(i));
-				if (htmlescape) {
-					writer.write(" class=\"norm\">");
-				} else {
-					writer.write(" class=\"norm g_fsm\">");
-				}
+				writer.write(" class=\"norm\">");
 
 				writer.write("</a>");
 			}
@@ -92,7 +87,6 @@ public class SingleSelectWriter extends AbstractPopupTextFieldWriter {
 		ListControlInfo listControlInfo = singleSelect.getListControlInfo(singleSelect.getFormatter());
 
 		// Append rigging
-		final boolean htmlescape = singleSelect.isHtmlEscape();
 		writer.beginFunction("ux.rigSingleSelect");
 		writer.writeParam("pId", singleSelect.getId());
 		writer.writeParam("pFacId", singleSelect.getFacadeId());
@@ -104,13 +98,8 @@ public class SingleSelectWriter extends AbstractPopupTextFieldWriter {
 		writer.writeParam("pKeys", listControlInfo.getKeys());
 		writer.writeParam("pLabels", listControlInfo.getLabels());
 		writer.writeParam("pIsBlankOption", singleSelect.isLoadingFailure() || singleSelect.getBlankOption() != null);
-		if (htmlescape) {
-			writer.writeParam("pNormCls", "norm");
-			writer.writeParam("pSelCls", getUserColorStyleClass("sel"));
-		} else {
-			writer.writeParam("pNormCls", "norm g_fsm");
-			writer.writeParam("pSelCls", getUserColorStyleClass("sel") + " g_fsm");
-		}
+		writer.writeParam("pNormCls", "norm");
+		writer.writeParam("pSelCls", getUserColorStyleClass("sel"));
 
 		writer.writeParam("pEnabled", popupEnabled);
 		writer.writeParam("pColors", singleSelect.isColors());
@@ -126,7 +115,7 @@ public class SingleSelectWriter extends AbstractPopupTextFieldWriter {
             AbstractPopupTextField popupTextField = (AbstractPopupTextField) widget;
             writer.write("<button tabindex=\"-1\"");
             writeTagId(writer, popupTextField.getPopupButtonId());
-            writeTagStyleClass(writer, "tpbutton g_fsm");
+            writeTagStyleClass(writer, "tpbutton");
             if (popupTextField.isContainerDisabled()) {
                 writer.write(" disabled");
             }

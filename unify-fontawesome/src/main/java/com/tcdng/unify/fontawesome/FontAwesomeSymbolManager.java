@@ -31,11 +31,15 @@ import com.tcdng.unify.web.font.AbstractFontSymbolManager;
  */
 @Component(FontAwesomeApplicationComponents.FONTAWESOME_FONTSYMBOLMANAGER)
 public class FontAwesomeSymbolManager extends AbstractFontSymbolManager {
-    @Override
-    public List<String> getFontResources() throws UnifyException {
-        // Currently uses font awesome 5.14.1
-        return Arrays.asList("webfonts/fa-solid-900.woff", "webfonts/fa-regular-400.woff");
-    }
+
+	@Override
+	public List<String> getFontResources() throws UnifyException {
+		// Currently uses font awesome 7.0.0
+		return Arrays.asList(
+				"webfonts/fa-solid-900.woff2",
+				"webfonts/fa-regular-400.woff2",
+				"webfonts/fa-brands-400.woff2");
+	}
 
     @Override
     protected void onInitialize() throws UnifyException {
