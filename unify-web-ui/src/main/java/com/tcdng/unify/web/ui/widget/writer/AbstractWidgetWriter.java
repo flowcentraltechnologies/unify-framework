@@ -122,6 +122,23 @@ public abstract class AbstractWidgetWriter extends AbstractDhtmlWriter implement
 		writer.write(resolveSymbolHtmlHexCode(symbol));
 		writer.write("</span>");
 	}
+
+	protected void writeFontIcon(ResponseWriter writer, String id, String additionStyleClass, String symbol)
+			throws UnifyException {
+		writer.write("<span");
+		if (!StringUtils.isBlank(id)) {
+			writer.write(" id=\"").write(id).write("\"");
+		}
+
+		writer.write(" class=\"g_fsm ");
+		if (!StringUtils.isBlank(additionStyleClass)) {
+			writer.write(additionStyleClass);
+		}
+
+		writer.write("\">");
+		writer.write(resolveSymbolHtmlHexCode(symbol));
+		writer.write("</span>");
+	}
     
     protected final boolean isWithFontSymbolManager() {
         return fontSymbolManager != null;
