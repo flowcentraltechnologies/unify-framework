@@ -113,22 +113,23 @@ public abstract class AbstractWidgetWriter extends AbstractDhtmlWriter implement
 
 	protected void writeFontIcon(ResponseWriter writer, String additionStyleClass, String symbol)
 			throws UnifyException {
-		writer.write("<span class=\"");
-		if (!StringUtils.isBlank(additionStyleClass)) {
-			writer.write(additionStyleClass);
-			writer.write(" ");
-		}
-
-		writer.write("g_fsm\">");
-		writer.write(resolveSymbolHtmlHexCode(symbol));
-		writer.write("</span>");
+		writeFontIcon(writer, null, additionStyleClass, symbol, null);
 	}
 
 	protected void writeFontIcon(ResponseWriter writer, String id, String additionStyleClass, String symbol)
 			throws UnifyException {
+		writeFontIcon(writer, id, additionStyleClass, symbol, null);
+	}
+
+	protected void writeFontIcon(ResponseWriter writer, String id, String additionStyleClass, String symbol, String hint)
+			throws UnifyException {
 		writer.write("<span");
 		if (!StringUtils.isBlank(id)) {
 			writer.write(" id=\"").write(id).write("\"");
+		}
+		
+		if (!StringUtils.isBlank(hint)) {
+			writer.write(" title=\"").write(resolveSessionMessage(hint)).write("\"");
 		}
 
 		writer.write(" class=\"");
