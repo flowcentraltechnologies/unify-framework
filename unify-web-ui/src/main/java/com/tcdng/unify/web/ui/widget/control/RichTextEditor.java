@@ -94,8 +94,14 @@ public class RichTextEditor extends AbstractMultiControl {
 
 	@Override
 	public void addPageAliases() throws UnifyException {
-		addPageAlias(fontSizeCtrl);
-		addPageAlias(fontColorCtrl);
+		if (isSize()) {
+			addPageAlias(fontSizeCtrl);
+		}
+		
+		if (isColor()) {
+			addPageAlias(fontColorCtrl);
+		}
+		
 		addPageAlias(valueCtrl);
 	}
 

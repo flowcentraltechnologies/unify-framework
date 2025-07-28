@@ -38,7 +38,7 @@ public class ButtonWriter extends AbstractTargetControlWriter {
     protected void doWriteTargetControl(ResponseWriter writer, TargetControl targetControl) throws UnifyException {
         Button button = (Button) targetControl;
         writer.write("<button type=\"button\"");
-        writeTagAttributesWithTrailingExtraStyleClass(writer, button, "g_fsm");
+        writeTagAttributes(writer, button);
         writer.write("/>");
         String imageSrc = button.getUplAttribute(String.class, "imageSrc");
         String caption = button.isResolve()? resolveSessionMessage(button.getCaption()) : button.getCaption();
@@ -61,7 +61,7 @@ public class ButtonWriter extends AbstractTargetControlWriter {
             if (isWithFontSymbolManager()) {
                 String symbol = button.getSymbol();
                 if (isSymbol = !StringUtils.isBlank(symbol)) {
-                    writer.write(resolveSymbolHtmlHexCode(symbol));
+                	writeFontIcon(writer, symbol);
                 }
             }
 

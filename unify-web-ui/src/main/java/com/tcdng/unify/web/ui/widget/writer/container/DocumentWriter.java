@@ -306,7 +306,7 @@ public class DocumentWriter extends AbstractPageWriter {
 			}
 			
 			fsb.append(document.getFontFamily());
-			fsb.append(";}");
+			fsb.append(";padding:0px !important;}");
 			writer.write(fsb);
 		}
 

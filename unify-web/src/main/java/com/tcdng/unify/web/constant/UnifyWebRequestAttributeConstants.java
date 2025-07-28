@@ -41,7 +41,7 @@ public interface UnifyWebRequestAttributeConstants {
 
     String PARAMETERS = "WR.PARAMETERS";
 
-    String LOADER_FORWARD_PATH = "WR.LOADERFORWARDPATH";
+    String LOADER_FORWARD_TARGET = "WR.LOADERFORWARDTARGET";
 
     String TEMP_COOKIE = "WR.TEMPCOOKIE";
 

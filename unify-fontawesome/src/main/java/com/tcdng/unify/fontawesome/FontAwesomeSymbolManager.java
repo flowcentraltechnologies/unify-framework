@@ -31,11 +31,15 @@ import com.tcdng.unify.web.font.AbstractFontSymbolManager;
  */
 @Component(FontAwesomeApplicationComponents.FONTAWESOME_FONTSYMBOLMANAGER)
 public class FontAwesomeSymbolManager extends AbstractFontSymbolManager {
-    @Override
-    public List<String> getFontResources() throws UnifyException {
-        // Currently uses font awesome 5.14.1
-        return Arrays.asList("webfonts/fa-solid-900.woff", "webfonts/fa-regular-400.woff");
-    }
+
+	@Override
+	public List<String> getFontResources() throws UnifyException {
+		// Currently uses font awesome 7.0.0
+		return Arrays.asList(
+				"webfonts/fa-solid-900.woff2",
+				"webfonts/fa-regular-400.woff2",
+				"webfonts/fa-brands-400.woff2");
+	}
 
     @Override
     protected void onInitialize() throws UnifyException {
@@ -66,6 +70,7 @@ public class FontAwesomeSymbolManager extends AbstractFontSymbolManager {
         registerSymbol("bell", "f0f3");
         registerSymbol("bell-slash", "f1f6");
         registerSymbol("bold", "f032");
+        registerSymbol("bomb", "f1e2");
         registerSymbol("buffer", "f837");
         registerSymbol("calendar", "f133");
         registerSymbol("calendar-alt", "f073");
@@ -90,6 +95,8 @@ public class FontAwesomeSymbolManager extends AbstractFontSymbolManager {
         registerSymbol("circle-arrow-left", "f359");
         registerSymbol("circle-arrow-right", "f35a");
         registerSymbol("circle-arrow-up", "f35b");
+        registerSymbol("circle-check", "f058");
+        registerSymbol("circle-info", "f05a");
         registerSymbol("circle-pause", "f28b");
         registerSymbol("clock", "f017");
         registerSymbol("cloud", "f0c2");
@@ -155,6 +162,7 @@ public class FontAwesomeSymbolManager extends AbstractFontSymbolManager {
         registerSymbol("key", "f084");
         registerSymbol("laptop-house", "e066");
         registerSymbol("laugh", "f599");
+        registerSymbol("lightbulb", "f0eb");
         registerSymbol("link", "f0c1");
         registerSymbol("list", "f03a");
         registerSymbol("list-unordered", "f0ca");
@@ -183,6 +191,7 @@ public class FontAwesomeSymbolManager extends AbstractFontSymbolManager {
         registerSymbol("project-diagram", "f542");
         registerSymbol("question", "f128");
         registerSymbol("question-circle", "f059");
+        registerSymbol("radiation", "f7b9");
         registerSymbol("redo", "f01e");
         registerSymbol("redo-alt", "f2f9");
         registerSymbol("rocket", "f135");
@@ -194,6 +203,7 @@ public class FontAwesomeSymbolManager extends AbstractFontSymbolManager {
         registerSymbol("sign-out", "f2f5");
         registerSymbol("site-map", "f0e8");
         registerSymbol("sort", "f0dc");
+        registerSymbol("square-check", "f14a");
         registerSymbol("step", "f54b");
         registerSymbol("stream", "f550");
         registerSymbol("swap", "f362");
@@ -207,6 +217,7 @@ public class FontAwesomeSymbolManager extends AbstractFontSymbolManager {
         registerSymbol("thumbtack", "f08d");
         registerSymbol("times-circle", "f057");
         registerSymbol("trash", "f2ed");
+        registerSymbol("triangle-exclamation", "f071");
         registerSymbol("underline", "f0cd");
         registerSymbol("undo", "f2ea");
         registerSymbol("unlock", "f09c");
@@ -216,7 +227,7 @@ public class FontAwesomeSymbolManager extends AbstractFontSymbolManager {
         registerSymbol("user-cog", "f4fe");
         registerSymbol("user-edit", "f4ff");
         registerSymbol("user-tag", "f507");
-        registerSymbol("vector-square", "f5cb");
+        registerSymbol("vector-square", "f0ac");
         registerSymbol("window-maximize", "f2d0");
         registerSymbol("window-restore", "f2d2");
         registerSymbol("woman", "f182");

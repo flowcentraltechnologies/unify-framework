@@ -192,7 +192,7 @@ public class HttpServletModule  {
 				RequestPathParts reqPathParts = httpRequestHandler.resolveRequestPath(httpRequest);
 				requestContextManager.loadRequestContext(
 						httpRequestHandler.getUserSession(this, httpRequest, httpResponse, reqPathParts),
-						httpRequest.getServletPath());
+						httpRequest.getServletPath(), httpRequest.getRequestTarget());
 				httpRequestHandler.handleRequest(type, reqPathParts, httpRequest, httpResponse);
 			} finally {
 				try {

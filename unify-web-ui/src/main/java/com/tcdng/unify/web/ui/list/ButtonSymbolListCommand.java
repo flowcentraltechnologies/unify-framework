@@ -54,8 +54,8 @@ public class ButtonSymbolListCommand extends AbstractListCommand<ZeroParams> {
 				if (list == null) {
 					List<ListData> listables = new ArrayList<ListData>();
 					for (String symbol : fontSymbolManager.getSymbolNames()) {
-						listables.add(new ListData(symbol,
-								fontSymbolManager.resolveSymbolHtmlHexCode(symbol) + "&nbsp;&nbsp;" + symbol));
+						listables.add(new ListData(symbol, "<span class=\"g_fsm\">"
+								+ fontSymbolManager.resolveSymbolHtmlHexCode(symbol) + "</span>&nbsp;&nbsp;" + symbol));
 					}
 
 					list = Collections.unmodifiableList(listables);

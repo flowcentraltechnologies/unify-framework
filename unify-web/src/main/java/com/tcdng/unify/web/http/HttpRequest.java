@@ -40,6 +40,10 @@ public interface HttpRequest extends HttpRequestHeaders, HttpRequestParameters {
 
 	String getPathInfo();
 
+	String getRequestURI();
+
+	String getRequestTarget();
+
 	String getCharacterEncoding();
 
 	String getRemoteAddr();

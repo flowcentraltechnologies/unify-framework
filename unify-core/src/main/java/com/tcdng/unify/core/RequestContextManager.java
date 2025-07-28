@@ -30,19 +30,17 @@ public interface RequestContextManager extends UnifyComponent {
      */
     RequestContext getRequestContext();
 
-    /**
-     * Sets the request context for the current executing thread using supplied user
-     * session, context path and request path. Adds user session to application
-     * context if it's a new session.
-     * 
-     * @param userSession
-     *            the user session object
-     * @param requestPath
-     *            the request path.
-     * @throws UnifyException
-     *             if an error occurs
-     */
-    void loadRequestContext(UserSession userSession, String requestPath) throws UnifyException;
+	/**
+	 * Sets the request context for the current executing thread using supplied user
+	 * session, context path and request path. Adds user session to application
+	 * context if it's a new session.
+	 * 
+	 * @param userSession   the user session object
+	 * @param requestPath   the request path.
+	 * @param requestTarget the request target
+	 * @throws UnifyException if an error occurs
+	 */
+	void loadRequestContext(UserSession userSession, String requestPath, String requestTarget) throws UnifyException;
 
     /**
      * Sets the request context for the current executing thread with supplied
