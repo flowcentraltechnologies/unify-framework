@@ -45,6 +45,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSession;
+
 import com.tcdng.unify.core.UnifyCoreErrorConstants;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.UnifyOperationException;
@@ -69,6 +73,8 @@ public class IOUtils {
 
 	private static final int READ_TIMEOUT = 30000;
 
+	private static final String DISABLE_HOSTNAME_PREFIX = "-k ";
+	
 	private IOUtils() {
 
 	}
@@ -1160,8 +1166,24 @@ public class IOUtils {
 			throws UnifyException {
 		PostResp<String> resp = null;
 		try {
+			boolean skipHostName = false;
+			if (endpoint.startsWith(DISABLE_HOSTNAME_PREFIX)) {
+				endpoint = endpoint.substring(DISABLE_HOSTNAME_PREFIX.length());
+				skipHostName = true;
+			}
+			
 			URL url = new URI(endpoint).toURL();
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			if (skipHostName && conn instanceof HttpsURLConnection) {
+		        HostnameVerifier verifier = new HostnameVerifier() {
+		            public boolean verify(String hostname, SSLSession session) {
+		                return true;
+		            }
+		        };
+		        
+		        HttpsURLConnection.setDefaultHostnameVerifier(verifier);
+			}
+			
 			conn.setRequestMethod("POST");
 			if (headers != null && !headers.isEmpty()) {
 				for (Map.Entry<String, String> entry : headers.entrySet()) {
