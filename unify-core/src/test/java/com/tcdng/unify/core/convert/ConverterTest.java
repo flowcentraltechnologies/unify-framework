@@ -241,8 +241,8 @@ public class ConverterTest extends AbstractUnifyComponentTest {
         Converter<Character> converter = new CharacterConverter();
         assertNull(converter.convert(null, null));
         assertNull(converter.convert(new Date(), null));
-        assertEquals(new Character('M'), converter.convert('M', null));
-        assertEquals(new Character('H'), converter.convert("Hello", null));
+        assertEquals(Character.valueOf('M'), converter.convert('M', null));
+        assertEquals(Character.valueOf('H'), converter.convert("Hello", null));
         assertEquals(Character.valueOf((char) 10), converter.convert(Integer.valueOf(10), null));
     }
 
