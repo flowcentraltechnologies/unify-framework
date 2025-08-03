@@ -182,6 +182,7 @@ public class FontAwesomeSymbolManager extends AbstractFontSymbolManager {
         registerSymbol("outdent", "f03b");
         registerSymbol("paint-brush", "f1fc");
         registerSymbol("paper-clip", "f0c6");
+        registerSymbol("paper-plane", "f1d8");
         registerSymbol("parachute-box", "f4cd");
         registerSymbol("pen-nib", "f5ad");
         registerSymbol("play", "f04b");
