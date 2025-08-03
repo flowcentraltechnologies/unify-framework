@@ -246,6 +246,14 @@ public interface ValueStore extends Iterable<ValueStore>{
      */
     void storeOnNull(int storageIndex, String name, Object value, Formatter<?> formatter) throws UnifyException;
 
+	/**
+	 * Gets valuestore values by name.
+	 * 
+	 * @return the values
+	 * @throws UnifyException if an error occurs
+	 */
+	Map<String, Object> getValues() throws UnifyException;
+
     /**
      * Gets temporary value from store using supplied name.
      * 

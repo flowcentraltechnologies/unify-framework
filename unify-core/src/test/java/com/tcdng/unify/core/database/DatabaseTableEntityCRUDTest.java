@@ -290,7 +290,7 @@ public class DatabaseTableEntityCRUDTest extends AbstractUnifyComponentTest {
 			Aggregation aggregation = aggregationList.get(0);
 			assertEquals(AggregateType.SUM, aggregation.getType());
 			assertEquals("quantity", aggregation.getFieldName());
-			assertEquals(new Integer(3), aggregation.getValue(Integer.class));
+			assertEquals(Integer.valueOf(3), aggregation.getValue(Integer.class));
 
 			// 1
 			groupingAggregation = quantityAggregate.get(1);
@@ -306,7 +306,7 @@ public class DatabaseTableEntityCRUDTest extends AbstractUnifyComponentTest {
 			aggregation = aggregationList.get(0);
 			assertEquals(AggregateType.SUM, aggregation.getType());
 			assertEquals("quantity", aggregation.getFieldName());
-			assertEquals(new Integer(11), aggregation.getValue(Integer.class));
+			assertEquals(Integer.valueOf(11), aggregation.getValue(Integer.class));
 
 			// 2
 			groupingAggregation = quantityAggregate.get(2);
@@ -322,7 +322,7 @@ public class DatabaseTableEntityCRUDTest extends AbstractUnifyComponentTest {
 			aggregation = aggregationList.get(0);
 			assertEquals(AggregateType.SUM, aggregation.getType());
 			assertEquals("quantity", aggregation.getFieldName());
-			assertEquals(new Integer(25 + 11), aggregation.getValue(Integer.class));
+			assertEquals(Integer.valueOf(25 + 11), aggregation.getValue(Integer.class));
 
 			// 3
 			groupingAggregation = quantityAggregate.get(3);
@@ -338,7 +338,7 @@ public class DatabaseTableEntityCRUDTest extends AbstractUnifyComponentTest {
 			aggregation = aggregationList.get(0);
 			assertEquals(AggregateType.SUM, aggregation.getType());
 			assertEquals("quantity", aggregation.getFieldName());
-			assertEquals(new Integer(45), aggregation.getValue(Integer.class));
+			assertEquals(Integer.valueOf(45), aggregation.getValue(Integer.class));
 		} catch (Exception e) {
 			tm.setRollback();
 			throw e;
@@ -380,7 +380,7 @@ public class DatabaseTableEntityCRUDTest extends AbstractUnifyComponentTest {
 			Aggregation aggregation = aggregationList.get(0);
 			assertEquals(AggregateType.SUM, aggregation.getType());
 			assertEquals("quantity", aggregation.getFieldName());
-			assertEquals(new Integer(25), aggregation.getValue(Integer.class));
+			assertEquals(Integer.valueOf(25), aggregation.getValue(Integer.class));
 
 			// 1
 			groupingAggregation = quantityAggregate.get(1);
@@ -398,7 +398,7 @@ public class DatabaseTableEntityCRUDTest extends AbstractUnifyComponentTest {
 			aggregation = aggregationList.get(0);
 			assertEquals(AggregateType.SUM, aggregation.getType());
 			assertEquals("quantity", aggregation.getFieldName());
-			assertEquals(new Integer(45), aggregation.getValue(Integer.class));
+			assertEquals(Integer.valueOf(45), aggregation.getValue(Integer.class));
 
 			// 2
 			groupingAggregation = quantityAggregate.get(2);
@@ -416,7 +416,7 @@ public class DatabaseTableEntityCRUDTest extends AbstractUnifyComponentTest {
 			aggregation = aggregationList.get(0);
 			assertEquals(AggregateType.SUM, aggregation.getType());
 			assertEquals("quantity", aggregation.getFieldName());
-			assertEquals(new Integer(11), aggregation.getValue(Integer.class));
+			assertEquals(Integer.valueOf(11), aggregation.getValue(Integer.class));
 
 			// 3
 			groupingAggregation = quantityAggregate.get(3);
@@ -434,7 +434,7 @@ public class DatabaseTableEntityCRUDTest extends AbstractUnifyComponentTest {
 			aggregation = aggregationList.get(0);
 			assertEquals(AggregateType.SUM, aggregation.getType());
 			assertEquals("quantity", aggregation.getFieldName());
-			assertEquals(new Integer(11), aggregation.getValue(Integer.class));
+			assertEquals(Integer.valueOf(11), aggregation.getValue(Integer.class));
 
 			// 4
 			groupingAggregation = quantityAggregate.get(4);
@@ -452,7 +452,7 @@ public class DatabaseTableEntityCRUDTest extends AbstractUnifyComponentTest {
 			aggregation = aggregationList.get(0);
 			assertEquals(AggregateType.SUM, aggregation.getType());
 			assertEquals("quantity", aggregation.getFieldName());
-			assertEquals(new Integer(3), aggregation.getValue(Integer.class));
+			assertEquals(Integer.valueOf(3), aggregation.getValue(Integer.class));
 		} catch (Exception e) {
 			tm.setRollback();
 			throw e;
@@ -494,17 +494,17 @@ public class DatabaseTableEntityCRUDTest extends AbstractUnifyComponentTest {
 			Aggregation aggregation = aggregationList.get(0);
 			assertEquals(AggregateType.SUM, aggregation.getType());
 			assertEquals("quantity", aggregation.getFieldName());
-			assertEquals(new Integer(3), aggregation.getValue(Integer.class));
+			assertEquals(Integer.valueOf(3), aggregation.getValue(Integer.class));
 
 			aggregation = aggregationList.get(1);
 			assertEquals(AggregateType.SUM, aggregation.getType());
 			assertEquals("price", aggregation.getFieldName());
-			assertEquals(new Double(60.00), aggregation.getValue(Double.class));
+			assertEquals(Double.valueOf(60.00), aggregation.getValue(Double.class));
 
 			aggregation = aggregationList.get(2);
 			assertEquals(AggregateType.AVERAGE, aggregation.getType());
 			assertEquals("price", aggregation.getFieldName());
-			assertEquals(new Double(60.00), aggregation.getValue(Double.class));
+			assertEquals(Double.valueOf(60.00), aggregation.getValue(Double.class));
 
 			// 1
 			groupingAggregation = quantityAggregate.get(1);
@@ -520,17 +520,17 @@ public class DatabaseTableEntityCRUDTest extends AbstractUnifyComponentTest {
 			aggregation = aggregationList.get(0);
 			assertEquals(AggregateType.SUM, aggregation.getType());
 			assertEquals("quantity", aggregation.getFieldName());
-			assertEquals(new Integer(11), aggregation.getValue(Integer.class));
+			assertEquals(Integer.valueOf(11), aggregation.getValue(Integer.class));
 
 			aggregation = aggregationList.get(1);
 			assertEquals(AggregateType.SUM, aggregation.getType());
 			assertEquals("price", aggregation.getFieldName());
-			assertEquals(new Double(15.00), aggregation.getValue(Double.class));
+			assertEquals(Double.valueOf(15.00), aggregation.getValue(Double.class));
 
 			aggregation = aggregationList.get(2);
 			assertEquals(AggregateType.AVERAGE, aggregation.getType());
 			assertEquals("price", aggregation.getFieldName());
-			assertEquals(new Double(15.00), aggregation.getValue(Double.class));
+			assertEquals(Double.valueOf(15.00), aggregation.getValue(Double.class));
 
 			// 2
 			groupingAggregation = quantityAggregate.get(2);
@@ -546,17 +546,17 @@ public class DatabaseTableEntityCRUDTest extends AbstractUnifyComponentTest {
 			aggregation = aggregationList.get(0);
 			assertEquals(AggregateType.SUM, aggregation.getType());
 			assertEquals("quantity", aggregation.getFieldName());
-			assertEquals(new Integer(25 + 11), aggregation.getValue(Integer.class));
+			assertEquals(Integer.valueOf(25 + 11), aggregation.getValue(Integer.class));
 
 			aggregation = aggregationList.get(1);
 			assertEquals(AggregateType.SUM, aggregation.getType());
 			assertEquals("price", aggregation.getFieldName());
-			assertEquals(new Double(45.00), aggregation.getValue(Double.class));
+			assertEquals(Double.valueOf(45.00), aggregation.getValue(Double.class));
 
 			aggregation = aggregationList.get(2);
 			assertEquals(AggregateType.AVERAGE, aggregation.getType());
 			assertEquals("price", aggregation.getFieldName());
-			assertEquals(new Double(22.50), aggregation.getValue(Double.class));
+			assertEquals(Double.valueOf(22.50), aggregation.getValue(Double.class));
 
 			// 3
 			groupingAggregation = quantityAggregate.get(3);
@@ -572,17 +572,17 @@ public class DatabaseTableEntityCRUDTest extends AbstractUnifyComponentTest {
 			aggregation = aggregationList.get(0);
 			assertEquals(AggregateType.SUM, aggregation.getType());
 			assertEquals("quantity", aggregation.getFieldName());
-			assertEquals(new Integer(45), aggregation.getValue(Integer.class));
+			assertEquals(Integer.valueOf(45), aggregation.getValue(Integer.class));
 
 			aggregation = aggregationList.get(1);
 			assertEquals(AggregateType.SUM, aggregation.getType());
 			assertEquals("price", aggregation.getFieldName());
-			assertEquals(new Double(45.00), aggregation.getValue(Double.class));
+			assertEquals(Double.valueOf(45.00), aggregation.getValue(Double.class));
 
 			aggregation = aggregationList.get(2);
 			assertEquals(AggregateType.AVERAGE, aggregation.getType());
 			assertEquals("price", aggregation.getFieldName());
-			assertEquals(new Double(45.00), aggregation.getValue(Double.class));
+			assertEquals(Double.valueOf(45.00), aggregation.getValue(Double.class));
 		} catch (Exception e) {
 			tm.setRollback();
 			throw e;

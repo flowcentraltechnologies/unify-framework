@@ -107,6 +107,19 @@ public abstract class AbstractValueStore implements ValueStore {
 		return false;
 	}
 
+    @Override
+	public Map<String, Object> getValues() throws UnifyException {
+		Map<String, Object> values = new HashMap<String, Object>();
+		for (GetterSetterInfo getterSetterInfo : ReflectUtils.getGetterSetterList(getDataClass())) {
+			if (getterSetterInfo.isGetter()) {
+				String fieldName = getterSetterInfo.getName();
+				values.put(fieldName, retrieve(fieldName));
+			}
+		}
+
+		return values;
+	}
+
 	@Override
 	public int compare(ValueStore valSource) throws UnifyException {
 		for (GetterSetterInfo getterSetterInfo : ReflectUtils.getGetterSetterList(getDataClass())) {
