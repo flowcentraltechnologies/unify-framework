@@ -41,6 +41,15 @@ public class FontAwesomeSymbolManager extends AbstractFontSymbolManager {
 				"webfonts/fa-brands-400.woff2");
 	}
 
+	@Override
+	public List<String> getRegularFontResources() throws UnifyException {
+		// Currently uses font awesome 7.0.0
+		return Arrays.asList(
+				"webfonts/fa-regular-400.woff2",
+				"webfonts/fa-solid-900.woff2",
+				"webfonts/fa-brands-400.woff2");
+	}
+
     @Override
     protected void onInitialize() throws UnifyException {
         super.onInitialize();
