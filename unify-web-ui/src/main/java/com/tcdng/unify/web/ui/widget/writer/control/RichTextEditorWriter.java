@@ -47,15 +47,17 @@ public class RichTextEditorWriter extends AbstractControlWriter {
 		writeTagStyle(writer, editor);
 		writer.write(">");
 
-		writer.write("<div class=\"toolbar\" style=\"display:table;\">");
-		writer.write("<div style=\"display:table-row;\">");
-		for (Control ctrl : editor.getRowAControls()) {
-			writer.write("<div class=\"ctrl\" style=\"display:table-cell;\">");
-			writer.writeStructureAndContent(ctrl);
+		if (!DataUtils.isBlank(editor.getRowAControls())) {
+			writer.write("<div class=\"toolbar\" style=\"display:table;\">");
+			writer.write("<div style=\"display:table-row;\">");
+			for (Control ctrl : editor.getRowAControls()) {
+				writer.write("<div class=\"ctrl\" style=\"display:table-cell;\">");
+				writer.writeStructureAndContent(ctrl);
+				writer.write("</div>");
+			}
+			writer.write("</div>");
 			writer.write("</div>");
 		}
-		writer.write("</div>");
-		writer.write("</div>");
 
 		if (!DataUtils.isBlank(editor.getRowBControls())) {
 			writer.write("<div class=\"toolbar\" style=\"display:table;\">");
@@ -68,7 +70,7 @@ public class RichTextEditorWriter extends AbstractControlWriter {
 			writer.write("</div>");
 			writer.write("</div>");
 		}
-		
+
 		writer.write("<div ");
 		writeTagId(writer, editor.getEditorId());
 		writeTagStyleClass(writer, "editor");
@@ -106,9 +108,13 @@ public class RichTextEditorWriter extends AbstractControlWriter {
 		writer.writeParam("pId", editor.getId());
 		writer.writeCommandURLParam("pCmdURL");
 		writer.writeParam("pContId", editor.getContainerId());
-		writer.writeParam("pBldId", editor.getBoldCtrl().getId());
-		writer.writeParam("pItlId", editor.getItalicCtrl().getId());
-		writer.writeParam("pUndId", editor.getUnderlineCtrl().getId());
+
+		if (editor.isFormat()) {
+			writer.writeParam("pBldId", editor.getBoldCtrl().getId());
+			writer.writeParam("pItlId", editor.getItalicCtrl().getId());
+			writer.writeParam("pUndId", editor.getUnderlineCtrl().getId());
+		}
+
 		if (editor.isSize()) {
 			writer.writeParam("pFnsId", editor.getFontSizeCtrl().getId());
 			writer.writeParam("pSFnsId", editor.getSetFontSizeCtrl().getId());
@@ -134,7 +140,7 @@ public class RichTextEditorWriter extends AbstractControlWriter {
 			writer.writeParam("pLnkId", editor.getLinkCtrl().getId());
 			writer.writeParam("pUrlId", editor.getUrlCtrl().getId());
 		}
-		
+
 		writer.writeParam("pEdtId", editor.getEditorId());
 		writer.writeParam("pValId", editor.getValueCtrl().getId());
 		writer.writeParam("pEditable", editor.isContainerEditable());

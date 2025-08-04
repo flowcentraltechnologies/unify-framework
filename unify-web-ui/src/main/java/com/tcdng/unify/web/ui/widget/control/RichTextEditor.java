@@ -35,6 +35,7 @@ import com.tcdng.unify.web.ui.widget.Control;
 @Component("ui-richtexteditor")
 @UplAttributes({
 		@UplAttribute(name = "rows", type = int.class),
+		@UplAttribute(name = "format", type = boolean.class, defaultVal = "true"),
 		@UplAttribute(name = "link", type = boolean.class, defaultVal = "true"),
 		@UplAttribute(name = "list", type = boolean.class, defaultVal = "true"),
 		@UplAttribute(name = "color", type = boolean.class, defaultVal = "true"),
@@ -108,6 +109,10 @@ public class RichTextEditor extends AbstractMultiControl {
 	public int getRows() throws UnifyException {
 		int rows = getUplAttribute(int.class, "rows");
 		return rows < MIN_ROWS ? MIN_ROWS : rows;
+	}
+
+	public boolean isFormat() throws UnifyException {
+		return getUplAttribute(boolean.class, "format");
 	}
 
 	public boolean isColor() throws UnifyException {
@@ -235,15 +240,17 @@ public class RichTextEditor extends AbstractMultiControl {
 		acontrols = new ArrayList<Control>();
 		bcontrols = new ArrayList<Control>();
 		
-		boldCtrl = (Control) addInternalChildWidget("!ui-button symbol:$s{bold} styleClass:$e{btn}");
-		italicCtrl = (Control) addInternalChildWidget("!ui-button symbol:$s{italic} styleClass:$e{btn}");
-		underlineCtrl = (Control) addInternalChildWidget("!ui-button symbol:$s{underline} styleClass:$e{btn}");
+		if (isFormat()) {
+			boldCtrl = (Control) addInternalChildWidget("!ui-button symbol:$s{bold} styleClass:$e{btn}");
+			italicCtrl = (Control) addInternalChildWidget("!ui-button symbol:$s{italic} styleClass:$e{btn}");
+			underlineCtrl = (Control) addInternalChildWidget("!ui-button symbol:$s{underline} styleClass:$e{btn}");
+			acontrols.add(boldCtrl);
+			acontrols.add(italicCtrl);
+			acontrols.add(underlineCtrl);
+		}
 		
 		valueCtrl = (Control) addInternalChildWidget("!ui-hidden binding:content");
 
-		acontrols.add(boldCtrl);
-		acontrols.add(italicCtrl);
-		acontrols.add(underlineCtrl);
 		if (isSize()) {
 			fontSizeCtrl = (Control) addInternalChildWidget(
 					"!ui-select list:$s{richtextfontsizelist} blankOption:$s{} styleClass:$e{sel} binding:fontSize");
