@@ -15,6 +15,7 @@
  */
 package com.tcdng.unify.core.util;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 /**
@@ -24,9 +25,13 @@ import java.util.Base64;
  * @since 4.1
  */
 public final class EncodingUtils {
-	
+
 	public static String getBase64String(String str) {
-		return str != null ? Base64.getEncoder().encodeToString(str.getBytes()) : null;
+		return str != null ? Base64.getEncoder().encodeToString(str.getBytes(StandardCharsets.UTF_8)) : null;
+	}
+
+	public static String decodeBase64String(String str) {
+		return str != null ? new String(Base64.getDecoder().decode(str), StandardCharsets.UTF_8) : null;
 	}
 
 }
