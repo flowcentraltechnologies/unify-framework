@@ -41,6 +41,7 @@ import com.tcdng.unify.core.data.FactoryMap;
 import com.tcdng.unify.core.data.UploadedFile;
 import com.tcdng.unify.core.util.CalendarUtils;
 import com.tcdng.unify.core.util.DataUtils;
+import com.tcdng.unify.core.util.EncodingUtils;
 import com.tcdng.unify.core.util.IOUtils;
 import com.tcdng.unify.core.util.StringUtils;
 import com.tcdng.unify.web.ClientCookie;
@@ -56,6 +57,7 @@ import com.tcdng.unify.web.UnifyWebErrorConstants;
 import com.tcdng.unify.web.UnifyWebPropertyConstants;
 import com.tcdng.unify.web.UnifyWebSessionAttributeConstants;
 import com.tcdng.unify.web.WebApplicationComponents;
+import com.tcdng.unify.web.constant.PortalCategoryConstants;
 import com.tcdng.unify.web.constant.RequestParameterConstants;
 import com.tcdng.unify.web.constant.ReservedPageControllerConstants;
 import com.tcdng.unify.web.constant.UnifyWebRequestAttributeConstants;
@@ -97,6 +99,8 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 	private FactoryMap<String, RequestPathParts> requestPathParts;
 
 	private boolean isTenantPathEnabled;
+
+	private boolean isPortalModeEnabled;
 
 	public HttpRequestHandlerImpl() {
 		this.requestPathParts = new FactoryMap<String, RequestPathParts>() {
@@ -208,6 +212,23 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 					throwOperationErrorException(
 							new IllegalArgumentException("Referer required for controller type [" + controller.getName()
 									+ "]. " + clientRequest.getRequestPathParts().getControllerPathParts()));
+				}
+
+				if (isPortalModeEnabled) {
+					Optional<ClientCookie> optional = httpRequest
+							.getCookie(HttpRequestCookieConstants.UNIFY_PORTAL_CATEGORY);
+					final String sessionPortalCategory = EncodingUtils
+							.decodeBase64String(optional.isPresent() ? optional.get().getVal() : null);
+					getSessionContext().setPortalCategory(sessionPortalCategory);
+					if (controller.isPageController()) {
+						final String controllerPortalCategory = controller.getPortalCategory();
+						if (!controllerPortalCategory.equals(PortalCategoryConstants.GLOBAL_CATEGORY)
+								&& !controllerPortalCategory.equals(sessionPortalCategory)) {
+							throwOperationErrorException(new IllegalArgumentException(
+									"Attempt to access restricted portal [" + controller.getName() + "]. "
+											+ clientRequest.getRequestPathParts().getControllerPathParts()));
+						}
+					}
 				}
 			} catch (Exception e) {
 				logError(e);
@@ -334,6 +355,8 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 	protected void onInitialize() throws UnifyException {
 		isTenantPathEnabled = getContainerSetting(boolean.class,
 				UnifyWebPropertyConstants.APPLICATION_TENANT_PATH_ENABLED, false);
+		isPortalModeEnabled = getContainerSetting(boolean.class,
+				UnifyWebPropertyConstants.APPLICATION_PORTAL_MODE_ENABLED, false);
 	}
 
 	@Override

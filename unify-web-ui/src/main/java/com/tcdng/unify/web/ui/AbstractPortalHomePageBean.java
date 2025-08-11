@@ -13,18 +13,23 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.tcdng.unify.web.http;
+package com.tcdng.unify.web.ui;
 
 /**
- * HTTP request cookie constants.
+ * Convenient base for portal home page beans.
  * 
  * @author The Code Department
  * @since 4.1
  */
-public interface HttpRequestCookieConstants {
-	
-	String UNIFY_PID_PREFIX = "unify-pid";
-	
-	String UNIFY_PORTAL_CATEGORY = "unify-portal-cat";
+public abstract class AbstractPortalHomePageBean extends AbstractPageBean {
 
+	private String targetPath;
+
+	public String getTargetPath() {
+		return targetPath;
+	}
+
+	public void setTargetPath(String targetPath) {
+		this.targetPath = targetPath;
+	}
 }

@@ -56,4 +56,10 @@ public interface UnifyWebPropertyConstants {
     String APPLICATION_WEB_BROWSER_LOCALE = "application.web.browser.locale";
 
     String APPLICATION_LOADING_PATH_ENABLED = "application.web.loadingpath.enabled";
+
+    String APPLICATION_PORTAL_MODE_ENABLED = "application.web.portalmode.enabled";
+
+    String APPLICATION_PORTAL_MODE_PORTAL = "application.web.portalmode.portal";
+
+    String APPLICATION_PORTAL_MODE_DEFAULT = "application.web.portalmode.default";
 }
