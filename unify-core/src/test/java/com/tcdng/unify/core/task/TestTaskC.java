@@ -34,6 +34,6 @@ public class TestTaskC extends AbstractTask {
 
     @Override
     public void execute(TaskMonitor taskMonitor, TaskInput input) throws UnifyException {
-        throw new UnifyOperationException();
+        throw new UnifyOperationException("Execute task C error.");
     }
 }

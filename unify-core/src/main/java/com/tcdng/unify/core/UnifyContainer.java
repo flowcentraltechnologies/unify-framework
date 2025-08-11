@@ -698,7 +698,7 @@ public class UnifyContainer {
 		try {
 			containerCommandQueue.offer(new ContainerCommand(command, params));
 		} catch (ClassCastException e) {
-			throw new UnifyOperationException(e, "Unify Container");
+			throw new UnifyOperationException(e);
 		}
 	}
 

@@ -1270,7 +1270,7 @@ public final class ReflectUtils {
 
 			return Class.forName(className);
 		} catch (Exception e) {
-			throw new UnifyOperationException(e, ReflectUtils.class);
+			throw new UnifyOperationException(e);
 		}
 	}
 
@@ -1399,7 +1399,7 @@ public final class ReflectUtils {
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new UnifyOperationException(e, ReflectUtils.class);
+			throw new UnifyOperationException(e);
 		}
 	}
 
@@ -1417,7 +1417,7 @@ public final class ReflectUtils {
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new UnifyOperationException(e, ReflectUtils.class);
+			throw new UnifyOperationException(e);
 		}
 	}
 
