@@ -67,7 +67,7 @@ public abstract class AbstractController extends AbstractUnifyComponent implemen
 
 	@Override
 	public String getPortalCategory() throws UnifyException {
-		return PortalCategoryConstants.DEFAULT_CATEGORY;
+		return PortalCategoryConstants.BACKOFFICE_CATEGORY;
 	}
 
 	@Override

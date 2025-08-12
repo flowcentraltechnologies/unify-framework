@@ -18,6 +18,7 @@ package com.tcdng.unify.web.ui;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.util.EncodingUtils;
 import com.tcdng.unify.web.UnifyWebPropertyConstants;
+import com.tcdng.unify.web.annotation.Action;
 import com.tcdng.unify.web.annotation.ResultMapping;
 import com.tcdng.unify.web.annotation.ResultMappings;
 import com.tcdng.unify.web.constant.PortalCategoryConstants;
@@ -47,20 +48,22 @@ public abstract class AbstractPortalHomePageController<T extends AbstractPortalH
 		return PortalCategoryConstants.GLOBAL_CATEGORY;
 	}
 
-	protected final String forwardToPortal() throws UnifyException {
-		return forwardToCategoryPath(PortalCategoryConstants.PORTAL_CATEGORY);
+	@Action
+	public final String forwardToFrontOffice() throws UnifyException {
+		return forwardToCategoryPath(PortalCategoryConstants.FRONTOFFICE_CATEGORY);
 	}
 
-	protected final String forwardToDefault() throws UnifyException {
-		return forwardToCategoryPath(PortalCategoryConstants.DEFAULT_CATEGORY);
+	@Action
+	public final String forwardToBackOffice() throws UnifyException {
+		return forwardToCategoryPath(PortalCategoryConstants.BACKOFFICE_CATEGORY);
 	}
 	
 	private String forwardToCategoryPath(String category) throws UnifyException {
 		AbstractPortalHomePageBean pageBean = getPageBean();
 		pageBean.setTargetPath(getContainerSetting(String.class,
-				PortalCategoryConstants.PORTAL_CATEGORY.equals(category)
-						? UnifyWebPropertyConstants.APPLICATION_PORTAL_MODE_PORTAL
-						: UnifyWebPropertyConstants.APPLICATION_PORTAL_MODE_DEFAULT));
+				PortalCategoryConstants.FRONTOFFICE_CATEGORY.equals(category)
+						? UnifyWebPropertyConstants.APPLICATION_PORTAL_MODE_FRONTOFFICE
+						: UnifyWebPropertyConstants.APPLICATION_PORTAL_MODE_BACKOFFICE));
 		getPageRequestContextUtil().getClientResponse().setCookie(HttpRequestCookieConstants.UNIFY_PORTAL_CATEGORY,
 				EncodingUtils.getBase64String(category));
 		return "forwardtopath";

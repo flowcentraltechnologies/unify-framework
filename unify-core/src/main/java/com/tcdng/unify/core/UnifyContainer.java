@@ -42,6 +42,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.tcdng.unify.common.annotation.AnnotationConstants;
 import com.tcdng.unify.common.constants.UnifyStaticSettings;
+import com.tcdng.unify.common.data.UnifyContainerProperty;
 import com.tcdng.unify.core.annotation.Broadcast;
 import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.annotation.Configurable;
@@ -270,11 +271,11 @@ public class UnifyContainer {
 			restrictedJARMode = Boolean.valueOf(
 					String.valueOf(unifySettings.get(UnifyCorePropertyConstants.APPLICATION_RETRICTED_JAR_MODE)));
 		}
-		
+
 		if (restrictedJARMode) {
 			IOUtils.enterRestrictedJARMode();
 		}
-		
+
 		// Banner
 		List<String> banner = getApplicationBanner();
 		if (!banner.isEmpty()) {
@@ -1367,14 +1368,25 @@ public class UnifyContainer {
 
 	@SuppressWarnings("unchecked")
 	private void initializeContainerMessages() throws UnifyException {
+		final Map<String, Object> _unifySettings = new HashMap<String, Object>(unifySettings);
 		List<String> messageBaseList = new ArrayList<String>();
 		for (UnifyStaticSettings unifyStaticSettings : staticSettings) {
 			String messageBase = unifyStaticSettings.getMessageBase();
 			if (StringUtils.isNotBlank(messageBase) && !messageBaseList.contains(messageBase)) {
 				messageBaseList.add(messageBase);
 			}
+
+			for (UnifyContainerProperty property : unifyStaticSettings.getContainerProperties()) {
+				if (_unifySettings.containsKey(property.getProperty()) && !property.isImportant()) {
+					continue;
+				}
+
+				_unifySettings.put(property.getProperty(),
+						property.getValueList().size() == 1 ? property.getValueList().get(0) : property.getValueList());
+			}
 		}
 
+		unifySettings = Collections.unmodifiableMap(_unifySettings);
 		List<String> cfgMessageBaseList = DataUtils.convert(ArrayList.class, String.class,
 				unifySettings.get(UnifyCorePropertyConstants.APPLICATION_MESSAGES_BASE));
 		if (cfgMessageBaseList != null) {

@@ -59,7 +59,7 @@ public interface UnifyWebPropertyConstants {
 
     String APPLICATION_PORTAL_MODE_ENABLED = "application.web.portalmode.enabled";
 
-    String APPLICATION_PORTAL_MODE_PORTAL = "application.web.portalmode.portal";
+    String APPLICATION_PORTAL_MODE_FRONTOFFICE = "application.web.portalmode.frontoffice";
 
-    String APPLICATION_PORTAL_MODE_DEFAULT = "application.web.portalmode.default";
+    String APPLICATION_PORTAL_MODE_BACKOFFICE = "application.web.portalmode.backoffice";
 }

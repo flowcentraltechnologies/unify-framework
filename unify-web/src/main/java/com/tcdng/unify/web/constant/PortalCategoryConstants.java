@@ -23,10 +23,10 @@ package com.tcdng.unify.web.constant;
  */
 public interface PortalCategoryConstants {
 
-    String DEFAULT_CATEGORY = "default-category";
+    String BACKOFFICE_CATEGORY = "backoffice-category";
+
+    String FRONTOFFICE_CATEGORY = "frontoffice-category";
 
     String GLOBAL_CATEGORY = "global-category";
-
-    String PORTAL_CATEGORY = "portal-category";
 
 }
