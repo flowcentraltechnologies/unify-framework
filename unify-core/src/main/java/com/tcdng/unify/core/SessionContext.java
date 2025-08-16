@@ -41,7 +41,7 @@ public class SessionContext extends Context {
 
 	private TimeZone timeZone;
 
-	private String portalCategory;
+	private String bundledCategory;
 	
 	private String externalForward;
 
@@ -131,12 +131,12 @@ public class SessionContext extends Context {
 		this.locale = locale;
 	}
 
-	public String getPortalCategory() {
-		return portalCategory;
+	public String getBundledCategory() {
+		return bundledCategory;
 	}
 
-	public void setPortalCategory(String portalCategory) {
-		this.portalCategory = portalCategory;
+	public void setBundledCategory(String bundledCategory) {
+		this.bundledCategory = bundledCategory;
 	}
 
 	public String getId() {

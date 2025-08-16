@@ -68,10 +68,10 @@ public interface Controller extends UnifyComponent {
     boolean isPageController();
     
 	/**
-	 * Gets this controller's portal category.
+	 * Gets this controller's bundled category.
 	 * 
-	 * @return the portal category
+	 * @return the bundled category
 	 * @throws UnifyException if an error occurs
 	 */
-	String getPortalCategory() throws UnifyException;
+	String getBundledCategory() throws UnifyException;
 }

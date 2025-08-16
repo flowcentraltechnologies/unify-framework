@@ -25,6 +25,6 @@ public interface HttpRequestCookieConstants {
 	
 	String UNIFY_PID_PREFIX = "unify-pid";
 	
-	String UNIFY_PORTAL_CATEGORY = "JS_PORTAL_CAT";
+	String UNIFY_BUNDLED_CATEGORY = "JS_BUNDLED_CAT";
 
 }

@@ -57,7 +57,7 @@ import com.tcdng.unify.web.UnifyWebErrorConstants;
 import com.tcdng.unify.web.UnifyWebPropertyConstants;
 import com.tcdng.unify.web.UnifyWebSessionAttributeConstants;
 import com.tcdng.unify.web.WebApplicationComponents;
-import com.tcdng.unify.web.constant.PortalCategoryConstants;
+import com.tcdng.unify.web.constant.BundledCategoryConstants;
 import com.tcdng.unify.web.constant.RequestParameterConstants;
 import com.tcdng.unify.web.constant.ReservedPageControllerConstants;
 import com.tcdng.unify.web.constant.UnifyWebRequestAttributeConstants;
@@ -100,7 +100,7 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 
 	private boolean isTenantPathEnabled;
 
-	private boolean isPortalModeEnabled;
+	private boolean isBundledModeEnabled;
 
 	public HttpRequestHandlerImpl() {
 		this.requestPathParts = new FactoryMap<String, RequestPathParts>() {
@@ -214,18 +214,18 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 									+ "]. " + clientRequest.getRequestPathParts().getControllerPathParts()));
 				}
 
-				if (isPortalModeEnabled) {
+				if (isBundledModeEnabled) {
 					Optional<ClientCookie> optional = httpRequest
-							.getCookie(HttpRequestCookieConstants.UNIFY_PORTAL_CATEGORY);
-					final String sessionPortalCategory = EncodingUtils
+							.getCookie(HttpRequestCookieConstants.UNIFY_BUNDLED_CATEGORY);
+					final String sessionBundledCategory = EncodingUtils
 							.decodeBase64String(optional.isPresent() ? optional.get().getVal() : null);
-					getSessionContext().setPortalCategory(sessionPortalCategory);
+					getSessionContext().setBundledCategory(sessionBundledCategory);
 					if (controller.isPageController()) {
-						final String controllerPortalCategory = controller.getPortalCategory();
-						if (!controllerPortalCategory.equals(PortalCategoryConstants.GLOBAL_CATEGORY)
-								&& !controllerPortalCategory.equals(sessionPortalCategory)) {
+						final String controllerBundledCategory = controller.getBundledCategory();
+						if (!controllerBundledCategory.equals(BundledCategoryConstants.GLOBAL_CATEGORY)
+								&& !controllerBundledCategory.equals(sessionBundledCategory)) {
 							throwOperationErrorException(new IllegalArgumentException(
-									"Attempt to access restricted portal [" + controller.getName() + "]. "
+									"Attempt to access restricted bundle [" + controller.getName() + "]. "
 											+ clientRequest.getRequestPathParts().getControllerPathParts()));
 						}
 					}
@@ -355,8 +355,8 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 	protected void onInitialize() throws UnifyException {
 		isTenantPathEnabled = getContainerSetting(boolean.class,
 				UnifyWebPropertyConstants.APPLICATION_TENANT_PATH_ENABLED, false);
-		isPortalModeEnabled = getContainerSetting(boolean.class,
-				UnifyWebPropertyConstants.APPLICATION_PORTAL_MODE_ENABLED, false);
+		isBundledModeEnabled = getContainerSetting(boolean.class,
+				UnifyWebPropertyConstants.APPLICATION_BUNDLED_MODE_ENABLED, false);
 	}
 
 	@Override

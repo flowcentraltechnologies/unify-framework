@@ -57,9 +57,9 @@ public interface UnifyWebPropertyConstants {
 
     String APPLICATION_LOADING_PATH_ENABLED = "application.web.loadingpath.enabled";
 
-    String APPLICATION_PORTAL_MODE_ENABLED = "application.web.portalmode.enabled";
+    String APPLICATION_BUNDLED_MODE_ENABLED = "application.web.bundledmode.enabled";
 
-    String APPLICATION_PORTAL_MODE_FRONTOFFICE = "application.web.portalmode.frontoffice";
+    String APPLICATION_BUNDLED_MODE_FRONTOFFICE = "application.web.bundledmode.frontoffice";
 
-    String APPLICATION_PORTAL_MODE_BACKOFFICE = "application.web.portalmode.backoffice";
+    String APPLICATION_BUNDLED_MODE_BACKOFFICE = "application.web.bundledmode.backoffice";
 }

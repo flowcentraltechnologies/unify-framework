@@ -13,23 +13,20 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.tcdng.unify.web.ui;
+package com.tcdng.unify.web.constant;
 
 /**
- * Convenient base for portal home page beans.
+ * Bundled category constants.
  * 
  * @author The Code Department
  * @since 4.1
  */
-public abstract class AbstractPortalHomePageBean extends AbstractPageBean {
+public interface BundledCategoryConstants {
 
-	private String targetPath;
+    String BACKOFFICE_CATEGORY = "backoffice-category";
 
-	public String getTargetPath() {
-		return targetPath;
-	}
+    String FRONTOFFICE_CATEGORY = "frontoffice-category";
 
-	public void setTargetPath(String targetPath) {
-		this.targetPath = targetPath;
-	}
+    String GLOBAL_CATEGORY = "global-category";
+
 }
