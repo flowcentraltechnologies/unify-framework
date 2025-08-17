@@ -430,7 +430,7 @@ public class HSqlDbDialect extends AbstractSqlDataSourceDialect {
 				st = connection.createStatement();
 				st.execute("SHUTDOWN");
 			} catch (SQLException e) {
-				throw new UnifyOperationException(e, getName());
+				throw new UnifyOperationException(e);
 			} finally {
 				SqlUtils.close(st);
 			}

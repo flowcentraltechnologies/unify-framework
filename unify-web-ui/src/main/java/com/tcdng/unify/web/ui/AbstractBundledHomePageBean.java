@@ -13,25 +13,23 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.tcdng.unify.core.util;
-
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
+package com.tcdng.unify.web.ui;
 
 /**
- * Encoding utilities
+ * Convenient base for bundled home page beans.
  * 
  * @author The Code Department
  * @since 4.1
  */
-public final class EncodingUtils {
+public abstract class AbstractBundledHomePageBean extends AbstractPageBean {
 
-	public static String getBase64String(String str) {
-		return str != null ? Base64.getEncoder().encodeToString(str.getBytes(StandardCharsets.UTF_8)) : null;
+	private String targetPath;
+
+	public String getTargetPath() {
+		return targetPath;
 	}
 
-	public static String decodeBase64String(String str) {
-		return str != null ? new String(Base64.getDecoder().decode(str), StandardCharsets.UTF_8) : null;
+	public void setTargetPath(String targetPath) {
+		this.targetPath = targetPath;
 	}
-
 }

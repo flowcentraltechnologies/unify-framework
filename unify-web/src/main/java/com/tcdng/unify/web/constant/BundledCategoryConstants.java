@@ -13,25 +13,20 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.tcdng.unify.core.util;
-
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
+package com.tcdng.unify.web.constant;
 
 /**
- * Encoding utilities
+ * Bundled category constants.
  * 
  * @author The Code Department
  * @since 4.1
  */
-public final class EncodingUtils {
+public interface BundledCategoryConstants {
 
-	public static String getBase64String(String str) {
-		return str != null ? Base64.getEncoder().encodeToString(str.getBytes(StandardCharsets.UTF_8)) : null;
-	}
+    String BACKOFFICE_CATEGORY = "backoffice-category";
 
-	public static String decodeBase64String(String str) {
-		return str != null ? new String(Base64.getDecoder().decode(str), StandardCharsets.UTF_8) : null;
-	}
+    String FRONTOFFICE_CATEGORY = "frontoffice-category";
+
+    String GLOBAL_CATEGORY = "global-category";
 
 }

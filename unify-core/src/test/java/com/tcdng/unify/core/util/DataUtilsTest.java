@@ -619,6 +619,26 @@ public class DataUtilsTest extends AbstractUnifyComponentTest {
 	}
 
 	@Test
+	public void testConstantFieldJsonObject() throws Exception {
+		PingReq req = new PingReq();
+		String json = DataUtils.asJsonString(req, PrintFormat.NONE);
+		PingReq rev = DataUtils.fromJsonString(PingReq.class, json);
+		assertNotNull(json);
+		assertNotNull(rev);
+		assertEquals("ping-processor", rev.getProcessor());
+		assertNull(rev.getType());
+		assertNull(rev.getLog());
+		
+		req.setLog(false);
+		req.setType("monitoring");
+		json = DataUtils.asJsonString(req, PrintFormat.NONE);
+		rev = DataUtils.fromJsonString(PingReq.class, json);
+		assertEquals("ping-processor", rev.getProcessor());
+		assertEquals("monitoring", rev.getType());
+		assertEquals(Boolean.FALSE, rev.getLog());
+	}
+	
+	@Test
 	public void testToJsonObjectString() throws Exception {
 		Book book = new Book("Saladin", BigDecimal.valueOf(10.0), 20, false);
 		book.setOrder(OrderType.ASCENDING);
@@ -961,6 +981,48 @@ public class DataUtilsTest extends AbstractUnifyComponentTest {
 	@Override
 	protected void onTearDown() throws Exception {
 
+	}
+
+	public static abstract class BaseReq {
+		
+		private String processor;
+
+		public BaseReq(String processor) {
+			this.processor = processor;
+		}
+
+		public String getProcessor() {
+			return processor;
+		}
+		
+	}
+
+	public static class PingReq extends BaseReq {
+		
+		private String type;
+		
+		private Boolean log;
+
+		public PingReq() {
+			super("ping-processor");
+		}
+
+		public String getType() {
+			return type;
+		}
+
+		public void setType(String type) {
+			this.type = type;
+		}
+
+		public Boolean getLog() {
+			return log;
+		}
+
+		public void setLog(Boolean log) {
+			this.log = log;
+		}
+		
 	}
 
 	public static abstract class Asset {

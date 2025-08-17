@@ -13,25 +13,26 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.tcdng.unify.core.util;
+package com.tcdng.unify.core.application;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
+import com.tcdng.unify.core.UnifyComponent;
+import com.tcdng.unify.core.UnifyException;
 
 /**
- * Encoding utilities
+ * Feature installer component.
  * 
  * @author The Code Department
  * @since 4.1
  */
-public final class EncodingUtils {
+public interface PostBootSetup extends UnifyComponent {
 
-	public static String getBase64String(String str) {
-		return str != null ? Base64.getEncoder().encodeToString(str.getBytes(StandardCharsets.UTF_8)) : null;
-	}
-
-	public static String decodeBase64String(String str) {
-		return str != null ? new String(Base64.getDecoder().decode(str), StandardCharsets.UTF_8) : null;
-	}
-
+    /**
+     * Performs independent post-boot setup.
+     * 
+     * @param isInstallationPerformed
+     *                                indicates installation was perform during boot
+     * @throws UnifyException
+     *                        if an error occurs
+     */
+    void performPostBootSetup(boolean isInstallationPerformed) throws UnifyException;
 }

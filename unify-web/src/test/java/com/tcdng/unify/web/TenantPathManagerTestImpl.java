@@ -33,7 +33,7 @@ public class TenantPathManagerTestImpl extends AbstractUnifyComponent implements
     @Override
     public void verifyTenantPath(String tenantPath) throws UnifyException {
         if (!"/abcbank".equals(tenantPath)) {
-            throw new UnifyOperationException();
+            throw new UnifyOperationException("Verify path error.");
         }
     }
 

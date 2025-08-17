@@ -74,7 +74,7 @@ public class IOUtils {
 	private static final int READ_TIMEOUT = 30000;
 
 	private static final String DISABLE_HOSTNAME_PREFIX = "-k ";
-	
+
 	private IOUtils() {
 
 	}
@@ -1138,7 +1138,7 @@ public class IOUtils {
 				: DataUtils.asJsonString(requestObject, PrintFormat.NONE);
 		final PostResp<String> resp = IOUtils.postJsonToEndpoint(endpoint, reqJSON, headers);
 		return new PostResp<T>(resp.isSuccess() ? DataUtils.fromJsonString(responseClass, resp.getResult()) : null,
-				resp.isSuccess() ? null : resp.getError(), resp.getStatus());
+				resp);
 	}
 
 	/**
@@ -1157,13 +1157,14 @@ public class IOUtils {
 	 * Posts JSON string to an end point with headers.
 	 * 
 	 * @param endpoint the end point
-	 * @param json     the json to post
+	 * @param reqJson  the json to post
 	 * @param headers  the headers
 	 * @return the response
 	 * @throws UnifyException if an error occurs
 	 */
-	public static PostResp<String> postJsonToEndpoint(String endpoint, String json, Map<String, String> headers)
+	public static PostResp<String> postJsonToEndpoint(String endpoint, String reqJson, Map<String, String> headers)
 			throws UnifyException {
+		final long start = System.currentTimeMillis();
 		PostResp<String> resp = null;
 		try {
 			boolean skipHostName = false;
@@ -1171,19 +1172,19 @@ public class IOUtils {
 				endpoint = endpoint.substring(DISABLE_HOSTNAME_PREFIX.length());
 				skipHostName = true;
 			}
-			
+
 			URL url = new URI(endpoint).toURL();
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			if (skipHostName && conn instanceof HttpsURLConnection) {
-		        HostnameVerifier verifier = new HostnameVerifier() {
-		            public boolean verify(String hostname, SSLSession session) {
-		                return true;
-		            }
-		        };
-		        
-		        HttpsURLConnection.setDefaultHostnameVerifier(verifier);
+				HostnameVerifier verifier = new HostnameVerifier() {
+					public boolean verify(String hostname, SSLSession session) {
+						return true;
+					}
+				};
+
+				HttpsURLConnection.setDefaultHostnameVerifier(verifier);
 			}
-			
+
 			conn.setRequestMethod("POST");
 			if (headers != null && !headers.isEmpty()) {
 				for (Map.Entry<String, String> entry : headers.entrySet()) {
@@ -1198,7 +1199,7 @@ public class IOUtils {
 			conn.setDoOutput(true);
 
 			try (OutputStream out = conn.getOutputStream()) {
-				out.write(json.getBytes("utf-8"));
+				out.write(reqJson.getBytes("utf-8"));
 				out.flush();
 			}
 
@@ -1213,8 +1214,9 @@ public class IOUtils {
 				}
 			}
 
-			resp = new PostResp<String>(success ? response.toString() : null, success ? null : response.toString(),
-					status);
+			final String respJson = response.toString();
+			resp = new PostResp<String>(success ? respJson : null, success ? null : respJson, reqJson, respJson, status,
+					System.currentTimeMillis() - start);
 		} catch (Exception e) {
 			throw new UnifyException(e, UnifyCoreErrorConstants.IOUTIL_STREAM_RW_ERROR);
 		}

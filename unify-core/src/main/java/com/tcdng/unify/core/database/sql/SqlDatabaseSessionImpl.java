@@ -741,7 +741,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new UnifyOperationException(e, getClass().getSimpleName());
+			throw new UnifyOperationException(e);
 		}
 		return 0;
 	}
@@ -947,7 +947,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new UnifyOperationException(e, getClass().getSimpleName());
+			throw new UnifyOperationException(e);
 		}
 
 		return 0;
@@ -1008,7 +1008,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new UnifyOperationException(e, getClass().getSimpleName());
+			throw new UnifyOperationException(e);
 		}
 	}
 
@@ -1028,7 +1028,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new UnifyOperationException(e, getClass().getSimpleName());
+			throw new UnifyOperationException(e);
 		}
 	}
 
@@ -1050,7 +1050,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new UnifyOperationException(e, getClass().getSimpleName());
+			throw new UnifyOperationException(e);
 		}
 	}
 
@@ -1072,7 +1072,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new UnifyOperationException(e, getClass().getSimpleName());
+			throw new UnifyOperationException(e);
 		}
 	}
 
@@ -1093,7 +1093,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new UnifyOperationException(e, getClass().getSimpleName());
+			throw new UnifyOperationException(e);
 		}
 	}
 
@@ -1114,7 +1114,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new UnifyOperationException(e, getClass().getSimpleName());
+			throw new UnifyOperationException(e);
 		}
 	}
 
@@ -1301,7 +1301,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new UnifyOperationException(e, getClass().getSimpleName());
+			throw new UnifyOperationException(e);
 		}
 		return record;
 	}
@@ -1472,7 +1472,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 			} catch (UnifyException e) {
 				throw e;
 			} catch (Exception e) {
-				throw new UnifyOperationException(e, getClass().getSimpleName());
+				throw new UnifyOperationException(e);
 			}
 		}
 	}
@@ -1585,7 +1585,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 			if (e instanceof UnifyException) {
 				throw ((UnifyException) e);
 			}
-			throw new UnifyOperationException(e, getClass().getSimpleName());
+			throw new UnifyOperationException(e);
 		} finally {
 			if (sqlStatement != null) {
 				sqlDataSourceDialect.restoreStatement(sqlStatement);
@@ -1689,7 +1689,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new UnifyOperationException(e, getClass().getSimpleName());
+			throw new UnifyOperationException(e);
 		}
 	}
 
@@ -1796,7 +1796,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new UnifyOperationException(e, getClass().getSimpleName());
+			throw new UnifyOperationException(e);
 		}
 	}
 

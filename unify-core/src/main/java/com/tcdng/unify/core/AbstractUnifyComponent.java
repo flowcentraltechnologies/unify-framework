@@ -1838,7 +1838,7 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 		if (t instanceof UnifyException) {
 			throw ((UnifyException) t);
 		}
-		throw new UnifyOperationException(e, getName(), e.getMessage());
+		throw new UnifyOperationException(e);
 	}
 
 	/**
@@ -1848,7 +1848,7 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	 */
 	protected void throwUnsupportedOperationException() throws UnifyException {
 		Exception e = new UnsupportedOperationException();
-		throw new UnifyOperationException(e, getName(), e.getMessage());
+		throw new UnifyOperationException(e);
 	}
 
 	protected Long getUserTenantId() throws UnifyException {

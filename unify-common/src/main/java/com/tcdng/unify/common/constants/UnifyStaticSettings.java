@@ -16,6 +16,10 @@
 
 package com.tcdng.unify.common.constants;
 
+import java.util.List;
+
+import com.tcdng.unify.common.data.UnifyContainerProperty;
+
 /**
  * Static settings interface.
  * 
@@ -33,4 +37,9 @@ public interface UnifyStaticSettings {
      * Returns the settings priority level.
      */
     int getLevel();
+    
+    /**
+     * Returns container properties.
+     */
+    List<UnifyContainerProperty> getContainerProperties();
 }

@@ -24,6 +24,7 @@ import com.tcdng.unify.core.logging.EventLogger;
 import com.tcdng.unify.core.util.DataUtils;
 import com.tcdng.unify.core.util.SystemUtils;
 import com.tcdng.unify.core.util.ValueStoreUtils;
+import com.tcdng.unify.web.constant.BundledCategoryConstants;
 import com.tcdng.unify.web.constant.Secured;
 import com.tcdng.unify.web.constant.UnifyWebRequestAttributeConstants;
 import com.tcdng.unify.web.http.HttpRequestHeaders;
@@ -62,6 +63,11 @@ public abstract class AbstractController extends AbstractUnifyComponent implemen
 	@Override
 	public boolean isPageController() {
 		return false;
+	}
+
+	@Override
+	public String getBundledCategory() throws UnifyException {
+		return BundledCategoryConstants.BACKOFFICE_CATEGORY;
 	}
 
 	@Override

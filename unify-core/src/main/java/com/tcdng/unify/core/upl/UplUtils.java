@@ -36,7 +36,7 @@ public final class UplUtils {
 
     public static UplGeneratorTarget getUplGeneratorTarget(String name) throws UnifyException {
         if (!UplUtils.isUplGeneratorTargetName(name)) {
-            throw new UnifyOperationException("UplUtils",
+            throw new UnifyOperationException(
                     "Invalid generator target name [" + name + "]");
         }
 
@@ -58,7 +58,7 @@ public final class UplUtils {
 
     public static UplComponentClone getUplComponentClone(String name) throws UnifyException {
         if (!UplUtils.isUplCloneName(name)) {
-            throw new UnifyOperationException("UplUtils",
+            throw new UnifyOperationException(
                     "Invalid UPL component clone name [" + name + "]");
         }
 

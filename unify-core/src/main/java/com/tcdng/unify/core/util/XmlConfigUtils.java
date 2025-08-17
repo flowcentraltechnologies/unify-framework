@@ -57,8 +57,7 @@ public final class XmlConfigUtils {
 
             return unmarshaller.readValue((File) xmlSrcObject, xmlDataClazz);
         } catch (Exception e) {
-            throw new UnifyOperationException(e,
-                    XmlConfigUtils.class.getName());
+            throw new UnifyOperationException(e);
         }
     }
 
@@ -103,7 +102,7 @@ public final class XmlConfigUtils {
 			marshaller.writeValue(outputStream, configObject);
 			outputStream.flush();
 		} catch (Exception e) {
-			throw new UnifyOperationException(e, XmlConfigUtils.class.getName());
+			throw new UnifyOperationException(e);
 		}
 	}
 
@@ -119,7 +118,7 @@ public final class XmlConfigUtils {
 			marshaller.writeValue(writer, configObject);
             writer.flush();
         } catch (Exception e) {
-            throw new UnifyOperationException(e, XmlConfigUtils.class.getName());
+            throw new UnifyOperationException(e);
         }
     }
 

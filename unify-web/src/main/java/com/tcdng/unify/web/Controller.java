@@ -66,4 +66,12 @@ public interface Controller extends UnifyComponent {
      * Returns true if controller is a page controller
      */
     boolean isPageController();
+    
+	/**
+	 * Gets this controller's bundled category.
+	 * 
+	 * @return the bundled category
+	 * @throws UnifyException if an error occurs
+	 */
+	String getBundledCategory() throws UnifyException;
 }

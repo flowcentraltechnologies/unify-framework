@@ -40,6 +40,8 @@ public class SessionContext extends Context {
 	private Locale locale;
 
 	private TimeZone timeZone;
+
+	private String bundledCategory;
 	
 	private String externalForward;
 
@@ -127,6 +129,14 @@ public class SessionContext extends Context {
 
 	public void setLocale(Locale locale) {
 		this.locale = locale;
+	}
+
+	public String getBundledCategory() {
+		return bundledCategory;
+	}
+
+	public void setBundledCategory(String bundledCategory) {
+		this.bundledCategory = bundledCategory;
 	}
 
 	public String getId() {

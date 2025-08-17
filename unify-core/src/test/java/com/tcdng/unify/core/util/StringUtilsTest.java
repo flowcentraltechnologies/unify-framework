@@ -294,7 +294,8 @@ public class StringUtilsTest {
 
         String testValue1 = "";
         result = StringUtils.commaSplit(testValue1);
-        assertEquals(0, result.length);
+        assertEquals(1, result.length);
+        assertEquals("", result[0]);
 
         String testValue2 = "     ";
         result = StringUtils.commaSplit(testValue2);
@@ -316,15 +317,17 @@ public class StringUtilsTest {
 
         String testValue5 = ",I Dig,";
         result = StringUtils.commaSplit(testValue5);
-        assertEquals(2, result.length);
+        assertEquals(3, result.length);
         assertEquals("", result[0]);
         assertEquals("I Dig", result[1]);
+        assertEquals("", result[2]);
 
         String testValue6 = ",,";
         result = StringUtils.commaSplit(testValue6);
-        assertEquals(2, result.length);
+        assertEquals(3, result.length);
         assertEquals("", result[0]);
         assertEquals("", result[1]);
+        assertEquals("", result[2]);
     }
 
     @Test
@@ -334,7 +337,8 @@ public class StringUtilsTest {
 
         String testValue1 = "";
         result = StringUtils.dotSplit(testValue1);
-        assertEquals(0, result.length);
+        assertEquals(1, result.length);
+        assertEquals("", result[0]);
 
         String testValue2 = "     ";
         result = StringUtils.dotSplit(testValue2);
@@ -356,15 +360,17 @@ public class StringUtilsTest {
 
         String testValue5 = ".I Dig.";
         result = StringUtils.dotSplit(testValue5);
-        assertEquals(2, result.length);
+        assertEquals(3, result.length);
         assertEquals("", result[0]);
         assertEquals("I Dig", result[1]);
+        assertEquals("", result[2]);
 
         String testValue6 = "..";
         result = StringUtils.dotSplit(testValue6);
-        assertEquals(2, result.length);
+        assertEquals(3, result.length);
         assertEquals("", result[0]);
         assertEquals("", result[1]);
+        assertEquals("", result[2]);
     }
 
     @Test

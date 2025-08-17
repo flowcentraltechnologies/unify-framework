@@ -16,6 +16,11 @@
 
 package com.tcdng.unify.common.constants;
 
+import java.util.Collections;
+import java.util.List;
+
+import com.tcdng.unify.common.data.UnifyContainerProperty;
+
 /**
  * Base class for abstract static settings.
  * 
@@ -24,27 +29,44 @@ package com.tcdng.unify.common.constants;
  */
 public abstract class AbstractUnifyStaticSettings implements UnifyStaticSettings {
 
-    private String messageBase;
+	private String messageBase;
 
-    private int level;
+	private int level;
 
-    public AbstractUnifyStaticSettings(String messageBase, int level) {
-        this.messageBase = messageBase;
-        this.level = level;
-    }
+	private List<UnifyContainerProperty> containerProperties;
 
-    public AbstractUnifyStaticSettings(String messageBase) {
-        this.messageBase = messageBase;
-    }
+	public AbstractUnifyStaticSettings(String messageBase, int level,
+			List<UnifyContainerProperty> containerProperties) {
+		this.messageBase = messageBase;
+		this.level = level;
+		this.containerProperties = containerProperties;
+	}
 
-    @Override
-    public String getMessageBase() {
-        return messageBase;
-    }
+	public AbstractUnifyStaticSettings(String messageBase, int level) {
+		this.messageBase = messageBase;
+		this.level = level;
+		this.containerProperties = Collections.emptyList();
+	}
 
-    @Override
-    public int getLevel() {
-        return level;
-    }
+	public AbstractUnifyStaticSettings(String messageBase) {
+		this.messageBase = messageBase;
+		this.level = 0;
+		this.containerProperties = Collections.emptyList();
+	}
+
+	@Override
+	public String getMessageBase() {
+		return messageBase;
+	}
+
+	@Override
+	public int getLevel() {
+		return level;
+	}
+
+	@Override
+	public List<UnifyContainerProperty> getContainerProperties() {
+		return containerProperties;
+	}
 
 }
