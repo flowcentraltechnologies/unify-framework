@@ -19,6 +19,7 @@ import java.util.List;
 
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.web.PageParts;
+import com.tcdng.unify.web.constant.BundledCatType;
 import com.tcdng.unify.web.ui.PageBean;
 import com.tcdng.unify.web.ui.widget.panel.StandalonePanel;
 
@@ -30,6 +31,22 @@ import com.tcdng.unify.web.ui.widget.panel.StandalonePanel;
  */
 public interface Page extends StandalonePanel, PageParts {
 
+	/**
+	 * Sets page bundle category.
+	 * 
+	 * @param type type
+	 * @throws UnifyException if an error occurs
+	 */
+	void setBundledCategory(BundledCatType type) throws UnifyException;
+
+	/**
+	 * Gets page bundle category.
+	 * 
+	 * @return the category type
+	 * @throws UnifyException if an error occurs
+	 */
+	BundledCatType getBundledCategory() throws UnifyException;
+	
     /**
      * Sets the page bean for this page.
      * 

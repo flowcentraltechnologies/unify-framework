@@ -57,7 +57,7 @@ import com.tcdng.unify.web.UnifyWebErrorConstants;
 import com.tcdng.unify.web.UnifyWebPropertyConstants;
 import com.tcdng.unify.web.UnifyWebSessionAttributeConstants;
 import com.tcdng.unify.web.WebApplicationComponents;
-import com.tcdng.unify.web.constant.BundledCategoryConstants;
+import com.tcdng.unify.web.constant.BundledCatType;
 import com.tcdng.unify.web.constant.RequestParameterConstants;
 import com.tcdng.unify.web.constant.ReservedPageControllerConstants;
 import com.tcdng.unify.web.constant.UnifyWebRequestAttributeConstants;
@@ -221,9 +221,8 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 							.decodeBase64String(optional.isPresent() ? optional.get().getVal() : null);
 					getSessionContext().setBundledCategory(sessionBundledCategory);
 					if (controller.isPageController()) {
-						final String controllerBundledCategory = controller.getBundledCategory();
-						if (!controllerBundledCategory.equals(BundledCategoryConstants.GLOBAL_CATEGORY)
-								&& !controllerBundledCategory.equals(sessionBundledCategory)) {
+						final BundledCatType bundledCatType = controller.getBundledCategory();
+						if (!bundledCatType.isAll() && !bundledCatType.id().equals(sessionBundledCategory)) {
 							throwOperationErrorException(new IllegalArgumentException(
 									"Attempt to access restricted bundle [" + controller.getName() + "]. "
 											+ clientRequest.getRequestPathParts().getControllerPathParts()));

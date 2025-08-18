@@ -25,6 +25,7 @@ import com.tcdng.unify.core.annotation.UplAttributes;
 import com.tcdng.unify.core.util.DataUtils;
 import com.tcdng.unify.core.util.ValueStoreUtils;
 import com.tcdng.unify.web.ControllerPathParts;
+import com.tcdng.unify.web.constant.BundledCatType;
 import com.tcdng.unify.web.ui.PageBean;
 import com.tcdng.unify.web.ui.UnifyWebUIErrorConstants;
 import com.tcdng.unify.web.ui.widget.panel.AbstractStandalonePanel;
@@ -49,6 +50,18 @@ public abstract class AbstractPage extends AbstractStandalonePanel implements Pa
 	private ControllerPathParts controllerPathParts;
 
 	private String pageId;
+
+	private BundledCatType bundledCatType;
+	
+	@Override
+	public void setBundledCategory(BundledCatType type) throws UnifyException {
+		this.bundledCatType = type;
+	}
+
+	@Override
+	public BundledCatType getBundledCategory() throws UnifyException {
+		return bundledCatType;
+	}
 
 	@Override
 	public String getSubCaption() throws UnifyException {
