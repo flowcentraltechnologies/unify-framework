@@ -21,7 +21,7 @@ import com.tcdng.unify.web.UnifyWebPropertyConstants;
 import com.tcdng.unify.web.annotation.Action;
 import com.tcdng.unify.web.annotation.ResultMapping;
 import com.tcdng.unify.web.annotation.ResultMappings;
-import com.tcdng.unify.web.constant.BundledCategoryConstants;
+import com.tcdng.unify.web.constant.BundledCatType;
 import com.tcdng.unify.web.constant.ReadOnly;
 import com.tcdng.unify.web.constant.ResetOnWrite;
 import com.tcdng.unify.web.constant.Secured;
@@ -44,28 +44,28 @@ public abstract class AbstractBundledHomePageController<T extends AbstractBundle
 	}
 
 	@Override
-	public final String getBundledCategory() throws UnifyException {
-		return BundledCategoryConstants.GLOBAL_CATEGORY;
+	public final BundledCatType getBundledCategory() throws UnifyException {
+		return BundledCatType.ALL;
 	}
 
 	@Action
 	public final String forwardToFrontOffice() throws UnifyException {
-		return forwardToCategoryPath(BundledCategoryConstants.FRONTOFFICE_CATEGORY);
+		return forwardToCategoryPath(BundledCatType.FRONTOFFICE);
 	}
 
 	@Action
 	public final String forwardToBackOffice() throws UnifyException {
-		return forwardToCategoryPath(BundledCategoryConstants.BACKOFFICE_CATEGORY);
+		return forwardToCategoryPath(BundledCatType.BACKOFFICE);
 	}
-	
-	private String forwardToCategoryPath(String category) throws UnifyException {
+
+	private String forwardToCategoryPath(BundledCatType category) throws UnifyException {
 		AbstractBundledHomePageBean pageBean = getPageBean();
 		pageBean.setTargetPath(getContainerSetting(String.class,
-				BundledCategoryConstants.FRONTOFFICE_CATEGORY.equals(category)
+				BundledCatType.FRONTOFFICE.equals(category)
 						? UnifyWebPropertyConstants.APPLICATION_BUNDLED_MODE_FRONTOFFICE
 						: UnifyWebPropertyConstants.APPLICATION_BUNDLED_MODE_BACKOFFICE));
 		getPageRequestContextUtil().getClientResponse().setCookie(HttpRequestCookieConstants.UNIFY_BUNDLED_CATEGORY,
-				EncodingUtils.getBase64String(category));
+				EncodingUtils.getBase64String(category.id()));
 		return "forwardtopath";
 	}
 

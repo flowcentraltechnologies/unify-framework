@@ -27,6 +27,7 @@ import com.tcdng.unify.core.constant.MimeType;
 import com.tcdng.unify.core.data.WebStringWriter;
 import com.tcdng.unify.core.util.StringUtils;
 import com.tcdng.unify.web.ControllerPathParts;
+import com.tcdng.unify.web.constant.BundledCatType;
 import com.tcdng.unify.web.constant.ClientSyncNameConstants;
 import com.tcdng.unify.web.constant.UnifyWebRequestAttributeConstants;
 import com.tcdng.unify.web.ui.PagePathInfoRepository;
@@ -107,7 +108,14 @@ public class DocumentWriter extends AbstractPageWriter {
 			}
 		}
 
+		final BundledCatType bundledCatType = document.getBundledCategory();
 		for (String styleSheet : getPageManager().getDocumentStyleSheets()) {
+			final BundledCatType prefixCatType = BundledCatType.fromPrefix(styleSheet);
+			if (!bundledCatType.isAll() && !prefixCatType.isAll() && !bundledCatType.equals(prefixCatType)) {
+				continue;
+			}
+			
+			styleSheet = BundledCatType.stripPrefix(styleSheet);
 			if (!excludeStyleSheet.contains(styleSheet)) {
 				writeStyleSheet(writer, styleSheet);
 				excludeStyleSheet.add(styleSheet); // Avoid duplication
@@ -131,6 +139,12 @@ public class DocumentWriter extends AbstractPageWriter {
 		}
 
 		for (String script : getPageManager().getDocumentsScripts()) {
+			final BundledCatType prefixCatType = BundledCatType.fromPrefix(script);
+			if (!bundledCatType.isAll() && !prefixCatType.isAll() && !bundledCatType.equals(prefixCatType)) {
+				continue;
+			}
+			
+			script = BundledCatType.stripPrefix(script);
 			if (!excludeScripts.contains(script)) {
 				writeJavascript(writer, script);
 				excludeScripts.add(script); // Avoid duplication
