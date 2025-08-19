@@ -52,6 +52,7 @@ import javax.net.ssl.SSLSession;
 import com.tcdng.unify.core.UnifyCoreErrorConstants;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.UnifyOperationException;
+import com.tcdng.unify.core.constant.MimeType;
 import com.tcdng.unify.core.constant.PrintFormat;
 
 /**
@@ -1192,7 +1193,7 @@ public class IOUtils {
 				}
 			}
 
-			conn.setRequestProperty("Content-Type", "application/json;");
+			conn.setRequestProperty("Content-Type", MimeType.APPLICATION_JSON.template());
 			conn.setRequestProperty("Accept", "*/*");
 			conn.setConnectTimeout(CONNECTION_TIMEOUT);
 			conn.setReadTimeout(READ_TIMEOUT);
