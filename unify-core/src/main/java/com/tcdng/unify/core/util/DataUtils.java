@@ -959,7 +959,7 @@ public final class DataUtils {
 	 * @throws UnifyException if an error occurs
 	 */
 	public static <T> T fromJsonString(JsonObjectComposition comp, Class<T> clazz, String json) throws UnifyException {
-		return DataUtils.fromJsonReader(comp, clazz, new StringReader(json));
+		return json != null ? DataUtils.fromJsonReader(comp, clazz, new StringReader(json)) : null;
 	}
 
 	/**
