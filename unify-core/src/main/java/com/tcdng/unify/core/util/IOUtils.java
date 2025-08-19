@@ -69,9 +69,9 @@ public class IOUtils {
 
 	private static boolean restrictedJARMode;
 
-	private static final int CONNECTION_TIMEOUT = 10000;
+	private static final int CONNECTION_TIMEOUT = 30000;
 
-	private static final int READ_TIMEOUT = 30000;
+	private static final int READ_TIMEOUT = 40000;
 
 	private static final String DISABLE_HOSTNAME_PREFIX = "-k ";
 
@@ -1162,7 +1162,7 @@ public class IOUtils {
 	 * @return the response
 	 * @throws UnifyException if an error occurs
 	 */
-	public static PostResp<String> postJsonToEndpoint(String endpoint, String reqJson, Map<String, String> headers)
+	public static PostResp<String> postJsonToEndpoint(String endpoint, final String reqJson, Map<String, String> headers)
 			throws UnifyException {
 		final long start = System.currentTimeMillis();
 		PostResp<String> resp = null;
@@ -1192,8 +1192,8 @@ public class IOUtils {
 				}
 			}
 
-			conn.setRequestProperty("Content-Type", "application/json; utf-8");
-			conn.setRequestProperty("Accept", "application/json");
+			conn.setRequestProperty("Content-Type", "application/json;");
+			conn.setRequestProperty("Accept", "*/*");
 			conn.setConnectTimeout(CONNECTION_TIMEOUT);
 			conn.setReadTimeout(READ_TIMEOUT);
 			conn.setDoOutput(true);
