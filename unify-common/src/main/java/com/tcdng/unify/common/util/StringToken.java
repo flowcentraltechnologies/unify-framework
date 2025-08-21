@@ -75,12 +75,4 @@ public abstract class StringToken {
         return type.isGeneratorParam();
     }
 
-	@Override
-	public String toString() {
-		return "[getToken()=" + getToken() + ", getType()=" + getType() + ", isText()=" + isText()
-				+ ", isNewline()=" + isNewline() + ", isParam()=" + isParam() + ", isFormattedParam()="
-				+ isFormattedParam() + ", isProcessParam()=" + isProcessParam() + ", isGeneratorParam()="
-				+ isGeneratorParam() + "]";
-	}
-
 }

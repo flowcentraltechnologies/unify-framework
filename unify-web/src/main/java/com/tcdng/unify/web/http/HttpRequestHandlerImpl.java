@@ -230,6 +230,7 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 					}
 				}
 			} catch (Exception e) {
+				e.printStackTrace();
 				logError(e);
 				boolean exit = true;
 				try {

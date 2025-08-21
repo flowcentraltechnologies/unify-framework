@@ -927,7 +927,10 @@ public abstract class AbstractWidget extends AbstractUplComponent implements Wid
 	protected <T> T getUplAttribute(Class<T> type, String attribute, String bindingAttribute) throws UnifyException {
 		String binding = getUplAttribute(String.class, bindingAttribute);
 		if (StringUtils.isNotBlank(binding)) {
-			return getValue(type, binding);
+			final T t =  getValue(type, binding);
+			if (t != null) {
+				return t;
+			}
 		}
 
 		return getUplAttribute(type, attribute);
