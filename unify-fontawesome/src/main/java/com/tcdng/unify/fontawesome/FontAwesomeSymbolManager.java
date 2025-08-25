@@ -109,6 +109,7 @@ public class FontAwesomeSymbolManager extends AbstractFontSymbolManager {
         registerSymbol("circle-nodes", "e4e2");
         registerSymbol("circle-pause", "f28b");
         registerSymbol("clock", "f017");
+        registerSymbol("clone", "f24d");
         registerSymbol("cloud", "f0c2");
         registerSymbol("cloud-download", "f381");
         registerSymbol("cloud-upload", "f382");
