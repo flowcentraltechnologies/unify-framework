@@ -74,12 +74,20 @@ public class IOUtils {
 
 	private static final int READ_TIMEOUT = 40000;
 
-	private static final String DISABLE_HOSTNAME_PREFIX = "-k ";
-
 	private IOUtils() {
 
 	}
 
+	public static void ignoreSSLHostNames() {
+		HostnameVerifier verifier = new HostnameVerifier() {
+			public boolean verify(String hostname, SSLSession session) {
+				return true;
+			}
+		};
+
+		HttpsURLConnection.setDefaultHostnameVerifier(verifier);
+	}
+	
 	public static void enterRestrictedJARMode() {
 		restrictedJARMode = true;
 	}
@@ -1168,23 +1176,8 @@ public class IOUtils {
 		final long start = System.currentTimeMillis();
 		PostResp<String> resp = null;
 		try {
-			boolean skipHostName = false;
-			if (endpoint.startsWith(DISABLE_HOSTNAME_PREFIX)) {
-				endpoint = endpoint.substring(DISABLE_HOSTNAME_PREFIX.length());
-				skipHostName = true;
-			}
-
 			URL url = new URI(endpoint).toURL();
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			if (skipHostName && conn instanceof HttpsURLConnection) {
-				HostnameVerifier verifier = new HostnameVerifier() {
-					public boolean verify(String hostname, SSLSession session) {
-						return true;
-					}
-				};
-
-				HttpsURLConnection.setDefaultHostnameVerifier(verifier);
-			}
 
 			conn.setRequestMethod("POST");
 			if (headers != null && !headers.isEmpty()) {
