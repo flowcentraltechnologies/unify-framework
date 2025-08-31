@@ -276,6 +276,11 @@ public class UnifyContainer {
 			IOUtils.enterRestrictedJARMode();
 		}
 
+		if (Boolean.valueOf(
+				String.valueOf(unifySettings.get(UnifyCorePropertyConstants.APPLICATION_IGNORE_SSL_HOSTNAMES)))) {
+			IOUtils.ignoreSSLHostNames();
+		}
+		
 		// Banner
 		List<String> banner = getApplicationBanner();
 		if (!banner.isEmpty()) {

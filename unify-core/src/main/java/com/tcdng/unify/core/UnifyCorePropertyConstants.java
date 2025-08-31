@@ -92,4 +92,6 @@ public interface UnifyCorePropertyConstants {
     String APPLICATION_MAX_TASKRUNNER_THREADS = "application.max.taskrunner.threads";
 
     String APPLICATION_RETRICTED_JAR_MODE= "application.restricted.jar.mode";
+
+    String APPLICATION_IGNORE_SSL_HOSTNAMES= "application.ignore.ssl.hostnames";
 }
