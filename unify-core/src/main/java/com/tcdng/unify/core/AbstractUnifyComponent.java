@@ -1230,7 +1230,7 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	 * @param params      message parameters
 	 */
 	protected void logDebug(TaskMonitor taskMonitor, String message, Object... params) {
-		log(taskMonitor, LoggingLevel.DEBUG, message, params);
+		log(taskMonitor, LoggingLevel.DEBUG, null, message, params);
 	}
 
 	/**
@@ -1241,7 +1241,7 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	 * @param params      message parameters
 	 */
 	protected void logInfo(TaskMonitor taskMonitor, String message, Object... params) {
-		log(taskMonitor, LoggingLevel.INFO, message, params);
+		log(taskMonitor, LoggingLevel.INFO, null, message, params);
 	}
 
 	/**
@@ -1252,7 +1252,7 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	 * @param params      message parameters
 	 */
 	protected void logWarn(TaskMonitor taskMonitor, String message, Object... params) {
-		log(taskMonitor, LoggingLevel.WARN, message, params);
+		log(taskMonitor, LoggingLevel.WARN, null, message, params);
 	}
 
 	/**
@@ -1263,7 +1263,7 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	 * @param params      message parameters
 	 */
 	protected void logError(TaskMonitor taskMonitor, String message, Object... params) {
-		log(taskMonitor, LoggingLevel.ERROR, message, params);
+		log(taskMonitor, LoggingLevel.ERROR, null, message, params);
 	}
 
 	/**
@@ -1283,7 +1283,7 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	 * @param params  message parameters
 	 */
 	protected void logDebug(String message, Object... params) {
-		log(null, LoggingLevel.DEBUG, message, params);
+		log(null, LoggingLevel.DEBUG, null, message, params);
 	}
 
 	/**
@@ -1293,7 +1293,7 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	 * @param params  message parameters
 	 */
 	protected void logInfo(String message, Object... params) {
-		log(null, LoggingLevel.INFO, message, params);
+		log(null, LoggingLevel.INFO, null, message, params);
 	}
 
 	/**
@@ -1303,7 +1303,7 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	 * @param params  message parameters
 	 */
 	protected void logWarn(String message, Object... params) {
-		log(null, LoggingLevel.WARN, message, params);
+		log(null, LoggingLevel.WARN, null, message, params);
 	}
 
 	/**
@@ -1313,7 +1313,7 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	 * @param params  message parameters
 	 */
 	protected void logError(String message, Object... params) {
-		log(null, LoggingLevel.ERROR, message, params);
+		log(null, LoggingLevel.ERROR, null, message, params);
 	}
 
 	/**
@@ -1337,11 +1337,22 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	/**
 	 * Logs a message at SEVERE level.
 	 * 
+	 * @param exception the exception to log
+	 * @param message the message to log
+	 * @param params  message parameters
+	 */
+	protected void logSevere(Exception exception, String message, Object... params) {
+		log(null, LoggingLevel.SEVERE, exception, message, params);
+	}
+
+	/**
+	 * Logs a message at SEVERE level.
+	 * 
 	 * @param message the message to log
 	 * @param params  message parameters
 	 */
 	protected void logSevere(String message, Object... params) {
-		log(null, LoggingLevel.SEVERE, message, params);
+		log(null, LoggingLevel.SEVERE, null, message, params);
 	}
 
 	/**
@@ -1939,7 +1950,8 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 		return DataUtils.ZEROLEN_STRING_ARRAY;
 	}
 
-	private void log(TaskMonitor taskMonitor, LoggingLevel loggingLevel, String message, Object... params) {
+	private void log(TaskMonitor taskMonitor, LoggingLevel loggingLevel, Exception ex, String message,
+			Object... params) {
 		if (isInitialized()) {
 			try {
 				Logger logger = unifyComponentContext.getLogger();
@@ -1947,7 +1959,7 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 				if (enabled || taskMonitor != null) {
 					String resolvedMsg = resolveApplicationMessage(message, params);
 					if (enabled) {
-						logger.log(loggingLevel, resolvedMsg);
+						logger.log(loggingLevel, resolvedMsg, ex);
 					}
 
 					if (taskMonitor != null) {
