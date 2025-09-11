@@ -74,7 +74,7 @@ public class SqlStatementExecutorImpl extends AbstractUnifyComponent implements 
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
-			logSevere("Error attempting to execute SQL statement [{0}].", sqlStatement.toString());
+			logSevere(e, "Error attempting to execute SQL statement [{0}].", sqlStatement.toString());
 			throwOperationErrorException(e);
 		} finally {
 			SqlUtils.close(pStmt);
@@ -105,7 +105,7 @@ public class SqlStatementExecutorImpl extends AbstractUnifyComponent implements 
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
-			logSevere("Error attempting to execute SQL statement [{0}].", sqlStatement.toString());
+			logSevere(e, "Error attempting to execute SQL statement [{0}].", sqlStatement.toString());
 			throwOperationErrorException(e);
 		} finally {
 			SqlUtils.close(rs);
@@ -213,7 +213,7 @@ public class SqlStatementExecutorImpl extends AbstractUnifyComponent implements 
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
-			logSevere("Error attempting to execute SQL statement [{0}].", sqlStatement.toString());
+			logSevere(e, "Error attempting to execute SQL statement [{0}].", sqlStatement.toString());
 			throwOperationErrorException(e);
 		} finally {
 			SqlUtils.close(rs);
@@ -277,7 +277,7 @@ public class SqlStatementExecutorImpl extends AbstractUnifyComponent implements 
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
-			logSevere("Error attempting to execute SQL statement [{0}].", sqlStatement.toString());
+			logSevere(e, "Error attempting to execute SQL statement [{0}].", sqlStatement.toString());
 			throwOperationErrorException(e);
 		} finally {
 			SqlUtils.close(rs);
@@ -361,7 +361,7 @@ public class SqlStatementExecutorImpl extends AbstractUnifyComponent implements 
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
-			logSevere("Error attempting to execute SQL statement [{0}].", sqlStatement.toString());
+			logSevere(e, "Error attempting to execute SQL statement [{0}].", sqlStatement.toString());
 			throwOperationErrorException(e);
 		} finally {
 			SqlUtils.close(rs);
@@ -427,7 +427,7 @@ public class SqlStatementExecutorImpl extends AbstractUnifyComponent implements 
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
-			logSevere("Error attempting to execute SQL statement [{0}].", sqlStatement.toString());
+			logSevere(e, "Error attempting to execute SQL statement [{0}].", sqlStatement.toString());
 			throwOperationErrorException(e);
 		} finally {
 			SqlUtils.close(rs);
@@ -493,7 +493,7 @@ public class SqlStatementExecutorImpl extends AbstractUnifyComponent implements 
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
-			logSevere("Error attempting to execute SQL statement [{0}].", sqlStatement.toString());
+			logSevere(e, "Error attempting to execute SQL statement [{0}].", sqlStatement.toString());
 			throwOperationErrorException(e);
 		} finally {
 			SqlUtils.close(rs);
@@ -541,7 +541,7 @@ public class SqlStatementExecutorImpl extends AbstractUnifyComponent implements 
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
-			logSevere("Error attempting to execute SQL statement [{0}].", sqlStatement.toString());
+			logSevere(e, "Error attempting to execute SQL statement [{0}].", sqlStatement.toString());
 			throwOperationErrorException(e);
 		} finally {
 			SqlUtils.close(rs);
@@ -588,7 +588,7 @@ public class SqlStatementExecutorImpl extends AbstractUnifyComponent implements 
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
-			logSevere("Error attempting to execute SQL statement [{0}].", sqlStatement.toString());
+			logSevere(e, "Error attempting to execute SQL statement [{0}].", sqlStatement.toString());
 			throwOperationErrorException(e);
 		} finally {
 			SqlUtils.close(rs);
@@ -654,7 +654,7 @@ public class SqlStatementExecutorImpl extends AbstractUnifyComponent implements 
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
-			logSevere("Error attempting to execute SQL statement [{0}].", sqlStatement.toString());
+			logSevere(e, "Error attempting to execute SQL statement [{0}].", sqlStatement.toString());
 			throwOperationErrorException(e);
 		} finally {
 			SqlUtils.close(rs);
@@ -726,7 +726,7 @@ public class SqlStatementExecutorImpl extends AbstractUnifyComponent implements 
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
-			logSevere("Error attempting to execute SQL statement [{0}].", sqlStatement.toString());
+			logSevere(e, "Error attempting to execute SQL statement [{0}].", sqlStatement.toString());
 			throwOperationErrorException(e);
 		} finally {
 			SqlUtils.close(rs);
