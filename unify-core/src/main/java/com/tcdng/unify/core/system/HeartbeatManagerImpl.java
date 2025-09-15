@@ -105,7 +105,7 @@ public class HeartbeatManagerImpl extends AbstractBusinessService implements Hea
 		}
 	}
 
-	private void performHeartbeat(HeartbeatConfig heartbeatConfig) throws UnifyException {
+	public void performHeartbeat(HeartbeatConfig heartbeatConfig) throws UnifyException {
 		final Date newExpiryDate = CalendarUtils.getDateWithFrequencyOffset(getNow(), FrequencyUnit.MINUTE,
 				heartbeatConfig.getLifeExtensionInMinutes());
 		if (db().updateAll(heartbeatConfig.getQuery(),

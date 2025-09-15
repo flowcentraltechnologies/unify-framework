@@ -209,8 +209,10 @@ public class FontAwesomeSymbolManager extends AbstractFontSymbolManager {
         registerSymbol("rocket", "f135");
         registerSymbol("satellite-disk", "f7c0");
         registerSymbol("save", "f0c7");
+        registerSymbol("screwdriver-wrench", "f7d9");
         registerSymbol("scroll", "f70e");
         registerSymbol("search", "f002");
+        registerSymbol("server", "f233");
         registerSymbol("sign-in", "f2f6");
         registerSymbol("sign-out", "f2f5");
         registerSymbol("site-map", "f0e8");
@@ -243,6 +245,7 @@ public class FontAwesomeSymbolManager extends AbstractFontSymbolManager {
         registerSymbol("window-maximize", "f2d0");
         registerSymbol("window-restore", "f2d2");
         registerSymbol("woman", "f182");
+        registerSymbol("wrench", "f0ad");
     }
 
 }
