@@ -229,7 +229,6 @@ public abstract class AbstractUIController extends AbstractHttpClientController 
 
 		final Set<String> reservedSet = WebUtils.getReservedRequestAttributes();
 		for (String transferId : request.getParameters().getParamNames()) {
-			logDebug("Processing transfer ID [{0}]...", transferId);
 			if (reservedSet.contains(transferId)) {
 				continue;
 			}
