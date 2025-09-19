@@ -104,7 +104,6 @@ public class ClassUniqueIDManagerImpl extends AbstractUnifyComponent implements 
 	@Override
 	public Long getClassUniqueID(Class<?> clazz) throws UnifyException {
 		final String className = clazz.getName();
-		logDebug("Fetching class [{0}] unique ID ...", className);
 		Long uniqueId = uniqueIdsByClass.get(className);
 		if (uniqueId == null) {
 			synchronized (this) {
@@ -123,7 +122,6 @@ public class ClassUniqueIDManagerImpl extends AbstractUnifyComponent implements 
 								.append(_sqlEntityInfo.getFieldInfo("className").getPreferredColumnName())
 								.append(" = ?");
 						String sql1 = sb1.toString();
-						logDebug("Executing script [{0}]...", sql1);
 						pstmt = connection.prepareStatement(sql1);
 						pstmt.setString(1, className);
 						rs = pstmt.executeQuery();
@@ -165,7 +163,6 @@ public class ClassUniqueIDManagerImpl extends AbstractUnifyComponent implements 
 			}
 		}
 
-		logDebug("Unique ID [{0}] fetched for class [{1}].", uniqueId, className);
 		return uniqueId;
 	}
 
