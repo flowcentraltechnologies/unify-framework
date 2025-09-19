@@ -556,7 +556,6 @@ public class UnifyContainer {
 			Random random = new Random();
 			TaskManager taskManager = (TaskManager) getComponent(ApplicationComponents.APPLICATION_TASKMANAGER);
 			for (Map.Entry<String, Map<String, PeriodicInfo>> componentEntry : componentPeriodMethodMap.entrySet()) {
-				logInfo("Intializing component [{0}] with periodic methods...", componentEntry.getKey());
 				getComponent(componentEntry.getKey());
 				for (Map.Entry<String, PeriodicInfo> periodicEntry : componentEntry.getValue().entrySet()) {
 					PeriodicInfo pin = periodicEntry.getValue();

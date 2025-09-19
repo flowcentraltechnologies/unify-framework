@@ -161,16 +161,6 @@ public class TaskRunnerImpl extends AbstractUnifyComponent implements TaskRunner
 	private TaskMonitor internalSchedule(TaskableMethodConfig tmc, String actualTaskName, String taskName,
 			Map<String, Object> parameters, boolean _permitMultiple, boolean logMessages, long inDelayInMillSec,
 			long periodInMillSec, int numberOfTimes) throws UnifyException {
-		if (numberOfTimes > 0) {
-			logDebug(
-					"Scheduling task [{0} - {1}] for execution [{2}] time(s) with initial delay [{3}ms] and repeat period [{4}ms]...",
-					actualTaskName, taskName, numberOfTimes, inDelayInMillSec, periodInMillSec);
-		} else {
-			logDebug(
-					"Scheduling task [{0} - {1}] for continuous execution with initial delay [{2}ms] and repeat period [{3}ms]...",
-					actualTaskName, taskName, inDelayInMillSec, periodInMillSec);
-		}
-
 		TaskMonitorImpl tm = new TaskMonitorImpl(actualTaskName, logMessages, numberOfTimes);
 		if (isRunning()) {
 			synchronized (this) {
@@ -190,7 +180,6 @@ public class TaskRunnerImpl extends AbstractUnifyComponent implements TaskRunner
 			throwOperationErrorException(new IllegalStateException("Task runner is not started."));
 		}
 
-		logDebug("Scheduling of task [{0}] completed with permitted [{1}].", actualTaskName, !tm.isNotPermitted());
 		return tm;
 	}
 
