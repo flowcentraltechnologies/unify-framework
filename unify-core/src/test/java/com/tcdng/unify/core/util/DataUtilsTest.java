@@ -469,6 +469,58 @@ public class DataUtilsTest extends AbstractUnifyComponentTest {
 	}
 
 	@Test
+	public void testFromJsonObjectString() throws Exception {
+		final Map<String, Object> map = DataUtils.fromJsonObjectString("{\"name\":\"john\",\"age\":36,\"salary\":38500.25}");
+		assertNotNull(map);
+		assertTrue(map.containsKey("name"));
+		assertTrue(map.containsKey("age"));
+		assertTrue(map.containsKey("salary"));
+		assertEquals("john", map.get("name"));
+		assertEquals(Long.valueOf(36L), map.get("age"));
+		assertEquals(BigDecimal.valueOf(38500.25), map.get("salary"));
+	}
+	
+	@Test
+	public void testReadDynamicJsonObject() throws Exception {
+		String json1 = "{}";
+		Account account = DataUtils.fromJsonString(Account.class, json1);
+		assertNotNull(account);
+		assertNull(account.getAccountNo());
+		assertNull(account.getEntries());
+
+		String json2 = "{\"accountNo\":\"1234567890\"}";
+		account = DataUtils.fromJsonString(Account.class, json2);
+		assertNotNull(account);
+		assertEquals("1234567890", account.getAccountNo());
+		assertNull(account.getEntries());
+
+		String json3 = "{\"accountNo\":\"1234567890\", \"entries\":[]}";
+		account = DataUtils.fromJsonString(Account.class, json3);
+		assertNotNull(account);
+		assertEquals("1234567890", account.getAccountNo());
+		assertNotNull(account.getEntries());
+		assertTrue(account.getEntries().isEmpty());
+
+		String json4 = "{\"accountNo\":\"1234567890\", \"entries\":[1, 2]}";
+		account = DataUtils.fromJsonString(Account.class, json4);
+		assertNotNull(account);
+		assertEquals("1234567890", account.getAccountNo());
+		assertNotNull(account.getEntries());
+		assertEquals(2, account.getEntries().size());
+		assertEquals("1", account.getEntries().get(0));
+		assertEquals("2", account.getEntries().get(1));
+
+		String json5 = "{\"accountNo\":\"1234567890\", \"entries\":[{\"name\":\"mary\",\"age\":32}, {\"name\":\"john\",\"age\":36}]}";
+		account = DataUtils.fromJsonString(Account.class, json5);
+		assertNotNull(account);
+		assertEquals("1234567890", account.getAccountNo());
+		assertNotNull(account.getEntries());
+		assertEquals(2, account.getEntries().size());
+		assertEquals("{\"name\":\"mary\",\"age\":32}", account.getEntries().get(0));
+		assertEquals("{\"name\":\"john\",\"age\":36}", account.getEntries().get(1));
+	}
+	
+	@Test
 	public void testReadEmptyJsonObjectAlias() throws Exception {
 		String json = "{}";
 		Template template = DataUtils.fromJsonString(Template.class, json);
@@ -982,6 +1034,30 @@ public class DataUtilsTest extends AbstractUnifyComponentTest {
 	protected void onTearDown() throws Exception {
 
 	}
+
+	public static class Account {
+
+		private String accountNo;
+		
+		private List<?> entries;
+
+		public String getAccountNo() {
+			return accountNo;
+		}
+
+		public void setAccountNo(String accountNo) {
+			this.accountNo = accountNo;
+		}
+
+		public List<?> getEntries() {
+			return entries;
+		}
+
+		public void setEntries(List<?> entries) {
+			this.entries = entries;
+		}
+	}
+	
 
 	public static abstract class BaseReq {
 		
