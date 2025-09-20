@@ -40,22 +40,22 @@ public abstract class AbstractObjectStreamer extends AbstractUnifyComponent impl
 
     @Override
     public void marshal(Object object, OutputStream outputStream, Charset charset) throws UnifyException {
-        marshal(object, outputStream, charset, PrintFormat.NONE);
+        marshal(object, outputStream, charset, PrintFormat.PRETTY);
     }
 
     @Override
     public void marshal(Object object, Writer writer) throws UnifyException {
-        marshal(object, writer, PrintFormat.NONE);
+        marshal(object, writer, PrintFormat.PRETTY);
     }
 
     @Override
     public Object marshal(Object object) throws UnifyException {
-        return marshal(object, PrintFormat.NONE);
+        return marshal(object, PrintFormat.PRETTY);
     }
 
     @Override
     public void marshal(Object object, OutputStream outputStream) throws UnifyException {
-        marshal(object, outputStream, null, PrintFormat.NONE);
+        marshal(object, outputStream, null, PrintFormat.PRETTY);
     }
 
     @Override

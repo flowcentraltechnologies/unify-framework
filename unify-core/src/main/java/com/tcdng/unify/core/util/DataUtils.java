@@ -17,6 +17,7 @@ package com.tcdng.unify.core.util;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -941,6 +942,30 @@ public final class DataUtils {
 	}
 
 	/**
+	 * Reads a JSON object into map.
+	 * 
+	 * @param json  the JSON string
+	 * @throws UnifyException if an error occurs
+	 */
+	public static Map<String, Object> fromJsonObjectString(String json) throws UnifyException {
+		JsonValue jsonValue;
+		try {
+			jsonValue = Json.parse(new StringReader(json));
+			if (jsonValue.isString()) {
+				jsonValue = Json.parse(new StringReader(jsonValue.asString()));
+			}
+			
+			if (!jsonValue.isObject()) {
+				throw new IllegalArgumentException("Invalid JSON object string");
+			}
+
+			return DataUtils.mapFromJson(jsonValue.asObject());
+		} catch (IOException e) {
+			throw new UnifyException(UnifyCoreErrorConstants.DATAUTIL_ERROR, e);
+		}
+	}
+
+	/**
 	 * Reads a JSON object. Has no support for collections.
 	 * 
 	 * @param clazz bean type
@@ -1077,10 +1102,12 @@ public final class DataUtils {
 				JsonArray jsonArray = jsonValue.asArray();
 				int len = jsonArray.size();
 				for (int i = 0; i < len; i++) {
-					result.add(DataUtils.getObjectFromJsonValue(comp, argClass, null, jsonArray.get(i)));
+					result.add(Object.class.equals(argClass) ? jsonArray.get(i).toString()
+							: DataUtils.getObjectFromJsonValue(comp, argClass, null, jsonArray.get(i)));
 				}
 			} else {
-				result.add(DataUtils.getObjectFromJsonValue(comp, argClass, null, jsonValue));
+				result.add(Object.class.equals(argClass) ? jsonValue.toString()
+						: DataUtils.getObjectFromJsonValue(comp, argClass, null, jsonValue));
 			}
 
 			return (T) result;
@@ -1143,7 +1170,7 @@ public final class DataUtils {
 						if (fmtCtx == null) {
 							fmtCtx = new FormatContext();
 						}
-						
+
 						val = DataUtils.getDateValue(fmtCtx, null, fcomp, jsonVal.asString());
 					}
 
@@ -1159,7 +1186,8 @@ public final class DataUtils {
 		return bean;
 	}
 
-	public static Object getDateValue(FormatContext fmtCtx, JsonObjectComposition comp, String fieldName, String val) throws Exception {
+	public static Object getDateValue(FormatContext fmtCtx, JsonObjectComposition comp, String fieldName, String val)
+			throws Exception {
 		return DataUtils.getDateValue(fmtCtx, comp, comp.getComposition(fieldName), val);
 	}
 
@@ -1737,6 +1765,41 @@ public final class DataUtils {
 		}
 
 		return second != null ? second : BigDecimal.ZERO;
+	}
+	
+	private static Map<String, Object> mapFromJson(JsonObject jsonObject) {
+		Map<String, Object> result = new HashMap<>();
+		for (String name : jsonObject.names()) {
+			JsonValue value = jsonObject.get(name);
+			result.put(name, convertMapType(value));
+		}
+
+		return result;
+	}
+
+	private static Object convertMapType(JsonValue jsonVal) {
+		if (jsonVal.isString()) {
+			return jsonVal.asString();
+		} else if (jsonVal.isNumber()) {
+			return jsonVal.toString().indexOf('.') >= 0 ? BigDecimal.valueOf(jsonVal.asDouble())
+					: Long.valueOf(jsonVal.asLong());
+		} else if (jsonVal.isBoolean()) {
+			return jsonVal.asBoolean();
+		} else if (jsonVal.isObject()) {
+			return mapFromJson(jsonVal.asObject());
+		} else if (jsonVal.isArray()) {
+			return convertMapList(jsonVal.asArray());
+		}
+
+		return null;
+	}
+
+	private static List<Object> convertMapList(JsonArray array) {
+		List<Object> list = new ArrayList<>();
+		for (JsonValue val : array) {
+			list.add(convertMapType(val));
+		}
+		return list;
 	}
 
 	@SuppressWarnings("unchecked")

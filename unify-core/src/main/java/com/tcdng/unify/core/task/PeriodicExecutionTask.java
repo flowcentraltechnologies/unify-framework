@@ -34,8 +34,6 @@ public class PeriodicExecutionTask extends AbstractTask {
 			if (!tm.isCancelled()) {
 				PeriodicExecutionInfo periodicExecutionInfo = input.getParam(PeriodicExecutionInfo.class,
 						PeriodicExecutionTaskConstants.PERIODICEXECUTIONINFO);
-				logDebug("Invoking periodic method [{0}] on component [{1}]...",
-						periodicExecutionInfo.getMethod().getName(), periodicExecutionInfo.getComponentName());
 				UnifyComponent unifyComponent = getComponent(periodicExecutionInfo.getComponentName());
 				periodicExecutionInfo.getMethod().invoke(unifyComponent, tm);
 			}

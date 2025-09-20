@@ -42,7 +42,6 @@ public abstract class AbstractPlainJsonController extends AbstractPlainControlle
 
 		try {
 			final String actionName = request.getRequestPathParts().getControllerPathParts().getActionName();
-			logDebug("Processing plain JSON request with action [{0}]...", actionName);
 			jsonResponse = doExecute(actionName, request.getText());
 		} catch (Exception e) {
 			StringBuilder sb = new StringBuilder();

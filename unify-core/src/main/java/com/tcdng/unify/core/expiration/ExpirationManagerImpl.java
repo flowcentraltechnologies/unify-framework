@@ -61,9 +61,6 @@ public class ExpirationManagerImpl extends AbstractUnifyComponent implements Exp
         for (ObservedExpirableInfo observedExpirableInfo : expirablesList) {
             try {
                 if (observedExpirableInfo.isExpired(now)) {
-                    logDebug("Invoking expiration method [{1}] on component [{0}]...",
-                            observedExpirableInfo.getExpirable().getName(),
-                            observedExpirableInfo.getMethod().getName());
                     observedExpirableInfo.getMethod().invoke(observedExpirableInfo.getExpirable());
                     observedExpirableInfo.reset(now);
                 }
