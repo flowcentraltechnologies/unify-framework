@@ -168,7 +168,6 @@ public class ContentPanelWriter extends AbstractPanelWriter {
 	}
 
 	private void writeContentPanel(ResponseWriter writer, ContentPanelImpl contentPanel) throws UnifyException {
-		logDebug("Writing structure for content panel [{0}]...", contentPanel.getLongName());
 		PageRequestContextUtil rcUtil = getRequestContextUtil();
 		ContentInfo currentContentInfo = contentPanel.getCurrentContentInfo();
 
@@ -179,7 +178,6 @@ public class ContentPanelWriter extends AbstractPanelWriter {
 			writer.write("<div style=\"display:table-cell;\">");
 			writer.write("<div id=\"").write(contentPanel.getTabPaneId()).write("\" class=\"cptabbar\">");
 			final List<String> paths = contentPanel.getPaths();
-			logDebug("Writing header tabs for content panel [{0}]...", contentPanel.getLongName());
 			writer.write("<ul class=\"cptab\">");
 			for (int i = 0; i < contentPanel.getPageCount(); i++) {
 				ContentInfo contentInfo = contentPanel.getContentInfo(i);

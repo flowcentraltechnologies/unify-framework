@@ -1184,21 +1184,14 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 		boolean successful = true;
 		if (page.isValidationEnabled()) {
 			String actionId = dataTransfer.getActionId();
-			logDebug("Page validation is enabled. actionId = [{0}]", actionId);
-
 			if (StringUtils.isNotBlank(actionId)) {
-				logDebug("Performing request parameter validation. page ID [{0}]", page.getPageId());
-
 				// Do validations
 				PageAction pageAction = page.getPageAction(getPageManager().getLongName(actionId));
 				UplElementReferences uer = pageAction.getUplAttribute(UplElementReferences.class, "validations");
 				for (String validationLongName : uer.getLongNames()) {
-					logDebug("Applying validation [{0}]...", validationLongName);
 					successful &= page.getPageWidgetValidator(getPageManager(), validationLongName)
 							.validate(dataTransfer);
 				}
-
-				logDebug("Request parameter validation completed. page ID [{0}]", page.getPageId());
 			}
 		}
 

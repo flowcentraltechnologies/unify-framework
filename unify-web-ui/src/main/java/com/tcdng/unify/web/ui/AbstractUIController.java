@@ -319,7 +319,6 @@ public abstract class AbstractUIController extends AbstractHttpClientController 
 
 	protected void populate(DataTransfer dataTransfer) throws UnifyException {
 		if (!isReadOnly()) {
-			logDebug("Populating controller [{0}]", getName());
 
 			// Reset first
 			if (isResetOnWrite()) {
@@ -329,14 +328,18 @@ public abstract class AbstractUIController extends AbstractHttpClientController 
 			// Populate controller
 			for (DataTransferBlock dataTransferBlock : dataTransfer.getDataTransferBlocks()) {
 				do {
-					logDebug("Populating widget [{0}] with value [{1}] using transfer block [{2}]...",
-							dataTransferBlock.getLongName(), dataTransferBlock.getDebugValue(), dataTransferBlock);
-					populate(dataTransferBlock);
+					try {
+						populate(dataTransferBlock);
+					} catch (UnifyException e) {
+						logError("Error populating controller [{0}]", getName());
+						logError("Error populating widget [{0}] with value [{1}] using transfer block [{2}]...",
+								dataTransferBlock.getLongName(), dataTransferBlock.getDebugValue(), dataTransferBlock);
+						throw e;
+					}
+
 					dataTransferBlock = dataTransferBlock.getSiblingBlock();
 				} while (dataTransferBlock != null);
 			}
-
-			logDebug("Controller population completed [{0}]", getName());
 		}
 	}
 
