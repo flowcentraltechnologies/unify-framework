@@ -111,7 +111,6 @@ public abstract class AbstractUIController extends AbstractHttpClientController 
 			setAdditionalResponseHeaders(response);
 			doProcess(request, response, docPageController, docPathParts);
 		} catch (Exception e) {
-			e.printStackTrace();
 			writeExceptionResponse(request, response, e);
 		} finally {
 			response.close();
@@ -393,8 +392,6 @@ public abstract class AbstractUIController extends AbstractHttpClientController 
 
 	private void writeExceptionResponse(ClientRequest request, ClientResponse response, Exception e)
 			throws UnifyException {
-		logError(e);
-
 		if (response.isOutUsed()) {
 			if (e instanceof UnifyException) {
 				throw (UnifyException) e;
@@ -412,6 +409,11 @@ public abstract class AbstractUIController extends AbstractHttpClientController 
 					|| UnifyCoreErrorConstants.UNKNOWN_PAGE_NAME.equals(errorCode)
 					|| SystemUtils.isForceLogoutErrorCode(errorCode);
 		}
+		
+		if (!loginRequired) {
+			logError(e);
+		}
+
 		final String message = getExceptionMessage(LocaleType.SESSION, e);
 		setSessionAttribute(SystemInfoConstants.LOGIN_REQUIRED_FLAG, loginRequired);
 		setSessionAttribute(SystemInfoConstants.EXCEPTION_MESSAGE_KEY, message);
