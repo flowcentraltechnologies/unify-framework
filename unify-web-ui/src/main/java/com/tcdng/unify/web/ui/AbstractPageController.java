@@ -56,6 +56,7 @@ import com.tcdng.unify.web.ui.widget.DataTransferWidget;
 import com.tcdng.unify.web.ui.widget.Document;
 import com.tcdng.unify.web.ui.widget.Page;
 import com.tcdng.unify.web.ui.widget.PageAction;
+import com.tcdng.unify.web.ui.widget.PageManager;
 import com.tcdng.unify.web.ui.widget.ResponseWriter;
 import com.tcdng.unify.web.ui.widget.Widget;
 import com.tcdng.unify.web.ui.widget.WidgetCommandManager;
@@ -105,9 +106,10 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 	@Override
 	public void ensureContextResources(ControllerPathParts controllerPathParts) throws UnifyException {
 		SessionContext sessionContext = getSessionContext();
-		final String pageId = getPageManager().getCurrentRequestPageId(controllerPathParts);
+		final PageManager pm = getPageManager();
+		final String pageId = pm.getCurrentRequestPageId(controllerPathParts);
 		if (sessionContext != null && sessionContext.getAttribute(pageId) == null) {
-			Page page = getPageManager().createPage(sessionContext.getLocale(),
+			final Page page = pm.createPage(sessionContext.getLocale(),
 					controllerPathParts.getControllerName());
 			page.setPathParts(controllerPathParts, pageId);
 			Class<? extends PageBean> pageBeanClass = getPageBeanClass();
@@ -120,6 +122,7 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 			page.setBundledCategory(getBundledCategory());
 			getPageRequestContextUtil().setRequestPage(page);
 			initPage();
+			
 			sessionContext.setAttribute(pageId, page);
 		}
 	}
@@ -376,33 +379,24 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 				}
 
 				respPageController = this;
-				logDebug("Processing result with name [{0}]...", resultName);
 				// Check if action result needs to be routed to containing
 				// document controller
 				if (!pbbInfo.hasResultWithName(resultName) && !restPage.isDocument()) {
 					if (docPageController != null) {
-						logDebug("Result with name [{0}] not found for controller [{1}]...", resultName,
-								respPageController.getName());
 						respPathParts = docPathParts;
 						respPageController = docPageController;
 						restPage = uiControllerUtil.loadRequestPage(respPathParts);
 						pbbInfo = uiControllerUtil.getPageControllerInfo(respPageController.getName());
-						logDebug("Result with name [{0}] routed to controller [{1}]...", resultName,
-								respPageController.getName());
 					}
 				}
 
 				// Route to common utilities if necessary
 				if (!pbbInfo.hasResultWithName(resultName)) {
-					logDebug("Result with name [{0}] not found for controller [{1}]...", resultName,
-							respPageController.getName());
 					respPathParts = pagePathInfoRepository
 							.getControllerPathParts(uiControllerUtil.getCommonUtilitiesControllerName());
 					respPageController = (PageController<?>) getControllerFinder().findController(respPathParts);
 					restPage = uiControllerUtil.loadRequestPage(respPathParts);
 					pbbInfo = uiControllerUtil.getPageControllerInfo(respPageController.getName());
-					logDebug("Result with name [{0}] routed to controller [{1}]...", resultName,
-							respPageController.getName());
 				}
 			}
 
@@ -1184,21 +1178,14 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 		boolean successful = true;
 		if (page.isValidationEnabled()) {
 			String actionId = dataTransfer.getActionId();
-			logDebug("Page validation is enabled. actionId = [{0}]", actionId);
-
 			if (StringUtils.isNotBlank(actionId)) {
-				logDebug("Performing request parameter validation. page ID [{0}]", page.getPageId());
-
 				// Do validations
 				PageAction pageAction = page.getPageAction(getPageManager().getLongName(actionId));
 				UplElementReferences uer = pageAction.getUplAttribute(UplElementReferences.class, "validations");
 				for (String validationLongName : uer.getLongNames()) {
-					logDebug("Applying validation [{0}]...", validationLongName);
 					successful &= page.getPageWidgetValidator(getPageManager(), validationLongName)
 							.validate(dataTransfer);
 				}
-
-				logDebug("Request parameter validation completed. page ID [{0}]", page.getPageId());
 			}
 		}
 

@@ -29,6 +29,8 @@ import java.io.PrintWriter;
 public interface HttpResponse {
     
     void setHeader(String key, String val);
+    
+    void setDateHeader(String key, long val);
 
     void setContentType(String contentType);
 

@@ -21,7 +21,6 @@ import com.tcdng.unify.core.constant.MimeType;
 import com.tcdng.unify.web.AbstractController;
 import com.tcdng.unify.web.ClientRequest;
 import com.tcdng.unify.web.ClientResponse;
-import com.tcdng.unify.web.ControllerPathParts;
 import com.tcdng.unify.web.DocPathParts;
 import com.tcdng.unify.web.DocumentController;
 import com.tcdng.unify.web.constant.Secured;
@@ -54,11 +53,6 @@ public abstract class AbstractDocumentController extends AbstractController impl
 		} finally {
 			responseWriterPool.restore(writer);
 		}
-	}
-
-	@Override
-	public void ensureContextResources(ControllerPathParts controllerPathParts) throws UnifyException {
-
 	}
 
 	protected abstract void writeDocument(ResponseWriter writer, String docPath, String section, String queryString)

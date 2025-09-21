@@ -80,6 +80,7 @@ public class DynamicSqlEntityLoaderImpl extends AbstractUnifyComponent implement
 					new JavaClassAdditionalTypeInfo(dynamicEntityInfo.getListTypeArgByFieldName()));
 			sourceList.add(source);
 		}
+		
 		logInfo("Source files successfully generated for [{0}] entity classes...",
 				dynamicEntityInfoList.size());
 

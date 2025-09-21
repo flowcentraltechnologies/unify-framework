@@ -79,26 +79,22 @@ public class TaskRunnerImpl extends AbstractUnifyComponent implements TaskRunner
 	
 	@Override
 	public boolean start(int maxRunThread, boolean permitMultiple) {
-		logDebug("Starting task runner [{0}] with maximum run threads [{1}]...", this, maxRunThread);
 		if (!this.started) {
 			synchronized (this) {
 				if (!this.started) {
 					this.processingExecutor = Executors.newFixedThreadPool(maxRunThread <= 0 ? 1 : maxRunThread);
 					this.permitMultiple = permitMultiple;
 					this.started = true;
-					logDebug("Task runner [{0}] is successfully started.", this);
 					return true;
 				}
 			}
 		}
 
-		logDebug("Task runner [{0}] is already started.", this);
 		return false;
 	}
 
 	@Override
 	public void stop() {
-		logDebug("Stopping task runner [{0}] ...", this);
 		if (started) {
 			synchronized (this) {
 				if (started) {
@@ -112,13 +108,10 @@ public class TaskRunnerImpl extends AbstractUnifyComponent implements TaskRunner
 						logSevere(e);
 					}
 
-					logDebug("Task runner [{0}] is successfully stopped.", this);
 					return;
 				}
 			}
 		}
-
-		logDebug("Task runner [{0}] is already stopped.", this);
 	}
 
 	@Override

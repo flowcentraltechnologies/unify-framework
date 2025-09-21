@@ -45,11 +45,6 @@ public abstract class AbstractPlainController extends AbstractController impleme
         }
     }
 
-    @Override
-    public void ensureContextResources(ControllerPathParts controllerPathParts) throws UnifyException {
-        
-    }
-
     protected abstract void doProcess(ClientRequest request, ClientResponse response) throws UnifyException;
 
 }

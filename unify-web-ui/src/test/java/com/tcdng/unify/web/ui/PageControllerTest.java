@@ -27,9 +27,7 @@ import com.tcdng.unify.web.PathInfoRepository;
 import com.tcdng.unify.web.RequestPathParts;
 import com.tcdng.unify.web.TestClientRequest;
 import com.tcdng.unify.web.TestClientResponse;
-import com.tcdng.unify.web.UnifyWebPropertyConstants;
 import com.tcdng.unify.web.WebApplicationComponents;
-import com.tcdng.unify.web.ui.controller.DocumentLoaderController;
 import com.tcdng.unify.web.ui.widget.Widget;
 
 /**
@@ -103,25 +101,6 @@ public class PageControllerTest extends AbstractUnifyWebTest {
 		assertEquals(
 				"{\"jsonResp\":[{\"handler\":\"hintUserHdl\"},{\"handler\":\"refreshMenuHdl\"}],\"scrollReset\":true}",
 				response.toString());
-	}
-
-	@SuppressWarnings("unused")
-	@Test
-	public void testDocumentLoading() throws Exception {
-		ControllerFinder controllerFinder = (ControllerFinder) getComponent(
-				WebApplicationComponents.APPLICATION_CONTROLLERFINDER);
-		PathInfoRepository pathInfoRepository = (PathInfoRepository) getComponent(
-				WebApplicationComponents.APPLICATION_PATHINFOREPOSITORY);
-
-		// Create page controller and load page to request context
-		DocumentLoaderController controller = (DocumentLoaderController) controllerFinder
-				.findController(pathInfoRepository.getControllerPathParts("/testauthor"));
-	}
-
-    @Override
-	protected void doAddSettingsAndDependencies() throws Exception {
-    	super.doAddSettingsAndDependencies();
-		addContainerSetting(UnifyWebPropertyConstants.APPLICATION_LOADING_PATH_ENABLED, "true");
 	}
 
 	@Override

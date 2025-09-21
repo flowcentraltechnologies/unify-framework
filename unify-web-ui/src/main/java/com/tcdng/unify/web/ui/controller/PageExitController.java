@@ -13,18 +13,26 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.tcdng.unify.web;
+package com.tcdng.unify.web.ui.controller;
+
+import com.tcdng.unify.core.UnifyException;
+import com.tcdng.unify.core.annotation.Component;
+import com.tcdng.unify.web.AbstractPlainJsonController;
+import com.tcdng.unify.web.WebApplicationComponents;
 
 /**
- * Unify web request attribute constants.
+ * Page exit controller.
  * 
  * @author The Code Department
  * @since 4.1
  */
-public interface UnifyWebRequestAttributeConstants extends com.tcdng.unify.core.UnifyCoreRequestAttributeConstants {
-    
-    String POPUP = "UNIFYWEB.POPUP";
+@Component(WebApplicationComponents.APPLICATION_PAGEEXIT_CONTROLLER)
+public class PageExitController extends AbstractPlainJsonController {
 
-    int PID_SIZE = 10;
+	@Override
+	protected String doExecute(String actionName, String jsonRequest) throws UnifyException {
+		//getSessionContext().ejectByRule(getHttpRequestParameter(PageRequestParameterConstants.OLD_PID));
+		return "{}";
+	}
 
 }

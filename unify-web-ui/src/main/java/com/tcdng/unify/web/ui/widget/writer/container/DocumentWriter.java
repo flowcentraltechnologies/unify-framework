@@ -25,11 +25,12 @@ import com.tcdng.unify.core.annotation.Configurable;
 import com.tcdng.unify.core.annotation.Writes;
 import com.tcdng.unify.core.constant.MimeType;
 import com.tcdng.unify.core.data.WebStringWriter;
+import com.tcdng.unify.core.util.RandomUtils;
 import com.tcdng.unify.core.util.StringUtils;
 import com.tcdng.unify.web.ControllerPathParts;
+import com.tcdng.unify.web.UnifyWebRequestAttributeConstants;
 import com.tcdng.unify.web.constant.BundledCatType;
 import com.tcdng.unify.web.constant.ClientSyncNameConstants;
-import com.tcdng.unify.web.constant.UnifyWebRequestAttributeConstants;
 import com.tcdng.unify.web.ui.PagePathInfoRepository;
 import com.tcdng.unify.web.ui.widget.Document;
 import com.tcdng.unify.web.ui.widget.DocumentLayout;
@@ -217,18 +218,15 @@ public class DocumentWriter extends AbstractPageWriter {
 		writer.write(">");
 		// Set document properties
 		ControllerPathParts controllerPathParts = pathInfoRepository.getControllerPathParts(document);
-		final String tempCookieName = getRequestAttribute(String.class, UnifyWebRequestAttributeConstants.TEMP_COOKIE);
+		if (StringUtils.isBlank(getRequestClientPageId())) {
+			setRequestClientPageId(
+					RandomUtils.generateRandomAlphanumeric(UnifyWebRequestAttributeConstants.PID_SIZE));
+		}
+		
 		writer.write("ux.setupDocument(\"").write(controllerPathParts.getControllerPathId()).write("\", \"")
 				.write(document.getPopupBaseId()).write("\", \"").write(document.getPopupWinId()).write("\", \"")
 				.write(document.getPopupSysId()).write("\", \"").write(document.getLatencyPanelId()).write("\", \"")
-				.write(getSessionContext().getId()).write("\",");
-		if (!StringUtils.isBlank(tempCookieName)) {
-			writer.write("\"").write(tempCookieName).write("\"");
-		} else {
-			writer.write("null");
-		}
-
-		writer.write(");");
+				.write(getSessionContext().getId()).write("\",\"").write(getRequestClientPageId()).write("\");");
 
 		if (document.isPushUpdate()
 				&& getContainerSetting(boolean.class, UnifyCorePropertyConstants.APPLICATION_BROADCAST_ENTITY_CHANGE)) {

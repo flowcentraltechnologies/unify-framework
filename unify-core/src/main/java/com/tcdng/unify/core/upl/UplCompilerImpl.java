@@ -478,7 +478,6 @@ public class UplCompilerImpl extends AbstractUnifyComponent implements UplCompil
 			Class<? extends UnifyComponent> componentClass, String generatedUpl) throws UnifyException {
 		// Add generated UPL if necessary 18/08/18
 		if (StringUtils.isNotBlank(generatedUpl)) {
-			logDebug("Parsing generated document for component type [{0}]...", componentClass);
 			uplElement.merge(parseUplSource(parserContext, new StringReader(generatedUpl), componentClass.getName()));
 		}
 
@@ -488,11 +487,11 @@ public class UplCompilerImpl extends AbstractUnifyComponent implements UplCompil
 			com.tcdng.unify.core.annotation.UplBinding uba = clazz
 					.getAnnotation(com.tcdng.unify.core.annotation.UplBinding.class);
 			if (uba != null) {
-				logDebug("Parsing binded document for component type [{0}] [{1}]...", componentClass, uba.value());
 				uplElement.merge(parseUplSource(parserContext, uba));
 			}
 			clazz = clazz.getSuperclass();
 		}
+		
 		postParse(parserContext, uplElement);
 	}
 

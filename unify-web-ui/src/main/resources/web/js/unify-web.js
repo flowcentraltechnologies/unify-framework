@@ -94,6 +94,8 @@ ux.remoteView = null;
 ux.remoteredirect = [];
 ux.hintTimeout=UNIFY_HIDE_USER_HINT_DISPLAY_PERIOD;
 
+ux.docPid = null;
+
 ux.shortcuts = [];
 ux.pagenamealiases = [];
 ux.delayedpanelposting = [];
@@ -141,29 +143,14 @@ ux.registerExtension = function(extLiteral, extObj) {
 }
 
 /** Basic * */
-ux.setupDocument = function(docPath, docPopupBaseId, docPopupId, docSysInfoId, docLatencyId, docSessionId, tempc) {
+ux.setupDocument = function(docPath, docPopupBaseId, docPopupId, docSysInfoId, docLatencyId, docSessionId, docPid) {
 	ux.docPath = docPath;
 	ux.docPopupBaseId = docPopupBaseId;
 	ux.docPopupId = docPopupId;
 	ux.docSysInfoId = docSysInfoId;
 	ux.busyIndicator = docLatencyId;
 	ux.docSessionId = docSessionId;
-	if (tempc) {
-		document.cookie = tempc + "=;Max-Age=0;path=/;";
-	}
-}
-
-ux.getPageId = function() {
-	let pid = sessionStorage.getItem("page_id");
-	if (pid === null) {
-		let uxstore = localStorage.getItem("uxp_store");
-		let _uxstore = uxstore !== null ? JSON.parse(uxstore): {pid:0};
-		pid = "pid" + (++_uxstore.pid).toString(16);
-		sessionStorage.setItem("page_id", pid);
-		localStorage.setItem("uxp_store", JSON.stringify(_uxstore));
-	}
-	
-	return pid;
+	ux.docPid = docPid;
 }
 
 ux.wsPushUpdate = function(wsSyncPath) {
@@ -174,7 +161,7 @@ ux.wsPushUpdate = function(wsSyncPath) {
 
 	ux.wsSocket = new WebSocket(ux.wsUrl);
 	ux.wsSocket.addEventListener('open', function (event) {
-	    ux.wsSend("open", ux.getPageId());
+	    ux.wsSend("open", ux.docPid);
 	});
 	ux.wsSocket.addEventListener('message', function (event) {
 	    ux.wsReceive(event.data);
@@ -669,7 +656,7 @@ ux.ajaxCall = function(ajaxPrms) {
 	try {
 		ux.saveContentScroll();
 		uAjaxReq.open("POST", url, true);
-		uAjaxReq.setRequestHeader("Unify-Pid", ux.getPageId());
+		uAjaxReq.setRequestHeader("Unify-Pid", ux.docPid);
 		if (ajaxPrms.uEncoded) {
 			uAjaxReq.setRequestHeader("Content-Type",
 					"application/x-www-form-urlencoded");
@@ -5897,9 +5884,7 @@ ux.init = function() {
 					{});
 	
 	// Window handler
-	ux.addHdl(window, "beforeunload", ux.windowUnload,
-					{});
-	
+						
 	// Register self as extension
 	ux.registerExtension("ux", ux);
 	
@@ -6003,11 +5988,6 @@ ux.getfn = function(id) {
 ux.setHintTimeout = function(millisec) {
 	ux.hintTimeout = millisec;
 }
-
-ux.windowUnload = function(uEv) {
-
-}
-
 
 ux.documentKeydownHdl = function(uEv) {
 	// Hide popup on tab

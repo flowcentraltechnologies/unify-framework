@@ -124,11 +124,6 @@ public abstract class AbstractHttpCRUDController extends AbstractHttpClientContr
 		}
 	}
 
-	@Override
-	public final void ensureContextResources(ControllerPathParts controllerPathParts) throws UnifyException {
-
-	}
-
 	/**
 	 * Gets Http CRUD controller processor.
 	 * 

@@ -49,5 +49,5 @@ public interface WebApplicationComponents {
     
     String APPLICATION_PAGEEVENTBROADCASTER= "application-pageeventbroadcaster";
 
-    String APPLICATION_DOCUMENTLOADERCONTROLLER = "/documentloader";
+    String APPLICATION_PAGEEXIT_CONTROLLER = "/pageExit";
 }

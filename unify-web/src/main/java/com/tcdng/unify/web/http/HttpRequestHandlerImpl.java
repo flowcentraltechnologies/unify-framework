@@ -55,7 +55,6 @@ import com.tcdng.unify.web.RequestPathParts;
 import com.tcdng.unify.web.TenantPathManager;
 import com.tcdng.unify.web.UnifyWebErrorConstants;
 import com.tcdng.unify.web.UnifyWebPropertyConstants;
-import com.tcdng.unify.web.UnifyWebSessionAttributeConstants;
 import com.tcdng.unify.web.WebApplicationComponents;
 import com.tcdng.unify.web.constant.BundledCatType;
 import com.tcdng.unify.web.constant.RequestParameterConstants;
@@ -145,13 +144,11 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 	@Override
 	public RequestPathParts resolveRequestPath(HttpRequest httpRequest) throws UnifyException {
 		final String resolvedPath = httpRequest.getPathInfo();
-		logDebug("Resolving request path [{0}]...", resolvedPath);
 		return requestPathParts.get(resolvedPath == null ? "" : resolvedPath);
 	}
 
 	@Override
 	public RequestPathParts getRequestPathParts(String requestPath) throws UnifyException {
-		logDebug("Get request path parts for path [{0}]...", requestPath);
 		return requestPathParts.get(requestPath);
 	}
 
@@ -169,20 +166,7 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 							: getApplicationLocale();
 			getSessionContext().setLocale(reqLocale);
 
-			String pid = httpRequest.getHeader(HttpRequestHeaderConstants.UNIFY_PID);
-			if (StringUtils.isBlank(pid)) {
-				final String tempCookieName = getSessionAttribute(String.class,
-						UnifyWebSessionAttributeConstants.TEMP_COOKIE);
-				if (!StringUtils.isBlank(tempCookieName)) {
-					Optional<ClientCookie> optional = httpRequest.getCookie(tempCookieName);
-					if (optional.isPresent()) {
-						pid = optional.get().getVal();
-						setRequestAttribute(UnifyWebRequestAttributeConstants.TEMP_COOKIE, tempCookieName);
-					}
-				}
-			}
-
-			setRequestClientPageId(pid);
+			setRequestClientPageId(httpRequest.getHeader(HttpRequestHeaderConstants.UNIFY_PID));
 			setRequestAttribute(UnifyWebRequestAttributeConstants.HEADERS, httpRequest);
 			setRequestAttribute(UnifyWebRequestAttributeConstants.PARAMETERS, httpRequest);
 
@@ -204,6 +188,11 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 				httpResponse.setHeader(HttpResponseHeaderConstants.ACCESS_CONTROL_MAX_AGE, "600");
 			}
 
+			// No caching by default
+			httpResponse.setHeader(HttpResponseHeaderConstants.CACHE_CONTROL, "no-store, no-cache, must-revalidate");
+			httpResponse.setHeader(HttpResponseHeaderConstants.PRAGMA, "no-cache");
+			httpResponse.setDateHeader(HttpResponseHeaderConstants.EXPIRES, 0L);			
+			
 			Controller controller = null;
 			try {
 				controller = controllerFinder.findController(requestPathParts.getControllerPathParts());
@@ -230,7 +219,6 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 					}
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
 				logError(e);
 				boolean exit = true;
 				try {
