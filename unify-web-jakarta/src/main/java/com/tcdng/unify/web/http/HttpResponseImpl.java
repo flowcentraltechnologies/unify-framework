@@ -46,6 +46,11 @@ public class HttpResponseImpl implements HttpResponse {
     }
 
     @Override
+	public void setDateHeader(String key, long val) {
+    	response.setDateHeader(key, val);
+	}
+
+	@Override
     public void setContentType(String contentType) {
         response.setContentType(contentType);
     }

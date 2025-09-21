@@ -27,8 +27,6 @@ import com.tcdng.unify.core.UnifyCoreErrorConstants;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.util.IOUtils;
-import com.tcdng.unify.core.util.StringUtils;
-import com.tcdng.unify.web.constant.UnifyWebRequestAttributeConstants;
 
 /**
  * Default implementation of a controller finder.
@@ -101,17 +99,6 @@ public class ControllerFinderImpl extends AbstractUnifyComponent implements Cont
 			}
 
 			Controller controller = (Controller) getComponent(_actualControllerName);
-			if (controller.isPageController()
-					&& getContainerSetting(boolean.class, UnifyWebPropertyConstants.APPLICATION_LOADING_PATH_ENABLED, false)
-					&& StringUtils.isBlank(getRequestClientPageId())) {
-				logDebug("Forcing document loading with controller [{0}] and path [{1}]...",
-						WebApplicationComponents.APPLICATION_DOCUMENTLOADERCONTROLLER,
-						controllerPathParts.getControllerPath());
-				setRequestAttribute(UnifyWebRequestAttributeConstants.LOADER_FORWARD_TARGET,
-						getClientRequestTarget());
-				controller = (Controller) getComponent(WebApplicationComponents.APPLICATION_DOCUMENTLOADERCONTROLLER);
-			}
-
 			controller.ensureContextResources(controllerPathParts);
 			return controller;
 		} catch (UnifyException e) {
