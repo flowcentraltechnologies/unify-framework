@@ -166,9 +166,7 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 							: getApplicationLocale();
 			getSessionContext().setLocale(reqLocale);
 
-			final String pid = httpRequest.getHeader(HttpRequestHeaderConstants.UNIFY_PID);
-			System.out.println("@prime: (header) pid = " + pid);
-			setRequestClientPageId(pid);
+			setRequestClientPageId(httpRequest.getHeader(HttpRequestHeaderConstants.UNIFY_PID));
 			setRequestAttribute(UnifyWebRequestAttributeConstants.HEADERS, httpRequest);
 			setRequestAttribute(UnifyWebRequestAttributeConstants.PARAMETERS, httpRequest);
 

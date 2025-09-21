@@ -28,9 +28,9 @@ import com.tcdng.unify.core.data.WebStringWriter;
 import com.tcdng.unify.core.util.RandomUtils;
 import com.tcdng.unify.core.util.StringUtils;
 import com.tcdng.unify.web.ControllerPathParts;
+import com.tcdng.unify.web.UnifyWebRequestAttributeConstants;
 import com.tcdng.unify.web.constant.BundledCatType;
 import com.tcdng.unify.web.constant.ClientSyncNameConstants;
-import com.tcdng.unify.web.http.HttpRequestHeaderConstants;
 import com.tcdng.unify.web.ui.PagePathInfoRepository;
 import com.tcdng.unify.web.ui.widget.Document;
 import com.tcdng.unify.web.ui.widget.DocumentLayout;
@@ -219,9 +219,8 @@ public class DocumentWriter extends AbstractPageWriter {
 		// Set document properties
 		ControllerPathParts controllerPathParts = pathInfoRepository.getControllerPathParts(document);
 		if (StringUtils.isBlank(getRequestClientPageId())) {
-			final String pid = RandomUtils.generateRandomAlphanumeric(8);
-			System.out.println("@prime: (generated) pid = " + pid);
-			setRequestClientPageId(pid);
+			setRequestClientPageId(
+					RandomUtils.generateRandomAlphanumeric(UnifyWebRequestAttributeConstants.PID_SIZE));
 		}
 		
 		writer.write("ux.setupDocument(\"").write(controllerPathParts.getControllerPathId()).write("\", \"")

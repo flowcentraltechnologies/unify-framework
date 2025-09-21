@@ -25,4 +25,6 @@ public interface UnifyWebRequestAttributeConstants extends com.tcdng.unify.core.
     
     String POPUP = "UNIFYWEB.POPUP";
 
+    int PID_SIZE = 10;
+
 }

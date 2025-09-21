@@ -27,6 +27,8 @@ import com.tcdng.unify.core.UnifyCoreErrorConstants;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.util.IOUtils;
+import com.tcdng.unify.core.util.RandomUtils;
+import com.tcdng.unify.core.util.StringUtils;
 
 /**
  * Default implementation of a controller finder.
@@ -99,6 +101,11 @@ public class ControllerFinderImpl extends AbstractUnifyComponent implements Cont
 			}
 
 			Controller controller = (Controller) getComponent(_actualControllerName);
+			if (controller.isPageController() && StringUtils.isBlank(getRequestClientPageId())) {
+				setRequestClientPageId(
+						RandomUtils.generateRandomAlphanumeric(UnifyWebRequestAttributeConstants.PID_SIZE));
+			}
+
 			controller.ensureContextResources(controllerPathParts);
 			return controller;
 		} catch (UnifyException e) {
