@@ -151,7 +151,6 @@ ux.setupDocument = function(docPath, docPopupBaseId, docPopupId, docSysInfoId, d
 	ux.busyIndicator = docLatencyId;
 	ux.docSessionId = docSessionId;
 	ux.docPid = docPid;
-	console.log("@prime: ux.docPid = " + ux.docPid);
 }
 
 ux.wsPushUpdate = function(wsSyncPath) {
@@ -5885,9 +5884,7 @@ ux.init = function() {
 					{});
 	
 	// Window handler
-	ux.addHdl(window, "beforeunload", ux.windowUnload,
-					{});
-	
+						
 	// Register self as extension
 	ux.registerExtension("ux", ux);
 	
@@ -5991,11 +5988,6 @@ ux.getfn = function(id) {
 ux.setHintTimeout = function(millisec) {
 	ux.hintTimeout = millisec;
 }
-
-ux.windowUnload = function(uEv) {
-
-}
-
 
 ux.documentKeydownHdl = function(uEv) {
 	// Hide popup on tab

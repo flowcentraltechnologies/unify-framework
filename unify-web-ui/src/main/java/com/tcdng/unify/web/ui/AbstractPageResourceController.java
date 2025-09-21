@@ -60,11 +60,6 @@ public abstract class AbstractPageResourceController extends AbstractUIControlle
     }
 
     @Override
-    public void ensureContextResources(ControllerPathParts controllerPathParts) throws UnifyException {
-        
-    }
-
-    @Override
 	public boolean isRefererRequired() {
 		return true;
 	}

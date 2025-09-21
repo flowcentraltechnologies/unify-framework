@@ -46,6 +46,8 @@ public interface PageRequestParameterConstants {
     String VALIDATION_ACTION = "req_va";
 
     String NO_TRANSFER = "req_nt";
+
+    String OLD_PID = "req_opid";
     
     String UNLOAD_ORIGIN_PAGE = "unload_origin";
 }

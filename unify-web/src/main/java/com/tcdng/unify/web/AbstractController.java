@@ -70,6 +70,11 @@ public abstract class AbstractController extends AbstractUnifyComponent implemen
 		return BundledCatType.BACKOFFICE;
 	}
 
+    @Override
+    public void ensureContextResources(ControllerPathParts controllerPathParts) throws UnifyException {
+        
+    }
+
 	@Override
 	protected void onInitialize() throws UnifyException {
 
