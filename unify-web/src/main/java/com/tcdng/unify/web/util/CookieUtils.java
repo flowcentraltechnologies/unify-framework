@@ -40,4 +40,10 @@ public final class CookieUtils {
 		final String _infix = StringUtils.flatten(infix).replaceAll("[^a-zA-Z0-9_]", "");
 		return ("NS_" + _infix + "_" + appPort).toUpperCase();
 	}
+    
+	public static String getBundledCategoryCookieName(String infix, int appPort) throws UnifyException {
+		final String _infix = StringUtils.flatten(infix).replaceAll("[^a-zA-Z0-9_]", "");
+		return ("BN_" + _infix + "_" + appPort).toUpperCase();
+	}
+
 }

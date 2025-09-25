@@ -24,7 +24,5 @@ package com.tcdng.unify.web.http;
 public interface HttpRequestCookieConstants {
 	
 	String UNIFY_PID_PREFIX = "unify-pid";
-	
-	String UNIFY_BUNDLED_CATEGORY = "JS_BUNDLED_CAT";
 
 }

@@ -15,6 +15,7 @@
  */
 package com.tcdng.unify.web.ui;
 
+import com.tcdng.unify.core.UnifyCoreApplicationAttributeConstants;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.util.EncodingUtils;
 import com.tcdng.unify.web.UnifyWebPropertyConstants;
@@ -25,7 +26,6 @@ import com.tcdng.unify.web.constant.BundledCatType;
 import com.tcdng.unify.web.constant.ReadOnly;
 import com.tcdng.unify.web.constant.ResetOnWrite;
 import com.tcdng.unify.web.constant.Secured;
-import com.tcdng.unify.web.http.HttpRequestCookieConstants;
 
 /**
  * Convenient abstract base class for bundled home page controllers.
@@ -64,7 +64,9 @@ public abstract class AbstractBundledHomePageController<T extends AbstractBundle
 				BundledCatType.FRONTOFFICE.equals(category)
 						? UnifyWebPropertyConstants.APPLICATION_BUNDLED_MODE_FRONTOFFICE
 						: UnifyWebPropertyConstants.APPLICATION_BUNDLED_MODE_BACKOFFICE));
-		getPageRequestContextUtil().getClientResponse().setCookie(HttpRequestCookieConstants.UNIFY_BUNDLED_CATEGORY,
+		final String bundleCookieName = getApplicationAttribute(String.class,
+				UnifyCoreApplicationAttributeConstants.BUNDLED_CATEGORY_COOKIE_NAME);
+		getPageRequestContextUtil().getClientResponse().setCookie(bundleCookieName,
 				EncodingUtils.getBase64String(category.id()));
 		return "forwardtopath";
 	}
