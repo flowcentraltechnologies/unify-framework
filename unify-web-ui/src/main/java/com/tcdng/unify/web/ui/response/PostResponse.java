@@ -62,7 +62,6 @@ public class PostResponse extends AbstractJsonPageControllerResponse {
             }
         }
 
-        logDebug("Preparing post response: path ID = [{0}], target path = [{1}]", page.getPathId(), path);
         if (StringUtils.isNotBlank(path)) {
             writer.write(",");
             writer.writeJsonPathVariable("postPath", path);

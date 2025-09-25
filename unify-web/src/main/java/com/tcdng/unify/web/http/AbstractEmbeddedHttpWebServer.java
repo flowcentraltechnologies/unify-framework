@@ -96,8 +96,10 @@ public abstract class AbstractEmbeddedHttpWebServer extends AbstractHttpWebInter
 		final String infix = getContainerSetting(String.class, UnifyCorePropertyConstants.APPLICATION_CODE, "unify");
 		final String sessionCookieName = CookieUtils.getSessionCookieName(infix, port);
 		final String longSessionCookieName = CookieUtils.getLongSessionCookieName(infix, port);
+		final String bundledCatCookieName = CookieUtils.getBundledCategoryCookieName(infix, port);
 		setApplicationAttribute(UnifyCoreApplicationAttributeConstants.SESSION_COOKIE_NAME, sessionCookieName);
 		setApplicationAttribute(UnifyCoreApplicationAttributeConstants.LONG_SESSION_COOKIE_NAME, longSessionCookieName);
+		setApplicationAttribute(UnifyCoreApplicationAttributeConstants.BUNDLED_CATEGORY_COOKIE_NAME, bundledCatCookieName);
 		return sessionCookieName;
 	}
 	

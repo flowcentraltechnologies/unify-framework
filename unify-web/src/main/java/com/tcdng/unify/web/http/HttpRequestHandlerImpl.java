@@ -31,6 +31,7 @@ import java.util.Optional;
 
 import com.tcdng.unify.core.AbstractUnifyComponent;
 import com.tcdng.unify.core.SessionAttributeProvider;
+import com.tcdng.unify.core.UnifyCoreApplicationAttributeConstants;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.UserSession;
 import com.tcdng.unify.core.annotation.Component;
@@ -191,8 +192,8 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 			// No caching by default
 			httpResponse.setHeader(HttpResponseHeaderConstants.CACHE_CONTROL, "no-store, no-cache, must-revalidate");
 			httpResponse.setHeader(HttpResponseHeaderConstants.PRAGMA, "no-cache");
-			httpResponse.setDateHeader(HttpResponseHeaderConstants.EXPIRES, 0L);			
-			
+			httpResponse.setDateHeader(HttpResponseHeaderConstants.EXPIRES, 0L);
+
 			Controller controller = null;
 			try {
 				controller = controllerFinder.findController(requestPathParts.getControllerPathParts());
@@ -204,8 +205,9 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 				}
 
 				if (isBundledModeEnabled) {
-					Optional<ClientCookie> optional = httpRequest
-							.getCookie(HttpRequestCookieConstants.UNIFY_BUNDLED_CATEGORY);
+					final String bundleCookieName = getApplicationAttribute(String.class,
+							UnifyCoreApplicationAttributeConstants.BUNDLED_CATEGORY_COOKIE_NAME);
+					Optional<ClientCookie> optional = httpRequest.getCookie(bundleCookieName);
 					final String sessionBundledCategory = EncodingUtils
 							.decodeBase64String(optional.isPresent() ? optional.get().getVal() : null);
 					getSessionContext().setBundledCategory(sessionBundledCategory);

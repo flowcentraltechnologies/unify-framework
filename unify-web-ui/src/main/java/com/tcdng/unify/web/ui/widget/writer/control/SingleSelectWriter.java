@@ -98,6 +98,7 @@ public class SingleSelectWriter extends AbstractPopupTextFieldWriter {
 		writer.writeParam("pKeys", listControlInfo.getKeys());
 		writer.writeParam("pLabels", listControlInfo.getLabels());
 		writer.writeParam("pIsBlankOption", singleSelect.isLoadingFailure() || singleSelect.getBlankOption() != null);
+		writer.writeParam("pIsValFac", singleSelect.isValueOnFacade());
 		writer.writeParam("pNormCls", "norm");
 		writer.writeParam("pSelCls", getUserColorStyleClass("sel"));
 

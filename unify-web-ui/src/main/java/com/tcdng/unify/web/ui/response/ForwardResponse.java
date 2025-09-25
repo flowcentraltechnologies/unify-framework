@@ -48,7 +48,6 @@ public class ForwardResponse extends AbstractJsonPageControllerResponse {
             path = (String) ReflectUtils.getNestedBeanProperty(page.getPageBean(), pathBinding);
         }
 
-        logDebug("Preparing forward response: path ID = [{0}],  target path = [{1}]", page.getPathId(), path);
         writer.write(",");
         writer.writeJsonPathVariable("loadDocument", path);
     }
