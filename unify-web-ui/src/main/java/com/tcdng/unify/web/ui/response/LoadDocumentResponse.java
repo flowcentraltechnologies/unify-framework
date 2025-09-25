@@ -38,7 +38,6 @@ public class LoadDocumentResponse extends AbstractPageControllerResponse {
 
     @Override
     public void generate(ResponseWriter writer, Page page) throws UnifyException {
-        logDebug("Preparing load document response: path ID = [{0}]", page.getPathId());
         Document document = (Document) page;
         writer.writeStructureAndContent(document);
         writer.writeBehavior(document);

@@ -42,7 +42,6 @@ public class RefreshMenuResponse extends AbstractJsonPageControllerResponse {
 
     @Override
     protected void doGenerate(ResponseWriter writer, Page page) throws UnifyException {
-        logDebug("Preparing refresh menu response: path ID = [{0}]", page.getPathId());
         if (Boolean.TRUE.equals(removeSessionAttribute(UnifyWebSessionAttributeConstants.REFRESH_MENU))) {
             Document document = getRequestContextUtil().getRequestDocument();
             Panel menuPanel = document.getMenuPanel();

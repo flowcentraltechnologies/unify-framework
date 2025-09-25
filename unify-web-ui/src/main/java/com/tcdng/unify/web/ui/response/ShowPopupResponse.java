@@ -46,7 +46,6 @@ public class ShowPopupResponse extends AbstractJsonPageControllerResponse {
 
     @Override
     protected void doGenerate(ResponseWriter writer, Page page) throws UnifyException {
-        logDebug("Preparing show popup response: path ID = [{0}]", page.getPathId());
         appendPopupPanelsJSON(writer, page);
         writer.write(",");
         appendRefreshAttributesJson(writer, false);

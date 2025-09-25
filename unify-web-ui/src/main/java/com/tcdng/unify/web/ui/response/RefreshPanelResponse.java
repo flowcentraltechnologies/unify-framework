@@ -58,7 +58,6 @@ public class RefreshPanelResponse extends AbstractJsonPageControllerResponse {
     
     private void appendRefreshPanelsJson(ResponseWriter writer, Page page, Panel[] panels)
             throws UnifyException {
-        logDebug("Preparing refresh panel response: path ID = [{0}]...", page.getPathId());
         writer.write(",\"refreshPanels\":[");
         if (panels != null) {
             boolean appendSym = false;

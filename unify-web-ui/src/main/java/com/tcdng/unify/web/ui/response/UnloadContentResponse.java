@@ -39,7 +39,6 @@ public class UnloadContentResponse extends AbstractJsonPageControllerResponse {
 
     @Override
     protected void doGenerate(ResponseWriter writer, Page page) throws UnifyException {
-        logDebug("Preparing unload content response: path ID = [{0}]", page.getPathId());
         ContentPanel contentPanel = getRequestContextUtil().getRequestDocument().getContentPanel();
         appendRefreshPageJSON(writer, contentPanel, page);
         writer.write(",");

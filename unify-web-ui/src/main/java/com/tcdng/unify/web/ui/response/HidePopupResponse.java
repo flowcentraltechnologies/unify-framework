@@ -39,7 +39,6 @@ public class HidePopupResponse extends AbstractJsonPageControllerResponse {
 
     @Override
     protected void doGenerate(ResponseWriter writer, Page page) throws UnifyException {
-        logDebug("Preparing hide popup response: path ID = [{0}]", page.getPathId());
         if (getUplAttribute(boolean.class, "systemInfo")) {
             writer.write(",\"hideSysInfoPopup\":true");
         } else {

@@ -41,7 +41,6 @@ public class HintUserResponse extends AbstractJsonPageControllerResponse {
 
     @Override
     protected void doGenerate(ResponseWriter writer, Page page) throws UnifyException {
-        logDebug("Preparing hint user response: path ID = [{0}]", page.getPathId());
         Hints hints = getRequestContextUtil().getUserHints();
         if (hints != null && hints.isPresent()) {
             writer.write(",\"hintUserHtml\":");

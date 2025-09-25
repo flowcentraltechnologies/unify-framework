@@ -43,12 +43,8 @@ public class AutoRefreshResponse extends AbstractJsonPageControllerResponse {
                 (AutoRefresh) getRequestAttribute(UnifyWebRequestAttributeConstants.AUTO_REFRESH);
         if (autoRefresh != null) {
             Widget widget = autoRefresh.getWidget();
-            logDebug("Preparing auto-refresh response: path ID = [{0}], component = [{1}]",
-                    page.getPathId(), widget.getLongName());
             writer.write(",\"autoRefresh\":").writeJsonAutoRefresh(widget);
             appendRegisteredDebounceWidgets(writer, false);
-        } else {
-            logDebug("Preparing auto-refresh response: Can not get auto-refresh information from request context");
         }
     }
 
