@@ -3309,6 +3309,7 @@ ux.rigSingleSelect = function(rgp) {
 		sel._frm = _id(rgp.pFrmId);
 		sel._list = _id(rgp.pLstId);
 		sel._blank = _id(rgp.pBlnkId);
+		sel._valFac = rgp.pIsValFac;
 		sel._colors = rgp.pColors;
 		if (sel._colors) {
 			sel._colorbtn = _id(rgp.pSelColId);
@@ -3373,7 +3374,7 @@ ux.rigSingleSelect = function(rgp) {
 				}
 				
 				this.value = val;
-				this._fac.value = txt;
+				this._fac.value = this._valFac ? val : txt;
 				this._fac.focus();
 				this._selIdx = index;
 				if (fire) {
