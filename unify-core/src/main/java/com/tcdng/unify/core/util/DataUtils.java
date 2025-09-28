@@ -1074,6 +1074,10 @@ public final class DataUtils {
 			return null;
 		}
 
+		if (Object.class.equals(clazz)) {
+			return (T) jsonValue.toString();
+		}
+		
 		// Array
 		if (clazz.isArray()) {
 			Class<?> compClass = clazz.getComponentType();

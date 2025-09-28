@@ -518,6 +518,20 @@ public class DataUtilsTest extends AbstractUnifyComponentTest {
 		assertEquals(2, account.getEntries().size());
 		assertEquals("{\"name\":\"mary\",\"age\":32}", account.getEntries().get(0));
 		assertEquals("{\"name\":\"john\",\"age\":36}", account.getEntries().get(1));
+
+		String json6 = "{\"accountNo\":\"1234567890\", \"trace\": {}}";
+		account = DataUtils.fromJsonString(Account.class, json6);
+		assertNotNull(account);
+		assertEquals("1234567890", account.getAccountNo());
+		assertEquals("{}", account.getTrace());
+		assertNull(account.getEntries());
+
+		String json7 = "{\"accountNo\":\"1234567890\", \"trace\": {\"age\":24}}";
+		account = DataUtils.fromJsonString(Account.class, json7);
+		assertNotNull(account);
+		assertEquals("1234567890", account.getAccountNo());
+		assertEquals("{\"age\":24}", account.getTrace());
+		assertNull(account.getEntries());
 	}
 	
 	@Test
@@ -1039,6 +1053,8 @@ public class DataUtilsTest extends AbstractUnifyComponentTest {
 
 		private String accountNo;
 		
+		private Object trace;
+		
 		private List<?> entries;
 
 		public String getAccountNo() {
@@ -1047,6 +1063,14 @@ public class DataUtilsTest extends AbstractUnifyComponentTest {
 
 		public void setAccountNo(String accountNo) {
 			this.accountNo = accountNo;
+		}
+
+		public Object getTrace() {
+			return trace;
+		}
+
+		public void setTrace(Object trace) {
+			this.trace = trace;
 		}
 
 		public List<?> getEntries() {
