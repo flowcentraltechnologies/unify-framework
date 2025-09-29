@@ -1074,6 +1074,10 @@ public final class DataUtils {
 			return null;
 		}
 
+		if (Object.class.equals(clazz)) {
+			return (T) (jsonValue.isString() ? jsonValue.asString(): jsonValue.toString());
+		}
+		
 		// Array
 		if (clazz.isArray()) {
 			Class<?> compClass = clazz.getComponentType();
@@ -1219,7 +1223,7 @@ public final class DataUtils {
 	 * @throws UnifyException if an error occurs
 	 */
 	public static void writeJsonObject(Object object, OutputStream outputStream) throws UnifyException {
-		writeJsonObject(null, object, outputStream, null, PrintFormat.NONE);
+		writeJsonObject(null, object, outputStream, null, PrintFormat.PRETTY);
 	}
 
 	/**
@@ -1231,7 +1235,7 @@ public final class DataUtils {
 	 */
 	public static void writeJsonObject(JsonObjectComposition comp, Object object, OutputStream outputStream)
 			throws UnifyException {
-		writeJsonObject(comp, object, outputStream, null, PrintFormat.NONE);
+		writeJsonObject(comp, object, outputStream, null, PrintFormat.PRETTY);
 	}
 
 	/**
@@ -1342,7 +1346,7 @@ public final class DataUtils {
 	}
 
 	public static String asJsonString(JsonObjectComposition comp, Object obj) throws UnifyException {
-		return DataUtils.asJsonString(comp, obj, PrintFormat.NONE);
+		return DataUtils.asJsonString(comp, obj, PrintFormat.PRETTY);
 	}
 
 	public static String asJsonString(Object obj, PrintFormat format) throws UnifyException {
@@ -1401,7 +1405,15 @@ public final class DataUtils {
 			return jsonArray;
 		}
 
-		// Map TODO
+		// Map
+		if (Map.class.isAssignableFrom(obj.getClass())) {
+			JsonObject jsonObject = Json.object();
+			for (Map.Entry<?, ?> entry : ((Map<?, ?>) obj).entrySet()) {
+				jsonObject.add(String.valueOf(entry.getKey()), getJsonValueFromObject(null, entry.getValue()));
+			}
+
+			return jsonObject;
+		}
 
 		// Bean
 		JsonObject jsonObject = Json.object();
