@@ -49,6 +49,10 @@ public final class ValueStoreUtils {
 
     public static ValueStore getValueStore(Object storageObject, String dataMarker, int dataIndex) {
         if (storageObject != null) {
+            if (storageObject instanceof ValueStore) {
+                return (ValueStore) storageObject;
+            }
+
             if (storageObject instanceof PackableDoc) {
                 return new PackableDocStore((PackableDoc) storageObject, dataMarker, dataIndex);
             }
