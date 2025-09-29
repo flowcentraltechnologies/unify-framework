@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -879,6 +880,29 @@ public class DataUtilsTest extends AbstractUnifyComponentTest {
 		assertEquals(((Picture) pictureAsset.getResource()).getFormat(), jsonPicture.getFormat());
 		assertEquals(((Picture) pictureAsset.getResource()).getWidth(), jsonPicture.getWidth());
 		assertEquals(((Picture) pictureAsset.getResource()).getHeight(), jsonPicture.getHeight());
+	}
+
+	@Test
+	public void testMapToJsonString() throws Exception {
+		Map<String, Object> map = new HashMap<String, Object>();
+		String json1 = DataUtils.asJsonString(map, PrintFormat.NONE);
+		assertNotNull(json1);
+		assertEquals("{}", json1);
+
+		map.put("name", "Edward Banfa");
+		String json2 = DataUtils.asJsonString(map, PrintFormat.NONE);
+		assertNotNull(json2);
+		assertEquals("{\"name\":\"Edward Banfa\"}", json2);
+
+		map.put("age", 25);
+		String json3 = DataUtils.asJsonString(map, PrintFormat.NONE);
+		assertNotNull(json3);
+		assertEquals("{\"name\":\"Edward Banfa\",\"age\":25}", json3);
+
+		map.put("employed", true);
+		String json4 = DataUtils.asJsonString(map, PrintFormat.NONE);
+		assertNotNull(json4);
+		assertEquals("{\"name\":\"Edward Banfa\",\"age\":25,\"employed\":true}", json4);
 	}
 
 	@Test
