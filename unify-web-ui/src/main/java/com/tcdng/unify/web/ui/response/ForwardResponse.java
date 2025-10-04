@@ -21,6 +21,7 @@ import com.tcdng.unify.core.annotation.UplAttribute;
 import com.tcdng.unify.core.annotation.UplAttributes;
 import com.tcdng.unify.core.util.ReflectUtils;
 import com.tcdng.unify.core.util.StringUtils;
+import com.tcdng.unify.web.UnifyWebSessionAttributeConstants;
 import com.tcdng.unify.web.ui.AbstractJsonPageControllerResponse;
 import com.tcdng.unify.web.ui.widget.Page;
 import com.tcdng.unify.web.ui.widget.ResponseWriter;
@@ -36,19 +37,21 @@ import com.tcdng.unify.web.ui.widget.ResponseWriter;
         @UplAttribute(name = "pathBinding", type = String.class) })
 public class ForwardResponse extends AbstractJsonPageControllerResponse {
 
-    public ForwardResponse() {
-        super("forwardHdl", false);
-    }
+	public ForwardResponse() {
+		super("forwardHdl", false);
+	}
 
-    @Override
-    public void doGenerate(ResponseWriter writer, Page page) throws UnifyException {
-        String path = getUplAttribute(String.class, "path");
-        if (StringUtils.isBlank(path)) {
-            String pathBinding = getUplAttribute(String.class, "pathBinding");
-            path = (String) ReflectUtils.getNestedBeanProperty(page.getPageBean(), pathBinding);
-        }
+	@Override
+	public void doGenerate(ResponseWriter writer, Page page) throws UnifyException {
+		String path = getUplAttribute(String.class, "path");
+		if (StringUtils.isBlank(path)) {
+			String pathBinding = getUplAttribute(String.class, "pathBinding");
+			path = (String) ReflectUtils.getNestedBeanProperty(page.getPageBean(), pathBinding);
+		}
 
-        writer.write(",");
-        writer.writeJsonPathVariable("loadDocument", path);
-    }
+		writer.write(",");
+		writer.writeJsonPathVariable("loadDocument", path);
+
+		setSessionAttribute(UnifyWebSessionAttributeConstants.FORWARD_HINTS, getRequestContextUtil().removeUserHints());
+	}
 }

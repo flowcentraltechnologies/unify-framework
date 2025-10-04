@@ -613,12 +613,48 @@ public interface PageRequestContextUtil extends UnifyComponent {
     void hintUser(Hint.MODE mode, String message, Object... params) throws UnifyException;
 
     /**
+     * Adds a user hint message to current request in {@link Hint.MODE#INFO} mode
+     * using supplied message key and optional parameters.
+     * 
+     * @param message
+     *            the message to hint user
+     * @param params
+     *            the message parameters
+     * @throws UnifyException
+     *             if an error occurs
+     */
+    void hintUserSticky(String message, Object... params) throws UnifyException;
+
+    /**
+     * Adds a user hint message to current request using supplied hint mode, message
+     * key and optional parameters.
+     * 
+     * @param mode
+     *            the hint mode
+     * @param message
+     *            the message to hint user
+     * @param params
+     *            the message parameters
+     * @throws UnifyException
+     *             if an error occurs
+     */
+    void hintUserSticky(Hint.MODE mode, String message, Object... params) throws UnifyException;
+
+    /**
      * Returns all user hints associated with current request.
      * 
      * @throws UnifyException
      *             if an error occurs
      */
     Hints getUserHints() throws UnifyException;
+
+    /**
+     * Removes all user hints associated with current request.
+     * 
+     * @throws UnifyException
+     *             if an error occurs
+     */
+    Hints removeUserHints() throws UnifyException;
     
     /**
      * Clears all hint user in current request.

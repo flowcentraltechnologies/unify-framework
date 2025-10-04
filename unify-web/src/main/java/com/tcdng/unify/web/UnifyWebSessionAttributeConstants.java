@@ -34,5 +34,7 @@ public interface UnifyWebSessionAttributeConstants extends com.tcdng.unify.core.
     String POPUP = "UNIFYWEB.POPUP";
     
     String INTERNAL_SERVER_ERROR = "UNIFYWEB.INTERNALSERVERERROR";
+    
+    String FORWARD_HINTS= "UNIFYWEB.FORWARDHINTS";
 
 }

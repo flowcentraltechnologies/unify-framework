@@ -951,7 +951,7 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 	 * @throws UnifyException if an error occurs
 	 */
 	protected void hintUser(String messageKey, Object... params) throws UnifyException {
-		getPageRequestContextUtil().hintUser(MODE.INFO, messageKey, params);
+		getPageRequestContextUtil().hintUser(messageKey, params);
 	}
 
 	/**
@@ -964,6 +964,29 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 	 */
 	protected void hintUser(MODE mode, String messageKey, Object... params) throws UnifyException {
 		getPageRequestContextUtil().hintUser(mode, messageKey, params);
+	}
+
+	/**
+	 * Hints user in current request with supplied message in INFO mode.
+	 * 
+	 * @param messageKey the message key
+	 * @param params     the message parameters
+	 * @throws UnifyException if an error occurs
+	 */
+	protected void hintUserSticky(String messageKey, Object... params) throws UnifyException {
+		getPageRequestContextUtil().hintUserSticky(messageKey, params);
+	}
+
+	/**
+	 * Hints user in current request with supplied message.
+	 * 
+	 * @param mode       the hint mode
+	 * @param messageKey the message key
+	 * @param params     the message parameters
+	 * @throws UnifyException if an error occurs
+	 */
+	protected void hintUserSticky(MODE mode, String messageKey, Object... params) throws UnifyException {
+		getPageRequestContextUtil().hintUserSticky(mode, messageKey, params);
 	}
 
 	/**

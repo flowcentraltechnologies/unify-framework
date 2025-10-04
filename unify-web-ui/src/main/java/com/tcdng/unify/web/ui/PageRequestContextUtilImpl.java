@@ -552,11 +552,32 @@ public class PageRequestContextUtilImpl extends AbstractUnifyComponent implement
     }
 
     @Override
+    public void hintUserSticky(String message, Object... params) throws UnifyException {
+    	hintUserSticky(Hint.MODE.INFO, message, params);
+    }
+
+    @Override
+    public void hintUserSticky(Hint.MODE mode, String message, Object... params) throws UnifyException {
+        Hints hints = (Hints) getRequestAttribute(USER_HINT_LIST);
+        if (hints == null) {
+            hints = new Hints();
+            setRequestAttribute(USER_HINT_LIST, hints);
+        }
+
+        hints.add(mode, resolveSessionMessage(message, params), true);
+    }
+
+    @Override
     public Hints getUserHints() throws UnifyException {
         return (Hints) getRequestAttribute(USER_HINT_LIST);
     }
 
     @Override
+	public Hints removeUserHints() throws UnifyException {
+		return (Hints) removeRequestAttribute(USER_HINT_LIST);
+	}
+
+	@Override
     public void clearHintUser() throws UnifyException {
         removeRequestAttribute(USER_HINT_LIST); 
     }
