@@ -218,8 +218,8 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 						final BundledCatType bundledCatType = controller.getBundledCategory();
 						if (!bundledCatType.isAll() && !bundledCatType.id().equals(sessionBundledCategory)) {
 							throwOperationErrorException(new IllegalArgumentException(
-									"Attempt to access restricted bundle [" + controller.getName() + "]. "
-											+ clientRequest.getRequestPathParts().getControllerPathParts()));
+									"Attempt to access restricted bundle [" + controller.getName() + "]. bundledCatType.id() = "
+											+ bundledCatType.id() + ", sessionBundledCategory = " + sessionBundledCategory));
 						}
 					}
 				}
