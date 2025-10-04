@@ -272,7 +272,7 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 
 			if (controller.isPageController()) {
 				setRequestAttribute(USER_HINT_LIST,
-						getSessionAttribute(UnifyWebSessionAttributeConstants.FORWARD_HINTS));
+						removeSessionAttribute(UnifyWebSessionAttributeConstants.FORWARD_HINTS));
 			}
 			
 			controller.process(clientRequest, clientResponse);
