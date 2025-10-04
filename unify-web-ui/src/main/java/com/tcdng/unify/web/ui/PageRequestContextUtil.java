@@ -585,7 +585,7 @@ public interface PageRequestContextUtil extends UnifyComponent {
     void clearOnSaveContentWidgets() throws UnifyException;
 
     /**
-     * Adds a user hint message to current request in {@link Hint.MODE#INFO} mode
+     * Adds a user hint message to current request in {@link Hint.MODE#PASS} mode
      * using supplied message key and optional parameters.
      * 
      * @param message
@@ -613,7 +613,7 @@ public interface PageRequestContextUtil extends UnifyComponent {
     void hintUser(Hint.MODE mode, String message, Object... params) throws UnifyException;
 
     /**
-     * Adds a user hint message to current request in {@link Hint.MODE#INFO} mode
+     * Adds a user hint message to current request in {@link Hint.MODE#PASS} mode
      * using supplied message key and optional parameters.
      * 
      * @param message

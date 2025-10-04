@@ -944,7 +944,7 @@ public abstract class AbstractWidget extends AbstractUplComponent implements Wid
 	 * @throws UnifyException if an error occurs
 	 */
 	protected void hintUser(String messageKey, Object... params) throws UnifyException {
-		getRequestContextUtil().hintUser(MODE.INFO, messageKey, params);
+		getRequestContextUtil().hintUser(MODE.PASS, messageKey, params);
 	}
 
 	/**

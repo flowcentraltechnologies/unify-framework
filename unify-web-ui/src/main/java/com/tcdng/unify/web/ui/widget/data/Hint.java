@@ -25,6 +25,7 @@ public class Hint {
 
 	public enum MODE {
 		INFO("bell", "#1E3A8A", "#909DC6", "#E1ECFA"),
+		PASS("circle-check", "#6C9E4B", "#A6C415", "#EFF5E7"),
 		WARNING("triangle-exclamation", "#B5A200", "#DACB68", "#FFFDD0"),
 		ERROR("exclamation-circle", "#B22222", "#DA8282", "#FDE2E2");
 

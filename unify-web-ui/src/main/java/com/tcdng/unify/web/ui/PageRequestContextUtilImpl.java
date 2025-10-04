@@ -537,7 +537,7 @@ public class PageRequestContextUtilImpl extends AbstractUnifyComponent implement
 
     @Override
     public void hintUser(String message, Object... params) throws UnifyException {
-        hintUser(Hint.MODE.INFO, message, params);
+        hintUser(Hint.MODE.PASS, message, params);
     }
 
     @Override
@@ -553,7 +553,7 @@ public class PageRequestContextUtilImpl extends AbstractUnifyComponent implement
 
     @Override
     public void hintUserSticky(String message, Object... params) throws UnifyException {
-    	hintUserSticky(Hint.MODE.INFO, message, params);
+    	hintUserSticky(Hint.MODE.PASS, message, params);
     }
 
     @Override
