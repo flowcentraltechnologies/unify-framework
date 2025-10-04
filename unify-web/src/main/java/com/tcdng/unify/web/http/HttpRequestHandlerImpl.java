@@ -82,7 +82,7 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 
 	private static final int BUFFER_SIZE = 4096;
 
-    private static final String USER_HINT_LIST = "USER_HINT_LIST";
+	private static final String USER_HINT_LIST = "USER_HINT_LIST";
 
 	@Configurable
 	private ControllerFinder controllerFinder;
@@ -218,8 +218,9 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 						final BundledCatType bundledCatType = controller.getBundledCategory();
 						if (!bundledCatType.isAll() && !bundledCatType.id().equals(sessionBundledCategory)) {
 							throwOperationErrorException(new IllegalArgumentException(
-									"Attempt to access restricted bundle [" + controller.getName() + "]. bundledCatType.id() = "
-											+ bundledCatType.id() + ", sessionBundledCategory = " + sessionBundledCategory));
+									"Attempt to access restricted bundle [" + controller.getName()
+											+ "]. controller.getBundledCategory().id() = " + bundledCatType.id()
+											+ ", sessionBundledCategory = " + sessionBundledCategory));
 						}
 					}
 				}
@@ -274,7 +275,7 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 				setRequestAttribute(USER_HINT_LIST,
 						removeSessionAttribute(UnifyWebSessionAttributeConstants.FORWARD_HINTS));
 			}
-			
+
 			controller.process(clientRequest, clientResponse);
 		} catch (UnifyException ue) {
 			logError(ue);
