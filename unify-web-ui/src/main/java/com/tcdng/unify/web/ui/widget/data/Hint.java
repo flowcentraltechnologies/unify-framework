@@ -70,7 +70,7 @@ public class Hint {
     public Hint(MODE mode, String message) {
         this.mode = mode;
         this.message = message;
-        this.sticky = true;
+        this.sticky = false;
     }
 
     public Hint(MODE mode, String message, boolean sticky) {
