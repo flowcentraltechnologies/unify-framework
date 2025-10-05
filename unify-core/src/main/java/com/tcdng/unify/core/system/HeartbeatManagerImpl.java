@@ -17,7 +17,6 @@ package com.tcdng.unify.core.system;
 
 import java.util.Date;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.tcdng.unify.common.database.Entity;
@@ -35,6 +34,7 @@ import com.tcdng.unify.core.criterion.Update;
 import com.tcdng.unify.core.database.Query;
 import com.tcdng.unify.core.task.TaskMonitor;
 import com.tcdng.unify.core.util.CalendarUtils;
+import com.tcdng.unify.core.util.RandomUtils;
 
 /**
  * Heartbeat manager implementation.
@@ -75,7 +75,7 @@ public class HeartbeatManagerImpl extends AbstractBusinessService implements Hea
 	@Override
 	public String startHeartbeat(Query<? extends Entity> query, String expiryFieldName, long lifeExtensionInMinutes)
 			throws UnifyException {
-		final String id = UUID.randomUUID().toString();
+		final String id = RandomUtils.generateUUID();
 		final long _lifeExtensionInMinutes = lifeExtensionInMinutes <= 0 ? 1 : lifeExtensionInMinutes;
 		HeartbeatConfig heartbeatConfig = new HeartbeatConfig(id, query.copy(), expiryFieldName,
 				_lifeExtensionInMinutes);

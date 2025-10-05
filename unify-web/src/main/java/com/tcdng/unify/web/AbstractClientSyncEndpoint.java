@@ -16,6 +16,7 @@
 
 package com.tcdng.unify.web;
 
+import com.tcdng.unify.core.util.RandomUtils;
 import com.tcdng.unify.web.util.ClientSyncUtils;
 
 /**
@@ -25,6 +26,12 @@ import com.tcdng.unify.web.util.ClientSyncUtils;
  * @since 4.1
  */
 public abstract class AbstractClientSyncEndpoint implements ClientSyncEndpoint {
+
+	protected final String sessionId;
+
+	public AbstractClientSyncEndpoint() {
+		this.sessionId = RandomUtils.generateUUID();
+	}
 
 	/**
 	 * Handles open session.

@@ -36,7 +36,6 @@ import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
 import java.util.TimeZone;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -78,6 +77,7 @@ import com.tcdng.unify.core.util.GetterSetterInfo;
 import com.tcdng.unify.core.util.IOUtils;
 import com.tcdng.unify.core.util.ImageUtils;
 import com.tcdng.unify.core.util.NameUtils;
+import com.tcdng.unify.core.util.RandomUtils;
 import com.tcdng.unify.core.util.ReflectUtils;
 import com.tcdng.unify.core.util.StringUtils;
 import com.tcdng.unify.core.util.ThreadUtils;
@@ -179,7 +179,7 @@ public class UnifyContainer {
 	private boolean interfacesOpen;
 
 	public UnifyContainer() {
-		this.accessKey = UUID.randomUUID().toString();
+		this.accessKey = RandomUtils.generateUUID();
 
 		this.internalUnifyComponentInfos = new ConcurrentHashMap<String, InternalUnifyComponentInfo>();
 		this.periodicTaskMonitorList = new ArrayList<TaskMonitor>();
@@ -248,7 +248,7 @@ public class UnifyContainer {
 		staticSettings = ucc.getStaticSettings();
 		nodeId = ucc.getNodeId();
 		preferredPort = ucc.getPreferredPort();
-		runtimeId = UUID.randomUUID().toString();
+		runtimeId = RandomUtils.generateUUID();
 
 		if (nodeId == null) {
 			throw new UnifyException(UnifyCoreErrorConstants.CONTAINER_NODEID_REQUIRED);
@@ -1877,6 +1877,7 @@ public class UnifyContainer {
 			return field;
 		}
 
+		@SuppressWarnings("deprecation")
 		public boolean isFieldAccessible() {
 			return field.isAccessible();
 		}
