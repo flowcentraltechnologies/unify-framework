@@ -32,6 +32,7 @@ import com.tcdng.unify.web.ui.widget.EventHandler;
 import com.tcdng.unify.web.ui.widget.PageManager;
 import com.tcdng.unify.web.ui.widget.ResponseWriter;
 import com.tcdng.unify.web.ui.widget.Widget;
+import com.tcdng.unify.web.ui.widget.data.Hint;
 
 /**
  * Abstract base class for widget writers.
@@ -140,6 +141,34 @@ public abstract class AbstractWidgetWriter extends AbstractDhtmlWriter implement
 
 		writer.write("g_fsm\">");
 		writer.write(resolveSymbolHtmlHexCode(symbol));
+		writer.write("</span>");
+	}
+
+	protected void writeFontIcon(ResponseWriter writer, Hint.MODE mode)
+			throws UnifyException {
+		writeFontIcon(writer, mode, null, null);
+	}
+
+	protected void writeFontIcon(ResponseWriter writer, Hint.MODE mode, String additionStyleClass)
+			throws UnifyException {
+		writeFontIcon(writer, mode, null, additionStyleClass);
+	}
+	
+	protected void writeFontIcon(ResponseWriter writer, Hint.MODE mode, String id, String additionStyleClass)
+			throws UnifyException {
+		writer.write("<span style=\"color:").write(mode.dark()).write(";\"");
+		if (!StringUtils.isBlank(id)) {
+			writer.write(" id=\"").write(id).write("\"");
+		}
+
+		writer.write(" class=\"");
+		if (!StringUtils.isBlank(additionStyleClass)) {
+			writer.write(additionStyleClass);
+			writer.write(" ");
+		}
+
+		writer.write("g_fsm\">");
+		writer.write(resolveSymbolHtmlHexCode(mode.icon()));
 		writer.write("</span>");
 	}
     

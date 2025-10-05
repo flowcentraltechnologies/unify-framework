@@ -56,6 +56,7 @@ import com.tcdng.unify.web.RequestPathParts;
 import com.tcdng.unify.web.TenantPathManager;
 import com.tcdng.unify.web.UnifyWebErrorConstants;
 import com.tcdng.unify.web.UnifyWebPropertyConstants;
+import com.tcdng.unify.web.UnifyWebSessionAttributeConstants;
 import com.tcdng.unify.web.WebApplicationComponents;
 import com.tcdng.unify.web.constant.BundledCatType;
 import com.tcdng.unify.web.constant.RequestParameterConstants;
@@ -80,6 +81,8 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 	private static final String BODY_BYTES = "__bodyBytes";
 
 	private static final int BUFFER_SIZE = 4096;
+
+	private static final String USER_HINT_LIST = "USER_HINT_LIST";
 
 	@Configurable
 	private ControllerFinder controllerFinder;
@@ -215,8 +218,9 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 						final BundledCatType bundledCatType = controller.getBundledCategory();
 						if (!bundledCatType.isAll() && !bundledCatType.id().equals(sessionBundledCategory)) {
 							throwOperationErrorException(new IllegalArgumentException(
-									"Attempt to access restricted bundle [" + controller.getName() + "]. "
-											+ clientRequest.getRequestPathParts().getControllerPathParts()));
+									"Attempt to access restricted bundle [" + controller.getName()
+											+ "]. controller.getBundledCategory().id() = " + bundledCatType.id()
+											+ ", sessionBundledCategory = " + sessionBundledCategory));
 						}
 					}
 				}
@@ -265,6 +269,11 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 				if (exit) {
 					return;
 				}
+			}
+
+			if (controller.isPageController()) {
+				setRequestAttribute(USER_HINT_LIST,
+						removeSessionAttribute(UnifyWebSessionAttributeConstants.FORWARD_HINTS));
 			}
 
 			controller.process(clientRequest, clientResponse);
