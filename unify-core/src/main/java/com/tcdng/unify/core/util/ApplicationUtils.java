@@ -15,8 +15,6 @@
  */
 package com.tcdng.unify.core.util;
 
-import java.util.UUID;
-
 import com.tcdng.unify.core.UserToken;
 
 /**
@@ -32,7 +30,7 @@ public final class ApplicationUtils {
 	}
 
 	public static synchronized String generateSessionContextId() {
-		return UUID.randomUUID().toString();
+		return RandomUtils.generateUUID();
 	}
 
 	public static synchronized String generateLongSessionCookieId(UserToken userToken) {

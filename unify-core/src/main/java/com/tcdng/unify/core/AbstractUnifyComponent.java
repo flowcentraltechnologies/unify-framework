@@ -1287,6 +1287,15 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	}
 
 	/**
+	 * Logs a exception at DEBUG level.
+	 * 
+	 * @param exception the exception to log
+	 */
+	protected void logDebug(Exception exception) {
+		log(null, LoggingLevel.DEBUG, exception);
+	}
+
+	/**
 	 * Logs a message at INFO level.
 	 * 
 	 * @param message the message to log
@@ -1993,7 +2002,7 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 				if (enabled || taskMonitor != null) {
 					String msg = getExceptionMessage(LocaleType.APPLICATION, exception);
 					if (enabled) {
-						logger.log(loggingLevel, msg, exception);
+						logger.log(loggingLevel, msg, loggingLevel.isLogStackTrace() ? exception : null);
 					}
 
 					if (taskMonitor != null) {

@@ -15,8 +15,11 @@
  */
 package com.tcdng.unify.core.util;
 
+import java.nio.ByteBuffer;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Base64;
+import java.util.UUID;
 
 /**
  * Random utilities
@@ -34,6 +37,16 @@ public final class RandomUtils {
 	
 	private RandomUtils() {
 		
+	}
+	
+	public static String generateUUID() { 
+		return UUID.randomUUID().toString();
+	}
+	
+	public static String generateUUIDInBase64() {
+		final UUID uuid = UUID.randomUUID();
+		return Base64.getUrlEncoder().withoutPadding().encodeToString(ByteBuffer.allocate(16)
+				.putLong(uuid.getMostSignificantBits()).putLong(uuid.getLeastSignificantBits()).array());
 	}
 	
 	public static String generateRandomLetters(int length) { 
