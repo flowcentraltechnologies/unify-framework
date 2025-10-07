@@ -47,6 +47,8 @@ public interface UnifyWebPropertyConstants {
 
     String APPLICATION_WEB_CSP_NONCE = "application.web.csp.nonce";
 
+    String APPLICATION_WEB_NO_CACHING = "application.web.nocaching";
+
     String APPLICATION_WEB_HIDE_ERRORTRACE = "application.web.hideerrortrace";
 
     String APPLICATION_WEB_FRIENDLY_REDIRECT = "application.web.friendlyredirect";
