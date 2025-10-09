@@ -105,6 +105,8 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 
 	private boolean isBundledModeEnabled;
 
+	private boolean isNoCachingEnabled;
+
 	public HttpRequestHandlerImpl() {
 		this.requestPathParts = new FactoryMap<String, RequestPathParts>() {
 
@@ -192,10 +194,12 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 				httpResponse.setHeader(HttpResponseHeaderConstants.ACCESS_CONTROL_MAX_AGE, "600");
 			}
 
-			// No caching by default
-			httpResponse.setHeader(HttpResponseHeaderConstants.CACHE_CONTROL, "no-store, no-cache, must-revalidate");
-			httpResponse.setHeader(HttpResponseHeaderConstants.PRAGMA, "no-cache");
-			httpResponse.setDateHeader(HttpResponseHeaderConstants.EXPIRES, 0L);
+			if (isNoCachingEnabled) {
+				httpResponse.setHeader(HttpResponseHeaderConstants.CACHE_CONTROL,
+						"no-store, no-cache, must-revalidate");
+				httpResponse.setHeader(HttpResponseHeaderConstants.PRAGMA, "no-cache");
+				httpResponse.setDateHeader(HttpResponseHeaderConstants.EXPIRES, 0L);
+			}
 
 			Controller controller = null;
 			try {
@@ -356,6 +360,8 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 				UnifyWebPropertyConstants.APPLICATION_TENANT_PATH_ENABLED, false);
 		isBundledModeEnabled = getContainerSetting(boolean.class,
 				UnifyWebPropertyConstants.APPLICATION_BUNDLED_MODE_ENABLED, false);
+		isNoCachingEnabled = getContainerSetting(boolean.class,
+				UnifyWebPropertyConstants.APPLICATION_WEB_NO_CACHING, false);
 	}
 
 	@Override
@@ -438,7 +444,6 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 	}
 
 	private void processParts(Map<String, Object> requestParameterMap, HttpRequest httpRequest) throws UnifyException {
-		logDebug("Processing multi-part request parameters [{0}]", requestParameterMap.keySet());
 		try {
 			Map<String, List<String>> stringMap = new HashMap<String, List<String>>();
 			Map<String, List<UploadedFile>> uploadedFileMap = new HashMap<String, List<UploadedFile>>();
@@ -498,7 +503,6 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 		} catch (Exception e) {
 			throwOperationErrorException(e);
 		}
-		logDebug("Multi-part request processing completed");
 	}
 
 	private ContentDisposition getContentDisposition(HttpPart part) throws UnifyException {
