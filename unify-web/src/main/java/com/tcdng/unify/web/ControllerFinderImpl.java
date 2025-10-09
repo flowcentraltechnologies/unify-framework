@@ -102,8 +102,7 @@ public class ControllerFinderImpl extends AbstractUnifyComponent implements Cont
 
 			Controller controller = (Controller) getComponent(_actualControllerName);
 			if (controller.isPageController() && StringUtils.isBlank(getRequestClientPageId())) {
-				setRequestClientPageId(
-						RandomUtils.generateRandomAlphanumeric(UnifyWebRequestAttributeConstants.PID_SIZE));
+				setRequestClientPageId(RandomUtils.generateRandomAlphanumeric(UnifyWebRequestAttributeConstants.PID_SIZE));
 			}
 
 			controller.ensureContextResources(controllerPathParts);

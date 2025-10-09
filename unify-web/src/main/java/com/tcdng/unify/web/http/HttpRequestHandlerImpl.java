@@ -444,7 +444,6 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 	}
 
 	private void processParts(Map<String, Object> requestParameterMap, HttpRequest httpRequest) throws UnifyException {
-		logDebug("Processing multi-part request parameters [{0}]", requestParameterMap.keySet());
 		try {
 			Map<String, List<String>> stringMap = new HashMap<String, List<String>>();
 			Map<String, List<UploadedFile>> uploadedFileMap = new HashMap<String, List<UploadedFile>>();
@@ -504,7 +503,6 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 		} catch (Exception e) {
 			throwOperationErrorException(e);
 		}
-		logDebug("Multi-part request processing completed");
 	}
 
 	private ContentDisposition getContentDisposition(HttpPart part) throws UnifyException {

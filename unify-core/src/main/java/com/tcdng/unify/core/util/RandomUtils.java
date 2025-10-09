@@ -16,7 +16,6 @@
 package com.tcdng.unify.core.util;
 
 import java.nio.ByteBuffer;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.UUID;
@@ -28,6 +27,8 @@ import java.util.UUID;
  * @since 4.1
  */
 public final class RandomUtils {
+	
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
 	private static String LETTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
@@ -63,15 +64,10 @@ public final class RandomUtils {
 
 	private static String generateRandom(String characters, int length) { 
 		StringBuilder sb = new StringBuilder();
-		try {
-			SecureRandom secureRandom = SecureRandom.getInstanceStrong();
-			for (int i = 0; i < length; i++) {
-				sb.append(characters.charAt(secureRandom.nextInt(characters.length())));
-			}
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
+		for (int i = 0; i < length; i++) {
+			sb.append(characters.charAt(SECURE_RANDOM.nextInt(characters.length())));
 		}
-		
+
 		return sb.toString();
 	}
 
