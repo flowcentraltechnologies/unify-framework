@@ -211,15 +211,14 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 									+ "]. " + clientRequest.getRequestPathParts().getControllerPathParts()));
 				}
 
-				if (isBundledModeEnabled) {
+				if (isBundledModeEnabled && controller.isPageController()) {
 					final String bundleCookieName = getApplicationAttribute(String.class,
 							UnifyCoreApplicationAttributeConstants.BUNDLED_CATEGORY_COOKIE_NAME);
 					Optional<ClientCookie> optional = httpRequest.getCookie(bundleCookieName);
-					final String sessionBundledCategory = EncodingUtils
-							.decodeBase64String(optional.isPresent() ? optional.get().getVal() : null);
-					getSessionContext().setBundledCategory(sessionBundledCategory);
-					if (controller.isPageController()) {
+					if (optional.isPresent()) {
 						final BundledCatType bundledCatType = controller.getBundledCategory();
+						final String sessionBundledCategory = EncodingUtils.decodeBase64String(optional.get().getVal());
+						getSessionContext().setBundledCategory(sessionBundledCategory);
 						if (!bundledCatType.isAll() && !bundledCatType.id().equals(sessionBundledCategory)) {
 							throwOperationErrorException(new IllegalArgumentException(
 									"Attempt to access restricted bundle [" + controller.getName()
@@ -360,8 +359,8 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 				UnifyWebPropertyConstants.APPLICATION_TENANT_PATH_ENABLED, false);
 		isBundledModeEnabled = getContainerSetting(boolean.class,
 				UnifyWebPropertyConstants.APPLICATION_BUNDLED_MODE_ENABLED, false);
-		isNoCachingEnabled = getContainerSetting(boolean.class,
-				UnifyWebPropertyConstants.APPLICATION_WEB_NO_CACHING, false);
+		isNoCachingEnabled = getContainerSetting(boolean.class, UnifyWebPropertyConstants.APPLICATION_WEB_NO_CACHING,
+				false);
 	}
 
 	@Override
