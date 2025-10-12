@@ -277,8 +277,8 @@ public final class DataUtils {
 
 	}
 
-	public static void registerDefaultFormatters(DateTimeFormatter defaultDateTimeFormatter) {
-		ConverterUtils.registerDefaultFormatters(defaultDateTimeFormatter);
+	public static void registerDefaultFormatter(Class<?> dataType, ConverterFormatter formatter) {
+		ConverterUtils.registerDefaultFormatter(dataType, formatter);
 	}
 
 	public static DateTimeFormatter getDefaultDateTimeFormatter() {

@@ -68,10 +68,11 @@ public class ConverterTest extends AbstractUnifyComponentTest {
         assertEquals(BigDecimal.valueOf(11002.254), converter.convert("11,002.254", defaultDecimalFormatter));
     }
 
-    @Test(expected = Exception.class)
+    @Test
     public void testBigDecimalConverterWithInvalidParameters() throws Exception {
         Converter<BigDecimal> converter = new BigDecimalConverter();
-        converter.convert("11,002.254", null); // Expects a formatter
+        BigDecimal val = converter.convert("11,002.254", null);
+        assertEquals(BigDecimal.valueOf(11002.254), val);
     }
 
     @Test
