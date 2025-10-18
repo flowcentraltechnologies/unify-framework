@@ -1204,7 +1204,7 @@ public class IOUtils {
 					: new InputStreamReader(conn.getErrorStream(), "utf-8"))) {
 				String responseLine = null;
 				while ((responseLine = br.readLine()) != null) {
-					response.append(responseLine.trim());
+					response.append(responseLine.trim()).append('\n');
 				}
 			}
 
