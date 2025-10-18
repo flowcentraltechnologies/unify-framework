@@ -1199,16 +1199,23 @@ public class IOUtils {
 
 			final int status = conn.getResponseCode();
 			final boolean success = status >= 200 && status < 300;
-			StringBuilder response = new StringBuilder();
+			StringBuilder rsb = new StringBuilder();
 			try (BufferedReader br = new BufferedReader(success ? new InputStreamReader(conn.getInputStream(), "utf-8")
 					: new InputStreamReader(conn.getErrorStream(), "utf-8"))) {
 				String responseLine = null;
+				boolean appendSym = false;
 				while ((responseLine = br.readLine()) != null) {
-					response.append(responseLine.trim()).append('\n');
+					if (appendSym) {
+						rsb.append('\n');
+					} else {
+						appendSym = true;
+					}
+
+					rsb.append(responseLine.trim());
 				}
 			}
 
-			final String respJson = response.toString();
+			final String respJson = rsb.toString();
 			resp = new PostResp<String>(success ? respJson : null, success ? null : respJson, reqJson, respJson, status,
 					System.currentTimeMillis() - start);
 		} catch (Exception e) {
