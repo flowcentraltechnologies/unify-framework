@@ -471,7 +471,8 @@ public class DataUtilsTest extends AbstractUnifyComponentTest {
 
 	@Test
 	public void testFromJsonObjectString() throws Exception {
-		final Map<String, Object> map = DataUtils.fromJsonObjectString("{\"name\":\"john\",\"age\":36,\"salary\":38500.25}");
+		final Map<String, Object> map = DataUtils
+				.fromJsonObjectString("{\"name\":\"john\",\"age\":36,\"salary\":38500.25}");
 		assertNotNull(map);
 		assertTrue(map.containsKey("name"));
 		assertTrue(map.containsKey("age"));
@@ -479,6 +480,12 @@ public class DataUtilsTest extends AbstractUnifyComponentTest {
 		assertEquals("john", map.get("name"));
 		assertEquals(Long.valueOf(36L), map.get("age"));
 		assertEquals(BigDecimal.valueOf(38500.25), map.get("salary"));
+
+		final Map<String, Object> _map = DataUtils.fromJsonObjectString(
+				"{\"evalMode\":null,\"update\":null,\"query\":\"AND]0]\\r\\nOR]1]\\r\\nEQ]2]wfItemVersionType]ORN]\\r\\nNL]2]wfItemVersionType]\\r\\n\",\"params\":[],\"operation\":\"FIND_ALL\",\"versionNo\":null,\"offset\":0,\"fieldName\":null,\"order\":\"\",\"limit\":0,\"ignoreEmptyCriteria\":true,\"entity\":\"setup.productSetup\",\"id\":null,\"payload\":null}");
+		assertTrue(_map.containsKey("evalMode"));
+		assertTrue(_map.containsKey("update"));
+		assertTrue(_map.containsKey("query"));
 	}
 	
 	@Test

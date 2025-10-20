@@ -28,32 +28,33 @@ import com.tcdng.unify.convert.util.ConverterUtils;
  */
 public class DateConverter extends AbstractConverter<Date> {
 
-    private static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
+	private static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
 
-    @Override
-    protected Date doConvert(Object value, ConverterFormatter<?> formatter) throws Exception {
-        if (value instanceof Date) {
-            return (Date) value;
-        }
+	@Override
+	protected Date doConvert(Object value, ConverterFormatter<?> formatter) throws Exception {
+		if (value instanceof Date) {
+			return (Date) value;
+		}
 
-        if (value instanceof Long) {
-            return new Date((Long) value);
-        }
+		if (value instanceof Long) {
+			return new Date((Long) value);
+		}
 
-        if (value instanceof String) {
-            String string = ((String) value).trim();
-            if (!string.isEmpty()) {
-                if (formatter == null) {
-                    formatter = ConverterUtils.getDefaultDateTimeFormatter();
-                }
+		if (value instanceof String) {
+			String string = ((String) value).trim();
+			if (!string.isEmpty()) {
+				if (formatter == null) {
+					formatter = string.indexOf(':') > 0 ? ConverterUtils.getDefaultDateTimeFormatter()
+							: ConverterUtils.getDefaultDateFormatter();
+				}
 
-                if (formatter != null) {
-                    return doConvert(formatter.parse((String) value), null);
-                }
-                
-                return new SimpleDateFormat(DEFAULT_DATE_FORMAT).parse((String) value);
-            }
-        }
-        return null;
-    }
+				if (formatter != null) {
+					return doConvert(formatter.parse((String) value), null);
+				}
+
+				return new SimpleDateFormat(DEFAULT_DATE_FORMAT).parse((String) value);
+			}
+		}
+		return null;
+	}
 }

@@ -19,7 +19,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
@@ -43,6 +42,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import com.tcdng.unify.common.annotation.AnnotationConstants;
 import com.tcdng.unify.common.constants.UnifyStaticSettings;
 import com.tcdng.unify.common.data.UnifyContainerProperty;
+import com.tcdng.unify.convert.constants.ConverterTypeConstants;
 import com.tcdng.unify.convert.converters.ConverterFormatter;
 import com.tcdng.unify.core.annotation.Broadcast;
 import com.tcdng.unify.core.annotation.Component;
@@ -58,6 +58,7 @@ import com.tcdng.unify.core.business.BusinessService;
 import com.tcdng.unify.core.business.internal.ProxyBusinessServiceGenerator;
 import com.tcdng.unify.core.data.FactoryMap;
 import com.tcdng.unify.core.data.LocaleFactoryMaps;
+import com.tcdng.unify.core.format.DateFormatter;
 import com.tcdng.unify.core.format.DateTimeFormatter;
 import com.tcdng.unify.core.logging.AbstractLog4jLogger;
 import com.tcdng.unify.core.logging.DummyEventLogger;
@@ -533,9 +534,11 @@ public class UnifyContainer {
 
 			// Initialize utilities
 			ImageUtils.scanForPlugins();
-			DataUtils.registerDefaultFormatter(Date.class, (DateTimeFormatter) getUplComponent(getApplicationLocale(),
+			DataUtils.registerDefaultFormatter(ConverterTypeConstants.DATE, (DateFormatter) getUplComponent(getApplicationLocale(),
+					"!fixeddatetimeformat pattern:$s{yyyy-MM-dd}", false));
+			DataUtils.registerDefaultFormatter(ConverterTypeConstants.DATETIME, (DateTimeFormatter) getUplComponent(getApplicationLocale(),
 					"!fixeddatetimeformat pattern:$s{yyyy-MM-dd HH:mm:ss.SSS}", false));
-			DataUtils.registerDefaultFormatter(BigDecimal.class, (ConverterFormatter<?>) getUplComponent(getApplicationLocale(),
+			DataUtils.registerDefaultFormatter(ConverterTypeConstants.DECIMAL, (ConverterFormatter<?>) getUplComponent(getApplicationLocale(),
 					"!amountformat", false));
 
 			// Run application startup service

@@ -21,6 +21,7 @@ import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.criterion.DoubleParamRestriction;
 import com.tcdng.unify.core.criterion.Restriction;
 import com.tcdng.unify.core.criterion.RestrictionField;
+import com.tcdng.unify.core.database.NativeTranslator;
 import com.tcdng.unify.core.database.sql.AbstractSqlCriteriaPolicy;
 import com.tcdng.unify.core.database.sql.SqlDataSourceDialectPolicies;
 import com.tcdng.unify.core.database.sql.SqlEntityInfo;
@@ -41,8 +42,8 @@ public abstract class DoubleParameterPolicy extends AbstractSqlCriteriaPolicy {
 	}
 
 	@Override
-	public void translate(StringBuilder sql, SqlEntityInfo sqlEntityInfo, Restriction restriction)
-			throws UnifyException {
+	public void translate(NativeTranslator translator, StringBuilder sql, SqlEntityInfo sqlEntityInfo,
+			Restriction restriction) throws UnifyException {
 		DoubleParamRestriction dvc = (DoubleParamRestriction) restriction;
 		String columnName = dvc.getFieldName();
 		if (sqlEntityInfo != null) {
@@ -61,7 +62,7 @@ public abstract class DoubleParameterPolicy extends AbstractSqlCriteriaPolicy {
 				sql.append(tableName).append('.').append(
 						sqlEntityInfo.getListFieldInfo(((RestrictionField) val1).getName()).getPreferredColumnName());
 			} else {
-				sql.append(getNativeSqlParam(resolveParam(null, val1)));
+				sql.append(getNativeSqlParam(translator, resolveParam(null, val1)));
 			}
 
 			sql.append(" AND ");
@@ -69,14 +70,14 @@ public abstract class DoubleParameterPolicy extends AbstractSqlCriteriaPolicy {
 				sql.append(tableName).append('.').append(
 						sqlEntityInfo.getListFieldInfo(((RestrictionField) val2).getName()).getPreferredColumnName());
 			} else {
-				sql.append(getNativeSqlParam(resolveParam(null, val2)));
+				sql.append(getNativeSqlParam(translator, resolveParam(null, val2)));
 			}
 
 			sql.append(")");
 			return;
 		}
 
-		translate(sql, tableName, columnName, val1, val2);
+		translate(translator, sql, tableName, columnName, val1, val2);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -135,11 +136,11 @@ public abstract class DoubleParameterPolicy extends AbstractSqlCriteriaPolicy {
 	}
 
 	@Override
-	protected void doTranslate(StringBuilder sql, String tableName, String columnName, Object param1, Object param2)
-			throws UnifyException {
+	protected void doTranslate(NativeTranslator translator, StringBuilder sql, String tableName, String columnName,
+			Object param1, Object param2) throws UnifyException {
 		sql.append("(");
-		sql.append(tableName).append('.').append(columnName).append(opSql).append(getNativeSqlParam(param1))
-				.append(" AND ").append(getNativeSqlParam(param2));
+		sql.append(tableName).append('.').append(columnName).append(opSql).append(getNativeSqlParam(translator, param1))
+				.append(" AND ").append(getNativeSqlParam(translator, param2));
 		sql.append(")");
 	}
 }

@@ -23,6 +23,7 @@ import com.tcdng.unify.core.UnifyCoreErrorConstants;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.criterion.MultipleParamRestriction;
 import com.tcdng.unify.core.criterion.Restriction;
+import com.tcdng.unify.core.database.NativeTranslator;
 import com.tcdng.unify.core.database.sql.AbstractSqlCriteriaPolicy;
 import com.tcdng.unify.core.database.sql.SqlDataSourceDialectPolicies;
 import com.tcdng.unify.core.database.sql.SqlEntityInfo;
@@ -40,106 +41,107 @@ import com.tcdng.unify.core.util.DataUtils;
 @SuppressWarnings("unchecked")
 public abstract class MultipleParameterPolicy extends AbstractSqlCriteriaPolicy {
 
-    private String multOpSql;
+	private String multOpSql;
 
-    public MultipleParameterPolicy(String opSql, SqlDataSourceDialectPolicies rootPolicies, String multOpSql) {
-        super(opSql, rootPolicies);
-        this.multOpSql = multOpSql;
-    }
+	public MultipleParameterPolicy(String opSql, SqlDataSourceDialectPolicies rootPolicies, String multOpSql) {
+		super(opSql, rootPolicies);
+		this.multOpSql = multOpSql;
+	}
 
-    @Override
-    public void translate(StringBuilder sql, SqlEntityInfo sqlEntityInfo, Restriction restriction)
-            throws UnifyException {
-        MultipleParamRestriction mvc = (MultipleParamRestriction) restriction;
-        String columnName = mvc.getFieldName();
-        if (sqlEntityInfo != null) {
-            columnName = sqlEntityInfo.getListFieldInfo(mvc.getFieldName()).getPreferredColumnName();
-        }
-        translate(sql, sqlEntityInfo.getTableAlias(), columnName, mvc.getParams(), null);
-    }
+	@Override
+	public void translate(NativeTranslator translator, StringBuilder sql, SqlEntityInfo sqlEntityInfo,
+			Restriction restriction) throws UnifyException {
+		MultipleParamRestriction mvc = (MultipleParamRestriction) restriction;
+		String columnName = mvc.getFieldName();
+		if (sqlEntityInfo != null) {
+			columnName = sqlEntityInfo.getListFieldInfo(mvc.getFieldName()).getPreferredColumnName();
+		}
+		translate(translator, sql, sqlEntityInfo.getTableAlias(), columnName, mvc.getParams(), null);
+	}
 
-    @Override
-    public void generatePreparedStatementCriteria(StringBuilder sql, List<SqlParameter> parameterInfoList,
-            SqlEntityInfo sqlEntityInfo, Restriction restriction) throws UnifyException {
-        MultipleParamRestriction mvc = (MultipleParamRestriction) restriction;
-        SqlFieldInfo sqlFieldInfo = sqlEntityInfo.getListFieldInfo((String) mvc.getFieldName());
-        Collection<Object> values = (Collection<Object>) mvc.getParams();
-        if (values == null || values.isEmpty()) {
-            throw new UnifyException(UnifyCoreErrorConstants.RECORD_AT_LEAST_ONE_VALUE_EXPECTED,
-                    sqlEntityInfo.getEntityClass());
-        }
+	@Override
+	public void generatePreparedStatementCriteria(StringBuilder sql, List<SqlParameter> parameterInfoList,
+			SqlEntityInfo sqlEntityInfo, Restriction restriction) throws UnifyException {
+		MultipleParamRestriction mvc = (MultipleParamRestriction) restriction;
+		SqlFieldInfo sqlFieldInfo = sqlEntityInfo.getListFieldInfo((String) mvc.getFieldName());
+		Collection<Object> values = (Collection<Object>) mvc.getParams();
+		if (values == null || values.isEmpty()) {
+			throw new UnifyException(UnifyCoreErrorConstants.RECORD_AT_LEAST_ONE_VALUE_EXPECTED,
+					sqlEntityInfo.getEntityClass());
+		}
 
-        if (sqlFieldInfo.isTransformed()) {
-            Transformer<Object, Object> transformer = (Transformer<Object, Object>) sqlFieldInfo.getTransformer();
-            Collection<?> origValues = (Collection<?>) mvc.getParams();
-            values = new ArrayList<Object>();
-            for (Object value : origValues) {
-                values.add(transformer.forwardTransform(value));
-            }
-        }
+		if (sqlFieldInfo.isTransformed()) {
+			Transformer<Object, Object> transformer = (Transformer<Object, Object>) sqlFieldInfo.getTransformer();
+			Collection<?> origValues = (Collection<?>) mvc.getParams();
+			values = new ArrayList<Object>();
+			for (Object value : origValues) {
+				values.add(transformer.forwardTransform(value));
+			}
+		}
 
-        sql.append("(");
-        int kLen = values.size();
-        int[] blocks = DataUtils.splitToBlocks(kLen, maximumClauseValues());
-        int i = 0;
-        int j = 0;
-        int iLen = blocks[j];
-        for (int k = 0; k < kLen; k++) {
-            if (i >= iLen) {
-                sql.append(multOpSql);
-                i = 0;
-                iLen = blocks[++j];
-            }
+		sql.append("(");
+		int kLen = values.size();
+		int[] blocks = DataUtils.splitToBlocks(kLen, maximumClauseValues());
+		int i = 0;
+		int j = 0;
+		int iLen = blocks[j];
+		for (int k = 0; k < kLen; k++) {
+			if (i >= iLen) {
+				sql.append(multOpSql);
+				i = 0;
+				iLen = blocks[++j];
+			}
 
-            if (i == 0) {
-                sql.append(sqlFieldInfo.getPreferredColumnName()).append(opSql).append("(");
-            } else {
-                sql.append(", ");
-            }
+			if (i == 0) {
+				sql.append(sqlFieldInfo.getPreferredColumnName()).append(opSql).append("(");
+			} else {
+				sql.append(", ");
+			}
 
-            sql.append("?");
+			sql.append("?");
 
-            if ((++i) >= iLen) {
-                sql.append(")");
-            }
-        }
-        sql.append(")");
-        parameterInfoList.add(new SqlParameter(getSqlTypePolicy(sqlFieldInfo.getColumnType(), sqlFieldInfo.getLength()), values, true));
-    }
+			if ((++i) >= iLen) {
+				sql.append(")");
+			}
+		}
+		sql.append(")");
+		parameterInfoList.add(new SqlParameter(getSqlTypePolicy(sqlFieldInfo.getColumnType(), sqlFieldInfo.getLength()),
+				values, true));
+	}
 
-    @Override
-    protected void doTranslate(StringBuilder sql, String tableName, String columnName, Object param1, Object param2)
-            throws UnifyException {
-        Collection<? extends Object> values = (Collection<? extends Object>) param1;
-        if (values == null || values.isEmpty()) {
-            throw new UnifyException(UnifyCoreErrorConstants.RECORD_AT_LEAST_ONE_VALUE_EXPECTED, columnName);
-        }
+	@Override
+	protected void doTranslate(NativeTranslator translator, StringBuilder sql, String tableName, String columnName,
+			Object param1, Object param2) throws UnifyException {
+		Collection<? extends Object> values = (Collection<? extends Object>) param1;
+		if (values == null || values.isEmpty()) {
+			throw new UnifyException(UnifyCoreErrorConstants.RECORD_AT_LEAST_ONE_VALUE_EXPECTED, columnName);
+		}
 
-        sql.append("(");
-        int[] blocks = DataUtils.splitToBlocks(values.size(), maximumClauseValues());
-        int i = 0;
-        int j = 0;
-        int iLen = blocks[j];
-        for (Object value : values) {
-            if (i >= iLen) {
-                sql.append(multOpSql);
-                i = 0;
-                iLen = blocks[++j];
-            }
+		sql.append("(");
+		int[] blocks = DataUtils.splitToBlocks(values.size(), maximumClauseValues());
+		int i = 0;
+		int j = 0;
+		int iLen = blocks[j];
+		for (Object value : values) {
+			if (i >= iLen) {
+				sql.append(multOpSql);
+				i = 0;
+				iLen = blocks[++j];
+			}
 
-            if (i == 0) {
-                sql.append(tableName).append('.').append(columnName).append(opSql).append("(");
-            } else {
-                sql.append(", ");
-            }
+			if (i == 0) {
+				sql.append(tableName).append('.').append(columnName).append(opSql).append("(");
+			} else {
+				sql.append(", ");
+			}
 
-            sql.append(getNativeSqlParam(value));
+			sql.append(getNativeSqlParam(translator, value));
 
-            if ((++i) >= iLen) {
-                sql.append(")");
-            }
-        }
-        sql.append(")");
-    }
+			if ((++i) >= iLen) {
+				sql.append(")");
+			}
+		}
+		sql.append(")");
+	}
 
 }
