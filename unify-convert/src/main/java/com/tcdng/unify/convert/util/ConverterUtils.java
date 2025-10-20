@@ -37,6 +37,7 @@ import java.util.Set;
 
 import com.tcdng.unify.common.constants.EnumConst;
 import com.tcdng.unify.common.util.EnumUtils;
+import com.tcdng.unify.convert.constants.ConverterTypeConstants;
 import com.tcdng.unify.convert.converters.BigDecimalConverter;
 import com.tcdng.unify.convert.converters.BooleanConverter;
 import com.tcdng.unify.convert.converters.ByteArrayConverter;
@@ -67,7 +68,7 @@ public final class ConverterUtils {
 
 	public static final Object[] ZEROLEN_OBJECT_ARRAY = new Object[0];
 
-	private static final Map<Class<?>, ConverterFormatter<?>> classToDefaultFormatters = new HashMap<Class<?>, ConverterFormatter<?>>();
+	private static final Map<String, ConverterFormatter<?>> classToDefaultFormatters = new HashMap<String, ConverterFormatter<?>>();
 
 	private static final Map<Class<?>, Converter<?>> classToConverterMap;
 
@@ -150,16 +151,20 @@ public final class ConverterUtils {
 		classToConverterMap.put(clazz, converter);
 	}
 
-	public static void registerDefaultFormatter(Class<?> clazz, ConverterFormatter defaultFormatter) {
-		classToDefaultFormatters.put(clazz, defaultFormatter);
+	public static void registerDefaultFormatter(String name, ConverterFormatter defaultFormatter) {
+		classToDefaultFormatters.put(name, defaultFormatter);
+	}
+
+	public static ConverterFormatter getDefaultDateFormatter() {
+		return classToDefaultFormatters.get(ConverterTypeConstants.DATE);
 	}
 
 	public static ConverterFormatter getDefaultDateTimeFormatter() {
-		return classToDefaultFormatters.get(Date.class);
+		return classToDefaultFormatters.get(ConverterTypeConstants.DATETIME);
 	}
 
 	public static ConverterFormatter getDefaultDecimalFormatter() {
-		return classToDefaultFormatters.get(BigDecimal.class);
+		return classToDefaultFormatters.get(ConverterTypeConstants.DECIMAL);
 	}
 
 	/**
