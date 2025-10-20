@@ -19,6 +19,7 @@ import java.util.List;
 
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.criterion.Restriction;
+import com.tcdng.unify.core.database.NativeTranslator;
 
 /**
  * SQL generation policy.
@@ -47,8 +48,10 @@ public interface SqlCriteriaPolicy {
 
     /**
      * Translates a restriction object to native SQL and appends to supplied string
-     * buffer..
+     * buffer.
      * 
+     * @param translator
+     *            the native translator (optional)
      * @param sql
      *            the buffer to write to
      * @param sqlEntityInfo
@@ -58,11 +61,14 @@ public interface SqlCriteriaPolicy {
      * @throws UnifyException
      *             if an error occurs
      */
-    void translate(StringBuilder sql, SqlEntityInfo sqlEntityInfo, Restriction restriction) throws UnifyException;
+	void translate(NativeTranslator translator, StringBuilder sql, SqlEntityInfo sqlEntityInfo, Restriction restriction)
+			throws UnifyException;
 
     /**
      * Translates a criteria to native SQL and appends to supplied string buffer..
      * 
+     * @param translator
+     *            the native translator (optional)
      * @param sql
      *            the buffer to write to
      * @param tableName
@@ -76,6 +82,6 @@ public interface SqlCriteriaPolicy {
      * @throws UnifyException
      *             if an error occurs
      */
-    void translate(StringBuilder sql, String tableName, String columnName, Object param1, Object param2)
+    void translate(NativeTranslator translator, StringBuilder sql, String tableName, String columnName, Object param1, Object param2)
             throws UnifyException;
 }
