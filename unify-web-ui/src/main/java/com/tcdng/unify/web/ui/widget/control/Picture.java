@@ -92,19 +92,26 @@ public class Picture extends AbstractAutoRefreshMultiControl {
     }
     
 	@Override
-    protected void doOnPageConstruct() throws UnifyException {
-    	final String _handler = getUplAttribute(String.class, "handler");
-    	if (!StringUtils.isBlank(_handler)) {
-    		handler = getComponent(PictureHandler.class, _handler);
-    	}
-    	
-        fileControl = (Control) addInternalChildWidget(
-                "!ui-fileupload accept:$s{image} binding:uploadedFile selectOnly:true hidden:true");
-        StringBuilder sb = new StringBuilder();
-        sb.append("!ui-image src:$t{images/camera.png} binding:handler");
-        appendUplAttribute(sb, "binding");
-        appendUplAttribute(sb, "styleClass");
-        appendUplAttribute(sb, "style");
-        imageControl = (Control) addInternalChildWidget(sb.toString(), true, false);
-    }
+	protected void doOnPageConstruct() throws UnifyException {
+		final String _handler = getUplAttribute(String.class, "handler");
+		if (!StringUtils.isBlank(_handler)) {
+			handler = getComponent(PictureHandler.class, _handler);
+		}
+
+		fileControl = (Control) addInternalChildWidget(
+				"!ui-fileupload accept:$s{image} binding:uploadedFile selectOnly:true hidden:true");
+		StringBuilder sb = new StringBuilder();
+		if (handler != null) {
+			sb.append("!ui-image src:$t{images/camera.png} binding:handler");
+			appendUplAttribute(sb, "styleClass");
+			appendUplAttribute(sb, "style");
+			imageControl = (Control) addInternalChildWidget(sb.toString(), false, false);
+		} else {
+			sb.append("!ui-image src:$t{images/camera.png}");
+			appendUplAttribute(sb, "binding");
+			appendUplAttribute(sb, "styleClass");
+			appendUplAttribute(sb, "style");
+			imageControl = (Control) addInternalChildWidget(sb.toString(), true, false);
+		}
+	}
 }
