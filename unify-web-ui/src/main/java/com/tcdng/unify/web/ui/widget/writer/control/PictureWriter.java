@@ -37,6 +37,7 @@ public class PictureWriter extends AbstractAutoRefreshMultiControlWriter {
 	@Override
 	protected void doWriteStructureAndContent(ResponseWriter writer, Widget widget) throws UnifyException {
 		Picture picture = (Picture) widget;
+		picture.getHandler();
 		writer.writeStructureAndContent(picture.getFileCtrl());
 		writer.writeStructureAndContent(picture.getImageCtrl());
 	}
@@ -48,6 +49,7 @@ public class PictureWriter extends AbstractAutoRefreshMultiControlWriter {
 
 		// Append rigging
 		Picture picture = (Picture) widget;
+		picture.getHandler();
 		writer.beginFunction("ux.rigPhotoUpload");
 		writer.writeParam("pId", picture.getId());
 		writer.writeCommandURLParam("pCmdURL");

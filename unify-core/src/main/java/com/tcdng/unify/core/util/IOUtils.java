@@ -612,6 +612,7 @@ public class IOUtils {
 	public static long writeAll(OutputStream outputStream, byte[] data) throws UnifyException {
 		try {
 			outputStream.write(data);
+			outputStream.flush();
 			return data.length;
 		} catch (IOException e) {
 			throw new UnifyException(e, UnifyCoreErrorConstants.IOUTIL_STREAM_RW_ERROR);
