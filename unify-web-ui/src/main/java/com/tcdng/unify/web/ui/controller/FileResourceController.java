@@ -65,7 +65,7 @@ public class FileResourceController extends AbstractPageResourceController {
 				IOUtils.writeAll(out, rin.getIn());
 			}
 		} catch (UnifyException e) {
-			throw e;
+			logDebug(e, "Exception executing resource [{0}]...", getResourceName());
 		} finally {
 			if (rin != null) {
 				contentType = rin.getContentType();
