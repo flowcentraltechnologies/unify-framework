@@ -2310,15 +2310,14 @@ ux.rigFileAttachment = function(rgp) {
 
 /** File Upload View */
 ux.rigFileUploadView = function(rgp) {
-	var id = rgp.pId;
+	const id = rgp.pId;
 	if (rgp.pEditable) {
-		var len = rgp.pLen;
-		var fileId = rgp.pFileId;
-		var attachId = rgp.pAttchId;
-		var viewId = rgp.pViewId;
-		var remId = rgp.pRemId;
+		const len = rgp.pLen;
+		const fileId = rgp.pFileId;
+		const attachId = rgp.pAttchId;
+		const remId = rgp.pRemId;
 
-		var fileElem = _id(fileId)
+		const fileElem = _id(fileId)
 		var evp = ux.newEvPrm(rgp);
 		evp.uRef = rgp.pRef;
 		evp.uCmd = rgp.pId + "->autoRefresh";
@@ -2330,24 +2329,24 @@ ux.rigFileUploadView = function(rgp) {
 		ux.addHdl(_id(attachId), "click",
 				ux.attachFileClickHdl, evp);
 
-		// View
-		if (rgp.pViewURL) {
-			evp = {uURL:rgp.pViewURL, uPanels:[ rgp.pContId ], uRef:rgp.pRef};
-			ux.addHdl(_id(viewId), "click", ux.post, evp);
-		} else {
-			evp = ux.newEvPrm(rgp);
-			evp.uCmd = id + "->view";
-			evp.uPanels = [ rgp.pContId ];
-			evp.uRef = rgp.pRef;
-			ux.addHdl(_id(viewId), "click", ux.post, evp);
-		}
-
 		// Remove
 		evp = ux.newEvPrm(rgp);
 		evp.uCmd = id + "->detach";
 		evp.uPanels = [ rgp.pContId ];
 		evp.uRef = rgp.pRef;
 		ux.addHdl(_id(remId), "click", ux.post, evp);
+	}
+
+	// View
+	if (rgp.pViewURL) {
+		const evp = {uURL:rgp.pViewURL, uPanels:[ rgp.pContId ], uRef:rgp.pRef};
+		ux.addHdl(_id(rgp.pViewId), "click", ux.post, evp);
+	} else {
+		const evp = ux.newEvPrm(rgp);
+		evp.uCmd = id + "->view";
+		evp.uPanels = [ rgp.pContId ];
+		evp.uRef = rgp.pRef;
+		ux.addHdl(_id(rgp.pViewId), "click", ux.post, evp);
 	}
 }
 
