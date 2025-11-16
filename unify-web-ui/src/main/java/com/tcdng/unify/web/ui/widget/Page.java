@@ -30,7 +30,7 @@ import com.tcdng.unify.web.ui.widget.panel.StandalonePanel;
  * @since 4.1
  */
 public interface Page extends StandalonePanel, PageParts {
-
+	
 	/**
 	 * Sets page bundle category.
 	 * 

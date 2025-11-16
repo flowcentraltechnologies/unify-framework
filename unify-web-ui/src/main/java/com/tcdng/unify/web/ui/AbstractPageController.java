@@ -109,8 +109,7 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 		final PageManager pm = getPageManager();
 		final String pageId = pm.getCurrentRequestPageId(controllerPathParts);
 		if (sessionContext != null && sessionContext.getAttribute(pageId) == null) {
-			final Page page = pm.createPage(sessionContext.getLocale(),
-					controllerPathParts.getControllerName());
+			final Page page = pm.createPage(sessionContext.getLocale(), controllerPathParts.getControllerName());
 			page.setPathParts(controllerPathParts, pageId);
 			Class<? extends PageBean> pageBeanClass = getPageBeanClass();
 			if (VoidPageBean.class.equals(pageBeanClass)) {
@@ -122,7 +121,7 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 			page.setBundledCategory(getBundledCategory());
 			getPageRequestContextUtil().setRequestPage(page);
 			initPage();
-			
+
 			sessionContext.setAttribute(pageId, page);
 		}
 	}
@@ -270,28 +269,23 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 	public String executePageCall(String actionName) throws UnifyException {
 		try {
 			final PageRequestContextUtil ctxUtil = getPageRequestContextUtil();
-			if ("/openPage".equals(actionName)) {
+			switch (actionName) {
+			case "/openPage": {
 				ContentPanel contentPanel = ctxUtil.getRequestDocument() != null
 						? ctxUtil.getRequestDocument().getContentPanel()
 						: null;
 				getPage().setAttribute(PageAttributeConstants.IN_DETACHED_WINDOW,
 						contentPanel != null ? contentPanel.isDetachedWindow() : false);
 
-				String resultName = openPage();
+				final String resultName = openPage();
 				if (contentPanel != null && isContentSupport()) {
-					if (contentPanel.isBlankContent()
-							&& !contentPanel.getPaths().contains(ctxUtil.getRequestPathParts().getControllerPath())) {
-						for (String stickyPath : contentPanel.getPaths()) {
-							fireOtherControllerAction(stickyPath);
-						}
-					}
-
 					contentPanel.addContent(ctxUtil.getRequestPage());
 				}
 
 				return resultName;
-			} else if ("/replacePage".equals(actionName)) {
-				String resultName = openPage();
+			}
+			case "/replacePage": {
+				final String resultName = openPage();
 				ContentPanel contentPanel = ctxUtil.getRequestDocument().getContentPanel();
 				Page currentPage = ctxUtil.getRequestPage();
 				String pathToReplaceId = contentPanel.insertContent(currentPage);
@@ -300,15 +294,18 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 				}
 
 				return resultName;
-			} else if ("/closePage".equals(actionName)) {
+			}
+			case "/closePage": {
 				ClosePageMode closePageMode = ctxUtil.getRequestTargetValue(ClosePageMode.class);
 				performClosePage(closePageMode, true);
 				return ResultMappingConstants.CLOSE;
 			}
+			default:
+				break;
+			}
 
-			String resultName = executeAction(this, actionName);
+			final String resultName = executeAction(this, actionName);
 			if (ResultMappingConstants.CLOSE.equals(resultName)) {
-				// Handle other actions that also return CLOSE result
 				performClosePage(ClosePageMode.CLOSE, false);
 			}
 
@@ -738,10 +735,10 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 	 * Fires action of a page controller in current session.
 	 * 
 	 * @param fullActionPath the target full action path name
-	 * @return the action result mapping
+	 * @return the supplied path page
 	 * @throws UnifyException if an error occurs
 	 */
-	protected String fireOtherControllerAction(String fullActionPath) throws UnifyException {
+	protected Page fireOtherControllerAction(String fullActionPath) throws UnifyException {
 		return getUIControllerUtil().executePageController(fullActionPath);
 	}
 

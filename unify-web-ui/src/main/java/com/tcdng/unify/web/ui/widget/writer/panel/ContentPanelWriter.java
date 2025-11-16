@@ -19,12 +19,14 @@ import java.util.List;
 
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
+import com.tcdng.unify.core.annotation.Configurable;
 import com.tcdng.unify.core.annotation.Writes;
 import com.tcdng.unify.core.util.StringUtils;
 import com.tcdng.unify.core.util.json.JsonWriter;
 import com.tcdng.unify.web.ControllerPathParts;
 import com.tcdng.unify.web.ui.PageAttributeConstants;
 import com.tcdng.unify.web.ui.PageRequestContextUtil;
+import com.tcdng.unify.web.ui.UIControllerUtil;
 import com.tcdng.unify.web.ui.widget.Container;
 import com.tcdng.unify.web.ui.widget.EventHandler;
 import com.tcdng.unify.web.ui.widget.Page;
@@ -46,23 +48,28 @@ public class ContentPanelWriter extends AbstractPanelWriter {
 
 	private static final String CPREMOTE_CATEGORYBASE = "cpcat";
 
+	@Configurable
+	private UIControllerUtil util;
+
 	@Override
 	protected void doWriteBehavior(ResponseWriter writer, Widget widget, EventHandler[] handlers)
 			throws UnifyException {
 		ContentPanelImpl contentPanel = (ContentPanelImpl) widget;
 
 		// Write content variables
+		final List<String> paths = contentPanel.getPaths();
 		writer.beginFunction("ux.rigContentPanel");
 		writer.writeParam("pId", contentPanel.getId());
 		writer.writeParam("pHintPanelId", contentPanel.getHintPanelId());
 		writer.writeParam("pBdyPanelId", contentPanel.getBodyPanelId());
+		writer.writeParam("pStickyCnt", paths.size());
 		if (contentPanel.getPageCount() > 0) {
 			// Close image
 			String closeImgId = contentPanel.getTabItemImgId(contentPanel.getPageIndex());
 			writer.writeParam("pCloseImgId", closeImgId);
 		}
 
-		PageRequestContextUtil rcUtil = getRequestContextUtil();
+		final PageRequestContextUtil rcUtil = getRequestContextUtil();
 		final boolean lowLatency = rcUtil.isLowLatencyRequest();
 		if (lowLatency) {
 			writer.writeParam("pLatency", lowLatency);
@@ -72,7 +79,10 @@ public class ContentPanelWriter extends AbstractPanelWriter {
 		}
 
 		if (contentPanel.getPageCount() == 0) {
-			writer.writeParam("pImmURL", getContextURL(contentPanel.getPaths().get(0)));
+			writer.writeParam("pImmURL", getContextURL(paths.get(paths.size() - 1)));
+			for (String stickyPath : paths) {
+				contentPanel.addContent(util.executePageController(stickyPath));
+			}
 		} else {
 			writer.writeParam("pCurIdx", contentPanel.getPageIndex());
 			ContentInfo currentContentInfo = contentPanel.getCurrentContentInfo();

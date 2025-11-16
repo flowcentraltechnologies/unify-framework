@@ -1172,6 +1172,7 @@ ux.rigContentPanel = function(rgp) {
 		const currIdx = rgp.pCurIdx;
 		const menuId = rgp.pMenuId;
 		const uId = rgp.pId;
+		const sticky = rgp.pStickyCnt;
 		if (rgp.pTabbed || rgp.pWindowed) {	
 			const evp = {};
 			evp.cPanelId = rgp.pBdyPanelId;
@@ -1195,19 +1196,16 @@ ux.rigContentPanel = function(rgp) {
 				evp.uIsDebounce = true;
 				ux.postCommit(evp);
 		} else {
-//			ux.hideBusyIndicator();
 			if (rgp.pTabbed) {
 				for (var i = 0; i < rgp.pContent.length; i++) {
 					const cnt = rgp.pContent[i];
 					if (i == currIdx) {
-						if (i > 0) {
-							const evp = { uTabPaneId: rgp.pTabPaneId, uMenuId: menuId };
-							ux.addHdl(_id(cnt.tabId), "rtclick", ux.contentOpenTabMenu,
-								evp);
-							ux.contentAttachClose(uId, cnt, "mic_", "CL");
-							ux.contentAttachClose(uId, cnt, "mico_", "CLO");
-							ux.contentAttachClose(uId, cnt, "mica_", "CLA");
-						}
+						const evp = {uId:uId, uTabPaneId: rgp.pTabPaneId, uMenuId: menuId, uSticky:sticky, uTabIndex:i };
+						ux.addHdl(_id(cnt.tabId), "rtclick", ux.contentOpenTabMenu,
+							evp);
+						ux.contentAttachClose(uId, cnt, "mic_", "CL");
+						ux.contentAttachClose(uId, cnt, "mico_", "CLO");
+						ux.contentAttachClose(uId, cnt, "mica_", "CLA");
 					} else {
 						const evp = { uOpenPath: cnt.openPath };
 						ux.addHdl(_id(cnt.tabId), "click", ux.contentOpen,
@@ -1246,6 +1244,10 @@ ux.contentOpenTabMenu = function(uEv) {
 	var evp = uEv.evp;
 	var loc = ux.getExactPointerCoordinates(uEv);
 	// Show menu
+	const disp = evp.uTabIndex < evp.uSticky ? 'none' : 'block';
+	_id("mic_" + evp.uId).style.display = disp;
+	_id("mica_" + evp.uId).style.display = disp;
+	
 	var openPrm = {};
 	openPrm.popupId = evp.uMenuId;
 	openPrm.relFrameId = evp.uTabPaneId;
