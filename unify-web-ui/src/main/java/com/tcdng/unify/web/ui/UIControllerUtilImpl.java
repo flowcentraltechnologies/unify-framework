@@ -182,7 +182,7 @@ public class UIControllerUtilImpl extends AbstractUnifyComponent implements UICo
     }
 
     @Override 
-    public String executePageController(String fullActionPath) throws UnifyException {
+    public Page executePageController(String fullActionPath) throws UnifyException {
         final Page currentPage = pageRequestContextUtil.getRequestPage();
         final ControllerPathParts currentPathParts = pageRequestContextUtil.getRequestPathParts();
         try {
@@ -192,7 +192,9 @@ public class UIControllerUtilImpl extends AbstractUnifyComponent implements UICo
             PageController<?> targetPageController = (PageController<?>) controllerFinder
                     .findController(targetPathParts);
             loadRequestPage(targetPathParts);
-            return targetPageController.executePageCall(targetPathParts.getActionName());
+            final Page newPage = pageRequestContextUtil.getRequestPage();
+            targetPageController.executePageCall(targetPathParts.getActionName());
+            return newPage;
         } finally {
         	pageRequestContextUtil.setRequestPathParts(currentPathParts); // Restore original path parts
             pageRequestContextUtil.setRequestPage(currentPage); // Restore original page

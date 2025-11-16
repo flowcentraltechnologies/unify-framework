@@ -39,6 +39,8 @@ import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -47,7 +49,10 @@ import java.util.Properties;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import com.tcdng.unify.core.UnifyCoreErrorConstants;
 import com.tcdng.unify.core.UnifyException;
@@ -79,7 +84,27 @@ public class IOUtils {
 	}
 
 	public static void ignoreSSLHostNames() {
-		HostnameVerifier verifier = new HostnameVerifier() {
+        try {
+			// Certificates
+			TrustManager[] trustAllCerts = new TrustManager[]{
+			    new X509TrustManager() {
+			        public X509Certificate[] getAcceptedIssuers() {
+			            return new X509Certificate[0];
+			        }
+			        public void checkClientTrusted(X509Certificate[] certs, String authType) {}
+			        public void checkServerTrusted(X509Certificate[] certs, String authType) {}
+			    }
+			};
+
+			SSLContext sc = SSLContext.getInstance("TLS");
+			sc.init(null, trustAllCerts, new SecureRandom());
+			HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+        // HostName
+        HostnameVerifier verifier = new HostnameVerifier() {
 			public boolean verify(String hostname, SSLSession session) {
 				return true;
 			}

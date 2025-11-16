@@ -98,11 +98,11 @@ public interface UIControllerUtil extends UnifyComponent {
      * 
      * @param fullActionPath
      *            the full action path
-     * @return the response mapping string
+     * @return the supplied path page
      * @throws UnifyException
      *             if an error occurs
      */
-    String executePageController(String fullActionPath) throws UnifyException;
+    Page executePageController(String fullActionPath) throws UnifyException;
 
     /**
      * Populates the property of a page controller page bean.

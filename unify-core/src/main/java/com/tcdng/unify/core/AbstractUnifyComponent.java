@@ -1296,6 +1296,18 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	}
 
 	/**
+	 * Logs a exception and message at DEBUG level.
+	 * 
+	 * @param exception the exception to log
+	 * @param message the message to log
+	 * @param params  message parameters
+	 */
+	protected void logDebug(Exception exception, String message, Object... params) {
+		log(null, LoggingLevel.DEBUG, null, message, params);
+		log(null, LoggingLevel.DEBUG, exception);
+	}
+
+	/**
 	 * Logs a message at INFO level.
 	 * 
 	 * @param message the message to log
