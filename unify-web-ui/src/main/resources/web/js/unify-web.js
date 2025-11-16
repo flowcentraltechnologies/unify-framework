@@ -1559,7 +1559,8 @@ ux.accordionClickHdl = function(uEv) {
 
 /** AssignmentBox */
 ux.rigAssignmentBox = function(rgp) {
-	var evPrmSel = ux.newEvPrm(rgp);
+	// Filter
+	const evPrmSel = ux.newEvPrm(rgp);
 	var filterSel1;
 	var filterSel2;
 	if (rgp.pFilterSel1Id) {
@@ -1581,6 +1582,30 @@ ux.rigAssignmentBox = function(rgp) {
 	evPrmSel.uPanels = [ rgp.pContId ];
 	ux.addHdl(filterSel1, "change", ux.post, evPrmSel);
 	ux.addHdl(filterSel2, "change", ux.post, evPrmSel);
+	
+	// Search
+	const evPrmFnd = ux.newEvPrm(rgp);
+	var search1;
+	var search2;
+	if (rgp.pSearch1Id) {
+		search1 = _id(rgp.pSearch1Id);
+		search1.disabled = false;
+		evPrmFnd.uRef = [ rgp.pSearch1Id ];
+	}
+
+	if (rgp.pSearch2Id) {
+		search2 = _id(rgp.pSearch2Id);
+		search2.disabled = false;
+		if (search1) {
+			evPrmFnd.uRef = [ rgp.pSearch1Id, rgp.pSearch2Id ];
+		} else {
+			evPrmFnd.uRef = [ rgp.pSearch2Id ];
+		}
+	}
+
+	evPrmFnd.uPanels = [ rgp.pContId ];
+	ux.addHdl(search1, "change", ux.post, evPrmFnd);
+	ux.addHdl(search2, "change", ux.post, evPrmFnd);
 
 	if (!rgp.pAssnOnly) {
 		var assnBoxRigBtns = function(rgp, assnBtnId, assnAllBtnId,

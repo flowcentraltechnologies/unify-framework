@@ -34,7 +34,10 @@ import com.tcdng.unify.web.ui.widget.Control;
  * @since 4.1
  */
 @Component("ui-assignmentbox")
-@UplAttributes({ @UplAttribute(name = "filterList1", type = String.class),
+@UplAttributes({
+		@UplAttribute(name = "search1", type = boolean.class),
+	    @UplAttribute(name = "search2", type = boolean.class),
+		@UplAttribute(name = "filterList1", type = String.class),
         @UplAttribute(name = "filterList2", type = String.class),
         @UplAttribute(name = "assignList", type = String.class, mandatory = true),
         @UplAttribute(name = "unassignList", type = String.class, mandatory = true),
@@ -57,6 +60,10 @@ public class AssignmentBox extends AbstractMultiControl {
 
     private Control unassignedSelCtrl;
 
+    private Control searchCtrl1;
+
+    private Control searchCtrl2;
+
     private Control filterCtrl1;
 
     private Control filterCtrl2;
@@ -69,6 +76,10 @@ public class AssignmentBox extends AbstractMultiControl {
 
     private Control unassignAllCtrl;
 
+    private String searchText1;
+
+    private String searchText2;
+    
     private String filterId1;
 
     private String filterId2;
@@ -134,7 +145,19 @@ public class AssignmentBox extends AbstractMultiControl {
         return getUplAttribute(boolean.class, "showAssignedOnly");
     }
 
-    public Control getFilterSel1() {
+    public Control getSearchCtrl1() {
+		return searchCtrl1;
+	}
+
+	public Control getSearchCtrl2() {
+		return searchCtrl2;
+	}
+
+	public boolean isWithSearch() {
+		return searchCtrl1 != null || searchCtrl2 != null;
+	}
+	
+	public Control getFilterSel1() {
         return filterCtrl1;
     }
 
@@ -194,7 +217,23 @@ public class AssignmentBox extends AbstractMultiControl {
         return getUplAttribute(String.class, "listRule");
     }
 
-    public String getFilterId1() {
+    public String getSearchText1() {
+		return searchText1;
+	}
+
+	public void setSearchText1(String searchText1) {
+		this.searchText1 = searchText1;
+	}
+
+	public String getSearchText2() {
+		return searchText2;
+	}
+
+	public void setSearchText2(String searchText2) {
+		this.searchText2 = searchText2;
+	}
+
+	public String getFilterId1() {
         return filterId1;
     }
 
@@ -228,13 +267,23 @@ public class AssignmentBox extends AbstractMultiControl {
             filterCtrl1.setEditable(true);
         }
 
+        if (getUplAttribute(boolean.class, "search1")) {
+        	searchCtrl1  = (Control) addInternalChildWidget("!ui-text styleClass:$e{abfselect} binding:searchText1 ignoreParentState:true");
+        	searchCtrl1.setEditable(true);
+        }
+        
         String filterList2 = getUplAttribute(String.class, "filterList2");
         if (StringUtils.isNotBlank(filterList2)) {
             filterCtrl2 = (Control) addInternalChildWidget("!ui-select styleClass:$e{abfselect} blankOption:$s{} list:"
                     + filterList2 + " listParams:$s{filterId1} binding:filterId2 ignoreParentState:true popupAlways:true");
             filterCtrl2.setEditable(true);
         }
-
+        
+        if (getUplAttribute(boolean.class, "search2")) {
+        	searchCtrl2  = (Control) addInternalChildWidget("!ui-text styleClass:$e{abfselect} binding:searchText2 ignoreParentState:true");
+        	searchCtrl2.setEditable(true);
+        }
+        
         String msStyle = "";
         String multiSelectStyle = getUplAttribute(String.class, "multiSelectStyle");
         if (multiSelectStyle != null) {
