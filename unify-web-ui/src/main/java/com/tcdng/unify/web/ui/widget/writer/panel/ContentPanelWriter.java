@@ -62,7 +62,6 @@ public class ContentPanelWriter extends AbstractPanelWriter {
 		writer.writeParam("pId", contentPanel.getId());
 		writer.writeParam("pHintPanelId", contentPanel.getHintPanelId());
 		writer.writeParam("pBdyPanelId", contentPanel.getBodyPanelId());
-		writer.writeParam("pStickyCnt", paths.size());
 		if (contentPanel.getPageCount() > 0) {
 			// Close image
 			String closeImgId = contentPanel.getTabItemImgId(contentPanel.getPageIndex());
@@ -80,8 +79,8 @@ public class ContentPanelWriter extends AbstractPanelWriter {
 
 		if (contentPanel.getPageCount() == 0) {
 			writer.writeParam("pImmURL", getContextURL(paths.get(paths.size() - 1)));
-			for (String stickyPath : paths) {
-				contentPanel.addContent(util.executePageController(stickyPath));
+			for (String path : paths) {
+				contentPanel.addContent(util.executePageController(path));
 			}
 		} else {
 			writer.writeParam("pCurIdx", contentPanel.getPageIndex());
@@ -187,7 +186,7 @@ public class ContentPanelWriter extends AbstractPanelWriter {
 			writer.write("<div style=\"display:table-row;width:100%;\">");
 			writer.write("<div style=\"display:table-cell;\">");
 			writer.write("<div id=\"").write(contentPanel.getTabPaneId()).write("\" class=\"cptabbar\">");
-			final List<String> paths = contentPanel.getPaths();
+			final List<String> stickyPaths = contentPanel.getStickyPaths();
 			writer.write("<ul class=\"cptab\">");
 			for (int i = 0; i < contentPanel.getPageCount(); i++) {
 				ContentInfo contentInfo = contentPanel.getContentInfo(i);
@@ -234,7 +233,7 @@ public class ContentPanelWriter extends AbstractPanelWriter {
 
 				writer.write("</a>");
 
-				if (!paths.contains(contentInfo.getOpenPath())) {
+				if (!stickyPaths.contains(contentInfo.getOpenPath())){
 					writer.write("<img id=\"").write(contentPanel.getTabItemImgId(i)).write("\" src=\"");
 					writer.writeFileImageContextURL("$t{images/cross_gray.png}");
 					writer.write("\"/>");

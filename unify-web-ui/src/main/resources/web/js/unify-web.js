@@ -1172,7 +1172,6 @@ ux.rigContentPanel = function(rgp) {
 		const currIdx = rgp.pCurIdx;
 		const menuId = rgp.pMenuId;
 		const uId = rgp.pId;
-		const sticky = rgp.pStickyCnt;
 		if (rgp.pTabbed || rgp.pWindowed) {	
 			const evp = {};
 			evp.cPanelId = rgp.pBdyPanelId;
@@ -1200,6 +1199,7 @@ ux.rigContentPanel = function(rgp) {
 				for (var i = 0; i < rgp.pContent.length; i++) {
 					const cnt = rgp.pContent[i];
 					if (i == currIdx) {
+						const sticky = _id("tabimg_" + uId + i) === null;
 						const evp = {uId:uId, uTabPaneId: rgp.pTabPaneId, uMenuId: menuId, uSticky:sticky, uTabIndex:i };
 						ux.addHdl(_id(cnt.tabId), "rtclick", ux.contentOpenTabMenu,
 							evp);
@@ -1241,14 +1241,13 @@ ux.rewireContent = function(evp) {
 }
 
 ux.contentOpenTabMenu = function(uEv) {
-	var evp = uEv.evp;
-	var loc = ux.getExactPointerCoordinates(uEv);
-	// Show menu
-	const disp = evp.uTabIndex < evp.uSticky ? 'none' : 'block';
+	const evp = uEv.evp;
+	const loc = ux.getExactPointerCoordinates(uEv);
+	const disp = evp.uSticky ? 'none' : 'block';
 	_id("mic_" + evp.uId).style.display = disp;
 	_id("mica_" + evp.uId).style.display = disp;
 	
-	var openPrm = {};
+	const openPrm = {};
 	openPrm.popupId = evp.uMenuId;
 	openPrm.relFrameId = evp.uTabPaneId;
 	openPrm.stayOpenForMillSec = UNIFY_DEFAULT_POPUP_TIMEOUT;
@@ -1259,7 +1258,7 @@ ux.contentOpenTabMenu = function(uEv) {
 }
 
 ux.contentOpen  = function(uEv) {
-	var evp = uEv.evp;
+	const evp = uEv.evp;
 	var path = evp.uOpenPath.replace(TIMESTAMP_VARIABLE, TIMESTAMP_SET + new Date().getTime());
 	evp.uRef = [];
 	evp.uViewer = null;

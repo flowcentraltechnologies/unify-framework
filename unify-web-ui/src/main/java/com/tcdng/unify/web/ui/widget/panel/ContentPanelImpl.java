@@ -17,6 +17,7 @@ package com.tcdng.unify.web.ui.widget.panel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +54,7 @@ import com.tcdng.unify.web.ui.widget.Widget;
 		@UplAttribute(name = "documentPathBinding", type = String.class),
 		@UplAttribute(name = "paths", type = String[].class),
 		@UplAttribute(name = "pathsBinding", type = String.class),
-		@UplAttribute(name = "stickyPaths", type = boolean.class),
+		@UplAttribute(name = "stickyPaths", type = String[].class),
 		@UplAttribute(name = "stickyPathsBinding", type = String.class),
 		@UplAttribute(name = "tabbed", type = boolean.class),
 		@UplAttribute(name = "tabbedBinding", type = String.class),
@@ -72,6 +73,8 @@ public class ContentPanelImpl extends AbstractContentPanel {
 
 	private List<String> paths;
 	
+	private List<String> stickyPaths;
+	
 	private int contentIndex;
 
 	public ContentPanelImpl() {
@@ -84,25 +87,11 @@ public class ContentPanelImpl extends AbstractContentPanel {
 	}
 
 	public List<String> getPaths() throws UnifyException {
-		if (paths == null) {
-			String pathsBinding = getUplAttribute(String.class, "pathsBinding");
-			if (!StringUtils.isBlank(pathsBinding)) {
-				String[] _paths = getValue(String[].class, pathsBinding);
-				if (!DataUtils.isBlank(_paths)) {
-					paths = Arrays.asList(_paths);
-				}
-			}
-		}
-
-		if (paths == null) {
-			paths = Arrays.asList(getUplAttribute(String[].class, "paths"));
-		}
-
-		return paths;
+		return paths = getPaths(paths, "paths", "pathsBinding");
 	}
 
-	public boolean isStickyPaths() throws UnifyException {
-		return getUplAttribute(boolean.class, "stickyPaths", "stickyPathsBinding");
+	public List<String> getStickyPaths() throws UnifyException {
+		return stickyPaths = getPaths(stickyPaths, "stickyPaths", "stickyPathsBinding");
 	}
 
 	public boolean isTabbed() throws UnifyException {
@@ -247,6 +236,25 @@ public class ContentPanelImpl extends AbstractContentPanel {
 		return replacedPathId;
 	}
 
+	private List<String> getPaths(List<String> src, String attr, String binding) throws UnifyException {
+		if (src == null) {
+			final String pathsBinding = getUplAttribute(String.class, binding);
+			if (!StringUtils.isBlank(pathsBinding)) {
+				final String[] _paths = getValue(String[].class, pathsBinding);
+				if (!DataUtils.isBlank(_paths)) {
+					src = Arrays.asList(_paths);
+				}
+			}
+		}
+
+		if (src == null) {
+			final String[] _paths = getUplAttribute(String[].class, attr);
+			src = !DataUtils.isBlank(_paths) ? Arrays.asList(_paths) : Collections.emptyList();
+		}
+
+		return src;
+	}
+
 	private void untabbedClear() throws UnifyException {
 		if (!isTabbed()) {
 			// Discard old pages
@@ -276,15 +284,15 @@ public class ContentPanelImpl extends AbstractContentPanel {
 			removeSrc = true;
 		case CLOSE_OTHERS:
 			// Close others
-			final List<String> paths = getPaths();
+			final List<String> stickyPaths = getStickyPaths();
 			for (ContentInfo contentInfo : contentList) {
 				Page remPage = contentInfo.getPage();
 				if (page == remPage) {
-					if (paths.contains(contentInfo.getOpenPath())) {
+					if (stickyPaths.contains(contentInfo.getOpenPath())) {
 						removeSrc = false;
 					}
 				} else {
-					if (!paths.contains(contentInfo.getOpenPath())) {
+					if (!stickyPaths.contains(contentInfo.getOpenPath())) {
 						toRemovePathIdList.add(remPage.getPageId());					
 					}
 				}
