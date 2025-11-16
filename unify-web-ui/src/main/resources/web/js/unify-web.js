@@ -1172,7 +1172,6 @@ ux.rigContentPanel = function(rgp) {
 		const currIdx = rgp.pCurIdx;
 		const menuId = rgp.pMenuId;
 		const uId = rgp.pId;
-		const sticky = rgp.pStickyCnt;
 		if (rgp.pTabbed || rgp.pWindowed) {	
 			const evp = {};
 			evp.cPanelId = rgp.pBdyPanelId;
@@ -1200,6 +1199,7 @@ ux.rigContentPanel = function(rgp) {
 				for (var i = 0; i < rgp.pContent.length; i++) {
 					const cnt = rgp.pContent[i];
 					if (i == currIdx) {
+						const sticky = _id("tabimg_" + uId + i) === null;
 						const evp = {uId:uId, uTabPaneId: rgp.pTabPaneId, uMenuId: menuId, uSticky:sticky, uTabIndex:i };
 						ux.addHdl(_id(cnt.tabId), "rtclick", ux.contentOpenTabMenu,
 							evp);
@@ -1241,14 +1241,13 @@ ux.rewireContent = function(evp) {
 }
 
 ux.contentOpenTabMenu = function(uEv) {
-	var evp = uEv.evp;
-	var loc = ux.getExactPointerCoordinates(uEv);
-	// Show menu
-	const disp = evp.uTabIndex < evp.uSticky ? 'none' : 'block';
+	const evp = uEv.evp;
+	const loc = ux.getExactPointerCoordinates(uEv);
+	const disp = evp.uSticky ? 'none' : 'block';
 	_id("mic_" + evp.uId).style.display = disp;
 	_id("mica_" + evp.uId).style.display = disp;
 	
-	var openPrm = {};
+	const openPrm = {};
 	openPrm.popupId = evp.uMenuId;
 	openPrm.relFrameId = evp.uTabPaneId;
 	openPrm.stayOpenForMillSec = UNIFY_DEFAULT_POPUP_TIMEOUT;
@@ -1259,7 +1258,7 @@ ux.contentOpenTabMenu = function(uEv) {
 }
 
 ux.contentOpen  = function(uEv) {
-	var evp = uEv.evp;
+	const evp = uEv.evp;
 	var path = evp.uOpenPath.replace(TIMESTAMP_VARIABLE, TIMESTAMP_SET + new Date().getTime());
 	evp.uRef = [];
 	evp.uViewer = null;
@@ -2311,15 +2310,14 @@ ux.rigFileAttachment = function(rgp) {
 
 /** File Upload View */
 ux.rigFileUploadView = function(rgp) {
-	var id = rgp.pId;
+	const id = rgp.pId;
 	if (rgp.pEditable) {
-		var len = rgp.pLen;
-		var fileId = rgp.pFileId;
-		var attachId = rgp.pAttchId;
-		var viewId = rgp.pViewId;
-		var remId = rgp.pRemId;
+		const len = rgp.pLen;
+		const fileId = rgp.pFileId;
+		const attachId = rgp.pAttchId;
+		const remId = rgp.pRemId;
 
-		var fileElem = _id(fileId)
+		const fileElem = _id(fileId)
 		var evp = ux.newEvPrm(rgp);
 		evp.uRef = rgp.pRef;
 		evp.uCmd = rgp.pId + "->autoRefresh";
@@ -2331,24 +2329,24 @@ ux.rigFileUploadView = function(rgp) {
 		ux.addHdl(_id(attachId), "click",
 				ux.attachFileClickHdl, evp);
 
-		// View
-		if (rgp.pViewURL) {
-			evp = {uURL:rgp.pViewURL, uPanels:[ rgp.pContId ], uRef:rgp.pRef};
-			ux.addHdl(_id(viewId), "click", ux.post, evp);
-		} else {
-			evp = ux.newEvPrm(rgp);
-			evp.uCmd = id + "->view";
-			evp.uPanels = [ rgp.pContId ];
-			evp.uRef = rgp.pRef;
-			ux.addHdl(_id(viewId), "click", ux.post, evp);
-		}
-
 		// Remove
 		evp = ux.newEvPrm(rgp);
 		evp.uCmd = id + "->detach";
 		evp.uPanels = [ rgp.pContId ];
 		evp.uRef = rgp.pRef;
 		ux.addHdl(_id(remId), "click", ux.post, evp);
+	}
+
+	// View
+	if (rgp.pViewURL) {
+		const evp = {uURL:rgp.pViewURL, uPanels:[ rgp.pContId ], uRef:rgp.pRef};
+		ux.addHdl(_id(rgp.pViewId), "click", ux.post, evp);
+	} else {
+		const evp = ux.newEvPrm(rgp);
+		evp.uCmd = id + "->view";
+		evp.uPanels = [ rgp.pContId ];
+		evp.uRef = rgp.pRef;
+		ux.addHdl(_id(rgp.pViewId), "click", ux.post, evp);
 	}
 }
 

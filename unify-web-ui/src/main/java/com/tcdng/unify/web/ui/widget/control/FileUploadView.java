@@ -137,6 +137,12 @@ public class FileUploadView extends AbstractAutoRefreshMultiControl {
 	}
 
 	@Override
+	public boolean isBehaviorAlways() throws UnifyException {
+		// TODO Auto-generated method stub
+		return super.isBehaviorAlways();
+	}
+
+	@Override
 	public void addPageAliases() throws UnifyException {
 		addPageAlias(fileCtrl);
 	}
@@ -181,7 +187,7 @@ public class FileUploadView extends AbstractAutoRefreshMultiControl {
 		attachCtrl = (Control) addInternalChildWidget(
 				"!ui-button styleClass:$e{fabutton} caption:$m{button.attach} hint:$m{button.attach} debounce:false");
 		viewCtrl = (Control) addInternalChildWidget(
-				"!ui-button styleClass:$e{fabutton} caption:$m{button.view} hint:$m{button.view} debounce:false");
+				"!ui-button styleClass:$e{fabutton} caption:$m{button.view} hint:$m{button.view} ignoreParentState:true debounce:false");
 		removeCtrl = (Control) addInternalChildWidget(
 				"!ui-button styleClass:$e{fabutton-alert} caption:$m{button.remove} hint:$m{button.remove} debounce:false");
 		String _handler = getUplAttribute(String.class, "handler");

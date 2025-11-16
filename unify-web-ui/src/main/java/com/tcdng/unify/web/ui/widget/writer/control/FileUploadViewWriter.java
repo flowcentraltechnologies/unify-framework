@@ -76,8 +76,8 @@ public class FileUploadViewWriter extends AbstractAutoRefreshMultiControlWriter 
 			removeCtrl.setDisabled(true);
 			removeCtrl.setEditable(false);
 		} else {
-			viewCtrl.setDisabled(isContainerDisabled);
-			viewCtrl.setEditable(isContainerEditable);
+			viewCtrl.setDisabled(false);
+			viewCtrl.setEditable(true);
 			removeCtrl.setDisabled(isContainerDisabled);
 			removeCtrl.setEditable(isContainerEditable);
 		}
