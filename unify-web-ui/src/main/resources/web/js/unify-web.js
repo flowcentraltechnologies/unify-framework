@@ -1559,6 +1559,8 @@ ux.accordionClickHdl = function(uEv) {
 
 /** AssignmentBox */
 ux.rigAssignmentBox = function(rgp) {
+	const id = rgp.pId;
+	
 	// Filter
 	const evPrmSel = ux.newEvPrm(rgp);
 	var filterSel1;
@@ -1584,28 +1586,21 @@ ux.rigAssignmentBox = function(rgp) {
 	ux.addHdl(filterSel2, "change", ux.post, evPrmSel);
 	
 	// Search
-	const evPrmFnd = ux.newEvPrm(rgp);
-	var search1;
-	var search2;
-	if (rgp.pSearch1Id) {
-		search1 = _id(rgp.pSearch1Id);
-		search1.disabled = false;
-		evPrmFnd.uRef = [ rgp.pSearch1Id ];
-	}
-
 	if (rgp.pSearch2Id) {
-		search2 = _id(rgp.pSearch2Id);
-		search2.disabled = false;
-		if (search1) {
-			evPrmFnd.uRef = [ rgp.pSearch1Id, rgp.pSearch2Id ];
-		} else {
-			evPrmFnd.uRef = [ rgp.pSearch2Id ];
+		const evp1 = ux.newEvPrm(rgp);
+		evp1.uCmd = id + "->asearch";
+		evp1.uRef = [ rgp.pSearch1Id ];
+		evp1.uIsReqTrg = true;
+		ux.addHdl(_id(rgp.pSearch1Id), "input", ux.post, evp1);
 		}
+	
+	if (rgp.pSearch2Id) {
+		const evp2 = ux.newEvPrm(rgp);
+		evp2.uCmd = id + "->usearch";
+		evp1.uRef = [ rgp.pSearch2Id ];
+		evp2.uIsReqTrg = true;
+		ux.addHdl(_id(rgp.pSearch2Id), "input", ux.post, evp2);
 	}
-
-	evPrmFnd.uPanels = [ rgp.pContId ];
-	ux.addHdl(search1, "change", ux.post, evPrmFnd);
-	ux.addHdl(search2, "change", ux.post, evPrmFnd);
 
 	if (!rgp.pAssnOnly) {
 		var assnBoxRigBtns = function(rgp, assnBtnId, assnAllBtnId,
@@ -1658,9 +1653,35 @@ ux.rigAssignmentBox = function(rgp) {
 				rgp.pUnassnSelId, rgp.pAssnAll);
 		assnBoxRigBtns(rgp, rgp.pUnassnBtnId, rgp.pUnassnAllBtnId,
 				rgp.pAssnSelId, rgp.pAssnAll);
-	}
 }
 
+ux.rigAssignBoxSec = function(rgp) {
+	if (!rgp.pAssnOnly) {
+		const unassnSel = _id(rgp.pUnassnSelId);
+		const assnBtn = _id(rgp.pAssnBtnId);
+		unassnSel.disabled = false;
+		assnBtn.disabled = true;
+
+		const btnDsbld =  !rgp.pEditable || unassnSel.options.length == 0;
+		if (rgp.pAssnAll) {
+			_id(rgp.pAssnAllBtnId).disabled = btnDsbld;
+		}
+
+		if (!btnDsbld) {
+			evp = {};
+			ux.addHdl(unassnSel, "change", function(uEv) {
+				assnBtn.disabled = true;
+				for (var i = 0; i < unassnSel.options.length; i++) {
+					if (unassnSel.options[i].selected) {
+						assnBtn.disabled = false;
+						break;
+					}
+				}
+			}, evp);
+		}
+	}
+}
+	 
 /** Checkbox */
 ux.rigCheckbox = function(rgp) {
 	const box = _id(rgp.pId);
@@ -6001,6 +6022,7 @@ ux.init = function() {
 	ux.setfn(ux.rigRichTextEditor, "ux44");
 	ux.setfn(ux.rigPalette, "ux45");  
 	ux.setfn(ux.rigTarget, "ux46");  
+	ux.setfn(ux.rigAssignBoxSec, "ux47");  
 }
 
 ux.setfn = function(fn, id) {

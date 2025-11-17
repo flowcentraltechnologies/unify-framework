@@ -23,6 +23,7 @@ import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.annotation.UplAttribute;
 import com.tcdng.unify.core.annotation.UplAttributes;
 import com.tcdng.unify.core.util.StringUtils;
+import com.tcdng.unify.web.annotation.Action;
 import com.tcdng.unify.web.ui.widget.AbstractMultiControl;
 import com.tcdng.unify.web.ui.widget.Control;
 
@@ -87,6 +88,16 @@ public class AssignmentBox extends AbstractMultiControl {
 	private List<String> unassignedSelList;
 
 	private List<String> assignedIdList;
+
+    @Action
+    public void asearch() throws UnifyException {
+    	commandRefreshSection(getAssignResultId());
+    }
+
+    @Action
+    public void usearch() throws UnifyException {
+    	commandRefreshSection(getUnassignResultId());
+    }
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -246,6 +257,14 @@ public class AssignmentBox extends AbstractMultiControl {
 	public void setFilterId2(String filterId2) {
 		this.filterId2 = filterId2;
 	}
+
+    public String getAssignResultId() throws UnifyException {
+        return getPrefixedId("arl_");
+    }
+
+    public String getUnassignResultId() throws UnifyException {
+        return getPrefixedId("url_");
+    }
 
 	public Long getAssignBaseId() throws UnifyException {
 		String baseIdBinding = getUplAttribute(String.class, "baseIdBinding");

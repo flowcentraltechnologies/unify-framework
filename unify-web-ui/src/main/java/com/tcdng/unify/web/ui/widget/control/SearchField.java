@@ -21,10 +21,7 @@ import com.tcdng.unify.core.annotation.UplAttribute;
 import com.tcdng.unify.core.annotation.UplAttributes;
 import com.tcdng.unify.web.annotation.Action;
 import com.tcdng.unify.web.constant.ExtensionType;
-import com.tcdng.unify.web.constant.ResultMappingConstants;
-import com.tcdng.unify.web.constant.UnifyWebRequestAttributeConstants;
 import com.tcdng.unify.web.ui.widget.ListParamType;
-import com.tcdng.unify.web.ui.widget.data.RefreshSection;
 
 /**
  * A search input control.
@@ -68,10 +65,7 @@ public class SearchField extends AbstractListPopupTextField {
     public void search() throws UnifyException {
         filter = getRequestTarget(String.class);
         setKeyOnly(false);
-
-        setRequestAttribute(UnifyWebRequestAttributeConstants.REFRESH_SECTION,
-                new RefreshSection(this, getResultPanelId()));
-        setCommandResultMapping(ResultMappingConstants.REFRESH_SECTION);
+    	commandRefreshSection(getResultPanelId());
     }
 
     public String getFilter() {
