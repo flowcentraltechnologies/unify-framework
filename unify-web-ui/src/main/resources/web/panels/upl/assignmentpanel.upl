@@ -21,6 +21,7 @@
 !ui-panel:assignmentBoxPanel components:$c{assignmentBox}
 !ui-assignmentbox:assignmentBox binding:$g{assignListAttribute}
     filterCaption1:$f{filterCaption1} filterCaption2:$f{filterCaption2} assignCaption:$f{assignCaption} unassignCaption:$f{unassignCaption}
+    search1:$f{search1} search2:$f{search2}
     filterList1:$f{filterList1} filterList2:$f{filterList2} assignList:$g{assignList} unassignList:$g{unassignList}
 
 // Action panel

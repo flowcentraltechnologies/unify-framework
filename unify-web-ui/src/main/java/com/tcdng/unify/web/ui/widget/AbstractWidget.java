@@ -46,6 +46,7 @@ import com.tcdng.unify.web.ui.constant.WidgetTempValueConstants;
 import com.tcdng.unify.web.ui.util.WidgetUtils;
 import com.tcdng.unify.web.ui.widget.data.Hint.MODE;
 import com.tcdng.unify.web.ui.widget.data.Popup;
+import com.tcdng.unify.web.ui.widget.data.RefreshSection;
 import com.tcdng.unify.web.ui.widget.panel.StandalonePanel;
 
 /**
@@ -975,6 +976,12 @@ public abstract class AbstractWidget extends AbstractUplComponent implements Wid
 		}
 	}
 
+	protected void commandRefreshSection(String sectionId) throws UnifyException {
+        setRequestAttribute(UnifyWebRequestAttributeConstants.REFRESH_SECTION,
+                new RefreshSection(this, sectionId));
+        setCommandResultMapping(ResultMappingConstants.REFRESH_SECTION);
+	}
+	
 	private String getWorkId() throws UnifyException {
 		return getPrefixedId("wrk_");
 	}

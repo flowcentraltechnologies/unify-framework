@@ -481,10 +481,10 @@ z-index:400;}
 /** Assignment box */
 .ui-assignmentbox {}
 .ui-assignmentbox .abblock {display:inline-block;}
-.ui-assignmentbox .ablabel {padding-bottom: 4px; padding-right:6px; padding-left:5px;}
+.ui-assignmentbox .ablabel {display:block; padding-bottom: 4px; padding-right:6px; padding-left:5px;}
 .ui-assignmentbox .abfselect {width: 320px; margin-bottom:6px;}
 .ui-assignmentbox .abtable {display:table;}
-.ui-assignmentbox .abftable {display:table; width:100%;}
+.ui-assignmentbox .abftable {display:table; width:100%;table-layout:fixed;}
 .ui-assignmentbox .abrow {display:table-row;}
 .ui-assignmentbox .abscell {display:table-cell;vertical-align:top;}
 .ui-assignmentbox .abfieldset {padding-top: 4px; padding-bottom: 4px; border: 1px solid white;}

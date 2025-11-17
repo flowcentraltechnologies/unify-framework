@@ -36,54 +36,78 @@ import com.tcdng.unify.web.ui.widget.writer.AbstractControlWriter;
 @Component("assignmentbox-writer")
 public class AssignmentBoxWriter extends AbstractControlWriter {
 
-    @Override
-    protected void doWriteStructureAndContent(ResponseWriter writer, Widget widget) throws UnifyException {
-        AssignmentBox assignmentBox = (AssignmentBox) widget;
-        writer.write("<div");
-        writeTagAttributes(writer, assignmentBox);
-        writer.write(">");
+	@Override
+	protected void doWriteStructureAndContent(ResponseWriter writer, Widget widget) throws UnifyException {
+		final AssignmentBox assignmentBox = (AssignmentBox) widget;
+		writer.write("<div");
+		writeTagAttributes(writer, assignmentBox);
+		writer.write(">");
 
-        writer.write("<div class=\"abftable\">");
-        writer.write("<div class=\"abrow\">");
-        writeFilter(writer, assignmentBox.getFilterSel1(), assignmentBox.getFilterCaption1());
-        writeFilter(writer, assignmentBox.getFilterSel2(), assignmentBox.getFilterCaption2());
-        writer.write("</div></div>");
+		// Select
+		writer.write("<div class=\"abftable\">");
+		writer.write("<div class=\"abrow\">");
+		writeFilter(writer, assignmentBox.getFilterSel1(), assignmentBox.getFilterCaption1());
+		writeFilter(writer, assignmentBox.getFilterSel2(), assignmentBox.getFilterCaption2());
+		writer.write("</div></div>");
 
-        writer.write("<div class=\"abtable\">");
-        writer.write("<div class=\"abrow\">");
-        // Assigned List
-        writer.write("<div class=\"abscell\"><fieldset class=\"abfieldset\"><legend>")
-        .write(assignmentBox.getAssignCaption()).write(":</legend>");
-        writer.writeStructureAndContent(assignmentBox.getAssignSel());
-        writer.write("</fieldset></div>");
-        if (!assignmentBox.isShowAssignedOnly()) {
-            // Action Buttons
-            writer.write("<div class=\"abbcell\"><div>");
-            writer.writeStructureAndContent(assignmentBox.getAssignBtn());
-            writer.write("</div><div>");
-            writer.writeStructureAndContent(assignmentBox.getUnassignBtn());
-            writer.write("</div>");
-            if(assignmentBox.isAllowAssignAll()) {
-                writer.write("<div>");
-                writer.writeStructureAndContent(assignmentBox.getAssignAllBtn());
-                writer.write("</div><div>");
-                writer.writeStructureAndContent(assignmentBox.getUnassignAllBtn());
-                writer.write("</div>");
-            }
-            writer.write("</div>");
+		writer.write("<div class=\"abtable\">");
+		writer.write("<div class=\"abrow\">");
+		// Assigned List
+		writer.write("<div class=\"abscell\"><fieldset class=\"abfieldset\"><legend>")
+				.write(assignmentBox.getAssignCaption()).write(":</legend>");
+		final String searchCaption = resolveSessionMessage("$m{assignmentpanel.search}");
+		writeSearch(writer, assignmentBox.getSearchCtrl1(), searchCaption);
+		writer.write("<div");
+		writeTagId(writer, assignmentBox.getAssignResultId());
+		writer.write(">");
+		doWriteSectionStructureAndContent(writer, assignmentBox, assignmentBox.getAssignResultId());
+		writer.write("</div>");
+		writer.write("</fieldset></div>");
+		if (!assignmentBox.isShowAssignedOnly()) {
+			// Action Buttons
+			writer.write("<div class=\"abbcell\"><div>");
+			writer.writeStructureAndContent(assignmentBox.getAssignBtn());
+			writer.write("</div><div>");
+			writer.writeStructureAndContent(assignmentBox.getUnassignBtn());
+			writer.write("</div>");
+			if (assignmentBox.isAllowAssignAll()) {
+				writer.write("<div>");
+				writer.writeStructureAndContent(assignmentBox.getAssignAllBtn());
+				writer.write("</div><div>");
+				writer.writeStructureAndContent(assignmentBox.getUnassignAllBtn());
+				writer.write("</div>");
+			}
+			writer.write("</div>");
 
-            // Unassigned List
-            writer.write("<div class=\"abscell\"><fieldset class=\"abfieldset\"><legend>")
-            .write(assignmentBox.getUnassignCaption()).write(":</legend>");
-            writer.writeStructureAndContent(assignmentBox.getUnassignSel());
-            writer.write("</fieldset></div>");
-        }
-        writer.write("</div></div>");
-        
-        writer.write("</div>");
-    }
+			// Unassigned List
+			writer.write("<div class=\"abscell\"><fieldset class=\"abfieldset\"><legend>")
+					.write(assignmentBox.getUnassignCaption()).write(":</legend>");
+			writeSearch(writer, assignmentBox.getSearchCtrl2(), searchCaption);
+			writer.write("<div");
+			writeTagId(writer, assignmentBox.getUnassignResultId());
+			writer.write(">");
+			doWriteSectionStructureAndContent(writer, assignmentBox, assignmentBox.getUnassignResultId());
+			writer.write("</div>");
+			writer.write("</fieldset></div>");
+		}
 
-    @Override
+		writer.write("</div></div>");
+
+		writer.write("</div>");
+	}
+
+	@Override
+	protected void doWriteSectionStructureAndContent(ResponseWriter writer, Widget widget, String sectionId)
+			throws UnifyException {
+		final AssignmentBox assignmentBox = (AssignmentBox) widget;
+		if (assignmentBox.getAssignResultId().equals(sectionId)) {
+			writer.writeStructureAndContent(assignmentBox.getAssignSel());
+		} else if (assignmentBox.getUnassignResultId().equals(sectionId)) {
+			writer.writeStructureAndContent(assignmentBox.getUnassignSel());
+		}
+	}
+
+	@Override
 	protected void doWriteBehavior(ResponseWriter writer, Widget widget, EventHandler[] handlers)
 			throws UnifyException {
 		super.doWriteBehavior(writer, widget, handlers);
@@ -104,6 +128,18 @@ public class AssignmentBoxWriter extends AbstractControlWriter {
 			writer.writeBehavior(filter2);
 		}
 
+		Control search1 = assignmentBox.getSearchCtrl1();
+		if (search1 != null) {
+			search1.setEditable(true);
+			writer.writeBehavior(search1);
+		}
+
+		Control search2 = assignmentBox.getSearchCtrl2();
+		if (search2 != null) {
+			search2.setEditable(true);
+			writer.writeBehavior(search2);
+		}
+
 		// Append rigging
 		writer.beginFunction("ux.rigAssignmentBox");
 		writer.writeParam("pId", assignmentBox.getId());
@@ -115,6 +151,14 @@ public class AssignmentBoxWriter extends AbstractControlWriter {
 
 		if (assignmentBox.getFilterSel2() != null) {
 			writer.writeParam("pFilterSel2Id", assignmentBox.getFilterSel2().getId());
+		}
+
+		if (assignmentBox.getSearchCtrl1() != null) {
+			writer.writeParam("pSearch1Id", assignmentBox.getSearchCtrl1().getId());
+		}
+
+		if (assignmentBox.getSearchCtrl2() != null) {
+			writer.writeParam("pSearch2Id", assignmentBox.getSearchCtrl2().getId());
 		}
 
 		writer.writeParam("pAssnSelId", assignmentBox.getAssignSel().getId());
@@ -132,14 +176,59 @@ public class AssignmentBoxWriter extends AbstractControlWriter {
 		writer.endFunction();
 	}
 
-    private void writeFilter(ResponseWriter writer, Control filter, String caption)
-            throws UnifyException {
-        if (filter != null) {
-        	filter.setEditable(true);
-            writer.write("<div class=\"abscell\"> <span class=\"ablabel\">");
-            writer.write(caption).write(":</span>");
-            writer.writeStructureAndContent(filter);
-            writer.write("</div>");
-        }
-    }
+	@Override
+	protected void doWriteSectionBehavior(ResponseWriter writer, Widget widget, String sectionId)
+			throws UnifyException {
+		final AssignmentBox assignmentBox = (AssignmentBox) widget;
+		if (assignmentBox.getAssignResultId().equals(sectionId)) {
+			writer.writeBehavior(assignmentBox.getAssignSel());
+			
+			writer.beginFunction("ux.rigAssignBoxSec");
+			writer.writeParam("pId", assignmentBox.getId());
+			writer.writeCommandURLParam("pCmdURL");
+			writer.writeParam("pContId", assignmentBox.getContainerId());
+			writer.writeParam("pAssnAll", assignmentBox.isAllowAssignAll());
+			writer.writeParam("pUnassnSelId", assignmentBox.getAssignSel().getId());
+			writer.writeParam("pAssnBtnId", assignmentBox.getUnassignBtn().getId());
+			writer.writeParam("pAssnAllBtnId", assignmentBox.getUnassignAllBtn().getId());
+			writer.writeParam("pEditable", assignmentBox.isContainerEditable());
+			writer.writeParam("pRef", DataUtils.toArray(String.class, writer.getPostCommandRefs()));
+			writer.endFunction();
+		} else if (assignmentBox.getUnassignResultId().equals(sectionId)) {
+			writer.writeBehavior(assignmentBox.getUnassignSel());
+			
+			writer.beginFunction("ux.rigAssignBoxSec");
+			writer.writeParam("pId", assignmentBox.getId());
+			writer.writeCommandURLParam("pCmdURL");
+			writer.writeParam("pContId", assignmentBox.getContainerId());
+			writer.writeParam("pAssnAll", assignmentBox.isAllowAssignAll());
+			writer.writeParam("pUnassnSelId", assignmentBox.getUnassignSel().getId());
+			writer.writeParam("pAssnBtnId", assignmentBox.getAssignBtn().getId());
+			writer.writeParam("pAssnAllBtnId", assignmentBox.getAssignAllBtn().getId());
+			writer.writeParam("pEditable", assignmentBox.isContainerEditable());
+			writer.writeParam("pRef", DataUtils.toArray(String.class, writer.getPostCommandRefs()));
+			writer.endFunction();
+		}
+	}
+
+	private void writeFilter(ResponseWriter writer, Control filter, String caption) throws UnifyException {
+		writer.write("<div class=\"abscell\">");
+		if (filter != null) {
+			filter.setEditable(true);
+			writer.write("<span class=\"ablabel\">").write(caption).write(":</span>");
+			writer.writeStructureAndContent(filter);
+		}
+
+		writer.write("</div>");
+	}
+
+	private void writeSearch(ResponseWriter writer, Control search, String caption) throws UnifyException {
+		if (search != null) {
+			writer.write("<div>");
+			search.setEditable(true);
+			writer.write("<span class=\"ablabel\">").write(caption).write(":</span>");
+			writer.writeStructureAndContent(search);
+			writer.write("</div>");
+		}
+	}
 }

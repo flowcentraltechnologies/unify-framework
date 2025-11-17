@@ -23,6 +23,7 @@ import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.annotation.UplAttribute;
 import com.tcdng.unify.core.annotation.UplAttributes;
 import com.tcdng.unify.core.util.StringUtils;
+import com.tcdng.unify.web.annotation.Action;
 import com.tcdng.unify.web.ui.widget.AbstractMultiControl;
 import com.tcdng.unify.web.ui.widget.Control;
 
@@ -34,243 +35,312 @@ import com.tcdng.unify.web.ui.widget.Control;
  * @since 4.1
  */
 @Component("ui-assignmentbox")
-@UplAttributes({ @UplAttribute(name = "filterList1", type = String.class),
-        @UplAttribute(name = "filterList2", type = String.class),
-        @UplAttribute(name = "assignList", type = String.class, mandatory = true),
-        @UplAttribute(name = "unassignList", type = String.class, mandatory = true),
-        @UplAttribute(name = "filterCaption1", type = String.class),
-        @UplAttribute(name = "filterCaption2", type = String.class),
-        @UplAttribute(name = "assignCaption", type = String.class, mandatory = true),
-        @UplAttribute(name = "unassignCaption", type = String.class, mandatory = true),
-        @UplAttribute(name = "assignListKey", type = String.class),
-        @UplAttribute(name = "unassignListKey", type = String.class),
-        @UplAttribute(name = "assignListDesc", type = String.class),
-        @UplAttribute(name = "unassignListDesc", type = String.class),
-        @UplAttribute(name = "multiSelectStyle", type = String.class),
-        @UplAttribute(name = "listRule", type = String.class),
-        @UplAttribute(name = "baseIdBinding", type = String.class),
-        @UplAttribute(name = "allowAssignAll", type = boolean.class, defaultVal="true"),
-        @UplAttribute(name = "showAssignedOnly", type = boolean.class) })
+@UplAttributes({
+		@UplAttribute(name = "search", type = boolean.class),
+		@UplAttribute(name = "filterList1", type = String.class),
+		@UplAttribute(name = "filterList2", type = String.class),
+		@UplAttribute(name = "assignList", type = String.class, mandatory = true),
+		@UplAttribute(name = "unassignList", type = String.class, mandatory = true),
+		@UplAttribute(name = "filterCaption1", type = String.class),
+		@UplAttribute(name = "filterCaption2", type = String.class),
+		@UplAttribute(name = "assignCaption", type = String.class, mandatory = true),
+		@UplAttribute(name = "unassignCaption", type = String.class, mandatory = true),
+		@UplAttribute(name = "assignListKey", type = String.class),
+		@UplAttribute(name = "unassignListKey", type = String.class),
+		@UplAttribute(name = "assignListDesc", type = String.class),
+		@UplAttribute(name = "unassignListDesc", type = String.class),
+		@UplAttribute(name = "multiSelectStyle", type = String.class),
+		@UplAttribute(name = "listRule", type = String.class),
+		@UplAttribute(name = "baseIdBinding", type = String.class),
+		@UplAttribute(name = "allowAssignAll", type = boolean.class, defaultVal = "true"),
+		@UplAttribute(name = "showAssignedOnly", type = boolean.class) })
 public class AssignmentBox extends AbstractMultiControl {
 
-    private Control assignedSelCtrl;
+	private Control assignedSelCtrl;
 
-    private Control unassignedSelCtrl;
+	private Control unassignedSelCtrl;
 
-    private Control filterCtrl1;
+	private Control searchCtrl1;
 
-    private Control filterCtrl2;
+	private Control searchCtrl2;
 
-    private Control assignCtrl;
+	private Control filterCtrl1;
 
-    private Control assignAllCtrl;
+	private Control filterCtrl2;
 
-    private Control unassignCtrl;
+	private Control assignCtrl;
 
-    private Control unassignAllCtrl;
+	private Control assignAllCtrl;
 
-    private String filterId1;
+	private Control unassignCtrl;
 
-    private String filterId2;
+	private Control unassignAllCtrl;
 
-    private List<String> assignedSelList;
+	private String searchText1;
 
-    private List<String> unassignedSelList;
+	private String searchText2;
 
-    private List<String> assignedIdList;
+	private String filterId1;
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public void updateInternalState() throws UnifyException {
-        List<String> valueList = getValue(List.class, String.class);
-        if (assignedIdList != valueList) {
-            assignedIdList = valueList;
-        }
+	private String filterId2;
 
-        if (assignedIdList == null) {
-            assignedIdList = new ArrayList<String>();
-        }
+	private List<String> assignedSelList;
 
-        if (assignedSelList != null) {
-            for (String id : assignedSelList) {
-                assignedIdList.remove(id);
-            }
+	private List<String> unassignedSelList;
 
-            assignedSelList = null;
-        }
+	private List<String> assignedIdList;
 
-        if (unassignedSelList != null) {
-            for (String id : unassignedSelList) {
-                assignedIdList.add(id);
-            }
-
-            unassignedSelList = null;
-        }
-
-        setValue(assignedIdList);
+    @Action
+    public void asearch() throws UnifyException {
+    	commandRefreshSection(getAssignResultId());
     }
 
-    public String getFilterCaption1() throws UnifyException {
-        return getUplAttribute(String.class, "filterCaption1");
+    @Action
+    public void usearch() throws UnifyException {
+    	commandRefreshSection(getUnassignResultId());
     }
 
-    public String getFilterCaption2() throws UnifyException {
-        return getUplAttribute(String.class, "filterCaption2");
+	@SuppressWarnings("unchecked")
+	@Override
+	public void updateInternalState() throws UnifyException {
+		List<String> valueList = getValue(List.class, String.class);
+		if (assignedIdList != valueList) {
+			assignedIdList = valueList;
+		}
+
+		if (assignedIdList == null) {
+			assignedIdList = new ArrayList<String>();
+		}
+
+		if (assignedSelList != null) {
+			for (String id : assignedSelList) {
+				assignedIdList.remove(id);
+			}
+
+			assignedSelList = null;
+		}
+
+		if (unassignedSelList != null) {
+			for (String id : unassignedSelList) {
+				assignedIdList.add(id);
+			}
+
+			unassignedSelList = null;
+		}
+
+		setValue(assignedIdList);
+	}
+
+	public String getFilterCaption1() throws UnifyException {
+		return getUplAttribute(String.class, "filterCaption1");
+	}
+
+	public String getFilterCaption2() throws UnifyException {
+		return getUplAttribute(String.class, "filterCaption2");
+	}
+
+	public String getUnassignCaption() throws UnifyException {
+		return getUplAttribute(String.class, "unassignCaption");
+	}
+
+	public String getAssignCaption() throws UnifyException {
+		return getUplAttribute(String.class, "assignCaption");
+	}
+
+	public boolean isAllowAssignAll() throws UnifyException {
+		return getUplAttribute(boolean.class, "allowAssignAll");
+	}
+
+	public boolean isShowAssignedOnly() throws UnifyException {
+		return getUplAttribute(boolean.class, "showAssignedOnly");
+	}
+
+	public Control getSearchCtrl1() {
+		return searchCtrl1;
+	}
+
+	public Control getSearchCtrl2() {
+		return searchCtrl2;
+	}
+
+	public boolean isWithSearch() {
+		return searchCtrl1 != null || searchCtrl2 != null;
+	}
+
+	public Control getFilterSel1() {
+		return filterCtrl1;
+	}
+
+	public Control getFilterSel2() {
+		return filterCtrl2;
+	}
+
+	public Control getAssignSel() {
+		return assignedSelCtrl;
+	}
+
+	public Control getUnassignSel() {
+		return unassignedSelCtrl;
+	}
+
+	public Control getAssignBtn() {
+		return assignCtrl;
+	}
+
+	public Control getAssignAllBtn() {
+		return assignAllCtrl;
+	}
+
+	public Control getUnassignBtn() {
+		return unassignCtrl;
+	}
+
+	public Control getUnassignAllBtn() {
+		return unassignAllCtrl;
+	}
+
+	public List<String> getAssignedSelList() {
+		return assignedSelList;
+	}
+
+	public void setAssignedSelList(List<String> assignedSelList) {
+		this.assignedSelList = assignedSelList;
+	}
+
+	public List<String> getUnassignedSelList() {
+		return unassignedSelList;
+	}
+
+	public void setUnassignedSelList(List<String> unassignedSelList) {
+		this.unassignedSelList = unassignedSelList;
+	}
+
+	public List<String> getAssignedIdList() {
+		return assignedIdList;
+	}
+
+	public void setAssignedIdList(List<String> assignedIdList) {
+		this.assignedIdList = assignedIdList;
+	}
+
+	public String getListRule() throws UnifyException {
+		return getUplAttribute(String.class, "listRule");
+	}
+
+	public String getSearchText1() {
+		return searchText1;
+	}
+
+	public void setSearchText1(String searchText1) {
+		this.searchText1 = searchText1;
+	}
+
+	public String getSearchText2() {
+		return searchText2;
+	}
+
+	public void setSearchText2(String searchText2) {
+		this.searchText2 = searchText2;
+	}
+
+	public String getFilterId1() {
+		return filterId1;
+	}
+
+	public void setFilterId1(String filterId1) {
+		this.filterId1 = filterId1;
+	}
+
+	public String getFilterId2() {
+		return filterId2;
+	}
+
+	public void setFilterId2(String filterId2) {
+		this.filterId2 = filterId2;
+	}
+
+    public String getAssignResultId() throws UnifyException {
+        return getPrefixedId("arl_");
     }
 
-    public String getUnassignCaption() throws UnifyException {
-        return getUplAttribute(String.class, "unassignCaption");
+    public String getUnassignResultId() throws UnifyException {
+        return getPrefixedId("url_");
     }
 
-    public String getAssignCaption() throws UnifyException {
-        return getUplAttribute(String.class, "assignCaption");
-    }
+	public Long getAssignBaseId() throws UnifyException {
+		String baseIdBinding = getUplAttribute(String.class, "baseIdBinding");
+		if (!StringUtils.isBlank(baseIdBinding)) {
+			return getValue(Long.class, baseIdBinding);
+		}
 
-    public boolean isAllowAssignAll() throws UnifyException {
-        return getUplAttribute(boolean.class, "allowAssignAll");
-    }
+		return null;
+	}
 
-    public boolean isShowAssignedOnly() throws UnifyException {
-        return getUplAttribute(boolean.class, "showAssignedOnly");
-    }
+	@Override
+	protected void doOnPageConstruct() throws UnifyException {
+		String filterList1 = getUplAttribute(String.class, "filterList1");
+		if (StringUtils.isNotBlank(filterList1)) {
+			filterCtrl1 = (Control) addInternalChildWidget("!ui-select styleClass:$e{abfselect} blankOption:$s{} list:"
+					+ filterList1 + " binding:filterId1 ignoreParentState:true popupAlways:true");
+			filterCtrl1.setEditable(true);
+		}
 
-    public Control getFilterSel1() {
-        return filterCtrl1;
-    }
+		if (getUplAttribute(boolean.class, "search")) {
+			searchCtrl1 = (Control) addInternalChildWidget(
+					"!ui-text styleClass:$e{abfselect} binding:searchText1 ignoreParentState:true");
+			searchCtrl1.setEditable(true);
 
-    public Control getFilterSel2() {
-        return filterCtrl2;
-    }
+			searchCtrl2 = (Control) addInternalChildWidget(
+					"!ui-text styleClass:$e{abfselect} binding:searchText2 ignoreParentState:true");
+			searchCtrl2.setEditable(true);
+		}
 
-    public Control getAssignSel() {
-        return assignedSelCtrl;
-    }
+		String filterList2 = getUplAttribute(String.class, "filterList2");
+		if (StringUtils.isNotBlank(filterList2)) {
+			filterCtrl2 = (Control) addInternalChildWidget(
+					"!ui-select styleClass:$e{abfselect} blankOption:$s{} list:" + filterList2
+							+ " listParams:$s{filterId1} binding:filterId2 ignoreParentState:true popupAlways:true");
+			filterCtrl2.setEditable(true);
+		}
 
-    public Control getUnassignSel() {
-        return unassignedSelCtrl;
-    }
+		String msStyle = "";
+		String multiSelectStyle = getUplAttribute(String.class, "multiSelectStyle");
+		if (multiSelectStyle != null) {
+			msStyle = "style:$s{" + multiSelectStyle + "}";
+		}
 
-    public Control getAssignBtn() {
-        return assignCtrl;
-    }
+		assignedSelCtrl = (Control) addInternalChildWidget(
+				constructMultiSelect("assignList", "assignListKey", "assignListDesc", "assignedSelList", msStyle));
+		unassignedSelCtrl = (Control) addInternalChildWidget(constructMultiSelect("unassignList", "unassignListKey",
+				"unassignListDesc", "unassignedSelList", msStyle));
+		assignCtrl = (Control) addInternalChildWidget(
+				"!ui-button styleClass:$e{abbutton} caption:$m{button.assign} debounce:false");
+		assignAllCtrl = (Control) addInternalChildWidget(
+				"!ui-button styleClass:$e{abbutton} caption:$m{button.assignall} debounce:false");
+		unassignCtrl = (Control) addInternalChildWidget(
+				"!ui-button styleClass:$e{abbutton} caption:$m{button.unassign} debounce:false");
+		unassignAllCtrl = (Control) addInternalChildWidget(
+				"!ui-button styleClass:$e{abbutton} caption:$m{button.unassignall} debounce:false");
+	}
 
-    public Control getAssignAllBtn() {
-        return assignAllCtrl;
-    }
+	private String constructMultiSelect(String listAttr, String listKeyAttr, String listDescAttr, String binding,
+			String msStyle) throws UnifyException {
+		StringBuilder sb = new StringBuilder();
+		sb.append("!ui-multiselect styleClass:$e{abmselect} ").append(msStyle).append(" list:")
+				.append(getUplAttribute(String.class, listAttr));
+		String listKey = getUplAttribute(String.class, listKeyAttr);
+		if (StringUtils.isNotBlank(listKey)) {
+			sb.append(" listKey:").append(listKey);
+		}
 
-    public Control getUnassignBtn() {
-        return unassignCtrl;
-    }
+		String listDesc = getUplAttribute(String.class, listDescAttr);
+		if (StringUtils.isNotBlank(listDesc)) {
+			sb.append(" listDescription:").append(listDesc);
+		}
 
-    public Control getUnassignAllBtn() {
-        return unassignAllCtrl;
-    }
-
-    public List<String> getAssignedSelList() {
-        return assignedSelList;
-    }
-
-    public void setAssignedSelList(List<String> assignedSelList) {
-        this.assignedSelList = assignedSelList;
-    }
-
-    public List<String> getUnassignedSelList() {
-        return unassignedSelList;
-    }
-
-    public void setUnassignedSelList(List<String> unassignedSelList) {
-        this.unassignedSelList = unassignedSelList;
-    }
-
-    public List<String> getAssignedIdList() {
-        return assignedIdList;
-    }
-
-    public void setAssignedIdList(List<String> assignedIdList) {
-        this.assignedIdList = assignedIdList;
-    }
-
-    public String getListRule() throws UnifyException {
-        return getUplAttribute(String.class, "listRule");
-    }
-
-    public String getFilterId1() {
-        return filterId1;
-    }
-
-    public void setFilterId1(String filterId1) {
-        this.filterId1 = filterId1;
-    }
-
-    public String getFilterId2() {
-        return filterId2;
-    }
-
-    public void setFilterId2(String filterId2) {
-        this.filterId2 = filterId2;
-    }
-
-    public Long getAssignBaseId() throws UnifyException {
-        String baseIdBinding = getUplAttribute(String.class, "baseIdBinding");
-        if (!StringUtils.isBlank(baseIdBinding)) {
-            return getValue(Long.class, baseIdBinding);
-        }
-
-        return null;
-    }
-
-    @Override
-    protected void doOnPageConstruct() throws UnifyException {
-        String filterList1 = getUplAttribute(String.class, "filterList1");
-        if (StringUtils.isNotBlank(filterList1)) {
-            filterCtrl1 = (Control) addInternalChildWidget("!ui-select styleClass:$e{abfselect} blankOption:$s{} list:"
-                    + filterList1 + " binding:filterId1 ignoreParentState:true popupAlways:true");
-            filterCtrl1.setEditable(true);
-        }
-
-        String filterList2 = getUplAttribute(String.class, "filterList2");
-        if (StringUtils.isNotBlank(filterList2)) {
-            filterCtrl2 = (Control) addInternalChildWidget("!ui-select styleClass:$e{abfselect} blankOption:$s{} list:"
-                    + filterList2 + " listParams:$s{filterId1} binding:filterId2 ignoreParentState:true popupAlways:true");
-            filterCtrl2.setEditable(true);
-        }
-
-        String msStyle = "";
-        String multiSelectStyle = getUplAttribute(String.class, "multiSelectStyle");
-        if (multiSelectStyle != null) {
-            msStyle = "style:$s{" + multiSelectStyle + "}";
-        }
-
-        assignedSelCtrl = (Control) addInternalChildWidget(
-                constructMultiSelect("assignList", "assignListKey", "assignListDesc", "assignedSelList", msStyle));
-        unassignedSelCtrl = (Control) addInternalChildWidget(constructMultiSelect("unassignList", "unassignListKey",
-                "unassignListDesc", "unassignedSelList", msStyle));
-        assignCtrl = (Control) addInternalChildWidget(
-                "!ui-button styleClass:$e{abbutton} caption:$m{button.assign} debounce:false");
-        assignAllCtrl = (Control) addInternalChildWidget(
-                "!ui-button styleClass:$e{abbutton} caption:$m{button.assignall} debounce:false");
-        unassignCtrl = (Control) addInternalChildWidget(
-                "!ui-button styleClass:$e{abbutton} caption:$m{button.unassign} debounce:false");
-        unassignAllCtrl = (Control) addInternalChildWidget(
-                "!ui-button styleClass:$e{abbutton} caption:$m{button.unassignall} debounce:false");
-    }
-
-    private String constructMultiSelect(String listAttr, String listKeyAttr, String listDescAttr, String binding,
-            String msStyle) throws UnifyException {
-        StringBuilder sb = new StringBuilder();
-        sb.append("!ui-multiselect styleClass:$e{abmselect} ").append(msStyle).append(" list:")
-                .append(getUplAttribute(String.class, listAttr));
-        String listKey = getUplAttribute(String.class, listKeyAttr);
-        if (StringUtils.isNotBlank(listKey)) {
-            sb.append(" listKey:").append(listKey);
-        }
-
-        String listDesc = getUplAttribute(String.class, listDescAttr);
-        if (StringUtils.isNotBlank(listDesc)) {
-            sb.append(" listDescription:").append(listDesc);
-        }
-
-        sb.append(" listParams:$l{assignBaseId assignedIdList listRule filterId1 filterId2} binding:").append(binding);
-        return sb.toString();
-    }
+		sb.append(
+				" listParams:$l{assignBaseId assignedIdList listRule filterId1 filterId2 searchText1 searchText2} binding:")
+				.append(binding);
+		return sb.toString();
+	}
 }
