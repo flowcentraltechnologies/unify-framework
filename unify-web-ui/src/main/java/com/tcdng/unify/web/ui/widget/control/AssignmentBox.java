@@ -35,8 +35,9 @@ import com.tcdng.unify.web.ui.widget.Control;
  * @since 4.1
  */
 @Component("ui-assignmentbox")
-@UplAttributes({ @UplAttribute(name = "search1", type = boolean.class),
-		@UplAttribute(name = "search2", type = boolean.class), @UplAttribute(name = "filterList1", type = String.class),
+@UplAttributes({
+		@UplAttribute(name = "search", type = boolean.class),
+		@UplAttribute(name = "filterList1", type = String.class),
 		@UplAttribute(name = "filterList2", type = String.class),
 		@UplAttribute(name = "assignList", type = String.class, mandatory = true),
 		@UplAttribute(name = "unassignList", type = String.class, mandatory = true),
@@ -284,10 +285,14 @@ public class AssignmentBox extends AbstractMultiControl {
 			filterCtrl1.setEditable(true);
 		}
 
-		if (getUplAttribute(boolean.class, "search1")) {
+		if (getUplAttribute(boolean.class, "search")) {
 			searchCtrl1 = (Control) addInternalChildWidget(
 					"!ui-text styleClass:$e{abfselect} binding:searchText1 ignoreParentState:true");
 			searchCtrl1.setEditable(true);
+
+			searchCtrl2 = (Control) addInternalChildWidget(
+					"!ui-text styleClass:$e{abfselect} binding:searchText2 ignoreParentState:true");
+			searchCtrl2.setEditable(true);
 		}
 
 		String filterList2 = getUplAttribute(String.class, "filterList2");
@@ -296,12 +301,6 @@ public class AssignmentBox extends AbstractMultiControl {
 					"!ui-select styleClass:$e{abfselect} blankOption:$s{} list:" + filterList2
 							+ " listParams:$s{filterId1} binding:filterId2 ignoreParentState:true popupAlways:true");
 			filterCtrl2.setEditable(true);
-		}
-
-		if (getUplAttribute(boolean.class, "search2")) {
-			searchCtrl2 = (Control) addInternalChildWidget(
-					"!ui-text styleClass:$e{abfselect} binding:searchText2 ignoreParentState:true");
-			searchCtrl2.setEditable(true);
 		}
 
 		String msStyle = "";

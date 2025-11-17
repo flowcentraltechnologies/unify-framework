@@ -1597,7 +1597,7 @@ ux.rigAssignmentBox = function(rgp) {
 	if (rgp.pSearch2Id) {
 		const evp2 = ux.newEvPrm(rgp);
 		evp2.uCmd = id + "->usearch";
-		evp1.uRef = [ rgp.pSearch2Id ];
+		evp2.uRef = [ rgp.pSearch2Id ];
 		evp2.uIsReqTrg = true;
 		ux.addHdl(_id(rgp.pSearch2Id), "input", ux.post, evp2);
 	}
@@ -1653,6 +1653,7 @@ ux.rigAssignmentBox = function(rgp) {
 				rgp.pUnassnSelId, rgp.pAssnAll);
 		assnBoxRigBtns(rgp, rgp.pUnassnBtnId, rgp.pUnassnAllBtnId,
 				rgp.pAssnSelId, rgp.pAssnAll);
+	}
 }
 
 ux.rigAssignBoxSec = function(rgp) {
