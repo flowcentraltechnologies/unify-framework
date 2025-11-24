@@ -41,6 +41,22 @@ import com.tcdng.unify.core.util.json.JsonWriter;
  */
 public interface ResponseWriter extends HtmlTextWriter { 
 
+	/**
+	 * Sets this response writer auto-stretch mode.
+	 * 
+	 * @param autoStretch the auto-strect mode
+	 * @throws UnifyException if an error occurs
+	 */
+	void setAutoStretch(boolean autoStretch) throws UnifyException;
+
+	/**
+	 * Checks if response writer is in auto-stretch mode
+	 * 
+	 * @return true if auto-stretch otherwise false
+	 * @throws UnifyException if an error occurs
+	 */
+	boolean isAutoStretch() throws UnifyException;
+	
     /**
      * Writes a message using application locale.
      * 

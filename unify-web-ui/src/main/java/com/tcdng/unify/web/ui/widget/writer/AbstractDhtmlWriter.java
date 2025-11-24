@@ -117,7 +117,16 @@ public abstract class AbstractDhtmlWriter extends AbstractUplComponentWriter {
 
 		String style = widget.getStyle();
 		if (style != null) {
-			writer.write(" style=\"").write(style).write("\"");
+			writer.write(" style=\"").write(style);
+			if (writer.isAutoStretch() && widget.isSupportStretch()) {
+				writer.write("width:100%;");
+			}
+			
+			writer.write("\"");
+		} else {
+			if (writer.isAutoStretch() && widget.isSupportStretch()) {
+				writer.write(" style=\"width:100%;\"");
+			}
 		}
 
 		String title = widget.getHint();
@@ -210,7 +219,16 @@ public abstract class AbstractDhtmlWriter extends AbstractUplComponentWriter {
 
 		String style = widget.getStyle();
 		if (style != null) {
-			writer.write(" style=\"").write(style).write("\"");
+			writer.write(" style=\"").write(style);
+			if (writer.isAutoStretch() && widget.isSupportStretch()) {
+				writer.write("width:100%;");
+			}
+			
+			writer.write("\"");
+		} else {
+			if (writer.isAutoStretch() && widget.isSupportStretch()) {
+				writer.write(" style=\"width:100%;\"");
+			}
 		}
 
 		String title = widget.getHint();
@@ -277,7 +295,16 @@ public abstract class AbstractDhtmlWriter extends AbstractUplComponentWriter {
 		writer.write("\"");
 
 		if (style != null) {
-			writer.write(" style=\"").write(style).write("\"");
+			writer.write(" style=\"").write(style);
+			if (writer.isAutoStretch() && widget.isSupportStretch()) {
+				writer.write("width:100%;");
+			}
+			
+			writer.write("\"");
+		} else {
+			if (writer.isAutoStretch() && widget.isSupportStretch()) {
+				writer.write(" style=\"width:100%;\"");
+			}
 		}
 
 		String title = widget.getHint();
@@ -482,7 +509,16 @@ public abstract class AbstractDhtmlWriter extends AbstractUplComponentWriter {
 	 */
 	protected final void writeTagStyle(ResponseWriter writer, Widget widget) throws UnifyException {
 		if (StringUtils.isNotBlank(widget.getStyle())) {
-			writer.write(" style=\"").write(widget.getStyle()).write("\"");
+			writer.write(" style=\"").write(widget.getStyle());
+			if (writer.isAutoStretch() && widget.isSupportStretch()) {
+				writer.write("width:100%;");
+			}
+			
+			writer.write("\"");
+		} else {
+			if (writer.isAutoStretch() && widget.isSupportStretch()) {
+				writer.write(" style=\"width:100%;\"");
+			}
 		}
 	}
 
@@ -517,6 +553,11 @@ public abstract class AbstractDhtmlWriter extends AbstractUplComponentWriter {
 			if (StringUtils.isNotBlank(style)) {
 				writer.write(style);
 			}
+			
+			if (writer.isAutoStretch() && widget.isSupportStretch()) {
+				writer.write("width:100%;");
+			}
+			
 			writer.write("\"");
 		}
 	}
