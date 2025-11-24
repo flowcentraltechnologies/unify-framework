@@ -45,9 +45,10 @@ public interface ResponseWriter extends HtmlTextWriter {
 	 * Sets this response writer auto-stretch mode.
 	 * 
 	 * @param autoStretch the auto-strect mode
+	 * @return old auto-stretch mode
 	 * @throws UnifyException if an error occurs
 	 */
-	void setAutoStretch(boolean autoStretch) throws UnifyException;
+	boolean setAutoStretch(boolean autoStretch) throws UnifyException;
 
 	/**
 	 * Checks if response writer is in auto-stretch mode

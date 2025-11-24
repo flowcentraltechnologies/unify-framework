@@ -127,8 +127,10 @@ public class ResponseWriterImpl extends AbstractUnifyComponent implements Respon
 	}
 
 	@Override
-	public void setAutoStretch(boolean autoStretch) {
+	public boolean setAutoStretch(boolean autoStretch) {
+		final boolean current = this.autoStretch;
 		this.autoStretch = autoStretch;
+		return current;
 	}
 
 	@Override
