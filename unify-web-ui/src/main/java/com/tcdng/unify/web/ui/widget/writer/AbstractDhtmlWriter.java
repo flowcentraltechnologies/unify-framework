@@ -803,13 +803,13 @@ public abstract class AbstractDhtmlWriter extends AbstractUplComponentWriter {
 
 		psb.append(",\"stayOpenForMillSec\":").append(stayOpenForMillSec);
 		if (onShowAction != null) {
-			psb.append(",\"showHandler\":\"").append(WriterUtils.getActionJSAlias(onShowAction)).append("\"");
+			psb.append(",\"showHdl\":\"").append(WriterUtils.getActionJSAlias(onShowAction)).append("\"");
 			if (onShowParamObject != null) {
 				psb.append(",\"showParam\":").append(onShowParamObject);
 			}
 		}
 		if (onHideAction != null) {
-			psb.append(",\"hideHandler\":\"").append(WriterUtils.getActionJSAlias(onHideAction)).append("\"");
+			psb.append(",\"hideHdl\":\"").append(WriterUtils.getActionJSAlias(onHideAction)).append("\"");
 			if (onHideParamObject != null) {
 				psb.append(",\"hideParam\":").append(onHideParamObject);
 			}
