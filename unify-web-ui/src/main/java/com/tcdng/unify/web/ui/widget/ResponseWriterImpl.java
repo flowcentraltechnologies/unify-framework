@@ -98,6 +98,8 @@ public class ResponseWriterImpl extends AbstractUnifyComponent implements Respon
 
 	private boolean plainResourceMode;
 
+	private boolean autoStretch;
+
 	public ResponseWriterImpl() {
 		this.history = new Stack<HistoryEntry>();
 		this.dataIndex = -1;
@@ -117,6 +119,18 @@ public class ResponseWriterImpl extends AbstractUnifyComponent implements Respon
 	@Override
 	public void clearPlainResourceMode() {
 		this.plainResourceMode = false;
+	}
+
+	@Override
+	public boolean isAutoStretch() {
+		return autoStretch;
+	}
+
+	@Override
+	public boolean setAutoStretch(boolean autoStretch) {
+		final boolean current = this.autoStretch;
+		this.autoStretch = autoStretch;
+		return current;
 	}
 
 	@Override
