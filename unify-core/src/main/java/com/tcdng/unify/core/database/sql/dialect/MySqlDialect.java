@@ -347,6 +347,11 @@ public class MySqlDialect extends AbstractSqlDataSourceDialect {
 	}
 
 	@Override
+	public final boolean isAllObjectsInLowerCase() {
+		return true;
+	}
+
+	@Override
 	public boolean isGeneratesUniqueConstraintsOnCreateTable() {
 		return true;
 	}

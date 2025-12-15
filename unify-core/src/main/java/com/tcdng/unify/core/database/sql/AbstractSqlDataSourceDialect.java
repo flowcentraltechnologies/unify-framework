@@ -1560,7 +1560,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 	}
 
 	@Override
-	public final boolean isAllObjectsInLowerCase() {
+	public boolean isAllObjectsInLowerCase() {
 		return allObjectsInLowerCase;
 	}
 
