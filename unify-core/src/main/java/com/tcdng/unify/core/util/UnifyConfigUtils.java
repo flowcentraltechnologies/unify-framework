@@ -281,7 +281,12 @@ public final class UnifyConfigUtils {
 				for (String property : propertyNames) {
 					String val = UnifyConfigUtils.replacePlaceHolderValues(appProperties.getProperty(property),
 							workingFolder);
-					uccb.setProperty(property, val);
+					if (val != null && val.indexOf(',') >= 0) {
+						List<String> valItems = DataUtils.convert(List.class, String.class, val);
+						uccb.setProperty(property, valItems);
+					} else { 
+						uccb.setProperty(property, val);
+					}
 				}
 
 				ComponentsConfig componentsConfig = unifyConfig.getComponentsConfig();
