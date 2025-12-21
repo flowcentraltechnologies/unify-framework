@@ -82,7 +82,6 @@ public class ClassUniqueIDManagerImpl extends AbstractUnifyComponent implements 
 				logDebug("Class unique ID table [{0}] not found. Attempting to create one...", tableName);
 				final SqlEntityInfo _sqlEntityInfo = getClassUniqueIDEntityInfo();
 				String sql = sqlDataSource.getDialect().generateCreateTableSql(_sqlEntityInfo, PrintFormat.PRETTY);
-				logDebug("Executing script [{0}]...", sql);
 				pstmt = connection.prepareStatement(sql);
 				pstmt.executeUpdate();
 				connection.commit();
@@ -134,7 +133,6 @@ public class ClassUniqueIDManagerImpl extends AbstractUnifyComponent implements 
 									.append(ClassUniqueIDTableNameConstants.CLASSUNIQUEID_CLASS_NAME)
 									.append(") VALUES (?)");
 							String sql2 = sb2.toString();
-							logDebug("Executing script [{0}]...", sql2);
 							pstmt = connection.prepareStatement(sql2);
 							pstmt.setString(1, className);
 							int count = pstmt.executeUpdate();
