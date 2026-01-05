@@ -33,11 +33,14 @@ public class Blurb {
 
 	private String description;
 
-	public Blurb(String icon, String caption, String description, String path) {
+	private boolean codeMode;
+	
+	public Blurb(String icon, String caption, String description, String path, boolean codeMode) {
 		this.icon = icon;
 		this.caption = caption;
 		this.description = description;
 		this.path = path;
+		this.codeMode = codeMode;
 	}
 
 	public String getIcon() {
@@ -62,5 +65,9 @@ public class Blurb {
 	
 	public boolean isWithPath() {
 		return !StringUtils.isBlank(path);
+	}
+
+	public boolean isCodeMode() {
+		return codeMode;
 	}
 }
