@@ -24,7 +24,7 @@ package com.tcdng.unify.web.ui.widget.data;
 public class SymbolCard extends Blurb {
 
 	public SymbolCard(String icon, String caption, String description, String path) {
-		super(icon, caption, description, path, false);
+		super(icon, caption, description, path);
 	}
 
 }

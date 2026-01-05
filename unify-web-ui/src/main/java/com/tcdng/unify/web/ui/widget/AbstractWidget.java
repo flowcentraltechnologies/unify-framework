@@ -540,7 +540,7 @@ public abstract class AbstractWidget extends AbstractUplComponent implements Wid
 	public Object getValue() throws UnifyException {
 		if (inRepeat) {
 			IndexedTarget target = getIndexedTarget();
-			if (target.isValidValueIndex()) {
+			if (target != null && target.isValidValueIndex()) {
 				return getValueStore().setDataIndex(target.getValueIndex()).getValueObjectAtDataIndex();
 			}
 		}
