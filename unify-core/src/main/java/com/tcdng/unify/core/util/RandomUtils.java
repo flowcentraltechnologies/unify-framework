@@ -27,42 +27,42 @@ import java.util.UUID;
  * @since 4.1
  */
 public final class RandomUtils {
-	
-    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
+
+	private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
 	private static String LETTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 	private static String ALPHANUMERIC = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 	private static String DIGITS = "0123456789";
-	
+
 	private RandomUtils() {
-		
+
 	}
-	
-	public static String generateUUID() { 
+
+	public static String generateUUID() {
 		return UUID.randomUUID().toString();
 	}
-	
+
 	public static String generateUUIDInBase64() {
 		final UUID uuid = UUID.randomUUID();
 		return Base64.getUrlEncoder().withoutPadding().encodeToString(ByteBuffer.allocate(16)
 				.putLong(uuid.getMostSignificantBits()).putLong(uuid.getLeastSignificantBits()).array());
 	}
-	
-	public static String generateRandomLetters(int length) { 
+
+	public static String generateRandomLetters(int length) {
 		return RandomUtils.generateRandom(LETTERS, length);
 	}
-	
-	public static String generateRandomAlphanumeric(int length) { 
+
+	public static String generateRandomAlphanumeric(int length) {
 		return RandomUtils.generateRandom(ALPHANUMERIC, length);
 	}
-	
-	public static String generateRandomDigits(int length) { 
+
+	public static String generateRandomDigits(int length) {
 		return RandomUtils.generateRandom(DIGITS, length);
 	}
 
-	private static String generateRandom(String characters, int length) { 
+	private static String generateRandom(String characters, int length) {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < length; i++) {
 			sb.append(characters.charAt(SECURE_RANDOM.nextInt(characters.length())));
@@ -71,4 +71,7 @@ public final class RandomUtils {
 		return sb.toString();
 	}
 
+	public static void main(String[] args) throws Exception {
+		System.out.println("@prime: id = " + RandomUtils.generateUUIDInBase64());
+	}
 }

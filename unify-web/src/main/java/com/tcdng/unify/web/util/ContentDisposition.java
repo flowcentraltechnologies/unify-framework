@@ -13,19 +13,43 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.tcdng.unify.web.http;
+package com.tcdng.unify.web.util;
 
-import java.util.Enumeration;
+import java.util.Date;
 
 /**
- * HTTP request headers.
+ * Content disposition
  * 
  * @author The Code Department
  * @since 4.1
  */
-public interface HttpRequestHeaders {
+public class ContentDisposition {
 
-	String getHeader(String name);
+	private String fileName;
 
-	Enumeration<String> getNames();
+	private Date creationDate;
+
+	private Date modificationDate;
+
+	public ContentDisposition(String fileName, Date creationDate, Date modificationDate) {
+		this.fileName = fileName;
+		this.creationDate = creationDate;
+		this.modificationDate = modificationDate;
+	}
+
+	public String getFileName() {
+		return fileName;
+	}
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public Date getModificationDate() {
+		return modificationDate;
+	}
+
+	public boolean isFileName() {
+		return fileName != null;
+	}
 }

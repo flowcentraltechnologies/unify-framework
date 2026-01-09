@@ -39,5 +39,7 @@ public interface HttpRequestHeaderConstants {
 	
 	String X_FORWARDED_FOR = "X-FORWARDED-FOR";
 	
-	String UNIFY_PID= "Unify-Pid";
+	String X_UNIFY_PID= "X-Unify-Pid";
+	
+	String X_UNIFY_UPLOAD= "X-Unify-Upload";
 }

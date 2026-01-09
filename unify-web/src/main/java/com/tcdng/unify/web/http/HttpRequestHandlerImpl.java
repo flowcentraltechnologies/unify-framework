@@ -51,6 +51,7 @@ import com.tcdng.unify.web.ClientResponse;
 import com.tcdng.unify.web.Controller;
 import com.tcdng.unify.web.ControllerFinder;
 import com.tcdng.unify.web.ControllerPathParts;
+import com.tcdng.unify.web.HttpUploadController;
 import com.tcdng.unify.web.PathInfoRepository;
 import com.tcdng.unify.web.RequestPathParts;
 import com.tcdng.unify.web.TenantPathManager;
@@ -161,7 +162,18 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 	@Override
 	public void handleRequest(HttpRequestMethodType methodType, RequestPathParts requestPathParts,
 			HttpRequest httpRequest, HttpResponse httpResponse) throws UnifyException {
+		final String contentType = httpRequest.getHeader("Content-Type");
 		try {
+			if (methodType.isPost() && MimeType.APPLICATION_OCTETSTREAM.template().equals(contentType)) {
+				HttpUploadController httpUploadController = controllerFinder
+						.findHttpUploadController(requestPathParts.getControllerPathParts());
+				if (httpUploadController != null) {
+					httpUploadController.upload(new HttpUploadRequest(httpRequest, httpRequest.getInputStream()));
+					httpResponse.setStatusOk();
+					return;
+				}
+			}
+
 			Charset charset = StandardCharsets.UTF_8;
 			if (httpRequest.getCharacterEncoding() != null) {
 				charset = Charset.forName(httpRequest.getCharacterEncoding());
@@ -172,7 +184,7 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 							: getApplicationLocale();
 			getSessionContext().setLocale(reqLocale);
 
-			setRequestClientPageId(httpRequest.getHeader(HttpRequestHeaderConstants.UNIFY_PID));
+			setRequestClientPageId(httpRequest.getHeader(HttpRequestHeaderConstants.X_UNIFY_PID));
 			setRequestAttribute(UnifyWebRequestAttributeConstants.HEADERS, httpRequest);
 			setRequestAttribute(UnifyWebRequestAttributeConstants.PARAMETERS, httpRequest);
 
@@ -231,7 +243,6 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 				logError(e);
 				boolean exit = true;
 				try {
-					final String contentType = httpRequest.getHeader("Content-Type");
 					if (MimeType.APPLICATION_JSON.template().equals(contentType)) {
 						clientResponse.setContentType(MimeType.APPLICATION_JSON.template());
 						clientResponse.getWriter().write("{\n");
@@ -283,6 +294,9 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 		} catch (UnifyException ue) {
 			logError(ue);
 			throw ue;
+		} catch (Exception ue) {
+			logError(ue);
+			throwOperationErrorException(ue);
 		}
 	}
 

@@ -69,7 +69,7 @@ public class IOUtils {
 
 	private static final String PROTOCOL_INFIX = "://";
 
-	private static final int BUFFER_SIZE = 1024 * 4;
+	private static final int BUFFER_SIZE = 8192;
 
 	private static final File[] ZEROLEN_FILES = new File[0];
 

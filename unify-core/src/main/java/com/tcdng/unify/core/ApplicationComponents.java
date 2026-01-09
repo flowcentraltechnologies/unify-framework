@@ -115,6 +115,8 @@ public interface ApplicationComponents {
 
     String APPLICATION_TYPELISTFACTORY = "application-tasklistfactory";
 
+    String APPLICATION_TEMPORARY_FILE_MANAGER = "application-temporaryfilemanager";
+
     String APPLICATION_TWOFACTORAUTHENTICATIONSERVICE = "application-twofactorauthenticationservice";
 
     String APPLICATION_PASSWORDAUTHENTICATIONSERVICE = "application-passwordauthenticationservice";

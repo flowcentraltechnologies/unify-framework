@@ -61,6 +61,16 @@ public class ControllerFinderImpl extends AbstractUnifyComponent implements Cont
 	}
 
 	@Override
+	public HttpUploadController findHttpUploadController(ControllerPathParts controllerPathParts)
+			throws UnifyException {
+		final String controllerName = controllerPathParts.getControllerName();
+		final String _actualControllerName = getActualControllerName(controllerName);
+		UnifyComponentConfig unifyComponentConfig = getComponentConfig(HttpUploadController.class,
+				_actualControllerName);
+		return unifyComponentConfig != null ? (HttpUploadController) getComponent(_actualControllerName) : null;
+	}
+
+	@Override
 	public Controller findController(ControllerPathParts controllerPathParts) throws UnifyException {
 		try {
 			if (controllerPathParts.isWithDocPathParts()) {

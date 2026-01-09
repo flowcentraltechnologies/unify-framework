@@ -63,13 +63,13 @@ public abstract class AbstractEmbeddedHttpWebServer extends AbstractHttpWebInter
 	@Configurable("data/tmp")
 	private String multipartLocation;
 
-	@Configurable("67108864") /* 64MB */
+	@Configurable("104857600") /* 100MB */
 	private long multipartMaxFileSize;
 
-	@Configurable("67108864") /* 64MB */
+	@Configurable("104857600") /* 100MB */
 	private long multipartMaxRequestSize;
 
-	@Configurable("4096")
+	@Configurable("1048576") /* 1MB */
 	private int multipartFileSizeThreshold;
 
     @Override

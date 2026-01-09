@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -86,6 +87,12 @@ public class HttpRequestImpl implements HttpRequest {
     }
 
     @Override
+	public Enumeration<String> getNames() {
+		// TODO Auto-generated method stub
+		return request.getHeaderNames();
+	}
+
+	@Override
     public String getParameter(String paramName) {
         return request.getParameter(paramName);
     }

@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -83,6 +84,11 @@ public class HttpRequestImpl implements HttpRequest {
 	@Override
 	public String getHeader(String headerName) {
 		return request.getHeader(headerName);
+	}
+
+	@Override
+	public Enumeration<String> getNames() {
+		return request.getHeaderNames();
 	}
 
 	@Override
