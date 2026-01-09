@@ -22,13 +22,23 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.stream.Stream;
 
 import com.tcdng.unify.core.ApplicationComponents;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
+import com.tcdng.unify.core.annotation.Periodic;
+import com.tcdng.unify.core.annotation.PeriodicType;
+import com.tcdng.unify.core.annotation.Synchronized;
 import com.tcdng.unify.core.annotation.Transactional;
 import com.tcdng.unify.core.business.AbstractBusinessService;
+import com.tcdng.unify.core.constant.FrequencyUnit;
 import com.tcdng.unify.core.data.FactoryMap;
+import com.tcdng.unify.core.task.TaskMonitor;
+import com.tcdng.unify.core.util.CalendarUtils;
 import com.tcdng.unify.core.util.IOUtils;
 import com.tcdng.unify.core.util.RandomUtils;
 
@@ -53,7 +63,7 @@ public class TemporaryFileManagerImpl extends AbstractBusinessService implements
 
 			@Override
 			protected TempFile create(String tempFileId, Object... params) throws Exception {
-				return new TempFile(tempFileId, Files.createTempFile(workingTempFolder, "worktmp-", ".tmp"));
+				return new TempFile(tempFileId, Files.createTempFile(workingTempFolder, "worktmp-", ".tmp"), getNow());
 			}
 
 		};
@@ -124,8 +134,38 @@ public class TemporaryFileManagerImpl extends AbstractBusinessService implements
 
 			return true;
 		}
-		
+
 		return false;
+	}
+
+	@Periodic(PeriodicType.ERA)
+	@Synchronized("tempfilemanager-housekeeping")
+	public void clearExpiredTemporaryFiles(TaskMonitor taskMonitor) throws UnifyException {
+		final Date expiryDate = CalendarUtils.getDateWithFrequencyOffset(getNow(), FrequencyUnit.HOUR, -1);
+		// Clear cache
+		for (TempFile tempFile : new ArrayList<TempFile>(tempfiles.values())) {
+			if (tempFile.isExpired(expiryDate)) {
+				deleteTemporaryFile(tempFile.getTempFileId());
+			}
+		}
+
+		// Clear files
+		final long expiryTime = expiryDate.getTime();
+		try (Stream<Path> paths = Files.list(workingTempFolder)) {
+			Iterator<Path> it = paths.iterator();
+			while (it.hasNext()) {
+				Path tempFile = it.next();
+				try {
+					if (Files.getLastModifiedTime(tempFile).toMillis() < expiryTime) {
+						Files.deleteIfExists(tempFile);
+					}
+				} catch (IOException e) {
+					logDebug(e);
+				}
+			}
+		} catch (IOException e) {
+			throwOperationErrorException(e);
+		}
 	}
 
 	@Override
@@ -146,9 +186,12 @@ public class TemporaryFileManagerImpl extends AbstractBusinessService implements
 
 		private final Path tempFile;
 
-		public TempFile(String tempFileId, Path tempFile) {
+		private final Date createDate;
+
+		public TempFile(String tempFileId, Path tempFile, Date createDate) {
 			this.tempFileId = tempFileId;
 			this.tempFile = tempFile;
+			this.createDate = createDate;
 		}
 
 		public String getTempFileId() {
@@ -159,5 +202,8 @@ public class TemporaryFileManagerImpl extends AbstractBusinessService implements
 			return tempFile;
 		}
 
+		public boolean isExpired(Date expiryDate) {
+			return createDate.before(expiryDate);
+		}
 	}
 }
