@@ -76,9 +76,8 @@ public class FileAttachment extends AbstractValueListMultiControl<ValueStore, Fi
 			FileAttachmentInfo fileAttachmentInfo = (FileAttachmentInfo) fileAttachmentsInfo
 					.getSelectedAttachmentInfo();
 			UploadedFile uploadedFile = ((UploadedFile[]) value)[0];
-			final byte[] file = uploadedFile.getData();
 			fileAttachmentInfo.setFilename(uploadedFile.getFilename());
-			fileAttachmentInfo.setAttachment(file);
+			fileAttachmentInfo.setAttachment(uploadedFile);
 
 			if (fileAttachmentsInfo.isAdhoc()) {
 				FileAttachmentType type = FileUtils.detectFileAttachmentType(fileAttachmentInfo);

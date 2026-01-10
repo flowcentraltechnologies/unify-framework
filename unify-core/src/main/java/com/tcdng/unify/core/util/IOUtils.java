@@ -543,6 +543,39 @@ public class IOUtils {
 	}
 
 	/**
+	 * Writes all data from input stream to output stream. Closes input stream at
+	 * end of write.
+	 * 
+	 * @param outputStream the output stream to write to
+	 * @param inputStream  the input stream to read from
+	 * @param detect 4-byte array header
+	 * @return the number of bytes written
+	 * @throws UnifyException if an error occurs
+	 */
+	public static long writeAll(OutputStream outputStream, InputStream inputStream, byte[] detect) throws UnifyException {
+		try {
+			long totalRead = 0;
+			byte[] buffer = new byte[BUFFER_SIZE];
+			int read = 0;
+			while ((read = inputStream.read(buffer)) >= 0) {
+				if (read == 0) {
+					System.arraycopy(buffer, 0, detect, 0, 4);
+				}
+
+				outputStream.write(buffer, 0, read);
+				totalRead += read;
+			}
+
+			outputStream.flush();
+			return totalRead;
+		} catch (IOException e) {
+			throw new UnifyException(e, UnifyCoreErrorConstants.IOUTIL_STREAM_RW_ERROR);
+		} finally {
+			IOUtils.close(inputStream);
+		}
+	}
+
+	/**
 	 * Writes all data from reader to output stream. Closes input stream at end of
 	 * write.
 	 * 

@@ -39,6 +39,15 @@ public interface TemporaryFileManager extends BusinessService {
 	boolean isTemporaryFileExists(String tempFileId) throws UnifyException;
 
 	/**
+	 * Gets temporary file size.
+	 * 
+	 * @param tempFileId the temporary file's ID
+	 * @return the size if temporary file exists otherwise zero
+	 * @throws UnifyException if an error occurs
+	 */
+	long getTemporaryFileSizeInBytes(String tempFileId) throws UnifyException;
+
+	/**
 	 * Creates a temporary file.
 	 * 
 	 * @return the temporary file ID
@@ -56,24 +65,45 @@ public interface TemporaryFileManager extends BusinessService {
 	String writeAllToTemporaryFile(InputStream in) throws UnifyException;
 
 	/**
+	 * Writes all of input stream to a new temporary file.
+	 * 
+	 * @param in     the input stream
+	 * @param detect the files first 4 bytes
+	 * @return the temporary file ID
+	 * @throws UnifyException if an error occurs
+	 */
+	String writeAllToTemporaryFile(InputStream in, byte[] detect) throws UnifyException;
+
+	/**
 	 * Writes all of input stream to temporary file.
 	 * 
 	 * @param tempFileId the temporary file's ID
 	 * @param in         the input stream
-	 * @return true if temporary file exists and written to otherwise false
+	 * @return the length read in bytes otherwise zero
 	 * @throws UnifyException if an error occurs
 	 */
-	boolean writeAllToTemporaryFile(String tempFileId, InputStream in) throws UnifyException;
+	long writeAllToTemporaryFile(String tempFileId, InputStream in) throws UnifyException;
+
+	/**
+	 * Writes all of input stream to temporary file.
+	 * 
+	 * @param tempFileId the temporary file's ID
+	 * @param in         the input stream
+	 * @param detect     the files first 4 bytes
+	 * @return the length read in bytes otherwise zero
+	 * @throws UnifyException if an error occurs
+	 */
+	long writeAllToTemporaryFile(String tempFileId, InputStream in, byte[] detect) throws UnifyException;
 
 	/**
 	 * Reads all of a temporary file to supplied output stream.
 	 * 
 	 * @param tempFileId the temporary file's ID
 	 * @param out        the output stream
-	 * @return true if temporary file exists and read from otherwise false
+	 * @return the length read in bytes otherwise zero
 	 * @throws UnifyException if an error occurs
 	 */
-	boolean readAllFromTemporaryFile(String tempFileId, OutputStream out) throws UnifyException;
+	long readAllFromTemporaryFile(String tempFileId, OutputStream out) throws UnifyException;
 
 	/**
 	 * Delete a temporary file.

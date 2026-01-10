@@ -15,7 +15,14 @@
  */
 package com.tcdng.unify.core.data;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Date;
+
+import com.tcdng.unify.core.UnifyException;
+import com.tcdng.unify.core.UnifyOperationException;
+import com.tcdng.unify.core.util.FileUtils;
 
 /**
  * Data object that represents an uploaded file.
@@ -25,43 +32,92 @@ import java.util.Date;
  */
 public class UploadedFile {
 
-    private String filename;
+	private String filename;
 
-    private Date creationDate;
+	private Date creationDate;
 
-    private Date modificationDate;
+	private Date modificationDate;
 
-    byte[] data;
+	private String tempFileId;
 
-    public UploadedFile(String filename, Date creationDate, Date modificationDate, byte[] data) {
-        this.filename = filename;
-        this.creationDate = creationDate;
-        this.modificationDate = modificationDate;
-        this.data = data;
-    }
+	private byte[] detect;
+	
+	public UploadedFile(String filename, Date creationDate, Date modificationDate, InputStream in)
+			throws UnifyException {
+		this.detect = new byte[4];
+		this.filename = filename;
+		this.creationDate = creationDate;
+		this.modificationDate = modificationDate;
+		this.tempFileId = FileUtils.writeAllToTemporaryFile(in, detect);
+	}
 
-    public String getFilename() {
-        return filename;
-    }
+	public String getFilename() {
+		return filename;
+	}
 
-    public Date getCreationDate() {
-        return creationDate;
-    }
+	public Date getCreationDate() {
+		return creationDate;
+	}
 
-    public Date getModificationDate() {
-        return modificationDate;
-    }
+	public Date getModificationDate() {
+		return modificationDate;
+	}
 
-    public byte[] getData() {
-        return data;
-    }
+	public byte[] getDetect() {
+		final byte[] _detect = new byte[4];
+		System.arraycopy(detect, 0, _detect, 0, 4);
+		return _detect;
+	}
 
-    public int getSize() {
-        if (data != null) {
-            return data.length;
-        }
+	/**
+	 * Gets the size of this upload file.
+	 * 
+	 * @return the size in bytes
+	 * @throws UnifyException if an error occurs
+	 */
+	public long size() throws UnifyException {
+		return FileUtils.getTemporaryFileSizeInBytes(getTempFileId());
+	}
+	
+	/**
+	 * Writes this upload file to output stream.
+	 * 
+	 * @param out the output stream
+	 * @throws UnifyException if an error occurs
+	 */
+	public long writeAll(OutputStream out) throws UnifyException {
+		return FileUtils.readAllFromTemporaryFile(getTempFileId(), out);
+	}
 
-        return 0;
-    }
+	/**
+	 * Gets this upload file into byte array. (Not recommended for large files)
+	 * 
+	 * @return the file bytes
+	 * @throws UnifyException if an error occurs
+	 */
+	public byte[] getData() throws UnifyException {
+		ByteArrayOutputStream baos = null;
+		FileUtils.readAllFromTemporaryFile(getTempFileId(), baos = new ByteArrayOutputStream());
+		return baos.toByteArray();
+	}
 
+	/**
+	 * Invalidates this uploaded file
+	 * 
+	 * @throws UnifyException if an error occurs
+	 */
+	public void invalidate() throws UnifyException {
+		if (tempFileId != null) {
+			FileUtils.deleteTemporaryFile(tempFileId);
+			tempFileId = null;
+		}
+	}
+
+	private String getTempFileId() throws UnifyException {
+		if (tempFileId == null) {
+			throw new UnifyOperationException("Uploaded file is already invalidated.");
+		}
+
+		return tempFileId;
+	}
 }

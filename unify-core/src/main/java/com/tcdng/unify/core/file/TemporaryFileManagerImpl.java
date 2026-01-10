@@ -30,6 +30,7 @@ import java.util.stream.Stream;
 import com.tcdng.unify.core.ApplicationComponents;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
+import com.tcdng.unify.core.annotation.Configurable;
 import com.tcdng.unify.core.annotation.Periodic;
 import com.tcdng.unify.core.annotation.PeriodicType;
 import com.tcdng.unify.core.annotation.Synchronized;
@@ -54,6 +55,9 @@ public class TemporaryFileManagerImpl extends AbstractBusinessService implements
 
 	private static final String TEMP_SUBFOLDER = "unifytmp";
 
+	@Configurable("60")
+	private int minutesToExpire;
+	
 	private final FactoryMap<String, TempFile> tempfiles;
 
 	private Path workingTempFolder;
@@ -75,6 +79,15 @@ public class TemporaryFileManagerImpl extends AbstractBusinessService implements
 	}
 
 	@Override
+	public long getTemporaryFileSizeInBytes(String tempFileId) throws UnifyException {
+		if (tempfiles.isKey(tempFileId)) {
+			return tempfiles.get(tempFileId).getLength();
+		}
+
+		return 0;
+	}
+
+	@Override
 	public String createTemporaryFile() throws UnifyException {
 		return tempfiles.get(RandomUtils.generateUUIDInBase64()).getTempFileId();
 	}
@@ -87,39 +100,62 @@ public class TemporaryFileManagerImpl extends AbstractBusinessService implements
 	}
 
 	@Override
-	public boolean writeAllToTemporaryFile(String tempFileId, InputStream in) throws UnifyException {
+	public long writeAllToTemporaryFile(String tempFileId, InputStream in) throws UnifyException {
 		if (tempfiles.isKey(tempFileId)) {
 			final TempFile tempFile = tempfiles.get(tempFileId);
 			try (OutputStream out = Files.newOutputStream(tempFile.getTempFile(), StandardOpenOption.WRITE)) {
-				IOUtils.writeAll(out, in);
+				final long len = IOUtils.writeAll(out, in);
+				tempFile.setLength(len);
+				return len;
 			} catch (UnifyException e) {
 				throw e;
 			} catch (Exception e) {
 				throwOperationErrorException(e);
 			}
-
-			return true;
 		}
 
-		return false;
+		return 0;
 	}
 
 	@Override
-	public boolean readAllFromTemporaryFile(String tempFileId, OutputStream out) throws UnifyException {
+	public String writeAllToTemporaryFile(InputStream in, byte[] detect) throws UnifyException {
+		final String tempFileId = createTemporaryFile();
+		writeAllToTemporaryFile(tempFileId, in, detect);
+		return tempFileId;
+	}
+
+	@Override
+	public long writeAllToTemporaryFile(String tempFileId, InputStream in, byte[] detect) throws UnifyException {
 		if (tempfiles.isKey(tempFileId)) {
 			final TempFile tempFile = tempfiles.get(tempFileId);
-			try (InputStream in = Files.newInputStream(tempFile.getTempFile(), StandardOpenOption.READ)) {
-				IOUtils.writeAll(out, in);
+			try (OutputStream out = Files.newOutputStream(tempFile.getTempFile(), StandardOpenOption.WRITE)) {
+				final long len = IOUtils.writeAll(out, in, detect);
+				tempFile.setLength(len);
+				return len;
 			} catch (UnifyException e) {
 				throw e;
 			} catch (Exception e) {
 				throwOperationErrorException(e);
 			}
-
-			return true;
 		}
 
-		return false;
+		return 0;
+	}
+
+	@Override
+	public long readAllFromTemporaryFile(String tempFileId, OutputStream out) throws UnifyException {
+		if (tempfiles.isKey(tempFileId)) {
+			final TempFile tempFile = tempfiles.get(tempFileId);
+			try (InputStream in = Files.newInputStream(tempFile.getTempFile(), StandardOpenOption.READ)) {
+				return IOUtils.writeAll(out, in);
+			} catch (UnifyException e) {
+				throw e;
+			} catch (Exception e) {
+				throwOperationErrorException(e);
+			}
+		}
+
+		return 0;
 	}
 
 	@Override
@@ -141,7 +177,8 @@ public class TemporaryFileManagerImpl extends AbstractBusinessService implements
 	@Periodic(PeriodicType.ERA)
 	@Synchronized("tempfilemanager-housekeeping")
 	public void clearExpiredTemporaryFiles(TaskMonitor taskMonitor) throws UnifyException {
-		final Date expiryDate = CalendarUtils.getDateWithFrequencyOffset(getNow(), FrequencyUnit.HOUR, -1);
+		final Date expiryDate = CalendarUtils.getDateWithFrequencyOffset(getNow(), FrequencyUnit.MINUTE,
+				-minutesToExpire);
 		// Clear cache
 		for (TempFile tempFile : new ArrayList<TempFile>(tempfiles.values())) {
 			if (tempFile.isExpired(expiryDate)) {
@@ -188,6 +225,8 @@ public class TemporaryFileManagerImpl extends AbstractBusinessService implements
 
 		private final Date createDate;
 
+		private long length;
+		
 		public TempFile(String tempFileId, Path tempFile, Date createDate) {
 			this.tempFileId = tempFileId;
 			this.tempFile = tempFile;
@@ -204,6 +243,14 @@ public class TemporaryFileManagerImpl extends AbstractBusinessService implements
 
 		public boolean isExpired(Date expiryDate) {
 			return createDate.before(expiryDate);
+		}
+
+		public long getLength() {
+			return length;
+		}
+
+		public void setLength(long length) {
+			this.length = length;
 		}
 	}
 }

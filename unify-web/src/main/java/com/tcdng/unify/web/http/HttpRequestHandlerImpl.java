@@ -473,7 +473,7 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 				if (contentDisposition.isFileName()) {
 					UploadedFile frmFile = new UploadedFile(contentDisposition.getFileName(),
 							contentDisposition.getCreationDate(), contentDisposition.getModificationDate(),
-							IOUtils.readAll(part.getInputStream()));
+							part.getInputStream());
 					List<UploadedFile> list = uploadedFileMap.get(name);
 					if (list == null) {
 						list = new ArrayList<UploadedFile>();

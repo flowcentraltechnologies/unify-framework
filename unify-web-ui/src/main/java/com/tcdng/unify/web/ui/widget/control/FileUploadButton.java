@@ -56,7 +56,7 @@ public class FileUploadButton extends AbstractAutoRefreshMultiControl implements
 		if (uploadedFile != null && uploadedFile.length > 0) {
 			if (uploadHandler != null) {
 				UploadedFile _uploadedFile = uploadedFile[0];
-				uploadHandler.saveUpload(targetIndex, getType(), _uploadedFile.getFilename(), _uploadedFile.getData());
+				uploadHandler.saveUpload(targetIndex, getType(), _uploadedFile.getFilename(), _uploadedFile);
 			} else {
 				setValue(uploadedFile[0]);
 			}
