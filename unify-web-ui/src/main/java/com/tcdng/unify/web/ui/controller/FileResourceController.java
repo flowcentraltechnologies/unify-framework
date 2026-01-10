@@ -87,7 +87,8 @@ public class FileResourceController extends AbstractPageResourceController {
 		final String resourceName = getResourceName();
 		String contentType = null;
 		if (fileResourceProvider != null) {
-			in = fileResourceProvider.getFileResourceInputStream("/resource/file", resourceName).getIn();
+			UploadedFile uploadedFile = fileResourceProvider.getFileResourceInputStream("/resource/file", resourceName);
+			in = uploadedFile != null ? uploadedFile.getIn() : null;
 		}
 
 		if (in == null) {
