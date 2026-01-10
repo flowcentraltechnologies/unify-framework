@@ -23,6 +23,7 @@ import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.annotation.Configurable;
 import com.tcdng.unify.core.constant.MimeType;
+import com.tcdng.unify.core.data.UploadedFile;
 import com.tcdng.unify.core.file.FileResourceProvider;
 import com.tcdng.unify.core.util.FileUtils;
 import com.tcdng.unify.core.util.IOUtils;
@@ -86,7 +87,7 @@ public class FileResourceController extends AbstractPageResourceController {
 		final String resourceName = getResourceName();
 		String contentType = null;
 		if (fileResourceProvider != null) {
-			in = fileResourceProvider.openFileResourceInputStream("/resource/file", resourceName);
+			in = fileResourceProvider.getFileResourceInputStream("/resource/file", resourceName).getIn();
 		}
 
 		if (in == null) {

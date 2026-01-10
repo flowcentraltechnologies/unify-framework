@@ -471,7 +471,7 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 
 				ContentDisposition contentDisposition = getContentDisposition(part);
 				if (contentDisposition.isFileName()) {
-					UploadedFile frmFile = new UploadedFile(contentDisposition.getFileName(),
+					UploadedFile frmFile = UploadedFile.createUsingTempFile(contentDisposition.getFileName(),
 							contentDisposition.getCreationDate(), contentDisposition.getModificationDate(),
 							part.getInputStream());
 					List<UploadedFile> list = uploadedFileMap.get(name);

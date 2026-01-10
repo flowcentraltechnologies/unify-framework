@@ -23,6 +23,7 @@ import java.util.Date;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.UnifyOperationException;
 import com.tcdng.unify.core.util.FileUtils;
+import com.tcdng.unify.core.util.IOUtils;
 
 /**
  * Data object that represents an uploaded file.
@@ -42,13 +43,31 @@ public class UploadedFile {
 
 	private byte[] detect;
 	
-	public UploadedFile(String filename, Date creationDate, Date modificationDate, InputStream in)
-			throws UnifyException {
+	private final boolean usesTempFile;
+	
+	private InputStream in;
+	
+	public static UploadedFile create(String filename, InputStream in) throws UnifyException {
+		return new UploadedFile(filename, null, null, in, false);
+	}
+	
+	public static UploadedFile createUsingTempFile(String filename, Date creationDate, Date modificationDate,
+			InputStream in) throws UnifyException {
+		return new UploadedFile(filename, creationDate, modificationDate, in, true);
+	}
+	
+	private UploadedFile(String filename, Date creationDate, Date modificationDate, InputStream in,
+			boolean usesTempFile) throws UnifyException {
 		this.detect = new byte[4];
 		this.filename = filename;
 		this.creationDate = creationDate;
 		this.modificationDate = modificationDate;
-		this.tempFileId = FileUtils.writeAllToTemporaryFile(in, detect);
+		this.usesTempFile = usesTempFile;
+		if (usesTempFile) {
+			this.tempFileId = FileUtils.writeAllToTemporaryFile(in, detect);
+		} else {
+			this.in = in;
+		}
 	}
 
 	public String getFilename() {
@@ -61,6 +80,10 @@ public class UploadedFile {
 
 	public Date getModificationDate() {
 		return modificationDate;
+	}
+
+	public boolean isUsesTempFile() {
+		return usesTempFile;
 	}
 
 	public byte[] getDetect() {
@@ -76,7 +99,7 @@ public class UploadedFile {
 	 * @throws UnifyException if an error occurs
 	 */
 	public long size() throws UnifyException {
-		return FileUtils.getTemporaryFileSizeInBytes(getTempFileId());
+		return usesTempFile ? FileUtils.getTemporaryFileSizeInBytes(getTempFileId()) : 0;
 	}
 	
 	/**
@@ -86,7 +109,29 @@ public class UploadedFile {
 	 * @throws UnifyException if an error occurs
 	 */
 	public long writeAll(OutputStream out) throws UnifyException {
-		return FileUtils.readAllFromTemporaryFile(getTempFileId(), out);
+		if (usesTempFile) {
+			return FileUtils.readAllFromTemporaryFile(getTempFileId(), out);
+		}
+
+		try {
+			return IOUtils.writeAll(out, getIn());
+		} finally {
+			invalidate();
+		}
+	}
+
+	/**
+	 * Writes this upload file to output stream.
+	 * 
+	 * @param out the output stream
+	 * @throws UnifyException if an error occurs
+	 */
+	public long writeAllAndInvalidate(OutputStream out) throws UnifyException {
+		try {
+			return writeAll(out);
+		} finally {
+			invalidate();
+		}
 	}
 
 	/**
@@ -96,9 +141,31 @@ public class UploadedFile {
 	 * @throws UnifyException if an error occurs
 	 */
 	public byte[] getData() throws UnifyException {
-		ByteArrayOutputStream baos = null;
-		FileUtils.readAllFromTemporaryFile(getTempFileId(), baos = new ByteArrayOutputStream());
-		return baos.toByteArray();
+		if (usesTempFile) {
+			ByteArrayOutputStream baos = null;
+			FileUtils.readAllFromTemporaryFile(getTempFileId(), baos = new ByteArrayOutputStream());
+			return baos.toByteArray();
+		}
+
+		try {
+			return IOUtils.readAll(getIn());
+		} finally {
+			invalidate();
+		}
+	}
+
+	/**
+	 * Gets this upload file into byte array. (Not recommended for large files)
+	 * 
+	 * @return the file bytes
+	 * @throws UnifyException if an error occurs
+	 */
+	public byte[] getDataAndInvalidate() throws UnifyException {
+		try {
+			return getData();
+		} finally {
+			invalidate();
+		}
 	}
 
 	/**
@@ -111,6 +178,10 @@ public class UploadedFile {
 			FileUtils.deleteTemporaryFile(tempFileId);
 			tempFileId = null;
 		}
+
+		if (in != null) {
+			in = null;
+		}
 	}
 
 	private String getTempFileId() throws UnifyException {
@@ -119,5 +190,15 @@ public class UploadedFile {
 		}
 
 		return tempFileId;
+	}
+
+	public InputStream getIn() throws UnifyException {
+		if (in == null) {
+			throw new UnifyOperationException("Uploaded file is already invalidated.");
+		}
+
+		InputStream _in = in;
+		in = null;
+		return _in;
 	}
 }
