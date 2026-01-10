@@ -33,20 +33,20 @@ import com.tcdng.unify.core.util.StringUtils;
 @StaticList(name = "fileattachmenttypelist", description = "$m{staticlist.fileattachmenttypelist}")
 public enum FileAttachmentType implements EnumConst {
 
-    AUDIO("AUD", "audio/*,audio/mp3", MimeType.AUDIO),
-    CSV("CSV", ".csv", MimeType.TEXT_CSV),
-    EXCEL("XLS", ".xls,.xlsx", MimeType.APPLICATION_EXCEL),
-    IMAGE("IMG", "image/*", MimeType.IMAGE),
-    IMAGE_PNG("PNG", ".png", MimeType.IMAGE_PNG),
-    IMAGE_JPG("JPG", ".jpg,.jpeg", MimeType.IMAGE_JPG),
-    IMAGE_GIF("GIF", ".gif", MimeType.IMAGE_GIF),
-    IMAGE_BMP("BMP", ".bmp", MimeType.IMAGE_BMP),
-    PDF("PDF", ".pdf", MimeType.APPLICATION_PDF),
-    XML("XML", ".xml", MimeType.APPLICATION_XML),
-    TEXT("TXT", ".txt", MimeType.TEXT),
-    VIDEO("VID", "video/*,video/mp4", MimeType.VIDEO),
-    WILDCARD("WILD", "", MimeType.APPLICATION_OCTETSTREAM),
-    WORD("DOC", ".doc,.docx", MimeType.APPLICATION_WORD);
+    AUDIO("AUD", "file-audio","audio/*,audio/mp3", MimeType.AUDIO),
+    CSV("CSV", "file-csv", ".csv", MimeType.TEXT_CSV),
+    EXCEL("XLS", "file-excel", ".xls,.xlsx", MimeType.APPLICATION_EXCEL),
+    IMAGE("IMG", "file-image", "image/*", MimeType.IMAGE),
+    IMAGE_PNG("PNG", "file-image", ".png", MimeType.IMAGE_PNG),
+    IMAGE_JPG("JPG", "file-image", ".jpg,.jpeg", MimeType.IMAGE_JPG),
+    IMAGE_GIF("GIF", "file-image", ".gif", MimeType.IMAGE_GIF),
+    IMAGE_BMP("BMP", "file-image", ".bmp", MimeType.IMAGE_BMP),
+    PDF("PDF", "file-pdf", ".pdf", MimeType.APPLICATION_PDF),
+    XML("XML", "file-code", ".xml", MimeType.APPLICATION_XML),
+    TEXT("TXT", "file-alt", ".txt", MimeType.TEXT),
+    VIDEO("VID", "file-video", "video/*,video/mp4", MimeType.VIDEO),
+    WILDCARD("WILD", "file", "", MimeType.APPLICATION_OCTETSTREAM),
+    WORD("DOC", "file-word", ".doc,.docx", MimeType.APPLICATION_WORD);
 
 	private static final Map<String, FileAttachmentType> byExtension;
 	
@@ -71,12 +71,15 @@ public enum FileAttachmentType implements EnumConst {
 	
     private final String code;
 
+    private final String symbol;
+
     private final String extensions;
 
     private final MimeType mimeType;
 
-    private FileAttachmentType(String code, String extensions, MimeType mimeType) {
+    private FileAttachmentType(String code, String symbol, String extensions, MimeType mimeType) {
         this.code = code;
+        this.symbol = symbol;
         this.extensions = extensions;
         this.mimeType = mimeType;
     }
@@ -89,6 +92,10 @@ public enum FileAttachmentType implements EnumConst {
     @Override
     public String defaultCode() {
         return TEXT.code;
+    }
+
+    public String symbol() {
+        return symbol;
     }
 
     public String extensions() {
