@@ -20,6 +20,7 @@ import java.io.InputStream;
 
 import com.tcdng.unify.core.UnifyComponent;
 import com.tcdng.unify.core.UnifyException;
+import com.tcdng.unify.core.data.UploadedFile;
 
 /**
  * Application file resource provider.
@@ -53,5 +54,5 @@ public interface FileResourceProvider extends UnifyComponent {
      * @throws UnifyException
      *                        if an error occurs
      */
-    byte[] readFileResource(String category, String resourceName) throws UnifyException;
+    UploadedFile readFileResource(String category, String resourceName) throws UnifyException;
 }
