@@ -71,7 +71,4 @@ public final class RandomUtils {
 		return sb.toString();
 	}
 
-	public static void main(String[] args) throws Exception {
-		System.out.println("@prime: id = " + RandomUtils.generateUUIDInBase64());
-	}
 }
