@@ -33,20 +33,20 @@ import com.tcdng.unify.core.util.StringUtils;
 @StaticList(name = "fileattachmenttypelist", description = "$m{staticlist.fileattachmenttypelist}")
 public enum FileAttachmentType implements EnumConst {
 
-    AUDIO("AUD", "file-audio","audio/*,audio/mp3", MimeType.AUDIO),
-    CSV("CSV", "file-csv", ".csv", MimeType.TEXT_CSV),
-    EXCEL("XLS", "file-excel", ".xls,.xlsx", MimeType.APPLICATION_EXCEL),
-    IMAGE("IMG", "file-image", "image/*", MimeType.IMAGE),
-    IMAGE_PNG("PNG", "file-image", ".png", MimeType.IMAGE_PNG),
-    IMAGE_JPG("JPG", "file-image", ".jpg,.jpeg", MimeType.IMAGE_JPG),
-    IMAGE_GIF("GIF", "file-image", ".gif", MimeType.IMAGE_GIF),
-    IMAGE_BMP("BMP", "file-image", ".bmp", MimeType.IMAGE_BMP),
-    PDF("PDF", "file-pdf", ".pdf", MimeType.APPLICATION_PDF),
-    XML("XML", "file-code", ".xml", MimeType.APPLICATION_XML),
-    TEXT("TXT", "file-alt", ".txt", MimeType.TEXT),
-    VIDEO("VID", "file-video", "video/*,video/mp4", MimeType.VIDEO),
-    WILDCARD("WILD", "file", "", MimeType.APPLICATION_OCTETSTREAM),
-    WORD("DOC", "file-word", ".doc,.docx", MimeType.APPLICATION_WORD);
+    AUDIO("AUD", "file-audio","audio/*,audio/mp3", "#ff9800", MimeType.AUDIO),
+    CSV("CSV", "file-csv", ".csv", "#4caf50", MimeType.TEXT_CSV),
+    EXCEL("XLS", "file-excel", ".xls,.xlsx", "#217346", MimeType.APPLICATION_EXCEL),
+    IMAGE("IMG", "file-image", "image/*", "#03a9f4", MimeType.IMAGE),
+    IMAGE_PNG("PNG", "file-image", ".png", "#03a9f4", MimeType.IMAGE_PNG),
+    IMAGE_JPG("JPG", "file-image", ".jpg,.jpeg", "#03a9f4", MimeType.IMAGE_JPG),
+    IMAGE_GIF("GIF", "file-image", ".gif", "#03a9f4", MimeType.IMAGE_GIF),
+    IMAGE_BMP("BMP", "file-image", ".bmp", "#03a9f4", MimeType.IMAGE_BMP),
+    PDF("PDF", "file-pdf", ".pdf", "#e53935", MimeType.APPLICATION_PDF),
+    XML("XML", "file-code", ".xml", "#607d8b", MimeType.APPLICATION_XML),
+    TEXT("TXT", "file-alt", ".txt", "#9e9e9e", MimeType.TEXT),
+    VIDEO("VID", "file-video", "video/*,video/mp4", "#9c27b0", MimeType.VIDEO),
+    WILDCARD("WILD", "file", "", "#616161", MimeType.APPLICATION_OCTETSTREAM),
+    WORD("DOC", "file-word", ".doc,.docx", "#2b579a", MimeType.APPLICATION_WORD);
 
 	private static final Map<String, FileAttachmentType> byExtension;
 	
@@ -75,14 +75,17 @@ public enum FileAttachmentType implements EnumConst {
 
     private final String extensions;
 
+    private final String color;
+
     private final MimeType mimeType;
 
-    private FileAttachmentType(String code, String symbol, String extensions, MimeType mimeType) {
-        this.code = code;
-        this.symbol = symbol;
-        this.extensions = extensions;
-        this.mimeType = mimeType;
-    }
+	private FileAttachmentType(String code, String symbol, String extensions, String color, MimeType mimeType) {
+		this.code = code;
+		this.symbol = symbol;
+		this.extensions = extensions;
+		this.color = color;
+		this.mimeType = mimeType;
+	}
 
     @Override
     public String code() {
@@ -100,6 +103,10 @@ public enum FileAttachmentType implements EnumConst {
 
     public String extensions() {
         return extensions;
+    }
+
+    public String color() {
+        return color;
     }
 
     public MimeType mimeType() {
