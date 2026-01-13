@@ -238,7 +238,7 @@ public class FormatterTest extends AbstractUnifyComponentTest {
     @Test
     public void testFileSizeFormatter() throws Exception {
         FileSizeFormatter fileSizeFormatter = (FileSizeFormatter) getUplComponent(Locale.UK, "!filesizeformat");
-        assertEquals("1000 Bytes", fileSizeFormatter.format(1000L));
+        assertEquals("1000 B", fileSizeFormatter.format(1000L));
         assertEquals("1.0 KB", fileSizeFormatter.format(1024L));
         assertEquals("9.6 MB", fileSizeFormatter.format(10094222L));
         assertEquals("896.5 MB", fileSizeFormatter.format(940094465L));
