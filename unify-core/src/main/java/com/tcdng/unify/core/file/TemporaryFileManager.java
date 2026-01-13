@@ -20,6 +20,7 @@ import java.io.OutputStream;
 
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.business.BusinessService;
+import com.tcdng.unify.core.data.IOInfo;
 
 /**
  * Temporary file manager.
@@ -59,20 +60,20 @@ public interface TemporaryFileManager extends BusinessService {
 	 * Writes all of input stream to a new temporary file.
 	 * 
 	 * @param in the input stream
-	 * @return the temporary file ID
+	 * @return the IO information
 	 * @throws UnifyException if an error occurs
 	 */
-	String writeAllToTemporaryFile(InputStream in) throws UnifyException;
+	IOInfo writeAllToTemporaryFile(InputStream in) throws UnifyException;
 
 	/**
 	 * Writes all of input stream to a new temporary file.
 	 * 
 	 * @param in     the input stream
 	 * @param detect the files first 4 bytes
-	 * @return the temporary file ID
+	 * @return the IO information
 	 * @throws UnifyException if an error occurs
 	 */
-	String writeAllToTemporaryFile(InputStream in, byte[] detect) throws UnifyException;
+	IOInfo writeAllToTemporaryFile(InputStream in, byte[] detect) throws UnifyException;
 
 	/**
 	 * Writes all of input stream to temporary file.

@@ -26,6 +26,7 @@ import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.UnifyOperationException;
 import com.tcdng.unify.core.constant.FileAttachmentType;
 import com.tcdng.unify.core.data.FileAttachmentInfo;
+import com.tcdng.unify.core.data.IOInfo;
 import com.tcdng.unify.core.data.UploadedFile;
 import com.tcdng.unify.core.file.TemporaryFileManager;
 import com.tcdng.unify.core.util.ImageUtils.ImageType;
@@ -86,10 +87,10 @@ public final class FileUtils {
 	 * Writes all of input stream to a new temporary file.
 	 * 
 	 * @param in the input stream
-	 * @return the temporary file ID
+	 * @return the temporary IO information
 	 * @throws UnifyException if an error occurs
 	 */
-	public static String writeAllToTemporaryFile(InputStream in) throws UnifyException {
+	public static IOInfo writeAllToTemporaryFile(InputStream in) throws UnifyException {
 		return temp().writeAllToTemporaryFile(in);
 	}
 
@@ -98,10 +99,10 @@ public final class FileUtils {
 	 * 
 	 * @param in     the input stream
 	 * @param detect the files first 4 bytes
-	 * @return the temporary file ID
+	 * @return the temporary IO information
 	 * @throws UnifyException if an error occurs
 	 */
-	public static String writeAllToTemporaryFile(InputStream in, byte[] detect) throws UnifyException {
+	public static IOInfo writeAllToTemporaryFile(InputStream in, byte[] detect) throws UnifyException {
 		return temp().writeAllToTemporaryFile(in, detect);
 	}
 

@@ -38,6 +38,7 @@ import com.tcdng.unify.core.annotation.Transactional;
 import com.tcdng.unify.core.business.AbstractBusinessService;
 import com.tcdng.unify.core.constant.FrequencyUnit;
 import com.tcdng.unify.core.data.FactoryMap;
+import com.tcdng.unify.core.data.IOInfo;
 import com.tcdng.unify.core.task.TaskMonitor;
 import com.tcdng.unify.core.util.CalendarUtils;
 import com.tcdng.unify.core.util.IOUtils;
@@ -93,10 +94,10 @@ public class TemporaryFileManagerImpl extends AbstractBusinessService implements
 	}
 
 	@Override
-	public String writeAllToTemporaryFile(InputStream in) throws UnifyException {
+	public IOInfo writeAllToTemporaryFile(InputStream in) throws UnifyException {
 		final String tempFileId = createTemporaryFile();
-		writeAllToTemporaryFile(tempFileId, in);
-		return tempFileId;
+		final long length = writeAllToTemporaryFile(tempFileId, in);
+		return new IOInfo(tempFileId, length);
 	}
 
 	@Override
@@ -118,10 +119,10 @@ public class TemporaryFileManagerImpl extends AbstractBusinessService implements
 	}
 
 	@Override
-	public String writeAllToTemporaryFile(InputStream in, byte[] detect) throws UnifyException {
+	public IOInfo writeAllToTemporaryFile(InputStream in, byte[] detect) throws UnifyException {
 		final String tempFileId = createTemporaryFile();
-		writeAllToTemporaryFile(tempFileId, in, detect);
-		return tempFileId;
+		final long length = writeAllToTemporaryFile(tempFileId, in, detect);
+		return new IOInfo(tempFileId, length);
 	}
 
 	@Override

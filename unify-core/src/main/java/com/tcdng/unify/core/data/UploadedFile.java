@@ -42,6 +42,8 @@ public class UploadedFile {
 
 	private String tempFileId;
 
+	private long fileSize;
+
 	private byte[] detect;
 	
 	private final boolean usesTempFile;
@@ -69,7 +71,9 @@ public class UploadedFile {
 		this.modificationDate = modificationDate;
 		this.usesTempFile = usesTempFile;
 		if (usesTempFile) {
-			this.tempFileId = FileUtils.writeAllToTemporaryFile(in, detect);
+			final IOInfo ioInfo = FileUtils.writeAllToTemporaryFile(in, detect);
+			this.tempFileId = ioInfo.getFileId();
+			this.fileSize = ioInfo.getFileLength();
 		} else {
 			this.in = in;
 		}
@@ -77,6 +81,10 @@ public class UploadedFile {
 
 	public String getFilename() {
 		return filename;
+	}
+
+	public long getFileSize() {
+		return fileSize;
 	}
 
 	public Date getCreationDate() {
@@ -104,7 +112,7 @@ public class UploadedFile {
 	 * @throws UnifyException if an error occurs
 	 */
 	public long size() throws UnifyException {
-		return usesTempFile ? FileUtils.getTemporaryFileSizeInBytes(getTempFileId()) : 0;
+		return fileSize;
 	}
 	
 	/**
