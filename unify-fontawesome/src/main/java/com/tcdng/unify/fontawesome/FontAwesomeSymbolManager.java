@@ -240,6 +240,7 @@ public class FontAwesomeSymbolManager extends AbstractFontSymbolManager {
         registerSymbol("underline", "f0cd");
         registerSymbol("undo", "f2ea");
         registerSymbol("unlock", "f09c");
+        registerSymbol("upload", "f093");
         registerSymbol("user", "f007");
         registerSymbol("users", "f0c0");
         registerSymbol("user-check", "f4fc");
