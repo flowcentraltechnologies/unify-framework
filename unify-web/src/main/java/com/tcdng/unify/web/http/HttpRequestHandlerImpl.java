@@ -168,12 +168,10 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 				HttpUploadController httpUploadController = controllerFinder
 						.findHttpUploadController(requestPathParts.getControllerPathParts());
 				if (httpUploadController != null) {
-					if (httpUploadController.upload(new HttpUploadRequest(httpRequest, httpRequest.getInputStream()))) {
-						httpResponse.setStatusOk();
-					} else {
-						httpResponse.setStatusInternalServerError();
-					}
-
+					String resp =httpUploadController.upload(new HttpUploadRequest(httpRequest, httpRequest.getInputStream()));
+					httpResponse.setContentType(MimeType.APPLICATION_JSON.template());
+					httpResponse.getWriter().write(resp);
+					httpResponse.setStatusOk();
 					return;
 				}
 			}

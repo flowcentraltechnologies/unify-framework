@@ -31,9 +31,9 @@ public interface HttpUploadController extends UnifyComponent {
 	 * Performs an upload using supplied HTTP upload request object.
 	 * 
 	 * @param httpUploadRequest the HTTP upload request.
-	 * @return true on success otherwise false
+	 * @return the upload response
 	 * @throws UnifyException if an error occurs
 	 */
-	boolean upload(HttpUploadRequest httpUploadRequest) throws UnifyException;
+	String upload(HttpUploadRequest httpUploadRequest) throws UnifyException;
 
 }
