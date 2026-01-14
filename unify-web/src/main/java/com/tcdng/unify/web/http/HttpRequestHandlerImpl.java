@@ -168,8 +168,12 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 				HttpUploadController httpUploadController = controllerFinder
 						.findHttpUploadController(requestPathParts.getControllerPathParts());
 				if (httpUploadController != null) {
-					httpUploadController.upload(new HttpUploadRequest(httpRequest, httpRequest.getInputStream()));
-					httpResponse.setStatusOk();
+					if (httpUploadController.upload(new HttpUploadRequest(httpRequest, httpRequest.getInputStream()))) {
+						httpResponse.setStatusOk();
+					} else {
+						httpResponse.setStatusInternalServerError();
+					}
+
 					return;
 				}
 			}
@@ -202,7 +206,7 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 				httpResponse.setHeader(HttpResponseHeaderConstants.ACCESS_CONTROL_ALLOW_METHODS,
 						"POST, GET, PUT, OPTIONS");
 				httpResponse.setHeader(HttpResponseHeaderConstants.ACCESS_CONTROL_ALLOW_HEADERS,
-						"Content-Type,Unify-Pid");
+						"Content-Type,X-Unify-Pid");
 				httpResponse.setHeader(HttpResponseHeaderConstants.ACCESS_CONTROL_MAX_AGE, "600");
 			}
 

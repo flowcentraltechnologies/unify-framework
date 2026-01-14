@@ -47,6 +47,12 @@ public final class HttpUtils {
         
     }
 
+	public static String getUploadHeader(ContentDisposition contentDisposition) {
+		final SimpleDateFormat format = new SimpleDateFormat(DATETIME_FORMAT);
+		return contentDisposition.getFileName() + ";" + format.format(contentDisposition.getCreationDate()) + ";"
+				+ format.format(contentDisposition.getModificationDate());
+	}
+    
 	public static ContentDisposition getUnifyContentDisposition(HttpRequestHeaders headers)
 			throws UnifyException {
 		ContentDisposition contentDisposition = null;

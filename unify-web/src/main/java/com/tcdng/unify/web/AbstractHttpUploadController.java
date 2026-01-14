@@ -33,10 +33,10 @@ import com.tcdng.unify.web.util.HttpUtils;
 public abstract class AbstractHttpUploadController extends AbstractUnifyComponent implements HttpUploadController {
 
 	@Override
-	public void upload(HttpUploadRequest httpUploadRequest) throws UnifyException {
+	public boolean upload(HttpUploadRequest httpUploadRequest) throws UnifyException {
 		final HttpRequestHeaders headers = httpUploadRequest.getHeaders();
 		final ContentDisposition contentDisposition = HttpUtils.getUnifyContentDisposition(headers);
-		handleUpload(headers, contentDisposition, httpUploadRequest.getIn());
+		return handleUpload(headers, contentDisposition, httpUploadRequest.getIn());
 	}
 
 	@Override
@@ -49,7 +49,7 @@ public abstract class AbstractHttpUploadController extends AbstractUnifyComponen
 
 	}
 
-	protected abstract void handleUpload(HttpRequestHeaders headers, ContentDisposition contentDisposition,
+	protected abstract boolean handleUpload(HttpRequestHeaders headers, ContentDisposition contentDisposition,
 			InputStream in) throws UnifyException;
 
 }
