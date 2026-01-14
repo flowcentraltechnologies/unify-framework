@@ -1288,6 +1288,22 @@ public class IOUtils {
 	 * Posts byte array to an end point with headers.
 	 * 
 	 * @param endpoint the end point
+	 * @param in       the byte array
+	 * @param headers  the headers
+	 * @return the post response
+	 * @throws UnifyException if an error occurs
+	 */
+	public static <T> PostResp<T> postByteArrayToEndpoint(Class<T> responseClass, String endpoint, final byte[] in,
+			Map<String, String> headers) throws UnifyException {
+		final PostResp<String> resp = IOUtils.postByteArrayToEndpoint(endpoint, in, headers);
+		return new PostResp<T>(resp.isSuccess() ? DataUtils.fromJsonString(responseClass, resp.getResult()) : null,
+				resp);
+	}
+
+	/**
+	 * Posts byte array to an end point with headers.
+	 * 
+	 * @param endpoint the end point
 	 * @param inArray  the input array
 	 * @param headers  the headers
 	 * @return the response
@@ -1300,6 +1316,22 @@ public class IOUtils {
 		} catch (Exception e) {
 			throw new UnifyException(e, UnifyCoreErrorConstants.IOUTIL_STREAM_RW_ERROR);
 		}
+	}
+
+	/**
+	 * Posts stream to an end point with headers.
+	 * 
+	 * @param endpoint the end point
+	 * @param in       the input stream
+	 * @param headers  the headers
+	 * @return the post response
+	 * @throws UnifyException if an error occurs
+	 */
+	public static <T> PostResp<T> postStreamToEndpoint(Class<T> responseClass, String endpoint, final InputStream in,
+			Map<String, String> headers) throws UnifyException {
+		final PostResp<String> resp = IOUtils.postStreamToEndpoint(endpoint, in, headers);
+		return new PostResp<T>(resp.isSuccess() ? DataUtils.fromJsonString(responseClass, resp.getResult()) : null,
+				resp);
 	}
 	
 	/**
