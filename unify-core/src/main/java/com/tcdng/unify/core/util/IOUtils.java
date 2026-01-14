@@ -75,9 +75,9 @@ public class IOUtils {
 
 	private static boolean restrictedJARMode;
 
-	private static final int CONNECTION_TIMEOUT = 30000;
+	private static final int CONNECTION_TIMEOUT = 10000;
 
-	private static final int READ_TIMEOUT = 40000;
+	private static final int READ_TIMEOUT = 30000;
 
 	private IOUtils() {
 
@@ -1276,6 +1276,86 @@ public class IOUtils {
 
 			final String respJson = rsb.toString();
 			resp = new PostResp<String>(success ? respJson : null, success ? null : respJson, reqJson, respJson, status,
+					System.currentTimeMillis() - start);
+		} catch (Exception e) {
+			throw new UnifyException(e, UnifyCoreErrorConstants.IOUTIL_STREAM_RW_ERROR);
+		}
+
+		return resp;
+	}
+
+	/**
+	 * Posts byte array to an end point with headers.
+	 * 
+	 * @param endpoint the end point
+	 * @param inArray  the input array
+	 * @param headers  the headers
+	 * @return the response
+	 * @throws UnifyException if an error occurs
+	 */
+	public static PostResp<String> postByteArrayToEndpoint(String endpoint, final byte[] inArray,
+			Map<String, String> headers) throws UnifyException {
+		try (InputStream in = new ByteArrayInputStream(inArray)) {
+			return IOUtils.postStreamToEndpoint(endpoint, in, headers);
+		} catch (Exception e) {
+			throw new UnifyException(e, UnifyCoreErrorConstants.IOUTIL_STREAM_RW_ERROR);
+		}
+	}
+	
+	/**
+	 * Posts stream to an end point with headers.
+	 * 
+	 * @param endpoint the end point
+	 * @param in  the input stream
+	 * @param headers  the headers
+	 * @return the response
+	 * @throws UnifyException if an error occurs
+	 */
+	public static PostResp<String> postStreamToEndpoint(String endpoint, final InputStream in, Map<String, String> headers)
+			throws UnifyException {
+		final long start = System.currentTimeMillis();
+		PostResp<String> resp = null;
+		try {
+			URL url = new URI(endpoint).toURL();
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+			conn.setRequestMethod("POST");
+			if (headers != null && !headers.isEmpty()) {
+				for (Map.Entry<String, String> entry : headers.entrySet()) {
+					conn.setRequestProperty(entry.getKey(), entry.getValue());
+				}
+			}
+
+			conn.setRequestProperty("Content-Type", MimeType.APPLICATION_OCTETSTREAM.template());
+			conn.setRequestProperty("Accept", "*/*");
+			conn.setConnectTimeout(CONNECTION_TIMEOUT);
+			conn.setReadTimeout(READ_TIMEOUT);
+			conn.setDoOutput(true);
+
+			try (OutputStream out = conn.getOutputStream()) {
+				IOUtils.writeAll(out, in);
+			}
+
+			final int status = conn.getResponseCode();
+			final boolean success = status >= 200 && status < 300;
+			StringBuilder rsb = new StringBuilder();
+			try (BufferedReader br = new BufferedReader(success ? new InputStreamReader(conn.getInputStream(), "utf-8")
+					: new InputStreamReader(conn.getErrorStream(), "utf-8"))) {
+				String responseLine = null;
+				boolean appendSym = false;
+				while ((responseLine = br.readLine()) != null) {
+					if (appendSym) {
+						rsb.append('\n');
+					} else {
+						appendSym = true;
+					}
+
+					rsb.append(responseLine.trim());
+				}
+			}
+
+			final String respJson = rsb.toString();
+			resp = new PostResp<String>(success ? respJson : null, success ? null : respJson, null, respJson, status,
 					System.currentTimeMillis() - start);
 		} catch (Exception e) {
 			throw new UnifyException(e, UnifyCoreErrorConstants.IOUTIL_STREAM_RW_ERROR);
