@@ -16,9 +16,12 @@
 package com.tcdng.unify.web;
 
 import java.io.InputStream;
+import java.io.StringWriter;
 
 import com.tcdng.unify.core.AbstractUnifyComponent;
 import com.tcdng.unify.core.UnifyException;
+import com.tcdng.unify.core.annotation.Configurable;
+import com.tcdng.unify.core.stream.JsonObjectStreamer;
 import com.tcdng.unify.web.http.HttpRequestHeaders;
 import com.tcdng.unify.web.http.HttpUploadRequest;
 import com.tcdng.unify.web.util.ContentDisposition;
@@ -31,6 +34,9 @@ import com.tcdng.unify.web.util.HttpUtils;
  * @since 4.1
  */
 public abstract class AbstractHttpUploadController extends AbstractUnifyComponent implements HttpUploadController {
+
+	@Configurable
+	private JsonObjectStreamer jsonObjectStreamer;
 
 	@Override
 	public String upload(HttpUploadRequest httpUploadRequest) throws UnifyException {
@@ -51,5 +57,19 @@ public abstract class AbstractHttpUploadController extends AbstractUnifyComponen
 
 	protected abstract String handleUpload(HttpRequestHeaders headers, ContentDisposition contentDisposition,
 			InputStream in) throws UnifyException;
+
+	protected final <T> T getObjectFromRequestJson(Class<T> jsonType, String json) throws UnifyException {
+		return jsonObjectStreamer.unmarshal(jsonType, json);
+	}
+
+	protected final String getResponseJsonFromObject(Object obj) throws UnifyException {
+		if (obj != null) {
+			StringWriter sw = new StringWriter();
+			jsonObjectStreamer.marshal(obj, sw);
+			return sw.toString();
+		}
+
+		return null;
+	}
 
 }
