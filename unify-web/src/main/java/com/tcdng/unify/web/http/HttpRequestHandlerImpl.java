@@ -40,7 +40,6 @@ import com.tcdng.unify.core.constant.ClientPlatform;
 import com.tcdng.unify.core.constant.MimeType;
 import com.tcdng.unify.core.data.FactoryMap;
 import com.tcdng.unify.core.data.UploadedFile;
-import com.tcdng.unify.core.util.CalendarUtils;
 import com.tcdng.unify.core.util.DataUtils;
 import com.tcdng.unify.core.util.EncodingUtils;
 import com.tcdng.unify.core.util.IOUtils;
@@ -51,6 +50,7 @@ import com.tcdng.unify.web.ClientResponse;
 import com.tcdng.unify.web.Controller;
 import com.tcdng.unify.web.ControllerFinder;
 import com.tcdng.unify.web.ControllerPathParts;
+import com.tcdng.unify.web.HttpDownloadController;
 import com.tcdng.unify.web.HttpUploadController;
 import com.tcdng.unify.web.PathInfoRepository;
 import com.tcdng.unify.web.RequestPathParts;
@@ -75,8 +75,6 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 
 	private static final String CONTENT_DISPOSITION = "content-disposition";
 	private static final String DISPOSITION_FILENAME = "filename";
-	private static final String DISPOSITION_CREATIONDATE = "creation-date";
-	private static final String DISPOSITION_MODIFICATIONDATE = "modification-date";
 
 	private static final String BODY_TEXT = "__bodyText";
 	private static final String BODY_BYTES = "__bodyBytes";
@@ -168,10 +166,19 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 				HttpUploadController httpUploadController = controllerFinder
 						.findHttpUploadController(requestPathParts.getControllerPathParts());
 				if (httpUploadController != null) {
-					String resp =httpUploadController.upload(new HttpUploadRequest(httpRequest, httpRequest.getInputStream()));
+					final String resp = httpUploadController.upload(new HttpUploadRequest(httpRequest, httpRequest.getInputStream()));
 					httpResponse.setContentType(MimeType.APPLICATION_JSON.template());
 					httpResponse.getWriter().write(resp);
 					httpResponse.setStatusOk();
+					return;
+				}
+
+				HttpDownloadController httpDownloadController = controllerFinder
+						.findHttpDownloadController(requestPathParts.getControllerPathParts());
+				if (httpDownloadController != null) {
+					httpResponse.setContentType(MimeType.APPLICATION_OCTETSTREAM.template());
+					httpResponse.setStatusOk();
+					httpDownloadController.download(new HttpDownloadRequest(httpRequest, httpResponse.getOutputStream()));
 					return;
 				}
 			}

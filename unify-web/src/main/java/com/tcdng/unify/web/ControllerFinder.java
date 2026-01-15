@@ -54,4 +54,13 @@ public interface ControllerFinder extends UnifyComponent {
 	 * @throws UnifyException if an error occurs
 	 */
 	HttpUploadController findHttpUploadController(ControllerPathParts controllerPathParts) throws UnifyException;
+
+	/**
+	 * Finds an download controller component using supplied path parts..
+	 * 
+	 * @param controllerPathParts the path parts to use
+	 * @return the controller otherwise null
+	 * @throws UnifyException if an error occurs
+	 */
+	HttpDownloadController findHttpDownloadController(ControllerPathParts controllerPathParts) throws UnifyException;
 }
