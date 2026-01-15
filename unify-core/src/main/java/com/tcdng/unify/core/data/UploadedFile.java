@@ -34,6 +34,8 @@ import com.tcdng.unify.core.util.IOUtils;
  */
 public class UploadedFile {
 
+	public static final UploadedFile BLANK = new UploadedFile();
+	
 	private String filename;
 
 	private Date creationDate;
@@ -79,6 +81,10 @@ public class UploadedFile {
 		}
 	}
 
+	private UploadedFile() {
+		this.usesTempFile = false;
+	}
+	
 	public String getFilename() {
 		return filename;
 	}
@@ -99,6 +105,10 @@ public class UploadedFile {
 		return usesTempFile;
 	}
 
+	public boolean isPresent() {
+		return (usesTempFile && tempFileId != null) || (!usesTempFile && in != null);
+	}
+	
 	public byte[] getDetect() {
 		final byte[] _detect = new byte[4];
 		System.arraycopy(detect, 0, _detect, 0, 4);

@@ -43,6 +43,7 @@ import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -1471,6 +1472,142 @@ public class IOUtils {
 			final String respJson = rsb.toString();
 			resp = new PostResp<String>(success ? respJson : null, success ? null : respJson, null, respJson, status,
 					System.currentTimeMillis() - start);
+		} catch (Exception e) {
+			throw new UnifyException(e, UnifyCoreErrorConstants.IOUTIL_STREAM_RW_ERROR);
+		}
+
+		return resp;
+	}
+
+	/**
+	 * Posts get stream from an end point with headers.
+	 * 
+	 * @param endpoint the end point
+	 * @param out      the output stream
+	 * @param headers  the headers
+	 * @return the post response
+	 * @throws UnifyException if an error occurs
+	 */
+	public static <T> PostResp<T> postGetStreamFromEndpoint(Class<T> responseClass, String endpoint,
+			final OutputStream out, Map<String, String> headers) throws UnifyException {
+		final PostResp<String> resp = IOUtils.postGetStreamFromEndpoint(endpoint, out, headers);
+		return new PostResp<T>(resp.isSuccess() ? DataUtils.fromJsonString(responseClass, resp.getResult()) : null,
+				resp);
+	}
+
+	/**
+	 * Posts get stream to an end point with headers.
+	 * 
+	 * @param endpoint the end point
+	 * @param out      the output stream
+	 * @param headers  the headers
+	 * @return the response
+	 * @throws UnifyException if an error occurs
+	 */
+	public static PostResp<String> postGetStreamFromEndpoint(String endpoint, final OutputStream out,
+			Map<String, String> headers) throws UnifyException {
+		final long start = System.currentTimeMillis();
+		PostResp<String> resp = null;
+		try {
+			URL url = new URI(endpoint).toURL();
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+			conn.setRequestMethod("POST");
+			if (headers != null && !headers.isEmpty()) {
+				for (Map.Entry<String, String> entry : headers.entrySet()) {
+					conn.setRequestProperty(entry.getKey(), entry.getValue());
+				}
+			}
+
+			conn.setRequestProperty("Content-Type", MimeType.APPLICATION_OCTETSTREAM.template());
+			conn.setRequestProperty("Accept", "*/*");
+			conn.setConnectTimeout(CONNECTION_TIMEOUT);
+			conn.setReadTimeout(READ_TIMEOUT);
+			conn.setDoOutput(false);
+
+			final int status = conn.getResponseCode();
+			final boolean success = status >= 200 && status < 300;
+			StringBuilder rsb = new StringBuilder();
+			if (success) {
+				IOUtils.writeAll(out, conn.getInputStream());
+				rsb.append("{\"responseCode\":\"00\", \"responseMessage\":\"Success\"}");
+			} else {
+				try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getErrorStream(), "utf-8"))) {
+					String responseLine = null;
+					boolean appendSym = false;
+					while ((responseLine = br.readLine()) != null) {
+						if (appendSym) {
+							rsb.append('\n');
+						} else {
+							appendSym = true;
+						}
+
+						rsb.append(responseLine.trim());
+					}
+				}
+			}
+
+			final String respJson = rsb.toString();
+			resp = new PostResp<String>(success ? respJson : null, success ? null : respJson, null, respJson, status,
+					System.currentTimeMillis() - start);
+		} catch (Exception e) {
+			throw new UnifyException(e, UnifyCoreErrorConstants.IOUTIL_STREAM_RW_ERROR);
+		}
+
+		return resp;
+	}
+
+	/**
+	 * Posts get uploaded file from an end point with headers.
+	 * 
+	 * @param endpoint the end point
+	 * @param headers  the headers
+	 * @return the response
+	 * @throws UnifyException if an error occurs
+	 */
+	public static UploadedFile postGetUploadedFileFromEndpoint(String endpoint, Map<String, String> headers)
+			throws UnifyException {
+		UploadedFile resp = null;
+		try {
+			URL url = new URI(endpoint).toURL();
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+			conn.setRequestMethod("POST");
+			if (headers != null && !headers.isEmpty()) {
+				for (Map.Entry<String, String> entry : headers.entrySet()) {
+					conn.setRequestProperty(entry.getKey(), entry.getValue());
+				}
+			}
+
+			conn.setRequestProperty("Content-Type", MimeType.APPLICATION_OCTETSTREAM.template());
+			conn.setRequestProperty("Accept", "*/*");
+			conn.setConnectTimeout(CONNECTION_TIMEOUT);
+			conn.setReadTimeout(READ_TIMEOUT);
+			conn.setDoOutput(false);
+
+			final int status = conn.getResponseCode();
+			final boolean success = status >= 200 && status < 300;
+			if (success) {
+				Date now = new Date();
+				resp = UploadedFile.createUsingTempFile("file", now, now, conn.getInputStream());
+			} else {
+				StringBuilder rsb = new StringBuilder();
+				try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getErrorStream(), "utf-8"))) {
+					String responseLine = null;
+					boolean appendSym = false;
+					while ((responseLine = br.readLine()) != null) {
+						if (appendSym) {
+							rsb.append('\n');
+						} else {
+							appendSym = true;
+						}
+
+						rsb.append(responseLine.trim());
+					}
+				}
+
+				throw new Exception(rsb.toString());
+			}
 		} catch (Exception e) {
 			throw new UnifyException(e, UnifyCoreErrorConstants.IOUTIL_STREAM_RW_ERROR);
 		}
