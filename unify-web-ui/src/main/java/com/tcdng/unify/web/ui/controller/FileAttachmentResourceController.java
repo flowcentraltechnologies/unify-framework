@@ -65,7 +65,7 @@ public class FileAttachmentResourceController extends AbstractPageResourceContro
         	uploadedFile = ((FileAttachmentInfo) resource).getAttachment();
         }
 
-        uploadedFile.writeAll(outputStream);
+        uploadedFile.writeAllAndInvalidate(outputStream);
         return null;
     }
 
