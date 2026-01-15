@@ -522,28 +522,15 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 
 	private ContentDisposition getContentDisposition(HttpPart part) throws UnifyException {
 		String fileName = null;
-		Date creationDate = null;
-		Date modificationDate = null;
 		for (String disposition : part.getHeader(CONTENT_DISPOSITION).split(";")) {
 			if (disposition.trim().startsWith(DISPOSITION_FILENAME)) {
 				fileName = disposition.substring(disposition.indexOf('=') + 1).trim().replace("\"", "");
-				continue;
-			}
-
-			if (disposition.trim().startsWith(DISPOSITION_CREATIONDATE)) {
-				creationDate = CalendarUtils
-						.parseRfc822Date(disposition.substring(disposition.indexOf('=') + 1).trim());
-				continue;
-			}
-
-			if (disposition.trim().startsWith(DISPOSITION_MODIFICATIONDATE)) {
-				modificationDate = CalendarUtils
-						.parseRfc822Date(disposition.substring(disposition.indexOf('=') + 1).trim());
-				continue;
+				break;
 			}
 		}
 
-		return new ContentDisposition(fileName, creationDate, modificationDate);
+		final Date now = new Date();
+		return new ContentDisposition(fileName, now, now);
 	}
 
 	private class ContentDisposition {
