@@ -59,6 +59,7 @@ import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.UnifyOperationException;
 import com.tcdng.unify.core.constant.MimeType;
 import com.tcdng.unify.core.constant.PrintFormat;
+import com.tcdng.unify.core.data.UploadedFile;
 
 /**
  * Provides utility methods for IO.
@@ -84,17 +85,19 @@ public class IOUtils {
 	}
 
 	public static void ignoreSSLHostNames() {
-        try {
+		try {
 			// Certificates
-			TrustManager[] trustAllCerts = new TrustManager[]{
-			    new X509TrustManager() {
-			        public X509Certificate[] getAcceptedIssuers() {
-			            return new X509Certificate[0];
-			        }
-			        public void checkClientTrusted(X509Certificate[] certs, String authType) {}
-			        public void checkServerTrusted(X509Certificate[] certs, String authType) {}
-			    }
-			};
+			TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+				public X509Certificate[] getAcceptedIssuers() {
+					return new X509Certificate[0];
+				}
+
+				public void checkClientTrusted(X509Certificate[] certs, String authType) {
+				}
+
+				public void checkServerTrusted(X509Certificate[] certs, String authType) {
+				}
+			} };
 
 			SSLContext sc = SSLContext.getInstance("TLS");
 			sc.init(null, trustAllCerts, new SecureRandom());
@@ -103,8 +106,8 @@ public class IOUtils {
 			e.printStackTrace();
 		}
 
-        // HostName
-        HostnameVerifier verifier = new HostnameVerifier() {
+		// HostName
+		HostnameVerifier verifier = new HostnameVerifier() {
 			public boolean verify(String hostname, SSLSession session) {
 				return true;
 			}
@@ -112,7 +115,7 @@ public class IOUtils {
 
 		HttpsURLConnection.setDefaultHostnameVerifier(verifier);
 	}
-	
+
 	public static void enterRestrictedJARMode() {
 		restrictedJARMode = true;
 	}
@@ -548,11 +551,12 @@ public class IOUtils {
 	 * 
 	 * @param outputStream the output stream to write to
 	 * @param inputStream  the input stream to read from
-	 * @param detect 4-byte array header
+	 * @param detect       4-byte array header
 	 * @return the number of bytes written
 	 * @throws UnifyException if an error occurs
 	 */
-	public static long writeAll(OutputStream outputStream, InputStream inputStream, byte[] detect) throws UnifyException {
+	public static long writeAll(OutputStream outputStream, InputStream inputStream, byte[] detect)
+			throws UnifyException {
 		try {
 			long totalRead = 0;
 			byte[] buffer = new byte[BUFFER_SIZE];
@@ -1230,8 +1234,8 @@ public class IOUtils {
 	 * @return the response
 	 * @throws UnifyException if an error occurs
 	 */
-	public static PostResp<String> postJsonToEndpoint(String endpoint, final String reqJson, Map<String, String> headers)
-			throws UnifyException {
+	public static PostResp<String> postJsonToEndpoint(String endpoint, final String reqJson,
+			Map<String, String> headers) throws UnifyException {
 		final long start = System.currentTimeMillis();
 		PostResp<String> resp = null;
 		try {
@@ -1333,18 +1337,18 @@ public class IOUtils {
 		return new PostResp<T>(resp.isSuccess() ? DataUtils.fromJsonString(responseClass, resp.getResult()) : null,
 				resp);
 	}
-	
+
 	/**
 	 * Posts stream to an end point with headers.
 	 * 
 	 * @param endpoint the end point
-	 * @param in  the input stream
+	 * @param in       the input stream
 	 * @param headers  the headers
 	 * @return the response
 	 * @throws UnifyException if an error occurs
 	 */
-	public static PostResp<String> postStreamToEndpoint(String endpoint, final InputStream in, Map<String, String> headers)
-			throws UnifyException {
+	public static PostResp<String> postStreamToEndpoint(String endpoint, final InputStream in,
+			Map<String, String> headers) throws UnifyException {
 		final long start = System.currentTimeMillis();
 		PostResp<String> resp = null;
 		try {
@@ -1366,6 +1370,84 @@ public class IOUtils {
 
 			try (OutputStream out = conn.getOutputStream()) {
 				IOUtils.writeAll(out, in);
+			}
+
+			final int status = conn.getResponseCode();
+			final boolean success = status >= 200 && status < 300;
+			StringBuilder rsb = new StringBuilder();
+			try (BufferedReader br = new BufferedReader(success ? new InputStreamReader(conn.getInputStream(), "utf-8")
+					: new InputStreamReader(conn.getErrorStream(), "utf-8"))) {
+				String responseLine = null;
+				boolean appendSym = false;
+				while ((responseLine = br.readLine()) != null) {
+					if (appendSym) {
+						rsb.append('\n');
+					} else {
+						appendSym = true;
+					}
+
+					rsb.append(responseLine.trim());
+				}
+			}
+
+			final String respJson = rsb.toString();
+			resp = new PostResp<String>(success ? respJson : null, success ? null : respJson, null, respJson, status,
+					System.currentTimeMillis() - start);
+		} catch (Exception e) {
+			throw new UnifyException(e, UnifyCoreErrorConstants.IOUTIL_STREAM_RW_ERROR);
+		}
+
+		return resp;
+	}
+
+	/**
+	 * Posts uploaded file to an end point with headers.
+	 * 
+	 * @param endpoint   the end point
+	 * @param uploadFile the upload file
+	 * @param headers    the headers
+	 * @return the post response
+	 * @throws UnifyException if an error occurs
+	 */
+	public static <T> PostResp<T> postUploadedFileToEndpoint(Class<T> responseClass, String endpoint,
+			final UploadedFile uploadFile, Map<String, String> headers) throws UnifyException {
+		final PostResp<String> resp = IOUtils.postUploadedFileToEndpoint(endpoint, uploadFile, headers);
+		return new PostResp<T>(resp.isSuccess() ? DataUtils.fromJsonString(responseClass, resp.getResult()) : null,
+				resp);
+	}
+
+	/**
+	 * Posts uploaded file to an end point with headers.
+	 * 
+	 * @param endpoint   the end point
+	 * @param uploadFile the upload file
+	 * @param headers    the headers
+	 * @return the response
+	 * @throws UnifyException if an error occurs
+	 */
+	public static PostResp<String> postUploadedFileToEndpoint(String endpoint, final UploadedFile uploadFile,
+			Map<String, String> headers) throws UnifyException {
+		final long start = System.currentTimeMillis();
+		PostResp<String> resp = null;
+		try {
+			URL url = new URI(endpoint).toURL();
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+			conn.setRequestMethod("POST");
+			if (headers != null && !headers.isEmpty()) {
+				for (Map.Entry<String, String> entry : headers.entrySet()) {
+					conn.setRequestProperty(entry.getKey(), entry.getValue());
+				}
+			}
+
+			conn.setRequestProperty("Content-Type", MimeType.APPLICATION_OCTETSTREAM.template());
+			conn.setRequestProperty("Accept", "*/*");
+			conn.setConnectTimeout(CONNECTION_TIMEOUT);
+			conn.setReadTimeout(READ_TIMEOUT);
+			conn.setDoOutput(true);
+
+			try (OutputStream out = conn.getOutputStream()) {
+				uploadFile.writeAll(out);
 			}
 
 			final int status = conn.getResponseCode();
