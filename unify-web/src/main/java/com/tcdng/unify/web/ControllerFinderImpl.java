@@ -63,21 +63,23 @@ public class ControllerFinderImpl extends AbstractUnifyComponent implements Cont
 	@Override
 	public HttpUploadController findHttpUploadController(ControllerPathParts controllerPathParts)
 			throws UnifyException {
-		final String controllerName = controllerPathParts.getControllerName();
-		final String _actualControllerName = getActualControllerName(controllerName);
-		UnifyComponentConfig unifyComponentConfig = getComponentConfig(HttpUploadController.class,
-				_actualControllerName);
-		return unifyComponentConfig != null ? (HttpUploadController) getComponent(_actualControllerName) : null;
+		final String _actualControllerName = getActualControllerName(controllerPathParts.getControllerName());
+		UnifyComponentConfig unifyComponentConfig = getComponentConfig(_actualControllerName);
+		return unifyComponentConfig != null
+				&& HttpUploadController.class.isAssignableFrom(unifyComponentConfig.getType())
+						? (HttpUploadController) getComponent(_actualControllerName)
+						: null;
 	}
 
 	@Override
 	public HttpDownloadController findHttpDownloadController(ControllerPathParts controllerPathParts)
 			throws UnifyException {
-		final String controllerName = controllerPathParts.getControllerName();
-		final String _actualControllerName = getActualControllerName(controllerName);
-		UnifyComponentConfig unifyComponentConfig = getComponentConfig(HttpDownloadController.class,
-				_actualControllerName);
-		return unifyComponentConfig != null ? (HttpDownloadController) getComponent(_actualControllerName) : null;
+		final String _actualControllerName = getActualControllerName(controllerPathParts.getControllerName());
+		UnifyComponentConfig unifyComponentConfig = getComponentConfig(_actualControllerName);
+		return unifyComponentConfig != null
+				&& HttpDownloadController.class.isAssignableFrom(unifyComponentConfig.getType())
+						? (HttpDownloadController) getComponent(_actualControllerName)
+						: null;
 	}
 
 	@Override

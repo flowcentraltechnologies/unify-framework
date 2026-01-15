@@ -60,14 +60,15 @@ public class PathInfoRepositoryImpl extends AbstractUnifyComponent implements Pa
 				String operation = null;
 				Long resourceId = null;
 				List<String> pathVariables = Collections.emptyList();
-				
+
 				ucc = getComponentConfig(controllerName);
-				if (ucc != null && HttpUploadController.class.isAssignableFrom(ucc.getType())) {
+				if (ucc != null && (HttpUploadController.class.isAssignableFrom(ucc.getType())
+						|| HttpDownloadController.class.isAssignableFrom(ucc.getType()))) {
 					return new ControllerPathParts(null, controllerPath, pathId, controllerName, pathVariables,
 							actionName, operation, resourceId, true);
 				}
 				ucc = null;
-				
+
 				int colIndex = controllerPath.indexOf(':');
 				if (colIndex > 0) {
 					controllerName = controllerPath.substring(0, colIndex);
