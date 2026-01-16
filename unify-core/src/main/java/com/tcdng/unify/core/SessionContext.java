@@ -123,6 +123,10 @@ public class SessionContext extends Context {
 		this.userToken = userToken;
 	}
 
+	public String getUserLoginId() {
+		return userToken != null ? userToken.getUserLoginId() : "SYSTEM";
+	}
+	
 	public Locale getLocale() {
 		return locale;
 	}
