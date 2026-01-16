@@ -124,7 +124,7 @@ public class SessionContext extends Context {
 	}
 
 	public String getUserLoginId() {
-		return userToken != null ? userToken.getUserLoginId() : "SYSTEM";
+		return userToken != null ? userToken.getUserLoginId() : null;
 	}
 	
 	public Locale getLocale() {
