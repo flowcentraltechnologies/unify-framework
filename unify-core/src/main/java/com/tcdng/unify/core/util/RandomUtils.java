@@ -36,6 +36,9 @@ public final class RandomUtils {
 
 	private static String DIGITS = "0123456789";
 
+	// SecureRandom.getInstanceStrong(); // Avoid in servers/containers
+	// Blocks while waiting for entropy on linux machines. Very hard to debug
+	
 	private RandomUtils() {
 
 	}
