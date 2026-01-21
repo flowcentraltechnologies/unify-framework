@@ -15,7 +15,10 @@
  */
 package com.tcdng.unify.web.ui.widget.panel;
 
+import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
+import com.tcdng.unify.core.annotation.UplAttribute;
+import com.tcdng.unify.core.annotation.UplAttributes;
 import com.tcdng.unify.core.annotation.UplBinding;
 import com.tcdng.unify.web.ui.widget.AbstractPanel;
 
@@ -27,6 +30,15 @@ import com.tcdng.unify.web.ui.widget.AbstractPanel;
  */
 @Component("ui-blurbpanel")
 @UplBinding("web/panels/upl/blurbpanel.upl")
+@UplAttributes({@UplAttribute(name = "code", type = boolean.class)})
 public class BlurbPanel extends AbstractPanel {
+
+	@Override
+	public void switchState() throws UnifyException {
+		super.switchState();
+		final boolean code = getUplAttribute(boolean.class, "code");
+		setVisible("symbol", !code);
+		setVisible("code", code);
+	}
 
 }

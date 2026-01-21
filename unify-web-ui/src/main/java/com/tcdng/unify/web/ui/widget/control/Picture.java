@@ -90,7 +90,12 @@ public class Picture extends AbstractAutoRefreshMultiControl {
     public boolean isWithHandler() {
     	return handler != null;
     }
-    
+
+    @Override
+	public boolean isSupportStretch() throws UnifyException {
+		return false;
+	}
+   
 	@Override
 	protected void doOnPageConstruct() throws UnifyException {
 		final String _handler = getUplAttribute(String.class, "handler");

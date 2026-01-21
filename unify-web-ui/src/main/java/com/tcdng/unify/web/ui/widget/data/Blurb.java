@@ -32,7 +32,7 @@ public class Blurb {
 	private String path;
 
 	private String description;
-
+	
 	public Blurb(String icon, String caption, String description, String path) {
 		this.icon = icon;
 		this.caption = caption;
@@ -63,4 +63,5 @@ public class Blurb {
 	public boolean isWithPath() {
 		return !StringUtils.isBlank(path);
 	}
+
 }

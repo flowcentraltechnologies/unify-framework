@@ -110,7 +110,7 @@ public abstract class AbstractPanelWriter extends AbstractContainerWriter implem
 
 		boolean isLegend = StringUtils.isNotBlank(legend);
 		if (isLegend) {
-			writer.write("<fieldset><legend>");
+			writer.write("<fieldset class=\"exset\"><legend class=\"exleg\">");
 			writeAttributeWithEscape(writer, panel, "legend");
 			writer.write("</legend>");
 		}

@@ -234,6 +234,8 @@ z-index:400;}
 .ui-blurbpanel {width:100%;color:#404040;border:solid 1px #A0A0A0;border-radius:4px;
 	padding:4px 4px;margin:4px;box-sizing: border-box;min-height:84px;}
 .ui-blurbpanel .blsym {font-weight:bold;font-size:1.4em;color:#404040;}
+.ui-blurbpanel .blcode {background-color:#404040;
+  color: #ffffff;margin-right:8px; font-size: 0.6em; font-weight: bold; padding: 4px; border-radius:4px;}
 .ui-blurbpanel .blcap {font-weight:bold;font-size: 1.2em;text-align:left;margin-bottom:6px;}
 .ui-blurbpanel .bldsc {text-align:left;margin-bottom:4px;color:#808080;}
 

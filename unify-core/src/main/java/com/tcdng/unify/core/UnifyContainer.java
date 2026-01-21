@@ -58,6 +58,7 @@ import com.tcdng.unify.core.business.BusinessService;
 import com.tcdng.unify.core.business.internal.ProxyBusinessServiceGenerator;
 import com.tcdng.unify.core.data.FactoryMap;
 import com.tcdng.unify.core.data.LocaleFactoryMaps;
+import com.tcdng.unify.core.file.TemporaryFileManager;
 import com.tcdng.unify.core.format.DateFormatter;
 import com.tcdng.unify.core.format.DateTimeFormatter;
 import com.tcdng.unify.core.logging.AbstractLog4jLogger;
@@ -76,6 +77,7 @@ import com.tcdng.unify.core.upl.UplCompiler;
 import com.tcdng.unify.core.upl.UplComponent;
 import com.tcdng.unify.core.upl.UplElementAttributes;
 import com.tcdng.unify.core.util.DataUtils;
+import com.tcdng.unify.core.util.FileUtils;
 import com.tcdng.unify.core.util.GetterSetterInfo;
 import com.tcdng.unify.core.util.IOUtils;
 import com.tcdng.unify.core.util.ImageUtils;
@@ -540,6 +542,7 @@ public class UnifyContainer {
 					"!fixeddatetimeformat pattern:$s{yyyy-MM-dd HH:mm:ss.SSS}", false));
 			DataUtils.registerDefaultFormatter(ConverterTypeConstants.DECIMAL, (ConverterFormatter<?>) getUplComponent(getApplicationLocale(),
 					"!amountformat", false));
+			FileUtils.init(getComponent(TemporaryFileManager.class));
 
 			// Run application startup service
 			toConsole("Initializing application boot service...");

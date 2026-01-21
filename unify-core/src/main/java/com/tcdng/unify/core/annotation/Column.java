@@ -39,6 +39,11 @@ public @interface Column {
     ColumnType type() default ColumnType.AUTO;
 
     /**
+     * The field column name. If not set system used name attribute.
+     */
+    String value() default AnnotationConstants.NONE;
+
+    /**
      * The field column name. If not set, the system generates a column name using
      * the field name.
      */

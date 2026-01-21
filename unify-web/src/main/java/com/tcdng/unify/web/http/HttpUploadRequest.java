@@ -15,17 +15,34 @@
  */
 package com.tcdng.unify.web.http;
 
-import java.util.Enumeration;
+import java.io.InputStream;
 
 /**
- * HTTP request headers.
+ * Http upload request.
  * 
  * @author The Code Department
  * @since 4.1
  */
-public interface HttpRequestHeaders {
+public class HttpUploadRequest {
 
-	String getHeader(String name);
+	private HttpRequestHeaders headers;
 
-	Enumeration<String> getNames();
+	private InputStream in;
+
+	public HttpUploadRequest(HttpRequestHeaders headers, InputStream in) {
+		this.headers = headers;
+		this.in = in;
+	}
+
+	public String getHeader(String name) {
+		return headers.getHeader(name);
+	}
+
+	public HttpRequestHeaders getHeaders() {
+		return headers;
+	}
+
+	public InputStream getIn() {
+		return in;
+	}
 }

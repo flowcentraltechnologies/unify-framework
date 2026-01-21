@@ -34,7 +34,7 @@ import com.tcdng.unify.web.ui.widget.AbstractControl;
 public class Bell extends AbstractControl {
 
     @Override
-	public boolean isSupportStretch() {
+	public boolean isSupportStretch() throws UnifyException {
 		return false;
 	}
 

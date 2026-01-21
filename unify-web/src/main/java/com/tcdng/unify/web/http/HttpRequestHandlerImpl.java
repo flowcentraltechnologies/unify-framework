@@ -40,7 +40,6 @@ import com.tcdng.unify.core.constant.ClientPlatform;
 import com.tcdng.unify.core.constant.MimeType;
 import com.tcdng.unify.core.data.FactoryMap;
 import com.tcdng.unify.core.data.UploadedFile;
-import com.tcdng.unify.core.util.CalendarUtils;
 import com.tcdng.unify.core.util.DataUtils;
 import com.tcdng.unify.core.util.EncodingUtils;
 import com.tcdng.unify.core.util.IOUtils;
@@ -51,6 +50,8 @@ import com.tcdng.unify.web.ClientResponse;
 import com.tcdng.unify.web.Controller;
 import com.tcdng.unify.web.ControllerFinder;
 import com.tcdng.unify.web.ControllerPathParts;
+import com.tcdng.unify.web.HttpDownloadController;
+import com.tcdng.unify.web.HttpUploadController;
 import com.tcdng.unify.web.PathInfoRepository;
 import com.tcdng.unify.web.RequestPathParts;
 import com.tcdng.unify.web.TenantPathManager;
@@ -74,8 +75,6 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 
 	private static final String CONTENT_DISPOSITION = "content-disposition";
 	private static final String DISPOSITION_FILENAME = "filename";
-	private static final String DISPOSITION_CREATIONDATE = "creation-date";
-	private static final String DISPOSITION_MODIFICATIONDATE = "modification-date";
 
 	private static final String BODY_TEXT = "__bodyText";
 	private static final String BODY_BYTES = "__bodyBytes";
@@ -161,7 +160,29 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 	@Override
 	public void handleRequest(HttpRequestMethodType methodType, RequestPathParts requestPathParts,
 			HttpRequest httpRequest, HttpResponse httpResponse) throws UnifyException {
+		final String contentType = httpRequest.getHeader("Content-Type");
 		try {
+			if (methodType.isPost() && MimeType.APPLICATION_OCTETSTREAM.template().equals(contentType)) {
+				HttpUploadController httpUploadController = controllerFinder
+						.findHttpUploadController(requestPathParts.getControllerPathParts());
+				if (httpUploadController != null) {
+					final String resp = httpUploadController.upload(new HttpUploadRequest(httpRequest, httpRequest.getInputStream()));
+					httpResponse.setContentType(MimeType.APPLICATION_JSON.template());
+					httpResponse.getWriter().write(resp);
+					httpResponse.setStatusOk();
+					return;
+				}
+
+				HttpDownloadController httpDownloadController = controllerFinder
+						.findHttpDownloadController(requestPathParts.getControllerPathParts());
+				if (httpDownloadController != null) {
+					httpResponse.setContentType(MimeType.APPLICATION_OCTETSTREAM.template());
+					httpResponse.setStatusOk();
+					httpDownloadController.download(new HttpDownloadRequest(httpRequest, httpResponse.getOutputStream()));
+					return;
+				}
+			}
+
 			Charset charset = StandardCharsets.UTF_8;
 			if (httpRequest.getCharacterEncoding() != null) {
 				charset = Charset.forName(httpRequest.getCharacterEncoding());
@@ -172,7 +193,7 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 							: getApplicationLocale();
 			getSessionContext().setLocale(reqLocale);
 
-			setRequestClientPageId(httpRequest.getHeader(HttpRequestHeaderConstants.UNIFY_PID));
+			setRequestClientPageId(httpRequest.getHeader(HttpRequestHeaderConstants.X_UNIFY_PID));
 			setRequestAttribute(UnifyWebRequestAttributeConstants.HEADERS, httpRequest);
 			setRequestAttribute(UnifyWebRequestAttributeConstants.PARAMETERS, httpRequest);
 
@@ -190,7 +211,7 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 				httpResponse.setHeader(HttpResponseHeaderConstants.ACCESS_CONTROL_ALLOW_METHODS,
 						"POST, GET, PUT, OPTIONS");
 				httpResponse.setHeader(HttpResponseHeaderConstants.ACCESS_CONTROL_ALLOW_HEADERS,
-						"Content-Type,Unify-Pid");
+						"Content-Type,X-Unify-Pid");
 				httpResponse.setHeader(HttpResponseHeaderConstants.ACCESS_CONTROL_MAX_AGE, "600");
 			}
 
@@ -231,7 +252,6 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 				logError(e);
 				boolean exit = true;
 				try {
-					final String contentType = httpRequest.getHeader("Content-Type");
 					if (MimeType.APPLICATION_JSON.template().equals(contentType)) {
 						clientResponse.setContentType(MimeType.APPLICATION_JSON.template());
 						clientResponse.getWriter().write("{\n");
@@ -283,6 +303,9 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 		} catch (UnifyException ue) {
 			logError(ue);
 			throw ue;
+		} catch (Exception ue) {
+			logError(ue);
+			throwOperationErrorException(ue);
 		}
 	}
 
@@ -457,9 +480,9 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 
 				ContentDisposition contentDisposition = getContentDisposition(part);
 				if (contentDisposition.isFileName()) {
-					UploadedFile frmFile = new UploadedFile(contentDisposition.getFileName(),
+					UploadedFile frmFile = UploadedFile.createUsingTempFile(contentDisposition.getFileName(),
 							contentDisposition.getCreationDate(), contentDisposition.getModificationDate(),
-							IOUtils.readAll(part.getInputStream()));
+							part.getInputStream());
 					List<UploadedFile> list = uploadedFileMap.get(name);
 					if (list == null) {
 						list = new ArrayList<UploadedFile>();
@@ -506,28 +529,15 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 
 	private ContentDisposition getContentDisposition(HttpPart part) throws UnifyException {
 		String fileName = null;
-		Date creationDate = null;
-		Date modificationDate = null;
 		for (String disposition : part.getHeader(CONTENT_DISPOSITION).split(";")) {
 			if (disposition.trim().startsWith(DISPOSITION_FILENAME)) {
 				fileName = disposition.substring(disposition.indexOf('=') + 1).trim().replace("\"", "");
-				continue;
-			}
-
-			if (disposition.trim().startsWith(DISPOSITION_CREATIONDATE)) {
-				creationDate = CalendarUtils
-						.parseRfc822Date(disposition.substring(disposition.indexOf('=') + 1).trim());
-				continue;
-			}
-
-			if (disposition.trim().startsWith(DISPOSITION_MODIFICATIONDATE)) {
-				modificationDate = CalendarUtils
-						.parseRfc822Date(disposition.substring(disposition.indexOf('=') + 1).trim());
-				continue;
+				break;
 			}
 		}
 
-		return new ContentDisposition(fileName, creationDate, modificationDate);
+		final Date now = new Date();
+		return new ContentDisposition(fileName, now, now);
 	}
 
 	private class ContentDisposition {

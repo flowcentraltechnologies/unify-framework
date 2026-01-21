@@ -279,9 +279,13 @@ public final class ConverterUtils {
 				}
 			} else {
 				if (value.getClass().isArray() && Array.getLength(value) == 1) {
-					result = classToConverterMap.get(targetClazz).convert(Array.get(value, 0), formatter);
+					result = classToConverterMap.containsKey(targetClazz)
+							? classToConverterMap.get(targetClazz).convert(Array.get(value, 0), formatter)
+							: null;
 				} else {
-					result = classToConverterMap.get(targetClazz).convert(value, formatter);
+					result = classToConverterMap.containsKey(targetClazz)
+							? classToConverterMap.get(targetClazz).convert(value, formatter)
+							: null;
 				}
 			}
 

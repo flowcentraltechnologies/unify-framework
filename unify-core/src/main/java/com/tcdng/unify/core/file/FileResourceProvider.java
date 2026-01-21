@@ -16,10 +16,9 @@
 
 package com.tcdng.unify.core.file;
 
-import java.io.InputStream;
-
 import com.tcdng.unify.core.UnifyComponent;
 import com.tcdng.unify.core.UnifyException;
+import com.tcdng.unify.core.data.UploadedFile;
 
 /**
  * Application file resource provider.
@@ -29,29 +28,23 @@ import com.tcdng.unify.core.UnifyException;
  */
 public interface FileResourceProvider extends UnifyComponent {
 
-    /**
-     * Opens input stream for a file resource.
-     * 
-     * @param category
-     *                     the resource category
-     * @param resourceName
-     *                     the resource file name
-     * @return the input stream if resource is found otherwise null
-     * @throws UnifyException
-     *                        if an error occurs
-     */
-    InputStream openFileResourceInputStream(String category, String resourceName) throws UnifyException;
+	/**
+	 * Opens input stream for a file resource.
+	 * 
+	 * @param category     the resource category
+	 * @param resourceName the resource file name
+	 * @return the input stream if resource is found otherwise null
+	 * @throws UnifyException if an error occurs
+	 */
+	UploadedFile getFileResourceInputStream(String category, String resourceName) throws UnifyException;
 
-    /**
-     * Read s file resource.
-     * 
-     * @param category
-     *                     the resource category
-     * @param resourceName
-     *                     the resource file name
-     * @return the file resource if found otherwise null
-     * @throws UnifyException
-     *                        if an error occurs
-     */
-    byte[] readFileResource(String category, String resourceName) throws UnifyException;
+	/**
+	 * Read s file resource.
+	 * 
+	 * @param category     the resource category
+	 * @param resourceName the resource file name
+	 * @return the file resource if found otherwise null
+	 * @throws UnifyException if an error occurs
+	 */
+	UploadedFile readFileResource(String category, String resourceName) throws UnifyException;
 }

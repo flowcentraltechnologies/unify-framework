@@ -13,19 +13,30 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.tcdng.unify.web.http;
-
-import java.util.Enumeration;
+package com.tcdng.unify.core.data;
 
 /**
- * HTTP request headers.
+ * IO information.
  * 
  * @author The Code Department
  * @since 4.1
  */
-public interface HttpRequestHeaders {
+public class IOInfo {
 
-	String getHeader(String name);
+	String fileId;
+	
+	long fileLength;
 
-	Enumeration<String> getNames();
+	public IOInfo(String fileId, long fileLength) {
+		this.fileId = fileId;
+		this.fileLength = fileLength;
+	}
+
+	public String getFileId() {
+		return fileId;
+	}
+
+	public long getFileLength() {
+		return fileLength;
+	}
 }

@@ -78,12 +78,11 @@ public class FileUploadView extends AbstractAutoRefreshMultiControl {
 			UploadedFile uploadedFile = ((UploadedFile[]) value)[0];
 			if (handler == null) {
 				setFilename(uploadedFile.getFilename());
-				setValue(uploadedFile.getData());
+				setValue(uploadedFile);
 			} else {
 				String category = getUplAttribute(String.class, "category");
 				FileAttachmentType type = getUplAttribute(FileAttachmentType.class, "type");
-				Object uploadId = handler.save(getUploadId(), category, type, uploadedFile.getFilename(),
-						uploadedFile.getData());
+				Object uploadId = handler.save(getUploadId(), category, type, uploadedFile.getFilename(), uploadedFile);
 				setUploadId(uploadId);
 			}
 		}
@@ -92,7 +91,7 @@ public class FileUploadView extends AbstractAutoRefreshMultiControl {
 	@Action
 	public void view() throws UnifyException {
 		if (handler == null) {
-			byte[] data = getValue(byte[].class);
+			UploadedFile data = getValue(UploadedFile.class);
 			if (data != null) {
 				final FileAttachmentType type = getType();
 				FileAttachmentInfo fileAttachmentInfo = new FileAttachmentInfo(type);

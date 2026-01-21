@@ -15,6 +15,7 @@
  */
 package com.tcdng.unify.web.ui.widget.control;
 
+import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.web.ui.widget.AbstractGroupListControl;
 
@@ -33,7 +34,7 @@ public class RadioButtons extends AbstractGroupListControl {
     }
 
     @Override
-	public boolean isSupportStretch() {
+	public boolean isSupportStretch() throws UnifyException {
 		return false;
 	}
 

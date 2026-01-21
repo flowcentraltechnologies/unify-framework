@@ -1126,6 +1126,16 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	}
 
 	/**
+	 * Gets current session user login ID.
+	 * 
+	 * @return the current session user login ID
+	 * @throws UnifyException if an error occurs
+	 */
+	protected String getUserLoginId() throws UnifyException {
+		return unifyComponentContext.getSessionContext().getUserLoginId();
+	}
+
+	/**
 	 * Sets the user token tenant ID for current session.
 	 * 
 	 * @param tenantId the tenant ID

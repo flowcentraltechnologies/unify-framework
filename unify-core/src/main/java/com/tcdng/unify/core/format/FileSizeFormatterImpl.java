@@ -19,6 +19,7 @@ import java.text.NumberFormat;
 
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
+import com.tcdng.unify.core.util.FileSizeUtils;
 
 /**
  * Default implementation of a file size formatter.
@@ -29,8 +30,6 @@ import com.tcdng.unify.core.annotation.Component;
 @Component(name = "filesizeformat", description = "$m{format.filesize}")
 public class FileSizeFormatterImpl extends AbstractFormatter<Number> implements FileSizeFormatter {
 
-    private static final String[] FILESIZE_SUFFIX = { "KB", "MB", "GB", "TB", "PB", "EB" };
-
     private NumberFormat nf;
 
     public FileSizeFormatterImpl() {
@@ -39,19 +38,7 @@ public class FileSizeFormatterImpl extends AbstractFormatter<Number> implements 
 
     @Override
     protected String doFormat(Number value) throws UnifyException {
-        if (value == null) {
-            return null;
-        }
-        if (value.longValue() < 0) {
-            throwOperationErrorException(new Exception("Invalid file size - " + value));
-        }
-        if (value.longValue() < 1024) {
-            return value + " Bytes";
-        }
-        double bytes = value.doubleValue();
-        int index = (int) (Math.log(bytes) / Math.log(1024));
-        return String.format("%s %s", getNumberFormat().format(bytes / Math.pow(1024, index)),
-                FILESIZE_SUFFIX[index - 1]);
+        return FileSizeUtils.formatReadable(value.longValue());
     }
 
     @Override

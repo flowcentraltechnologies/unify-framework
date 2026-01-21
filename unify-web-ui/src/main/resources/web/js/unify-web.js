@@ -656,7 +656,7 @@ ux.ajaxCall = function(ajaxPrms) {
 	try {
 		ux.saveContentScroll();
 		uAjaxReq.open("POST", url, true);
-		uAjaxReq.setRequestHeader("Unify-Pid", ux.docPid);
+		uAjaxReq.setRequestHeader("X-Unify-Pid", ux.docPid);
 		if (ajaxPrms.uEncoded) {
 			uAjaxReq.setRequestHeader("Content-Type",
 					"application/x-www-form-urlencoded");

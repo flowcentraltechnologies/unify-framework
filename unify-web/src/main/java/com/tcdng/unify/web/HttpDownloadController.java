@@ -13,19 +13,26 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.tcdng.unify.web.http;
+package com.tcdng.unify.web;
 
-import java.util.Enumeration;
+import com.tcdng.unify.core.UnifyComponent;
+import com.tcdng.unify.core.UnifyException;
+import com.tcdng.unify.web.http.HttpDownloadRequest;
 
 /**
- * HTTP request headers.
+ * HTTP download controller.
  * 
  * @author The Code Department
  * @since 4.1
  */
-public interface HttpRequestHeaders {
+public interface HttpDownloadController extends UnifyComponent {
 
-	String getHeader(String name);
+	/**
+	 * Performs a download.
+	 * 
+	 * @param httpDownloadRequest the download
+	 * @throws UnifyException if an error occurs
+	 */
+	void download(HttpDownloadRequest httpDownloadRequest) throws UnifyException;
 
-	Enumeration<String> getNames();
 }

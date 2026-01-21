@@ -55,7 +55,8 @@ import com.tcdng.unify.web.ui.widget.panel.StandalonePanel;
  * @author The Code Department
  * @since 4.1
  */
-@UplAttributes({ @UplAttribute(name = "binding", type = String.class),
+@UplAttributes({
+		@UplAttribute(name = "binding", type = String.class),
 		@UplAttribute(name = "styleClass", type = String.class, defaultVal = "$e{}"),
 		@UplAttribute(name = "styleClassBinding", type = String.class),
 		@UplAttribute(name = "style", type = String.class), @UplAttribute(name = "caption", type = String.class),
@@ -73,6 +74,7 @@ import com.tcdng.unify.web.ui.widget.panel.StandalonePanel;
 		@UplAttribute(name = "valueStoreMemory", type = boolean.class, defaultVal = "false"),
 		@UplAttribute(name = "behaviorAlways", type = boolean.class, defaultVal = "false"),
 		@UplAttribute(name = "copyEventHandlers", type = boolean.class, defaultVal = "false"),
+		@UplAttribute(name = "autoStretch", type = boolean.class, defaultVal = "true"),
 		@UplAttribute(name = "eventHandler", type = EventHandler[].class) })
 public abstract class AbstractWidget extends AbstractUplComponent implements Widget {
 
@@ -540,7 +542,7 @@ public abstract class AbstractWidget extends AbstractUplComponent implements Wid
 	public Object getValue() throws UnifyException {
 		if (inRepeat) {
 			IndexedTarget target = getIndexedTarget();
-			if (target.isValidValueIndex()) {
+			if (target != null && target.isValidValueIndex()) {
 				return getValueStore().setDataIndex(target.getValueIndex()).getValueObjectAtDataIndex();
 			}
 		}
@@ -579,8 +581,8 @@ public abstract class AbstractWidget extends AbstractUplComponent implements Wid
 	}
 
 	@Override
-	public boolean isSupportStretch() {
-		return true;
+	public boolean isSupportStretch() throws UnifyException {
+		return getUplAttribute(boolean.class, "autoStretch");
 	}
 
 	@Override

@@ -18,12 +18,12 @@ package com.tcdng.unify.web.http;
 import java.util.Enumeration;
 
 /**
- * HTTP request headers.
+ * HTTP response headers.
  * 
  * @author The Code Department
  * @since 4.1
  */
-public interface HttpRequestHeaders {
+public interface HttpResponseHeaders {
 
 	String getHeader(String name);
 

@@ -15,17 +15,34 @@
  */
 package com.tcdng.unify.web.http;
 
-import java.util.Enumeration;
+import java.io.OutputStream;
 
 /**
- * HTTP request headers.
+ * Http download request.
  * 
  * @author The Code Department
  * @since 4.1
  */
-public interface HttpRequestHeaders {
+public class HttpDownloadRequest {
 
-	String getHeader(String name);
+	private HttpRequestHeaders headers;
 
-	Enumeration<String> getNames();
+	private OutputStream out;
+	
+	public HttpDownloadRequest(HttpRequestHeaders headers, OutputStream out) {
+		this.headers = headers;
+		this.out = out;
+	}
+
+	public String getHeader(String name) {
+		return headers.getHeader(name);
+	}
+
+	public HttpRequestHeaders getHeaders() {
+		return headers;
+	}
+
+	public OutputStream getOut() {
+		return out;
+	}
 }

@@ -15,13 +15,20 @@
  */
 package com.tcdng.unify.core.util;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.tcdng.unify.core.UnifyException;
+import com.tcdng.unify.core.UnifyOperationException;
 import com.tcdng.unify.core.constant.FileAttachmentType;
 import com.tcdng.unify.core.data.FileAttachmentInfo;
+import com.tcdng.unify.core.data.IOInfo;
+import com.tcdng.unify.core.data.UploadedFile;
+import com.tcdng.unify.core.file.TemporaryFileManager;
 import com.tcdng.unify.core.util.ImageUtils.ImageType;
 
 /**
@@ -32,10 +39,107 @@ import com.tcdng.unify.core.util.ImageUtils.ImageType;
  */
 public final class FileUtils {
 
+	private static TemporaryFileManager tempFileManager;
+	
 	private FileUtils() {
 
 	}
 
+	public static void init(TemporaryFileManager temporaryFileManager) {
+		if (tempFileManager == null) {
+			tempFileManager = temporaryFileManager;
+		}
+	}
+	
+	/**
+	 * Checks if temporary file exists.
+	 * 
+	 * @param tempFileId the temporary file's ID
+	 * @return true if temporary file exists otherwise false
+	 * @throws UnifyException if an error occurs
+	 */
+	public static boolean isTemporaryFileExists(String tempFileId) throws UnifyException {
+		return temp().isTemporaryFileExists(tempFileId);
+	}
+
+	/**
+	 * Gets temporary file size.
+	 * 
+	 * @param tempFileId the temporary file's ID
+	 * @return the size if temporary file exists otherwise zero
+	 * @throws UnifyException if an error occurs
+	 */
+	public static long getTemporaryFileSizeInBytes(String tempFileId) throws UnifyException {
+		return temp().getTemporaryFileSizeInBytes(tempFileId);
+	}
+
+	/**
+	 * Creates a temporary file.
+	 * 
+	 * @return the temporary file ID
+	 * @throws UnifyException if an error occurs
+	 */
+	public static String createTemporaryFile() throws UnifyException {
+		return temp().createTemporaryFile();
+	}
+
+	/**
+	 * Writes all of input stream to a new temporary file.
+	 * 
+	 * @param in the input stream
+	 * @return the temporary IO information
+	 * @throws UnifyException if an error occurs
+	 */
+	public static IOInfo writeAllToTemporaryFile(InputStream in) throws UnifyException {
+		return temp().writeAllToTemporaryFile(in);
+	}
+
+	/**
+	 * Writes all of input stream to a new temporary file.
+	 * 
+	 * @param in     the input stream
+	 * @param detect the files first 4 bytes
+	 * @return the temporary IO information
+	 * @throws UnifyException if an error occurs
+	 */
+	public static IOInfo writeAllToTemporaryFile(InputStream in, byte[] detect) throws UnifyException {
+		return temp().writeAllToTemporaryFile(in, detect);
+	}
+
+	/**
+	 * Writes all of input stream to temporary file.
+	 * 
+	 * @param tempFileId the temporary file's ID
+	 * @param in         the input stream
+	 * @return the length read in bytes otherwise zero
+	 * @throws UnifyException if an error occurs
+	 */
+	public static long writeAllToTemporaryFile(String tempFileId, InputStream in) throws UnifyException {
+		return temp().writeAllToTemporaryFile(tempFileId, in);
+	}
+
+	/**
+	 * Reads all of a temporary file to supplied output stream.
+	 * 
+	 * @param tempFileId the temporary file's ID
+	 * @param out        the output stream
+	 * @return the length read in bytes otherwise zero
+	 * @throws UnifyException if an error occurs
+	 */
+	public static long readAllFromTemporaryFile(String tempFileId, OutputStream out) throws UnifyException {
+		return temp().readAllFromTemporaryFile(tempFileId, out);
+	}
+
+	/**
+	 * Delete a temporary file.
+	 * 
+	 * @return true if temporary file exists and deleted otherwise false
+	 * @throws UnifyException if an error occurs
+	 */
+	public static boolean deleteTemporaryFile(String tempFileId) throws UnifyException {
+		return temp().deleteTemporaryFile(tempFileId);
+	}
+	
 	/**
 	 * Detects file attachment type from supplied file attachment information.
 	 * 
@@ -56,7 +160,16 @@ public final class FileUtils {
 	public static FileAttachmentType detectFileAttachmentType(String fileName) {
 		return FileAttachmentType.detectFromFileName(fileName);
 	}
-
+	/**
+	 * Detects file attachment type from supplied file
+	 * 
+	 * @param file the file to check
+	 * @return the file attachment type
+	 */
+	public static FileAttachmentType detectFileAttachmentType(UploadedFile file) {
+		return FileUtils.detectFileAttachmentType(file.getDetect());
+	}
+	
 	/**
 	 * Detects file attachment type from supplied file
 	 * 
@@ -120,6 +233,14 @@ public final class FileUtils {
 		}
 
 		return fileName;
+	}
+	
+	private static TemporaryFileManager temp() throws UnifyException {
+		if (tempFileManager == null) {
+			throw new UnifyOperationException("FileUtils not properly initialized with a temporary file manager.");
+		}
+
+		return tempFileManager;
 	}
 
 }

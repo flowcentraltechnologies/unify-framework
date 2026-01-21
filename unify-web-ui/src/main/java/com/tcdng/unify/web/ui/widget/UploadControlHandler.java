@@ -18,6 +18,7 @@ package com.tcdng.unify.web.ui.widget;
 import com.tcdng.unify.core.UnifyComponent;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.constant.FileAttachmentType;
+import com.tcdng.unify.core.data.UploadedFile;
 
 /**
  * Upload control handler.
@@ -33,10 +34,11 @@ public interface UploadControlHandler extends UnifyComponent {
 	 * @param dataIndex the item data index
 	 * @param type      the attachment type
 	 * @param filename  the file name
-	 * @param fileData  the file data
+	 * @param uploadedFile  the upload file
 	 * @throws UnifyException if an error occurs
 	 */
-	void saveUpload(int dataIndex, FileAttachmentType type, String filename, byte[] fileData) throws UnifyException;
+	void saveUpload(int dataIndex, FileAttachmentType type, String filename, UploadedFile uploadedFile)
+			throws UnifyException;
 
 	/**
 	 * Checks is data item at index has file data
