@@ -30,6 +30,10 @@ public final class RandomUtils {
 
 	private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
+	private static String UPPERLETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+	private static String LOWERLETTERS = "abcdefghijklmnopqrstuvwxyz";
+
 	private static String LETTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 	private static String ALPHANUMERIC = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -37,14 +41,40 @@ public final class RandomUtils {
 	private static String DIGITS = "0123456789";
 
 	private static String HEX = "0123456789abcdef";
+	
+	private static final String SPECIALS = "!@#$%*-_=+";
 
+	//*****************************************************************/
+	// DO NOT DELETE
 	// SecureRandom.getInstanceStrong(); // Avoid in servers/containers
 	// Blocks while waiting for entropy on linux machines. Very hard to debug
+	//*****************************************************************/
 	
 	private RandomUtils() {
 
 	}
 
+	public static String generateRandomWord(int upperLetters, int lowerLetters, int digits, int specials) {
+        if (upperLetters < 0 || lowerLetters < 0  || digits < 0 || specials < 0) {
+            throw new IllegalArgumentException("Counts must be non-negative");
+        }
+        
+        int total = upperLetters + lowerLetters + digits + specials;
+        if (total <= 0) {
+            throw new IllegalArgumentException("Total count must be greater than zero.");
+        }
+       
+        char[] rand = new char[total];
+        int index = 0;
+        index = fillWithRandom(rand, index, UPPERLETTERS, upperLetters);
+        index = fillWithRandom(rand, index, LOWERLETTERS, lowerLetters);
+        index = fillWithRandom(rand, index, DIGITS, digits);
+        fillWithRandom(rand, index, SPECIALS, specials);
+        
+        shuffleRandomly(rand);
+        return new String(rand);		
+	}
+	
 	public static String generateUUID() {
 		return UUID.randomUUID().toString();
 	}
@@ -117,4 +147,24 @@ public final class RandomUtils {
 	    }
 	    
 	    return out;
-	}}
+	}
+
+
+	private static int fillWithRandom(char[] dest, int startIndex, String source, int count) {
+		for (int i = 0; i < count; i++) {
+			dest[startIndex + i] = source.charAt(SECURE_RANDOM.nextInt(source.length()));
+		}
+		
+		return startIndex + count;
+	}
+
+	private static void shuffleRandomly(char[] dest) {
+		for (int i = dest.length - 1; i > 0; i--) {
+			int j = SECURE_RANDOM.nextInt(i + 1);
+			char tmp = dest[i];
+			dest[i] = dest[j];
+			dest[j] = tmp;
+		}
+	}
+	
+}
