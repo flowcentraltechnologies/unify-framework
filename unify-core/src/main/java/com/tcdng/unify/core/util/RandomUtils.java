@@ -42,7 +42,7 @@ public final class RandomUtils {
 
 	private static String HEX = "0123456789abcdef";
 	
-	private static final String SPECIALS = "!@#$%*-_=+";
+	private static final String SPECIALS = "!@#$%";
 
 	//*****************************************************************/
 	// DO NOT DELETE
