@@ -26,7 +26,7 @@ import com.tcdng.unify.core.annotation.Component;
  * @author The Code Department
  * @since 4.1
  */
-@Component(name = "lowercaseprincipal-passwordgenerator", description = "$m{passwordgenerator.lowercaseprincipal}")
+@Component(name = SecurityComponents.LOWERCASE_PASSWORD_GENERATOR, description = "$m{passwordgenerator.lowercaseprincipal}")
 public class LowerCasePrincipalPasswordGenerator extends AbstractUnifyComponent implements PasswordGenerator {
 
     @Override

@@ -25,8 +25,6 @@ import com.tcdng.unify.common.constants.ApplicationCommonConstants;
  */
 public interface ApplicationComponents {
 
-    String APPLICATION_BYTEARRAYCRYPTOGRAPH = "application-bytearraycryptograph";
-
     String APPLICATION_CLASSUNIQUEIDMANAGER = "application-classuniqueidmanager";
     
     String APPLICATION_CLUSTERSERVICE = "application-clusterservice";

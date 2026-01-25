@@ -27,11 +27,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 
 import com.tcdng.unify.core.AbstractUnifyComponent;
 import com.tcdng.unify.core.SessionAttributeProvider;
-import com.tcdng.unify.core.UnifyCoreApplicationAttributeConstants;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.UserSession;
 import com.tcdng.unify.core.annotation.Component;
@@ -41,7 +39,6 @@ import com.tcdng.unify.core.constant.MimeType;
 import com.tcdng.unify.core.data.FactoryMap;
 import com.tcdng.unify.core.data.UploadedFile;
 import com.tcdng.unify.core.util.DataUtils;
-import com.tcdng.unify.core.util.EncodingUtils;
 import com.tcdng.unify.core.util.IOUtils;
 import com.tcdng.unify.core.util.StringUtils;
 import com.tcdng.unify.web.ClientCookie;
@@ -59,7 +56,6 @@ import com.tcdng.unify.web.UnifyWebErrorConstants;
 import com.tcdng.unify.web.UnifyWebPropertyConstants;
 import com.tcdng.unify.web.UnifyWebSessionAttributeConstants;
 import com.tcdng.unify.web.WebApplicationComponents;
-import com.tcdng.unify.web.constant.BundledCatType;
 import com.tcdng.unify.web.constant.RequestParameterConstants;
 import com.tcdng.unify.web.constant.ReservedPageControllerConstants;
 import com.tcdng.unify.web.constant.UnifyWebRequestAttributeConstants;
@@ -97,6 +93,9 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 
 	@Configurable
 	private LongUserSessionManager longUserSessionManager;
+
+	@Configurable
+	private BundledCategoryManager bundledCategoryManager;
 
 	private FactoryMap<String, RequestPathParts> requestPathParts;
 
@@ -166,7 +165,8 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 				HttpUploadController httpUploadController = controllerFinder
 						.findHttpUploadController(requestPathParts.getControllerPathParts());
 				if (httpUploadController != null) {
-					final String resp = httpUploadController.upload(new HttpUploadRequest(httpRequest, httpRequest.getInputStream()));
+					final String resp = httpUploadController
+							.upload(new HttpUploadRequest(httpRequest, httpRequest.getInputStream()));
 					httpResponse.setContentType(MimeType.APPLICATION_JSON.template());
 					httpResponse.getWriter().write(resp);
 					httpResponse.setStatusOk();
@@ -178,7 +178,8 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 				if (httpDownloadController != null) {
 					httpResponse.setContentType(MimeType.APPLICATION_OCTETSTREAM.template());
 					httpResponse.setStatusOk();
-					httpDownloadController.download(new HttpDownloadRequest(httpRequest, httpResponse.getOutputStream()));
+					httpDownloadController
+							.download(new HttpDownloadRequest(httpRequest, httpResponse.getOutputStream()));
 					return;
 				}
 			}
@@ -233,20 +234,8 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 				}
 
 				if (isBundledModeEnabled && controller.isPageController()) {
-					final String bundleCookieName = getApplicationAttribute(String.class,
-							UnifyCoreApplicationAttributeConstants.BUNDLED_CATEGORY_COOKIE_NAME);
-					Optional<ClientCookie> optional = httpRequest.getCookie(bundleCookieName);
-					if (optional.isPresent()) {
-						final BundledCatType bundledCatType = controller.getBundledCategory();
-						final String sessionBundledCategory = EncodingUtils.decodeBase64String(optional.get().getVal());
-						getSessionContext().setBundledCategory(sessionBundledCategory);
-						if (!bundledCatType.isAll() && !bundledCatType.id().equals(sessionBundledCategory)) {
-							throwOperationErrorException(new IllegalArgumentException(
-									"Attempt to access restricted bundle [" + controller.getName()
-											+ "]. controller.getBundledCategory().id() = " + bundledCatType.id()
-											+ ", sessionBundledCategory = " + sessionBundledCategory));
-						}
-					}
+					bundledCategoryManager.ensureSessionCategory(clientRequest, clientResponse,
+							controller.getBundledCategory());
 				}
 			} catch (Exception e) {
 				logError(e);

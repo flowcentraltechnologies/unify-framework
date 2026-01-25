@@ -28,7 +28,7 @@ import com.tcdng.unify.core.annotation.Tooling;
  * @since 4.1
  */
 @Tooling(description = "Default One-way String Cryptograph")
-@Component("oneway-stringcryptograph")
+@Component(SecurityComponents.ONEWAY_STRING_CRYPTOGRAPH)
 public class OneWayStringCryptographImpl extends AbstractOneWayCryptograph implements OneWayStringCryptograph {
 
     @Override
