@@ -96,7 +96,7 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 
 	@Configurable
 	private BundledCategoryManager bundledCategoryManager;
-	
+
 	private FactoryMap<String, RequestPathParts> requestPathParts;
 
 	private boolean isTenantPathEnabled;
@@ -165,7 +165,8 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 				HttpUploadController httpUploadController = controllerFinder
 						.findHttpUploadController(requestPathParts.getControllerPathParts());
 				if (httpUploadController != null) {
-					final String resp = httpUploadController.upload(new HttpUploadRequest(httpRequest, httpRequest.getInputStream()));
+					final String resp = httpUploadController
+							.upload(new HttpUploadRequest(httpRequest, httpRequest.getInputStream()));
 					httpResponse.setContentType(MimeType.APPLICATION_JSON.template());
 					httpResponse.getWriter().write(resp);
 					httpResponse.setStatusOk();
@@ -177,7 +178,8 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 				if (httpDownloadController != null) {
 					httpResponse.setContentType(MimeType.APPLICATION_OCTETSTREAM.template());
 					httpResponse.setStatusOk();
-					httpDownloadController.download(new HttpDownloadRequest(httpRequest, httpResponse.getOutputStream()));
+					httpDownloadController
+							.download(new HttpDownloadRequest(httpRequest, httpResponse.getOutputStream()));
 					return;
 				}
 			}
@@ -232,7 +234,8 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 				}
 
 				if (isBundledModeEnabled && controller.isPageController()) {
-					bundledCategoryManager.ensureSessionCategory(controller.getBundledCategory());
+					bundledCategoryManager.ensureSessionCategory(clientRequest, clientResponse,
+							controller.getBundledCategory());
 				}
 			} catch (Exception e) {
 				logError(e);

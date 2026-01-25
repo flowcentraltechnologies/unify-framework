@@ -18,6 +18,8 @@ package com.tcdng.unify.web.http;
 
 import com.tcdng.unify.core.UnifyComponent;
 import com.tcdng.unify.core.UnifyException;
+import com.tcdng.unify.web.ClientRequest;
+import com.tcdng.unify.web.ClientResponse;
 import com.tcdng.unify.web.constant.BundledCatType;
 
 /**
@@ -39,8 +41,12 @@ public interface BundledCategoryManager extends UnifyComponent {
 	/**
 	 * Ensures current session category matches request.
 	 * 
+	 * @param clientRequest  the client request
+	 * @param clientResponse the client response
+	 * @param category       the category
 	 * @throws UnifyException if an error occurs
 	 */
-	void ensureSessionCategory(BundledCatType category) throws UnifyException;
-	
+	void ensureSessionCategory(ClientRequest clientRequest, ClientResponse clientResponse, BundledCatType category)
+			throws UnifyException;
+
 }
