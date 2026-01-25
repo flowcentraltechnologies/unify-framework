@@ -20,6 +20,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import com.tcdng.unify.core.data.Context;
+import com.tcdng.unify.core.util.StringUtils;
 
 /**
  * User session context.
@@ -143,6 +144,10 @@ public class SessionContext extends Context {
 		this.bundledCategory = bundledCategory;
 	}
 
+	public boolean isWithBundledCategory() {
+		return !StringUtils.isBlank(bundledCategory);
+	}
+	
 	public String getId() {
 		return id;
 	}

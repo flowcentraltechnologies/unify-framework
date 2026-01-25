@@ -30,17 +30,22 @@ import java.util.Set;
 import org.apache.commons.codec.binary.Base64;
 
 import com.tcdng.unify.core.AbstractUnifyComponent;
+import com.tcdng.unify.core.UnifyCoreApplicationAttributeConstants;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.constant.TopicEventType;
 import com.tcdng.unify.core.data.Parameters;
 import com.tcdng.unify.core.util.DataUtils;
+import com.tcdng.unify.core.util.EncodingUtils;
+import com.tcdng.unify.web.ClientCookie;
 import com.tcdng.unify.web.ClientRequest;
 import com.tcdng.unify.web.ClientResponse;
 import com.tcdng.unify.web.ControllerPathParts;
 import com.tcdng.unify.web.TargetPath;
+import com.tcdng.unify.web.constant.BundledCatType;
 import com.tcdng.unify.web.constant.UnifyWebRequestAttributeConstants;
 import com.tcdng.unify.web.data.TopicEvent;
+import com.tcdng.unify.web.http.BundledCategoryManager;
 import com.tcdng.unify.web.ui.constant.PageRequestParameterConstants;
 import com.tcdng.unify.web.ui.widget.Document;
 import com.tcdng.unify.web.ui.widget.Page;
@@ -58,7 +63,8 @@ import com.tcdng.unify.web.ui.widget.data.ValidationInfo;
  */
 @SuppressWarnings("unchecked")
 @Component(WebUIApplicationComponents.APPLICATION_PAGEREQUESTCONTEXTUTIL)
-public class PageRequestContextUtilImpl extends AbstractUnifyComponent implements PageRequestContextUtil {
+public class PageRequestContextUtilImpl extends AbstractUnifyComponent
+		implements PageRequestContextUtil, BundledCategoryManager {
 
     private static final String COMMAND = "COMMAND";
 
@@ -128,7 +134,43 @@ public class PageRequestContextUtilImpl extends AbstractUnifyComponent implement
 
     private static final String CLIENT_REQUEST = "CLIENT_REQUEST";
     
-    @Override
+	@Override
+	public void setSessionCategory(BundledCatType category) throws UnifyException {
+		if (category.isAll()) {
+			getSessionContext().setBundledCategory(null);
+		} else {
+			final String bundleCookieName = getApplicationAttribute(String.class,
+					UnifyCoreApplicationAttributeConstants.BUNDLED_CATEGORY_COOKIE_NAME);
+			getClientResponse().setCookie(bundleCookieName, EncodingUtils.getBase64String(category.id()));
+			getSessionContext().setBundledCategory(category.id());
+		}
+	}
+
+	@Override
+	public void ensureSessionCategory(BundledCatType category) throws UnifyException {
+		if (category.isAll()) {
+			getSessionContext().setBundledCategory(null);
+		} else {
+			final String bundleCookieName = getApplicationAttribute(String.class,
+					UnifyCoreApplicationAttributeConstants.BUNDLED_CATEGORY_COOKIE_NAME);
+			ClientCookie cookie = getClientRequest().getCookie(bundleCookieName);
+			if (cookie != null) {
+				final String id = EncodingUtils.decodeBase64String(cookie.getVal());
+				if (getSessionContext().isWithBundledCategory()) {
+					if (getSessionContext().getBundledCategory().equals(id)) {
+						throwOperationErrorException(
+								new IllegalArgumentException("Attempt to access restricted bundle. category.id() = "
+										+ category.id() + ", sessionBundledCategory = " + id));
+					}
+				} else {
+					getClientResponse().setCookie(bundleCookieName, EncodingUtils.getBase64String(id));
+					getSessionContext().setBundledCategory(id);
+				}
+			}
+		}
+	}
+
+	@Override
     public void setRequestPage(Page page) throws UnifyException {
         setRequestAttribute(REQUEST_PAGE, page);
     }

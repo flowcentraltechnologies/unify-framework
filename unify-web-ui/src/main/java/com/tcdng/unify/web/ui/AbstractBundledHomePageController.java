@@ -15,9 +15,8 @@
  */
 package com.tcdng.unify.web.ui;
 
-import com.tcdng.unify.core.UnifyCoreApplicationAttributeConstants;
 import com.tcdng.unify.core.UnifyException;
-import com.tcdng.unify.core.util.EncodingUtils;
+import com.tcdng.unify.core.annotation.Configurable;
 import com.tcdng.unify.web.UnifyWebPropertyConstants;
 import com.tcdng.unify.web.annotation.Action;
 import com.tcdng.unify.web.annotation.ResultMapping;
@@ -26,6 +25,7 @@ import com.tcdng.unify.web.constant.BundledCatType;
 import com.tcdng.unify.web.constant.ReadOnly;
 import com.tcdng.unify.web.constant.ResetOnWrite;
 import com.tcdng.unify.web.constant.Secured;
+import com.tcdng.unify.web.http.BundledCategoryManager;
 
 /**
  * Convenient abstract base class for bundled home page controllers.
@@ -38,6 +38,9 @@ import com.tcdng.unify.web.constant.Secured;
 				response = { "!forwardresponse pathBinding:$s{targetPath}" }) })
 public abstract class AbstractBundledHomePageController<T extends AbstractBundledHomePageBean>
 		extends AbstractPageController<T> {
+
+	@Configurable
+	private BundledCategoryManager bundledCategoryManager;
 
 	public AbstractBundledHomePageController(Class<T> pageBeanClass) {
 		super(pageBeanClass, Secured.FALSE, ReadOnly.TRUE, ResetOnWrite.FALSE);
@@ -54,7 +57,7 @@ public abstract class AbstractBundledHomePageController<T extends AbstractBundle
 	}
 
 	@Action
-	public final String forwardToBackOffice() throws UnifyException {
+	public final String forwardToBackOffice() throws UnifyException { 
 		return forwardToCategoryPath(BundledCatType.BACKOFFICE);
 	}
 
@@ -64,10 +67,7 @@ public abstract class AbstractBundledHomePageController<T extends AbstractBundle
 				BundledCatType.FRONTOFFICE.equals(category)
 						? UnifyWebPropertyConstants.APPLICATION_BUNDLED_MODE_FRONTOFFICE
 						: UnifyWebPropertyConstants.APPLICATION_BUNDLED_MODE_BACKOFFICE));
-		final String bundleCookieName = getApplicationAttribute(String.class,
-				UnifyCoreApplicationAttributeConstants.BUNDLED_CATEGORY_COOKIE_NAME);
-		getPageRequestContextUtil().getClientResponse().setCookie(bundleCookieName,
-				EncodingUtils.getBase64String(category.id()));
+		bundledCategoryManager.setSessionCategory(category);
 		return "forwardtopath";
 	}
 
