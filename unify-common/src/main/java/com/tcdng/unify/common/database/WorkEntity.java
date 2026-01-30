@@ -15,6 +15,8 @@
  */
 package com.tcdng.unify.common.database;
 
+import java.util.Date;
+
 import com.tcdng.unify.common.constants.ProcessingStatus;
 import com.tcdng.unify.common.constants.WfItemVersionType;
 
@@ -26,31 +28,89 @@ import com.tcdng.unify.common.constants.WfItemVersionType;
  */
 public interface WorkEntity extends Entity {
 
+	/**
+	 * Gets the tenant ID
+	 */
     Long getTenantId();
-    
+
+    /**
+     * Gets the work item processing status
+     */
     ProcessingStatus getProcessingStatus();
-    
+
+    /**
+     * Sets the work item processing status
+     * @param processingStatus the processing status
+     */
     void setProcessingStatus(ProcessingStatus processingStatus);
      
+    /**
+     * Gets the workflow item version type
+     */
     WfItemVersionType getWfItemVersionType();
 
+    /**
+     * Sets the workflow item version type
+     * @param wfItemVersionType the version type to set
+     */
     void setWfItemVersionType(WfItemVersionType wfItemVersionType);
     
+    /**
+     * Gets the workitem branch code
+     */
     String getWorkBranchCode();
 
+    /**
+     * Sets the workitem branch code
+     * @param branchCode the branch code
+     */
     void setWorkBranchCode(String branchCode);
     
+    /**
+     * Gets the workitem department code
+     */
     String getWorkDepartmentCode();
 
+    /**
+     * Sets the workitem department code
+     * @param departmentCode the department code
+     */
     void setWorkDepartmentCode(String departmentCode);
 
+    /**
+     * Gets the workitem description
+     */
     String getWorkflowItemDesc();
 
+    /**
+     * Gets the workitem in-workflow status.
+     */
     boolean isInWorkflow();
 
+    /**
+     * Sets the workitem in-workflow flag.
+     * @param inWorkflow the value to set
+     */
     void setInWorkflow(boolean inWorkflow);
     
+    /**
+     * Gets the workitem original copy ID
+     */
     Long getOriginalCopyId();
-    
+
+    /**
+     * Sets the workitem original copy.
+     * @param originalCopyId the ID to set
+     */
     void setOriginalCopyId(Long originalCopyId);
+    
+    /**
+     * Gets the workitem created by.
+     */
+    String getCreatedBy();
+
+    /**
+     * Gets the work item create date.
+     */
+    Date getCreateDt();
 }
