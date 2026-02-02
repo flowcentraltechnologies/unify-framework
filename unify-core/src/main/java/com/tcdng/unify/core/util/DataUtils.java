@@ -17,7 +17,6 @@ package com.tcdng.unify.core.util;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -948,23 +947,35 @@ public final class DataUtils {
 	/**
 	 * Reads a JSON object into map.
 	 * 
-	 * @param json  the JSON string
+	 * @param json the JSON string
 	 * @throws UnifyException if an error occurs
 	 */
 	public static Map<String, Object> fromJsonObjectString(String json) throws UnifyException {
+		return DataUtils.fromJsonObjectString(null, json);
+	}
+
+	/**
+	 * Reads a JSON object into map.
+	 * 
+	 * @param comp object composition
+	 * @param json the JSON string
+	 * @throws UnifyException if an error occurs
+	 */
+	public static Map<String, Object> fromJsonObjectString(JsonObjectComposition comp, String json)
+			throws UnifyException {
 		JsonValue jsonValue;
 		try {
 			jsonValue = Json.parse(new StringReader(json));
 			if (jsonValue.isString()) {
 				jsonValue = Json.parse(new StringReader(jsonValue.asString()));
 			}
-			
+
 			if (!jsonValue.isObject()) {
 				throw new IllegalArgumentException("Invalid JSON object string");
 			}
 
-			return DataUtils.mapFromJson(jsonValue.asObject());
-		} catch (IOException e) {
+			return DataUtils.mapFromJson(comp, jsonValue.asObject());
+		} catch (Exception e) {
 			throw new UnifyException(UnifyCoreErrorConstants.DATAUTIL_ERROR, e);
 		}
 	}
@@ -1782,19 +1793,23 @@ public final class DataUtils {
 
 		return second != null ? second : BigDecimal.ZERO;
 	}
-	
-	private static Map<String, Object> mapFromJson(JsonObject jsonObject) {
+
+	private static Map<String, Object> mapFromJson(JsonObjectComposition comp, JsonObject jsonObject) throws Exception {
 		Map<String, Object> result = new HashMap<>();
 		for (String name : jsonObject.names()) {
 			JsonValue value = jsonObject.get(name);
-			result.put(name, convertMapType(value));
+			result.put(name, convertMapType(comp != null ? comp.getComposition(name) : null, value));
 		}
 
 		return result;
 	}
 
-	private static Object convertMapType(JsonValue jsonVal) {
+	private static Object convertMapType(JsonFieldComposition fcomp, JsonValue jsonVal) throws Exception {
 		if (jsonVal.isString()) {
+			if (fcomp != null && (fcomp.isDate() || fcomp.isDateTime())) {
+					return ConverterUtils.convert(Date.class, jsonVal.asString());
+			}
+			
 			return jsonVal.asString();
 		} else if (jsonVal.isNumber()) {
 			return jsonVal.toString().indexOf('.') >= 0 ? BigDecimal.valueOf(jsonVal.asDouble())
@@ -1802,18 +1817,18 @@ public final class DataUtils {
 		} else if (jsonVal.isBoolean()) {
 			return jsonVal.asBoolean();
 		} else if (jsonVal.isObject()) {
-			return mapFromJson(jsonVal.asObject());
+			return mapFromJson(fcomp != null ? fcomp.getObjectComposition() : null, jsonVal.asObject());
 		} else if (jsonVal.isArray()) {
-			return convertMapList(jsonVal.asArray());
+			return convertMapList(fcomp, jsonVal.asArray());
 		}
 
 		return null;
 	}
 
-	private static List<Object> convertMapList(JsonArray array) {
+	private static List<Object> convertMapList(JsonFieldComposition fcomp, JsonArray array) throws Exception {
 		List<Object> list = new ArrayList<>();
 		for (JsonValue val : array) {
-			list.add(convertMapType(val));
+			list.add(convertMapType(fcomp, val));
 		}
 		return list;
 	}
