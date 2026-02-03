@@ -236,7 +236,8 @@ z-index:400;}
 .ui-blurbpanel .blsym {font-weight:bold;font-size:1.4em;color:#404040;}
 .ui-blurbpanel .blcode {background-color:#404040;
   color: #ffffff;margin-right:8px; font-size: 0.6em; font-weight: bold; padding: 4px; border-radius:4px;}
-.ui-blurbpanel .blcap {font-weight:bold;font-size: 1.2em;text-align:left;margin-bottom:6px;}
+  .ui-blurbpanel .blcat {font-weight:bold;font-size: 0.8em;text-align:right;}
+  .ui-blurbpanel .blcap {font-weight:bold;font-size: 1.2em;}
 .ui-blurbpanel .bldsc {text-align:left;margin-bottom:4px;color:#808080;}
 
 /** Collapsible panel */

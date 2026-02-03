@@ -5,12 +5,13 @@
 //Blurb panel UPL
 !ui-blurbpanel layout:$d{!ui-horizontal style:$s{width:100%;text-align:center;} widths:$l{22px none}}
 	components:$c{symbol code bodyPanel}
-	styleClassBinding:styleClass
+	styleClassBinding:styleClassBlur
    
 !ui-symbol:symbol styleClass:$e{blsym} binding:icon
 !ui-label:code styleClass:$e{blcode} binding:icon
 
 !ui-panel:bodyPanel layout:$d{!ui-vertical style:$s{width:100%;}} style:$s{width:100%;}
-	components:$c{caption description}
+	components:$c{category caption description}
+!ui-label:category styleClass:$e{blcat} binding:category
 !ui-label:caption styleClass:$e{blcap} binding:caption
 !ui-label:description styleClass:$e{bldsc} binding:description

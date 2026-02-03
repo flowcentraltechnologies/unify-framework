@@ -27,14 +27,17 @@ public class Blurb {
 
 	private String icon;
 
+	private String category;
+
 	private String caption;
 
 	private String path;
 
 	private String description;
-	
-	public Blurb(String icon, String caption, String description, String path) {
+
+	public Blurb(String icon, String category, String caption, String description, String path) {
 		this.icon = icon;
+		this.category = category;
 		this.caption = caption;
 		this.description = description;
 		this.path = path;
@@ -42,6 +45,10 @@ public class Blurb {
 
 	public String getIcon() {
 		return icon;
+	}
+
+	public String getCategory() {
+		return category;
 	}
 
 	public String getCaption() {
@@ -57,9 +64,9 @@ public class Blurb {
 	}
 
 	public String getStyleClass() {
-		return isWithPath()? "popdiv": null;
+		return isWithPath() ? "popdiv" : null;
 	}
-	
+
 	public boolean isWithPath() {
 		return !StringUtils.isBlank(path);
 	}
