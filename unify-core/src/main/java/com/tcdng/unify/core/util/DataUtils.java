@@ -976,6 +976,7 @@ public final class DataUtils {
 
 			return DataUtils.mapFromJson(comp, jsonValue.asObject());
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new UnifyException(UnifyCoreErrorConstants.DATAUTIL_ERROR, e);
 		}
 	}
