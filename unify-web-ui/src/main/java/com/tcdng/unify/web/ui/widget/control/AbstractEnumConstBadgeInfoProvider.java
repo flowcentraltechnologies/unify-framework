@@ -32,7 +32,7 @@ import com.tcdng.unify.web.ui.widget.data.BadgeInfo;
  */
 public abstract class AbstractEnumConstBadgeInfoProvider extends AbstractBadgeInfoProvider {
 
-	private static BadgeInfo BADGEINFO;
+	private BadgeInfo badgeInfo;
 
 	private final String list;
 
@@ -41,21 +41,21 @@ public abstract class AbstractEnumConstBadgeInfoProvider extends AbstractBadgeIn
 	}
 
 	public BadgeInfo provide() throws UnifyException {
-		if (BADGEINFO == null) {
+		if (badgeInfo == null) {
 			synchronized (AbstractEnumConstBadgeInfoProvider.class) {
-				if (BADGEINFO == null) {
+				if (badgeInfo == null) {
 					BadgeInfo.Builder bib = BadgeInfo.newBuilder();
 					Map<String, Listable> map = getListMap(LocaleType.APPLICATION, list);
 					for (Map.Entry<EnumConst, ColorScheme> entry : getColors().entrySet()) {
 						addBadgeInfo(bib, map, entry.getKey(), entry.getValue());
 					}
 
-					BADGEINFO = bib.build();
+					badgeInfo = bib.build();
 				}
 			}
 		}
 
-		return BADGEINFO;
+		return badgeInfo;
 	}
 
 	protected abstract Map<EnumConst, ColorScheme> getColors() throws UnifyException;
