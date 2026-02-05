@@ -1813,6 +1813,11 @@ public final class DataUtils {
 			
 			return jsonVal.asString();
 		} else if (jsonVal.isNumber()) {
+			if (fcomp != null) {
+				return fcomp.isDecimal() ? BigDecimal.valueOf(jsonVal.asDouble())
+						: Long.valueOf(jsonVal.asLong());
+			}
+			
 			return jsonVal.toString().indexOf('.') >= 0 ? BigDecimal.valueOf(jsonVal.asDouble())
 					: Long.valueOf(jsonVal.asLong());
 		} else if (jsonVal.isBoolean()) {
