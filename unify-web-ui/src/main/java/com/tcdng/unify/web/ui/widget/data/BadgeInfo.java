@@ -55,7 +55,7 @@ public class BadgeInfo {
 		return preferredField;
 	}
 
-	public boolean isWithgPrefferedField() {
+	public boolean isWithPrefferedField() {
 		return !StringUtils.isBlank(preferredField);
 	}
     
