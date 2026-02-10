@@ -216,13 +216,6 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 				httpResponse.setHeader(HttpResponseHeaderConstants.ACCESS_CONTROL_MAX_AGE, "600");
 			}
 
-			if (isNoCachingEnabled) {
-				httpResponse.setHeader(HttpResponseHeaderConstants.CACHE_CONTROL,
-						"no-store, no-cache, must-revalidate");
-				httpResponse.setHeader(HttpResponseHeaderConstants.PRAGMA, "no-cache");
-				httpResponse.setDateHeader(HttpResponseHeaderConstants.EXPIRES, 0L);
-			}
-
 			Controller controller = null;
 			try {
 				controller = controllerFinder.findController(requestPathParts.getControllerPathParts());
@@ -284,6 +277,13 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 			}
 
 			if (controller.isPageController()) {
+				if (isNoCachingEnabled) {
+					httpResponse.setHeader(HttpResponseHeaderConstants.CACHE_CONTROL,
+							"no-store, no-cache, must-revalidate");
+					httpResponse.setHeader(HttpResponseHeaderConstants.PRAGMA, "no-cache");
+					httpResponse.setDateHeader(HttpResponseHeaderConstants.EXPIRES, 0L);
+				}
+
 				setRequestAttribute(USER_HINT_LIST,
 						removeSessionAttribute(UnifyWebSessionAttributeConstants.FORWARD_HINTS));
 			}

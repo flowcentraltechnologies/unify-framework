@@ -235,11 +235,13 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 				uiCommandManager.executeCommand(widget, requestCommand.getCommand());
 				String commandResultMapping = getPageRequestContextUtil().getCommandResultMapping();
 				if (StringUtils.isNotBlank(commandResultMapping)) {
+					postCommand(requestCommand.getParentLongName(), requestCommand.getCommand());
 					return commandResultMapping;
 				}
 			}
 		}
 
+		postCommand(requestCommand.getParentLongName(), requestCommand.getCommand());
 		return ResultMappingConstants.COMMAND;
 	}
 
@@ -438,6 +440,17 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 
 	protected List<String> getPathVariables() throws UnifyException {
 		return resolveRequestPage().getPathVariables();
+	}
+	
+	/**
+	 * Executes after a page command.
+	 * 
+	 * @param widgetName the widget name
+	 * @param command    the executed command
+	 * @throws UnifyException if an error occurs
+	 */
+	protected void postCommand(String widgetName, String command) throws UnifyException {
+
 	}
 
 	/**

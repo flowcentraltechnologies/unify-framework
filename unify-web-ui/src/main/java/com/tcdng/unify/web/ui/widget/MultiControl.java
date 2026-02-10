@@ -15,7 +15,7 @@
  */
 package com.tcdng.unify.web.ui.widget;
 
-import java.util.Collection;
+import java.util.List;
 
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.web.ui.widget.AbstractMultiControl.ChildWidgetInfo;
@@ -48,7 +48,7 @@ public interface MultiControl extends Control, WidgetContainer {
     /**
      * Returns all child widget information.
      */
-    Collection<ChildWidgetInfo> getChildWidgetInfos();
+    List<ChildWidgetInfo> getChildWidgetInfos();
 
     /**
      * Returns child widget count.

@@ -236,8 +236,9 @@ z-index:400;}
 .ui-blurbpanel .blsym {font-weight:bold;font-size:1.4em;color:#404040;}
 .ui-blurbpanel .blcode {background-color:#404040;
   color: #ffffff;margin-right:8px; font-size: 0.6em; font-weight: bold; padding: 4px; border-radius:4px;}
-.ui-blurbpanel .blcap {font-weight:bold;font-size: 1.2em;text-align:left;margin-bottom:6px;}
-.ui-blurbpanel .bldsc {text-align:left;margin-bottom:4px;color:#808080;}
+.ui-blurbpanel .blcat {font-weight:bold;font-size: 0.8em;text-align:right;}
+.ui-blurbpanel .blcap {font-weight:bold;font-size: 1.2em;text-align: left;margin-bottom: 4px;}
+.ui-blurbpanel .bldsc {text-align:left;margin-bottom:8px;color:#808080;}
 
 /** Collapsible panel */
 .ui-collapsiblepanel {border: 1px solid #A9A9A9; background: #FFF;}
@@ -496,7 +497,7 @@ z-index:400;}
 .ui-assignmentbox .abbutton:hover:enabled {color: #FFF; background-color: #6080F0;}
 
 /** Badge */
-.ui-badge {display:inline-block !important; padding:2px 8px;}
+.ui-badge {text-align: center;font-weight: bold;display:inline-block !important; padding:2px 8px;}
 .badgesel {background-color: #5970B2; color: #FFF;}
 .badgeselred {background-color: #C03333; color: #FFF;}
 .badgeselblue {background-color: #3378C0; color: #FFF;}

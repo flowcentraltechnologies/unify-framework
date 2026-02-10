@@ -20,6 +20,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URI;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -127,10 +129,14 @@ public abstract class AbstractReportServer extends AbstractUnifyComponent
 				doc = new PDDocument();
 				List<ReportHtml> embeddedHtmls = report.getEmbeddedHtmls();
 				logDebug("Multi-document HTML count is [{0}]...", embeddedHtmls != null ? embeddedHtmls.size() : 0);
+				URL fontUrl = getClass()
+		                .getResource("fonts/DejaVuSans.ttf");
+				URI fontUri = fontUrl.toURI();
 				if (!DataUtils.isBlank(embeddedHtmls)) {
 					for (ReportHtml html : embeddedHtmls) {
 						PdfRendererBuilder builder = new PdfRendererBuilder();
 						builder.withHtmlContent(html.getHtml(), html.getResourceBaseUri());
+						builder.useFont(new File(fontUri), "DejaVu Sans");
 						builder.usePDDocument(doc);
 						builder.useFastMode();
 						PdfBoxRenderer renderer = builder.buildPdfRenderer();
@@ -140,7 +146,7 @@ public abstract class AbstractReportServer extends AbstractUnifyComponent
 				}
 
 				doc.save(outputStream);
-			} catch (IOException e) {
+			} catch (Exception e) {
 				throwOperationErrorException(e);
 			} finally {
 				if (doc != null) {

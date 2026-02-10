@@ -44,7 +44,6 @@ public class BadgeWriter extends AbstractTargetControlWriter {
 		final String code = badge.getStringValue();
 		if (!StringUtils.isBlank(code)) {
 			BadgeItem item = badgeInfo.getItem(code);
-
 			writer.write("<span");
 			final String sel = "badgesel" + item.getColorScheme().code() + (badge.getHandler() != null ? " pick" :"");
 			writeTagId(writer, badge);

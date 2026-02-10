@@ -86,6 +86,23 @@ public abstract class AbstractControlWriter extends AbstractWidgetWriter impleme
         writer.write("</button>");
     }
 
+    protected void writeLink(ResponseWriter writer, String id, String styleClass, String style, String caption)
+            throws UnifyException {
+        writer.write("<a");
+        writeTagId(writer, id);
+        if (styleClass != null) {
+            writeTagStyleClass(writer, styleClass);
+        }
+
+        if (style != null) {
+            writeTagStyle(writer, style);
+        }
+
+        writer.write(">");
+        writer.writeWithHtmlEscape(caption);
+        writer.write("</a>");
+    }
+
 	protected void writeSymbolButton(ResponseWriter writer, String id, String styleClass, String symbol, String hint)
 			throws UnifyException {
 		writer.write("<button type=\"button\"");

@@ -13,18 +13,26 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.tcdng.unify.web.ui.widget.data;
+package com.tcdng.unify.web.ui.widget.control;
+
+import com.tcdng.unify.core.UnifyComponent;
+import com.tcdng.unify.core.UnifyException;
+import com.tcdng.unify.web.ui.widget.data.BadgeInfo;
 
 /**
- * Symbol card.
+ * Badge information provider.
  * 
  * @author The Code Department
  * @since 4.1
  */
-public class SymbolCard extends Blurb {
+public interface BadgeInfoProvider extends UnifyComponent {
 
-	public SymbolCard(String icon, String category, String caption, String description, String path) {
-		super(icon, category, caption, description, path);
-	}
+	/**
+	 * Provides badge information.
+	 * 
+	 * @return the badge information
+	 * @throws UnifyException if an error occurs
+	 */
+	BadgeInfo provide() throws UnifyException;
 
 }

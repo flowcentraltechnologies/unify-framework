@@ -13,18 +13,27 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.tcdng.unify.web.ui.widget.data;
+package com.tcdng.unify.web.ui.widget.control;
+
+import com.tcdng.unify.core.AbstractUnifyComponent;
+import com.tcdng.unify.core.UnifyException;
 
 /**
- * Symbol card.
+ * Convenient abstract base class for badge information provider.
  * 
  * @author The Code Department
  * @since 4.1
  */
-public class SymbolCard extends Blurb {
+public abstract class AbstractBadgeInfoProvider extends AbstractUnifyComponent implements BadgeInfoProvider {
 
-	public SymbolCard(String icon, String category, String caption, String description, String path) {
-		super(icon, category, caption, description, path);
+	@Override
+	protected void onInitialize() throws UnifyException {
+
+	}
+
+	@Override
+	protected void onTerminate() throws UnifyException {
+
 	}
 
 }
