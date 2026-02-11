@@ -241,7 +241,10 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 			}
 		}
 
-		postCommand(requestCommand.getParentLongName(), requestCommand.getCommand());
+		if (requestCommand != null) {
+			postCommand(requestCommand.getParentLongName(), requestCommand.getCommand());
+		}
+		
 		return ResultMappingConstants.COMMAND;
 	}
 
