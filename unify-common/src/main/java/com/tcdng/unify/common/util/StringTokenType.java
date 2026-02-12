@@ -61,6 +61,10 @@ public enum StringTokenType implements EnumConst {
         return PARAM.equals(this) || FORMATTED_PARAM.equals(this) || PROCESS_PARAM.equals(this) || GENERATOR_PARAM.equals(this);
     }
 
+    public boolean isFieldParam() {
+        return PARAM.equals(this);
+    }
+
     public boolean isFormattedParam() {
         return FORMATTED_PARAM.equals(this);
     }
