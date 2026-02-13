@@ -85,6 +85,14 @@ public class TextField extends AbstractFormattedControl {
         return getUplAttribute(String.class, "placeholder");
     }
 
+	public String getFacadeStringValue() throws UnifyException {
+		return getStringValue();
+	}
+
+	public String getFacadeHiddenStringValue() throws UnifyException {
+		return getStringValue();
+	}
+
     public boolean getExtReadOnly() throws UnifyException {
         return getUplAttribute(boolean.class, "extReadOnly");
     }
