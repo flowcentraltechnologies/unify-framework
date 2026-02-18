@@ -52,12 +52,18 @@ public class UploadedFile {
 	
 	private InputStream in;
 	
+	private OutputStream out;
+	
 	public static UploadedFile create(String filename, byte[] in) throws UnifyException {
 		return new UploadedFile(filename, null, null, new ByteArrayInputStream(in), false);
 	}
 	
 	public static UploadedFile create(String filename, InputStream in) throws UnifyException {
 		return new UploadedFile(filename, null, null, in, false);
+	}
+	
+	public static UploadedFile create(String filename) throws UnifyException {
+		return new UploadedFile(filename, null, null, null, true);
 	}
 	
 	public static UploadedFile createUsingTempFile(String filename, Date creationDate, Date modificationDate,
@@ -73,9 +79,13 @@ public class UploadedFile {
 		this.modificationDate = modificationDate;
 		this.usesTempFile = usesTempFile;
 		if (usesTempFile) {
-			final IOInfo ioInfo = FileUtils.writeAllToTemporaryFile(in, detect);
-			this.tempFileId = ioInfo.getFileId();
-			this.fileSize = ioInfo.getFileLength();
+			if (in != null) {
+				final IOInfo ioInfo = FileUtils.writeAllToTemporaryFile(in, detect);
+				this.tempFileId = ioInfo.getFileId();
+				this.fileSize = ioInfo.getFileLength();
+			} else {
+				this.tempFileId = FileUtils.createTemporaryFile();
+			}
 		} else {
 			this.in = in;
 		}
@@ -83,6 +93,14 @@ public class UploadedFile {
 
 	private UploadedFile() {
 		this.usesTempFile = false;
+	}
+	
+	public OutputStream getOut() throws UnifyException {
+		if (usesTempFile && tempFileId != null && out == null) {
+			out = FileUtils.openTemporaryFile(tempFileId);
+		}
+		
+		return out;
 	}
 	
 	public String getFilename() {
@@ -204,6 +222,11 @@ public class UploadedFile {
 
 		if (in != null) {
 			in = null;
+		}
+
+		if (out != null) {
+			IOUtils.close(out);
+			out = null;
 		}
 	}
 
