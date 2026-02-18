@@ -103,6 +103,10 @@ public class UploadedFile {
 		return out;
 	}
 	
+	public void closeOut() throws UnifyException {
+		IOUtils.close(out);
+	}
+	
 	public String getFilename() {
 		return filename;
 	}
