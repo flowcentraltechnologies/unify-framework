@@ -55,15 +55,18 @@ public class UploadedFile {
 	private OutputStream out;
 	
 	public static UploadedFile create(String filename, byte[] in) throws UnifyException {
-		return new UploadedFile(filename, null, null, new ByteArrayInputStream(in), false);
+		final Date now = new Date();
+		return new UploadedFile(filename, now, now, new ByteArrayInputStream(in), false);
 	}
 	
 	public static UploadedFile create(String filename, InputStream in) throws UnifyException {
-		return new UploadedFile(filename, null, null, in, false);
+		final Date now = new Date();
+		return new UploadedFile(filename, now, now, in, false);
 	}
 	
 	public static UploadedFile create(String filename) throws UnifyException {
-		return new UploadedFile(filename, null, null, null, true);
+		final Date now = new Date();
+		return new UploadedFile(filename, now, now, null, true);
 	}
 	
 	public static UploadedFile createUsingTempFile(String filename, Date creationDate, Date modificationDate,
