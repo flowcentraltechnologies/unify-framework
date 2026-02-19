@@ -15,8 +15,6 @@
  */
 package com.tcdng.unify.common.database;
 
-import java.util.Date;
-
 import com.tcdng.unify.common.constants.ProcessingStatus;
 import com.tcdng.unify.common.constants.WfItemVersionType;
 
@@ -26,7 +24,7 @@ import com.tcdng.unify.common.constants.WfItemVersionType;
  * @author The Code Department
  * @since 4.1
  */
-public interface WorkEntity extends Entity {
+public interface WorkEntity extends AuditEntity {
 
 	/**
 	 * Gets the tenant ID
@@ -103,14 +101,5 @@ public interface WorkEntity extends Entity {
      * @param originalCopyId the ID to set
      */
     void setOriginalCopyId(Long originalCopyId);
-    
-    /**
-     * Gets the workitem created by.
-     */
-    String getCreatedBy();
 
-    /**
-     * Gets the work item create date.
-     */
-    Date getCreateDt();
 }
