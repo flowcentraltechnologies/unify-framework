@@ -102,4 +102,10 @@ public interface WorkEntity extends AuditEntity {
      */
     void setOriginalCopyId(Long originalCopyId);
 
+	/**
+	 * Gets preferred workflow name for this item.
+	 * 
+	 * @return the preferred workflow name
+	 */
+	String getPreferredWorkflowName();
 }
