@@ -91,6 +91,11 @@ public class MsSqlDialect extends AbstractSqlDataSourceDialect {
 	}
 
 	@Override
+	public String getCurrentTimestampSQL() {
+		return "SELECT GETDATE()";
+	}
+
+	@Override
 	public String generateUTCTimestampSql() throws UnifyException {
 		return "SELECT GETUTCDATE()";
 	}

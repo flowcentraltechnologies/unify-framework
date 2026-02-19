@@ -103,7 +103,7 @@ public abstract class AbstractSqlDataSource extends AbstractDataSource implement
 		} finally {
 			restoreConnection(conn);
 		}
-		
+
 		return null;
 	}
 
