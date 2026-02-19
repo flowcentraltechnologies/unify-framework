@@ -67,10 +67,9 @@ public class LockManagerImpl extends AbstractUnifyComponent implements LockManag
 	public boolean isLocked(String lockName) throws UnifyException {
 		boolean locked = threadLockInfos.containsKey(lockName);
 		if (!locked && clusterMode) {
-			final Date _now = getNow();
-			final Timestamp now = new Timestamp(_now.getTime());
 			SqlDataSource sqlDataSource = getComponent(SqlDataSource.class,
 					ApplicationCommonConstants.APPLICATION_DATASOURCE);
+			final Timestamp now = sqlDataSource.getNow();
 			Connection connection = (Connection) sqlDataSource.getConnection();
 			PreparedStatement pstmt = null;
 			ResultSet rst = null;
@@ -112,11 +111,10 @@ public class LockManagerImpl extends AbstractUnifyComponent implements LockManag
 				if (threadLockInfo == null) {
 					if (clusterMode) {
 						final String nodeId = getNodeId();
-						final Date _now = getNow();
-						final Timestamp now = new Timestamp(_now.getTime());
-						final Timestamp nextExpiryTime = getNextExpiryTimestamp(_now);
 						SqlDataSource sqlDataSource = getComponent(SqlDataSource.class,
 								ApplicationCommonConstants.APPLICATION_DATASOURCE);
+						final Timestamp now = sqlDataSource.getNow();
+						final Timestamp nextExpiryTime = getNextExpiryTimestamp(now);
 						Connection connection = (Connection) sqlDataSource.getConnection();
 						PreparedStatement pstmt = null;
 						ResultSet rst = null;
@@ -306,7 +304,7 @@ public class LockManagerImpl extends AbstractUnifyComponent implements LockManag
 						synchronized (getSynchObject(threadLockInfo.getLockName())) {
 							PreparedStatement pstmt = null;
 							try {
-								final Timestamp nextExpiryTime = getNextExpiryTimestamp(getNow());
+								final Timestamp nextExpiryTime = getNextExpiryTimestamp(sqlDataSource.getNow());
 								pstmt = connection.prepareStatement(
 										"UPDATE unclusterlock SET expiry_time = ? WHERE unclusterlock_id = ? AND current_owner = ?");
 								pstmt.setTimestamp(1, nextExpiryTime);
@@ -343,11 +341,7 @@ public class LockManagerImpl extends AbstractUnifyComponent implements LockManag
 		return obj;
 	}
 
-	private Date getNow() {
-		return new Date();
-	}
-
-	private Timestamp getNextExpiryTimestamp(Date _now) {
+	private Timestamp getNextExpiryTimestamp(Timestamp _now) {
 		return new Timestamp(_now.getTime() + EXPIRATION_MILLISECONDS);
 	}
 

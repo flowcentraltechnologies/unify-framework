@@ -188,6 +188,11 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 	}
 
 	@Override
+	public String getCurrentTimestampSQL() {
+		return "SELECT CURRENT_TIMESTAMP";
+	}
+
+	@Override
 	public List<SqlEntityInfo> getSqlEntityInfos() throws UnifyException {
 		return sqlEntityInfoFactory.getSqlEntityInfos();
 	}

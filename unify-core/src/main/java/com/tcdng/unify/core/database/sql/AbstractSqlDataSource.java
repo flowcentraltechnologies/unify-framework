@@ -20,6 +20,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -85,6 +87,25 @@ public abstract class AbstractSqlDataSource extends AbstractDataSource implement
     public String getConnectionUrl() {
         return connectionUrl;
     }
+
+    @Override
+	public Timestamp getNow() throws UnifyException {
+		final Connection conn = (Connection) getConnection();
+		try (Statement stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(getDialect().getCurrentTimestampSQL())) {
+			if (rs.next()) {
+				return rs.getTimestamp(1);
+			}
+
+			throw new SQLException("Could not retrieve timestamp from database.");
+		} catch (Exception e) {
+			throwOperationErrorException(e);
+		} finally {
+			restoreConnection(conn);
+		}
+		
+		return null;
+	}
 
     @Override
 	public List<SqlEntityInfo> getSqlEntityInfos() throws UnifyException {
