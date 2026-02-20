@@ -21,6 +21,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -90,11 +91,16 @@ public abstract class AbstractSqlDataSource extends AbstractDataSource implement
 
     @Override
 	public Date getNow() throws UnifyException {
+    	return new Date(getNowAsTimestamp().getTime());
+	}
+
+    @Override
+	public Timestamp getNowAsTimestamp() throws UnifyException {
 		final Connection conn = (Connection) getConnection();
 		try (Statement stmt = conn.createStatement();
 				ResultSet rs = stmt.executeQuery(getDialect().getCurrentTimestampSQL())) {
 			if (rs.next()) {
-				return new Date(rs.getTimestamp(1).getTime());
+				return rs.getTimestamp(1);
 			}
 
 			throw new SQLException("Could not retrieve timestamp from database.");
@@ -107,7 +113,7 @@ public abstract class AbstractSqlDataSource extends AbstractDataSource implement
 		return null;
 	}
 
-    @Override
+	@Override
 	public List<SqlEntityInfo> getSqlEntityInfos() throws UnifyException {
 		return getDialect().getSqlEntityInfos();
 	}

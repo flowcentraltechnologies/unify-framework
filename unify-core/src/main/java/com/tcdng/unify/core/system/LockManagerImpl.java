@@ -69,7 +69,7 @@ public class LockManagerImpl extends AbstractUnifyComponent implements LockManag
 		if (!locked && clusterMode) {
 			SqlDataSource sqlDataSource = getComponent(SqlDataSource.class,
 					ApplicationCommonConstants.APPLICATION_DATASOURCE);
-			final Timestamp now = new java.sql.Timestamp(sqlDataSource.getNow().getTime());
+			final Timestamp now = sqlDataSource.getNowAsTimestamp();
 			Connection connection = (Connection) sqlDataSource.getConnection();
 			PreparedStatement pstmt = null;
 			ResultSet rst = null;
@@ -113,8 +113,7 @@ public class LockManagerImpl extends AbstractUnifyComponent implements LockManag
 						final String nodeId = getNodeId();
 						SqlDataSource sqlDataSource = getComponent(SqlDataSource.class,
 								ApplicationCommonConstants.APPLICATION_DATASOURCE);
-						final Timestamp now = new java.sql.Timestamp(sqlDataSource.getNow().getTime());
-						;
+						final Timestamp now = sqlDataSource.getNowAsTimestamp();
 						final Timestamp nextExpiryTime = getNextExpiryTimestamp(now);
 						Connection connection = (Connection) sqlDataSource.getConnection();
 						PreparedStatement pstmt = null;
@@ -305,7 +304,7 @@ public class LockManagerImpl extends AbstractUnifyComponent implements LockManag
 						synchronized (getSynchObject(threadLockInfo.getLockName())) {
 							PreparedStatement pstmt = null;
 							try {
-								final Timestamp nextExpiryTime = getNextExpiryTimestamp(new java.sql.Timestamp(sqlDataSource.getNow().getTime()));
+								final Timestamp nextExpiryTime = getNextExpiryTimestamp(sqlDataSource.getNowAsTimestamp());
 								pstmt = connection.prepareStatement(
 										"UPDATE unclusterlock SET expiry_time = ? WHERE unclusterlock_id = ? AND current_owner = ?");
 								pstmt.setTimestamp(1, nextExpiryTime);
