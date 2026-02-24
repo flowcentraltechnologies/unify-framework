@@ -91,6 +91,8 @@ public class FontAwesomeSymbolManager extends AbstractFontSymbolManager {
         registerSymbol("chart-area", "f1fe");
         registerSymbol("chart-bar", "f080");
         registerSymbol("chart-pie", "f200");
+        registerSymbol("chat", "f075");
+        registerSymbol("chats", "f086");
         registerSymbol("chevron-circle-down", "f13a");
         registerSymbol("chevron-circle-left", "f137");
         registerSymbol("chevron-circle-right", "f138");
@@ -192,6 +194,7 @@ public class FontAwesomeSymbolManager extends AbstractFontSymbolManager {
         registerSymbol("magic", "f0d0");
         registerSymbol("mail", "f0e0");
         registerSymbol("mail-bulk", "f674");
+        registerSymbol("message", "f27a");
         registerSymbol("minus", "f068");
         registerSymbol("minus-square", "f146");
         registerSymbol("money-bill", "f0d6");
