@@ -19,6 +19,7 @@ import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.annotation.UplAttribute;
 import com.tcdng.unify.core.annotation.UplAttributes;
+import com.tcdng.unify.core.util.StringUtils;
 import com.tcdng.unify.web.ui.DataTransferBlock;
 import com.tcdng.unify.web.ui.widget.AbstractControl;
 
@@ -30,6 +31,8 @@ import com.tcdng.unify.web.ui.widget.AbstractControl;
  */
 @Component("ui-textarea")
 @UplAttributes({
+	    @UplAttribute(name = "placeholder", type = String.class),
+	    @UplAttribute(name = "placeholderBinding", type = String.class),
 		@UplAttribute(name = "columns", type = int.class),
 		@UplAttribute(name = "rows", type = int.class),
         @UplAttribute(name = "minLen", type = int.class),
@@ -49,6 +52,15 @@ public class TextArea extends AbstractControl {
 
 		super.populate(transferBlock);
 	}
+
+    public String getPlaceholder() throws UnifyException {
+    	final String placeholderBinding = getUplAttribute(String.class, "placeholderBinding");
+    	if (!StringUtils.isBlank(placeholderBinding)) {
+    		return getStringValue(placeholderBinding);
+    	}
+    	
+        return getUplAttribute(String.class, "placeholder");
+    }
 
     public int getColumns() throws UnifyException {
         return getUplAttribute(int.class, "columns");
