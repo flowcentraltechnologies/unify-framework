@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.tcdng.unify.web.ui.widget.writer.control;
+package com.tcdng.unify.web.ui.widget.writer;
 
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
@@ -22,7 +22,6 @@ import com.tcdng.unify.core.annotation.Writes;
 import com.tcdng.unify.web.ui.widget.ResponseWriter;
 import com.tcdng.unify.web.ui.widget.Widget;
 import com.tcdng.unify.web.ui.widget.control.Bell;
-import com.tcdng.unify.web.ui.widget.writer.AbstractWidgetWriter;
 
 /**
  * Bell writer.

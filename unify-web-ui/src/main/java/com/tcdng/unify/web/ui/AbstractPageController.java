@@ -428,11 +428,11 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 
 			writer.writeTo(response.getWriter());
 		} finally {
-			// Remove closed pages from session
-			getSessionContext().removeAttributes(pageRequestContextUtil.getClosedPagePaths());
-
 			// Restore writer
 			getResponseWriterPool().restore(writer);
+			
+			// Remove closed pages from session
+			getSessionContext().removeAttributes(pageRequestContextUtil.getClosedPagePaths());
 		}
 	}
 

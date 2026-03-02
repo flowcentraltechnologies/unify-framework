@@ -5817,7 +5817,7 @@ ux.onSpecialKeyHdl= function(uEv) {
 	} else {
 		if (uEv.uKeyCode == uEv.evp.uSpecialKeyCode) {
 			if (UNIFY_KEY_ENTER == uEv.uKeyCode
-				&& (uEv.uShortKeyCode & UNIFY_SHIFT > 0)) {
+				&& (uEv.uShortKeyCode & (UNIFY_SHIFT | UNIFY_CTRL) > 0)) {
 				return;
 			}
 			
