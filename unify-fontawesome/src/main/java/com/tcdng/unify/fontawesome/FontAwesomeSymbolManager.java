@@ -127,6 +127,7 @@ public class FontAwesomeSymbolManager extends AbstractFontSymbolManager {
         registerSymbol("cross", "f00d");
         registerSymbol("cubes", "f1b3");
         registerSymbol("cut", "f0c4");
+        registerSymbol("dashboard", "f201");
         registerSymbol("database", "f1c0");
         registerSymbol("desktop", "f108");
         registerSymbol("diff", "f53e");
