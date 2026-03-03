@@ -59,7 +59,7 @@ public class DocumentWriter extends AbstractPageWriter {
 	@Configurable
 	private BasicDocumentResources resources;
 
-	@Override 
+	@Override
 	protected void doWriteStructureAndContent(ResponseWriter writer, Widget widget) throws UnifyException {
 		BasicDocument document = (BasicDocument) widget;
 		writer.write("<!DOCTYPE html>");
@@ -116,7 +116,7 @@ public class DocumentWriter extends AbstractPageWriter {
 			if (!bundledCatType.isAll() && !prefixCatType.isAll() && !bundledCatType.equals(prefixCatType)) {
 				continue;
 			}
-			
+
 			styleSheet = BundledCatType.stripPrefix(styleSheet);
 			if (!excludeStyleSheet.contains(styleSheet)) {
 				WriterUtils.writeStyleSheet(writer, styleSheet);
@@ -146,7 +146,7 @@ public class DocumentWriter extends AbstractPageWriter {
 			if (!bundledCatType.isAll() && !prefixCatType.isAll() && !bundledCatType.equals(prefixCatType)) {
 				continue;
 			}
-			
+
 			script = BundledCatType.stripPrefix(script);
 			if (!excludeScripts.contains(script)) {
 				WriterUtils.writeJavascript(writer, script, nonce);
@@ -222,10 +222,9 @@ public class DocumentWriter extends AbstractPageWriter {
 		// Set document properties
 		ControllerPathParts controllerPathParts = pathInfoRepository.getControllerPathParts(document);
 		if (StringUtils.isBlank(getRequestClientPageId())) {
-			setRequestClientPageId(
-					RandomUtils.generateRandomAlphanumeric(UnifyWebRequestAttributeConstants.PID_SIZE));
+			setRequestClientPageId(RandomUtils.generateRandomAlphanumeric(UnifyWebRequestAttributeConstants.PID_SIZE));
 		}
-		
+
 		writer.write("ux.setupDocument(\"").write(controllerPathParts.getControllerPathId()).write("\", \"")
 				.write(document.getPopupBaseId()).write("\", \"").write(document.getPopupWinId()).write("\", \"")
 				.write(document.getPopupSysId()).write("\", \"").write(document.getLatencyPanelId()).write("\", \"")
@@ -251,8 +250,10 @@ public class DocumentWriter extends AbstractPageWriter {
 		writeBehaviour(writer, document.getContentPanel());
 		writeBehaviour(writer, document.getFooterPanel());
 		WebStringWriter scriptLsw = writer.discardSecondary();
-		writer.write("var behaviorPrm = ").write(scriptLsw).write(";");
-		writer.write("ux.perform(behaviorPrm);");
+		if (!scriptLsw.isEmpty()) {
+			writer.write("var behaviorPrm = ").write(scriptLsw).write(";");
+			writer.write("ux.perform(behaviorPrm);");
+		}
 
 		// Write page aliases
 		writer.write("var aliasPrms = {");
@@ -315,11 +316,11 @@ public class DocumentWriter extends AbstractPageWriter {
 				fsb.append("'FontSymbolMngr").append(i).append('\'');
 				i++;
 			}
-			
+
 			if (appendSym) {
 				fsb.append(',');
 			}
-			
+
 			fsb.append(document.getFontFamily());
 			fsb.append(";padding:0px !important;}");
 			writer.write(fsb);

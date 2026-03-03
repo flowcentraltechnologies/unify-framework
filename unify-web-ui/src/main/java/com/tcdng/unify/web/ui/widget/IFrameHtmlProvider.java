@@ -29,12 +29,10 @@ public interface IFrameHtmlProvider extends UnifyComponent {
 	/**
 	 * Generates I-frame in-line HTML.
 	 * 
-	 * @param writer     the response writer
 	 * @param styleSheet the style sheets to use
 	 * @param script     the scripts to use
 	 * @param font       the fonts to use
 	 * @throws UnifyException if an error occurs
 	 */
-	void generateHtml(ResponseWriter writer, String[] styleSheet, String[] script, String[] font)
-			throws UnifyException;
+	String generateHtml(String[] styleSheet, String[] script, String[] font) throws UnifyException;
 }

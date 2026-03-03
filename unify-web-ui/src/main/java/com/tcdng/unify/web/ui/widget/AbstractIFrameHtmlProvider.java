@@ -20,6 +20,8 @@ import java.util.Set;
 
 import com.tcdng.unify.core.AbstractUnifyComponent;
 import com.tcdng.unify.core.UnifyException;
+import com.tcdng.unify.core.annotation.Configurable;
+import com.tcdng.unify.web.ui.PageRequestContextUtil;
 import com.tcdng.unify.web.ui.util.WriterUtils;
 
 /**
@@ -30,51 +32,66 @@ import com.tcdng.unify.web.ui.util.WriterUtils;
  */
 public abstract class AbstractIFrameHtmlProvider extends AbstractUnifyComponent implements IFrameHtmlProvider {
 
+	@Configurable
+	private ResponseWriterPool responseWriterPool;
+
+	@Configurable
+	private PageRequestContextUtil rcUtils;
+	
 	@Override
-	public void generateHtml(ResponseWriter writer, String[] styleSheets, String[] scripts, String[] font) throws UnifyException {
-		writer.write("<!DOCTYPE html>");
-		writer.write("<html>");
-		
-		// Head
-		writer.write("<head>");
-		
-		// Style sheet links
-		WriterUtils.writeStyleSheet(writer, "$t{css/unify-web.css}");
-		Set<String> excludeStyleSheet = new HashSet<String>();
-		if (styleSheets != null) {
-			for (String styleSheet : styleSheets) {
-				if (!excludeStyleSheet.contains(styleSheet)) {
-					WriterUtils.writeStyleSheet(writer, styleSheet);
-					excludeStyleSheet.add(styleSheet); // Avoid duplication
+	public String generateHtml(String[] styleSheets, String[] scripts, String[] font) throws UnifyException {
+		ResponseWriter writer = responseWriterPool.getResponseWriter(rcUtils.getClientRequest());
+		final boolean oldDirectFuncCall = writer.setDirectFuncCall(true);
+		try {
+			writer.write("<!DOCTYPE html>");
+			writer.write("<html>");
+			
+			// Head
+			writer.write("<head>");
+			
+			// Style sheet links
+			WriterUtils.writeStyleSheet(writer, "$t{css/unify-web.css}");
+			Set<String> excludeStyleSheet = new HashSet<String>();
+			if (styleSheets != null) {
+				for (String styleSheet : styleSheets) {
+					if (!excludeStyleSheet.contains(styleSheet)) {
+						WriterUtils.writeStyleSheet(writer, styleSheet);
+						excludeStyleSheet.add(styleSheet); // Avoid duplication
+					}
 				}
 			}
-		}
-		
-		// Write javascript sources
-		WriterUtils.writeJavascript(writer, "web/js/unify-web.js", null);
-		Set<String> excludeScripts = new HashSet<String>();
-		if (scripts != null) {
-			for (String script : scripts) {
-				if (!excludeScripts.contains(script)) {
-					WriterUtils.writeJavascript(writer, script, null);
-					excludeScripts.add(script); // Avoid duplication
+			
+			// Write javascript sources
+			WriterUtils.writeJavascript(writer, "web/js/unify-web.js", null);
+			Set<String> excludeScripts = new HashSet<String>();
+			if (scripts != null) {
+				for (String script : scripts) {
+					if (!excludeScripts.contains(script)) {
+						WriterUtils.writeJavascript(writer, script, null);
+						excludeScripts.add(script); // Avoid duplication
+					}
 				}
 			}
+
+			writer.write("</head>");
+
+			// Body
+			writer.write("<body>");
+			writeHtml(writer);
+			writer.write("</body>");
+
+			// Scripts
+			writer.write("<script>");
+			writeScript(writer);
+			writer.write("</script>");
+
+			writer.write("</html>");
+			
+			return writer.toString();
+		} finally {
+			writer.setDirectFuncCall(oldDirectFuncCall);
+			responseWriterPool.restore(writer);
 		}
-
-		writer.write("</head>");
-
-		// Body
-		writer.write("<body>");
-		writeHtml(writer);
-		writer.write("</body>");
-
-		// Scripts
-		writer.write("<script>");
-		writeScript(writer);
-		writer.write("</script>");
-
-		writer.write("</html>");
 	}
 
 	@Override

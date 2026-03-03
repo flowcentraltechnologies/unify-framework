@@ -17,12 +17,10 @@ package com.tcdng.unify.web.ui.widget.writer;
 
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
-import com.tcdng.unify.core.annotation.Configurable;
 import com.tcdng.unify.core.annotation.Writes;
 import com.tcdng.unify.web.ui.widget.IFrameHtmlProvider;
 import com.tcdng.unify.web.ui.widget.IFrameWidget;
 import com.tcdng.unify.web.ui.widget.ResponseWriter;
-import com.tcdng.unify.web.ui.widget.ResponseWriterPool;
 import com.tcdng.unify.web.ui.widget.Widget;
 
 /**
@@ -35,9 +33,6 @@ import com.tcdng.unify.web.ui.widget.Widget;
 @Component("iframe-writer")
 public class IFrameWriter extends AbstractWidgetWriter {
 
-	@Configurable
-	private ResponseWriterPool responseWriterPool;
-
 	@Override
 	protected void doWriteStructureAndContent(ResponseWriter writer, Widget widget) throws UnifyException {
 		final IFrameWidget iFrameWidget = (IFrameWidget) widget;
@@ -45,23 +40,16 @@ public class IFrameWriter extends AbstractWidgetWriter {
 		writeTagAttributes(writer, iFrameWidget);
 		writer.write(">");
 
-		ResponseWriter iwriter = responseWriterPool.getResponseWriter(getRequestContextUtil().getClientRequest());
-		try {
-			final String[] styleSheet = iFrameWidget.getStyleSheet();
-			final String[] script = iFrameWidget.getScript();
-			final String[] font = iFrameWidget.getFont();
+		writer.write("<iframe style=\"width:100%;height:100%;border:none;\" srcdoc=\"");
+		final String[] styleSheet = iFrameWidget.getStyleSheet();
+		final String[] script = iFrameWidget.getScript();
+		final String[] font = iFrameWidget.getFont();
+		final String html = getComponent(IFrameHtmlProvider.class, iFrameWidget.getHtmlProvider())
+				.generateHtml(styleSheet, script, font);
+		writer.writeWithHtmlEscape(html);
+		writer.write("\">");
 
-			getComponent(IFrameHtmlProvider.class, iFrameWidget.getHtmlProvider())
-					.generateHtml(iwriter, styleSheet, script, font);
-
-			writer.write("<iframe style=\"width:100%;height:100%;overflow:scroll;\" srcdoc=\"");
-			writer.writeWithHtmlEscape(iwriter.toString());
-			writer.write("\">");
-			
-			writer.write("</iframe>");
-		} finally {
-			responseWriterPool.restore(iwriter);
-		}
+		writer.write("</iframe>");
 
 		writer.write("</div>");
 	}

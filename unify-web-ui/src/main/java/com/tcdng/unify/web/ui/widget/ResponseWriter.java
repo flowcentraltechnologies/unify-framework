@@ -42,6 +42,23 @@ import com.tcdng.unify.core.util.json.JsonWriter;
 public interface ResponseWriter extends HtmlTextWriter { 
 
 	/**
+	 * Sets this response writer direct function call mode.
+	 * 
+	 * @param directFuncCall the direct function call mode
+	 * @return old direct function call mode
+	 * @throws UnifyException if an error occurs
+	 */
+	boolean setDirectFuncCall(boolean directFuncCall) throws UnifyException;
+
+	/**
+	 * Checks if response writer is in direct function call mode
+	 * 
+	 * @return true if direct function call otherwise false
+	 * @throws UnifyException if an error occurs
+	 */
+	boolean isDirectFuncCall() throws UnifyException;
+
+	/**
 	 * Sets this response writer auto-stretch mode.
 	 * 
 	 * @param autoStretch the auto-strect mode
