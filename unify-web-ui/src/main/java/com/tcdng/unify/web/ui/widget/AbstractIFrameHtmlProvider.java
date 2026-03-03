@@ -41,8 +41,8 @@ public abstract class AbstractIFrameHtmlProvider extends AbstractUnifyComponent 
 	@Override
 	public String generateHtml(String[] styleSheets, String[] scripts, String[] font) throws UnifyException {
 		ResponseWriter writer = responseWriterPool.getResponseWriter(rcUtils.getClientRequest());
-		final boolean oldDirectFuncCall = writer.setDirectFuncCall(true);
 		try {
+			writer.setDirectFuncCall(true);
 			writer.write("<!DOCTYPE html>");
 			writer.write("<html>");
 			
@@ -89,7 +89,6 @@ public abstract class AbstractIFrameHtmlProvider extends AbstractUnifyComponent 
 			
 			return writer.toString();
 		} finally {
-			writer.setDirectFuncCall(oldDirectFuncCall);
 			responseWriterPool.restore(writer);
 		}
 	}

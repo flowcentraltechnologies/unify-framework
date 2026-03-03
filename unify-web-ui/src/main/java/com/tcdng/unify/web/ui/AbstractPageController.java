@@ -913,7 +913,7 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 		return getPageRequestContextUtil().getRequestPage().getWidgetByLongName(clazz, longName);
 	}
 
-	protected <U> U getPageWidgetByShortName(Class<U> clazz, String shortName) throws UnifyException {
+	public <U> U getPageWidgetByShortName(Class<U> clazz, String shortName) throws UnifyException {
 		return getPageRequestContextUtil().getRequestPage().getWidgetByShortName(clazz, shortName);
 	}
 
