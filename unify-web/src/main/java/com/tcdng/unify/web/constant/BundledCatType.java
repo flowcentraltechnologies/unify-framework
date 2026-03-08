@@ -24,9 +24,11 @@ package com.tcdng.unify.web.constant;
  */
 public enum BundledCatType {
 
-	BACKOFFICE("backoffice-category"),
-	FRONTOFFICE("frontoffice-category"),
-	ALL("all-category");
+	WRAPPER("wrapper-category"),
+	CORE("core-category");
+	
+	public static final String CORE_PREFIX = "co:";
+	public static final String WRAPPER_PREFIX = "wo:";
 
 	private final String id;
 	
@@ -38,44 +40,40 @@ public enum BundledCatType {
 		return id;
 	}
 
-	public boolean isBackOffice() {
-		return BACKOFFICE.equals(this);
+	public boolean isCore() {
+		return CORE.equals(this);
 	}
 
-	public boolean isFrontOffice() {
-		return FRONTOFFICE.equals(this);
-	}
-	
-	public boolean isAll() {
-		return ALL.equals(this);
+	public boolean isWrapper() {
+		return WRAPPER.equals(this);
 	}
 	
 	public boolean isWithPrefix() {
-		return BACKOFFICE.equals(this) || FRONTOFFICE.equals(this);
+		return CORE.equals(this) || WRAPPER.equals(this);
 	}
 	
 	public static BundledCatType fromPrefix(String val) {
 		if (val != null) {
-			if (val.startsWith("bo:")) {
-				return BACKOFFICE;
+			if (val.startsWith(CORE_PREFIX)) {
+				return CORE;
 			}
 			
-			if (val.startsWith("fo:")) {
-				return FRONTOFFICE;
+			if (val.startsWith(WRAPPER_PREFIX)) {
+				return WRAPPER;
 			}
 		}
 		
-		return ALL;
+		return null;
 	}
 	
 	public static String stripPrefix(String val) {
 		if (val != null) {
-			if (val.startsWith("bo:")) {
-				return val.substring("bo:".length());
+			if (val.startsWith(CORE_PREFIX)) {
+				return val.substring(CORE_PREFIX.length());
 			}
 			
-			if (val.startsWith("fo:")) {
-				return val.substring("fo:".length());
+			if (val.startsWith(WRAPPER_PREFIX)) {
+				return val.substring(WRAPPER_PREFIX.length());
 			}
 		}
 		

@@ -113,7 +113,7 @@ public class DocumentWriter extends AbstractPageWriter {
 		final BundledCatType bundledCatType = document.getBundledCategory();
 		for (String styleSheet : getPageManager().getDocumentStyleSheets()) {
 			final BundledCatType prefixCatType = BundledCatType.fromPrefix(styleSheet);
-			if (!bundledCatType.isAll() && !prefixCatType.isAll() && !bundledCatType.equals(prefixCatType)) {
+			if (!bundledCatType.equals(prefixCatType)) {
 				continue;
 			}
 
@@ -143,7 +143,7 @@ public class DocumentWriter extends AbstractPageWriter {
 
 		for (String script : getPageManager().getDocumentsScripts()) {
 			final BundledCatType prefixCatType = BundledCatType.fromPrefix(script);
-			if (!bundledCatType.isAll() && !prefixCatType.isAll() && !bundledCatType.equals(prefixCatType)) {
+			if (!bundledCatType.equals(prefixCatType)) {
 				continue;
 			}
 

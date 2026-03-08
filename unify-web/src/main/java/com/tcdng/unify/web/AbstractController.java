@@ -67,7 +67,7 @@ public abstract class AbstractController extends AbstractUnifyComponent implemen
 
 	@Override
 	public BundledCatType getBundledCategory() throws UnifyException {
-		return BundledCatType.BACKOFFICE;
+		return BundledCatType.CORE;
 	}
 
     @Override

@@ -56,6 +56,7 @@ import com.tcdng.unify.web.UnifyWebErrorConstants;
 import com.tcdng.unify.web.UnifyWebPropertyConstants;
 import com.tcdng.unify.web.UnifyWebSessionAttributeConstants;
 import com.tcdng.unify.web.WebApplicationComponents;
+import com.tcdng.unify.web.constant.BundledCatType;
 import com.tcdng.unify.web.constant.RequestParameterConstants;
 import com.tcdng.unify.web.constant.ReservedPageControllerConstants;
 import com.tcdng.unify.web.constant.UnifyWebRequestAttributeConstants;
@@ -93,9 +94,6 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 
 	@Configurable
 	private LongUserSessionManager longUserSessionManager;
-
-	@Configurable
-	private BundledCategoryManager bundledCategoryManager;
 
 	private FactoryMap<String, RequestPathParts> requestPathParts;
 
@@ -227,8 +225,11 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 				}
 
 				if (isBundledModeEnabled && controller.isPageController()) {
-					bundledCategoryManager.ensureSessionCategory(clientRequest, clientResponse,
-							controller.getBundledCategory());
+					BundledCatType bundledCatType = controller.getBundledCategory();
+					if (bundledCatType != null && bundledCatType.isCore()) {
+						throwOperationErrorException(
+								new IllegalArgumentException("Attempt to access restricted bundle."));
+					}
 				}
 			} catch (Exception e) {
 				logError(e);

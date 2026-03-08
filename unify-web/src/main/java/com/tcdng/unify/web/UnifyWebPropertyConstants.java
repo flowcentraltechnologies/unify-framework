@@ -59,7 +59,4 @@ public interface UnifyWebPropertyConstants {
 
     String APPLICATION_BUNDLED_MODE_ENABLED = "application.web.bundledmode.enabled";
 
-    String APPLICATION_BUNDLED_MODE_FRONTOFFICE = "application.web.bundledmode.frontoffice";
-
-    String APPLICATION_BUNDLED_MODE_BACKOFFICE = "application.web.bundledmode.backoffice";
 }
