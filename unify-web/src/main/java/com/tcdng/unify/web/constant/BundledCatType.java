@@ -25,7 +25,8 @@ package com.tcdng.unify.web.constant;
 public enum BundledCatType {
 
 	WRAPPER("wrapper-category"),
-	CORE("core-category");
+	CORE("core-category"),
+	ALL("all-category");
 	
 	public static final String CORE_PREFIX = "co:";
 	public static final String WRAPPER_PREFIX = "wo:";
