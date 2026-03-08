@@ -194,17 +194,21 @@ public class TextFieldWriter extends AbstractControlWriter {
 		}
 
 		String placeholder = textField.getPlaceholder();
-		if (!StringUtils.isBlank(placeholder))	{
+		if (!StringUtils.isBlank(placeholder)) {
 			writer.write(" placeholder=\"");
 			writer.writeWithHtmlEscape(resolveSessionMessage(placeholder));
 			writer.write("\"");
-		}		
+		}
 
 		writer.write(" spellcheck=\"").write(textField.isSpellCheck()).write("\"");
 		if (textField.isAutoComplete()) {
 			writer.write(" autocomplete=\"on\"");
 		} else {
-			writer.write(" autocomplete=\"nef\"");
+			if (type.equals("password")) {
+				writer.write(" autocomplete=\"new-password\"");
+			} else {
+				writer.write(" autocomplete=\"off\"");
+			}
 		}
 
 		if (textField.getTabIndex() >= 0) {
