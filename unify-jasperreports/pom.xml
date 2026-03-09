@@ -70,7 +70,7 @@
 		<dependency>
 			<groupId>net.sf.jasperreports</groupId>
 			<artifactId>jasperreports</artifactId>
-			<version>6.8.0</version>
+			<version>7.0.4</version>
 			<exclusions>
 				<exclusion>
 					<groupId>com.lowagie</groupId>
