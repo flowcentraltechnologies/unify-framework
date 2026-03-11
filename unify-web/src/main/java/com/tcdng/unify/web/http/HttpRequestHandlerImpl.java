@@ -30,6 +30,7 @@ import java.util.Map;
 
 import com.tcdng.unify.core.AbstractUnifyComponent;
 import com.tcdng.unify.core.SessionAttributeProvider;
+import com.tcdng.unify.core.UnifyCoreErrorConstants;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.UserSession;
 import com.tcdng.unify.core.annotation.Component;
@@ -325,9 +326,17 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 				}
 			}
 		}
-
+		
 		if (longUserSessionManager != null) {
-			longUserSessionManager.performAutoLogin(httpRequest, httpResponse, userSession);
+			try {
+				longUserSessionManager.performAutoLogin(httpRequest, httpResponse, userSession);
+			} catch (UnifyException e) {
+				if (UnifyCoreErrorConstants.IOUTIL_STREAM_RW_ERROR.equals(e.getErrorCode())) {
+					userSession.setServiceUnavailable(true);
+				} else {
+					throw e;
+				}
+			}
 		}
 
 		userSession.setUserSessionManager(httpModule.getUserSessionManager());

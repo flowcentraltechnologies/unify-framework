@@ -31,6 +31,8 @@ public interface UnifyWebPropertyConstants {
 
     String APPLICATION_500 = "application.web.500";
 
+    String APPLICATION_503 = "application.web.503";
+
     String APPLICATION_COMMON_UTILITIES = "application.web.common";
 
     String APPLICATION_THEME = "application.web.theme";

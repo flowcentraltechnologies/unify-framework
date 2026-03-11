@@ -54,8 +54,8 @@ public class RequestContextManagerImpl extends AbstractUnifyComponent implements
     @Override
 	public void loadRequestContext(UserSession userSession, String requestPath, String requestTarget)
 			throws UnifyException {
-		requestContextThreadLocal.get().setRequestContext(
-				new RequestContext(requestPath != null ? requestPath : "", requestTarget, userSession.getSessionContext()));
+		requestContextThreadLocal.get().setRequestContext(new RequestContext(requestPath != null ? requestPath : "",
+				requestTarget, userSession != null ? userSession.getSessionContext() : null));
 	}
 
     @Override
@@ -79,6 +79,11 @@ public class RequestContextManagerImpl extends AbstractUnifyComponent implements
     }
 
     @Override
+	public <T> T getContainerSetting(Class<T> clazz, String name) throws UnifyException {
+		return super.getContainerSetting(clazz, name);
+	}
+
+	@Override
     protected void onInitialize() throws UnifyException {
         applicationLocale = getApplicationLocale();
         applicationTimeZone = getApplicationTimeZone();

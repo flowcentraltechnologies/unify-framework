@@ -907,6 +907,10 @@ public class UnifyContainer {
 		return unifySettings.get(name);
 	}
 
+	public <T> T getSetting(Class<T> dataType, String name) throws UnifyException {
+		return DataUtils.convert(dataType, unifySettings.get(name));
+	}
+
 	public String getWorkingPath() {
 		return unifyContainerEnvironment.getWorkingPath();
 	}

@@ -34,5 +34,4 @@ public interface HttpUserSession extends UserSession {
     boolean isUserLoggedIn();
 
 	boolean isAuthorized();
-
 }
