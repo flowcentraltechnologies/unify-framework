@@ -80,7 +80,7 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 	private static final int BUFFER_SIZE = 4096;
 
 	private static final String USER_HINT_LIST = "USER_HINT_LIST";
-	
+
 	@Configurable
 	private ControllerFinder controllerFinder;
 
@@ -138,7 +138,8 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 							ReservedPageControllerConstants.DEFAULT_APPLICATION_HOME);
 				}
 
-				return new RequestPathParts(pathInfoRepository.getControllerPathParts(controllerPath), tenantPath);
+				return new RequestPathParts(pathInfoRepository.getControllerPathParts(controllerPath), tenantPath,
+						params.length > 0 ? (String) params[0] : null);
 			}
 
 		};
@@ -147,7 +148,7 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 	@Override
 	public RequestPathParts resolveRequestPath(HttpRequest httpRequest) throws UnifyException {
 		final String resolvedPath = httpRequest.getPathInfo();
-		return requestPathParts.get(resolvedPath == null ? "" : resolvedPath);
+		return requestPathParts.get(resolvedPath == null ? "" : resolvedPath, httpRequest.getRequestTarget());
 	}
 
 	@Override
@@ -326,7 +327,7 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 				}
 			}
 		}
-		
+
 		if (longUserSessionManager != null) {
 			try {
 				longUserSessionManager.performAutoLogin(httpRequest, httpResponse, userSession);
