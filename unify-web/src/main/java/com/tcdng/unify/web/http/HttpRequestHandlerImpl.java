@@ -80,7 +80,7 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 	private static final int BUFFER_SIZE = 4096;
 
 	private static final String USER_HINT_LIST = "USER_HINT_LIST";
-
+	
 	@Configurable
 	private ControllerFinder controllerFinder;
 

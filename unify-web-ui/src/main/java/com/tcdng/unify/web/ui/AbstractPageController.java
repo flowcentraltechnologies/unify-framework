@@ -50,7 +50,9 @@ import com.tcdng.unify.web.constant.ResetOnWrite;
 import com.tcdng.unify.web.constant.ResultMappingConstants;
 import com.tcdng.unify.web.constant.Secured;
 import com.tcdng.unify.web.constant.UnifyWebRequestAttributeConstants;
+import com.tcdng.unify.web.data.MenuDetectInfo;
 import com.tcdng.unify.web.http.LongUserSessionManager;
+import com.tcdng.unify.web.http.MenuDetector;
 import com.tcdng.unify.web.ui.widget.ContentPanel;
 import com.tcdng.unify.web.ui.widget.DataTransferWidget;
 import com.tcdng.unify.web.ui.widget.Document;
@@ -90,6 +92,9 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 
 	@Configurable
 	private WidgetCommandManager uiCommandManager;
+
+	@Configurable
+	private MenuDetector menuDetector;
 
 	private Class<T> pageBeanClass;
 
@@ -137,6 +142,11 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 	}
 
 	@Override
+	public boolean isDeterminesMenu() throws UnifyException {
+		return false;
+	}
+
+	@Override
 	public final boolean isPageController() {
 		return true;
 	}
@@ -160,10 +170,14 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 
 	@Action
 	public final String indexPage() throws UnifyException {
+		final PageRequestContextUtil prcUtil = getPageRequestContextUtil();
+		if (menuDetector != null && isDeterminesMenu()) {
+			MenuDetectInfo info = menuDetector.detectFromPath(prcUtil.getRequestPathParts().getControllerPath());
+			setPageAttribute(PageAttributeConstants.DETECTED_MENU, info);
+		}
+
 		onIndexPage();
-		return getPageRequestContextUtil().isWithCommandResultMapping()
-				? getPageRequestContextUtil().getCommandResultMapping()
-				: ResultMappingConstants.INDEX;
+		return prcUtil.isWithCommandResultMapping() ? prcUtil.getCommandResultMapping() : ResultMappingConstants.INDEX;
 	}
 
 	@Action

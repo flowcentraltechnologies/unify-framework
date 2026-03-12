@@ -101,4 +101,11 @@ public interface PageController<T extends PageBean> extends UIController {
      *                        if an error occurs
      */
     String executePageCall(String actionName) throws UnifyException;
+    
+	/**
+	 * Returns true if this controller determines menu
+	 * 
+	 * @throws UnifyException if an error occurs
+	 */
+	boolean isDeterminesMenu() throws UnifyException;
 }
