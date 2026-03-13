@@ -464,7 +464,8 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 	}
 	
 	protected String getPathVariable(int index) throws UnifyException {
-		return resolveRequestPage().getPathVariables().get(index);
+		final List<String> variables = resolveRequestPage().getPathVariables();
+		return variables != null && index >= 0 && variables.size() > index ? variables.get(index) : null;
 	}
 	
 	/**
