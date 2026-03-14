@@ -84,6 +84,8 @@ import com.tcdng.unify.web.ui.widget.data.TaskMonitorInfo;
 public abstract class AbstractPageController<T extends PageBean> extends AbstractUIController
 		implements PageController<T> {
 
+	private static final String CONFIRM_PATHVARIABLES = "confirm-pathvariables";
+	
 	@Configurable
 	private TaskLauncher taskLauncher;
 
@@ -274,7 +276,8 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 		if (StringUtils.isNotBlank(param)) {
 			msg = MessageFormat.format(msg, param);
 		}
-
+		
+		setSessionAttribute(CONFIRM_PATHVARIABLES, pageRequestContextUtil.getRequestPathParts().getPathVariables());
 		return showMessageBox(pageRequestContextUtil.getRequestConfirmMessageIcon(), MessageMode.YES_NO,
 				getSessionMessage("messagebox.confirmation"), msg, "/confirmResult");
 	}
@@ -285,6 +288,7 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 			return hidePopupFireConfirm();
 		}
 
+		removeSessionAttribute(CONFIRM_PATHVARIABLES);
 		return hidePopup();
 	}
 
@@ -459,12 +463,14 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 		return (T) resolveRequestPage().getPageBean();
 	}
 
+	@SuppressWarnings("unchecked")
 	protected List<String> getPathVariables() throws UnifyException {
-		return resolveRequestPage().getPathVariables();
+		List<String> variables = (List<String>) removeSessionAttribute(CONFIRM_PATHVARIABLES);
+		return variables != null ? variables:resolveRequestPage().getPathVariables();
 	}
 	
 	protected String getPathVariable(int index) throws UnifyException {
-		final List<String> variables = resolveRequestPage().getPathVariables();
+		final List<String> variables = getPathVariables();
 		return variables != null && index >= 0 && variables.size() > index ? variables.get(index) : null;
 	}
 	
