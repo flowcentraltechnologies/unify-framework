@@ -313,6 +313,11 @@ public class PageRequestContextUtilImpl extends AbstractUnifyComponent implement
 	}
 
 	@Override
+	public boolean isWithRequestPathParts() throws UnifyException {
+		return getRequestAttribute(REQUEST_PATHPARTS) != null;
+	}
+
+	@Override
 	public void setResponsePathParts(ControllerPathParts respPathParts) throws UnifyException {
 		setRequestAttribute(RESPONSE_PATHPARTS, respPathParts);
 	}
