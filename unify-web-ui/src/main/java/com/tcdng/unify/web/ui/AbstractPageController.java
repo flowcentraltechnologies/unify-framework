@@ -36,6 +36,7 @@ import com.tcdng.unify.core.task.TaskMonitor;
 import com.tcdng.unify.core.task.TaskSetup;
 import com.tcdng.unify.core.upl.UplElementReferences;
 import com.tcdng.unify.core.util.ApplicationUtils;
+import com.tcdng.unify.core.util.DataUtils;
 import com.tcdng.unify.core.util.ReflectUtils;
 import com.tcdng.unify.core.util.StringUtils;
 import com.tcdng.unify.web.ClientCookie;
@@ -468,7 +469,7 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 	@SuppressWarnings("unchecked")
 	protected List<String> getPathVariables() throws UnifyException {
 		List<String> variables = (List<String>) removeSessionAttribute(CONFIRM_PATHVARIABLES);
-		return variables != null ? variables:resolveRequestPage().getPathVariables();
+		return !DataUtils.isBlank(variables) ? variables:resolveRequestPage().getPathVariables();
 	}
 	
 	protected String getPathVariable(int index) throws UnifyException {
