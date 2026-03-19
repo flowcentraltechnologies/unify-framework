@@ -309,6 +309,7 @@ public class TableWriter extends AbstractControlWriter {
 			jw.endArray();
 			writer.writeParam("pSortColList", jw);
 		}
+		
 		writer.endFunction();
 
 	}
