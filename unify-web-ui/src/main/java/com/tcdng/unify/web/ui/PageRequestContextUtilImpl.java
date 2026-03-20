@@ -35,6 +35,7 @@ import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.constant.TopicEventType;
 import com.tcdng.unify.core.data.Parameters;
 import com.tcdng.unify.core.util.DataUtils;
+import com.tcdng.unify.core.util.StringUtils;
 import com.tcdng.unify.web.ClientRequest;
 import com.tcdng.unify.web.ClientResponse;
 import com.tcdng.unify.web.ControllerPathParts;
@@ -315,6 +316,11 @@ public class PageRequestContextUtilImpl extends AbstractUnifyComponent implement
 	@Override
 	public boolean isWithRequestPathParts() throws UnifyException {
 		return getRequestAttribute(REQUEST_PATHPARTS) != null;
+	}
+
+	@Override
+	public boolean isWithRequestTarget() throws UnifyException {
+		return isWithRequestPathParts() && !StringUtils.isBlank(getRequestPathParts().getRequestTarget());
 	}
 
 	@Override

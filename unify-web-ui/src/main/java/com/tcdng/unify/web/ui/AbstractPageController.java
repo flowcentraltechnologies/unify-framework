@@ -175,7 +175,7 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 	public final String indexPage() throws UnifyException {
 		final PageRequestContextUtil prcUtil = getPageRequestContextUtil();
 		if (menuDetector != null && isDeterminesMenu()) {
-			MenuDetectInfo info = prcUtil.isWithRequestPathParts()
+			MenuDetectInfo info = prcUtil.isWithRequestTarget()
 					? menuDetector.detectFromPath(prcUtil.getRequestPathParts().getRequestTarget())
 					: null;
 			if (info != null) {
