@@ -441,16 +441,28 @@ public class UIControllerUtilImpl extends AbstractUnifyComponent implements UICo
 
 					List<PageControllerResponse> responses = new ArrayList<PageControllerResponse>();
 					Locale locale = Locale.getDefault();
+					boolean hint = false;
+					boolean menu = false;
 					for (String descriptor : descriptors) {
-						if (!"!hintuserresponse".equals(descriptor) && !"!refreshmenuresponse".equals(descriptor)) {
+						final boolean _hint = "!hintuserresponse".equals(descriptor);
+						final boolean _menu = "!refreshmenuresponse".equals(descriptor);
+						if (!_hint && !_menu) {
 							responses.add((PageControllerResponse) getUplComponent(locale, descriptor, false));
 						}
+						
+						hint |= _hint;
+						menu |= _menu;
 					}
 
 					if (ra.type().isApplicationJson()) {
 						// Add implicit JSON responses
-						responses.add(hintUserResponse);
-						responses.add(refreshMenuResponse);
+						if (hint) {
+							responses.add(hintUserResponse);
+						}
+						
+						if (menu) {
+							responses.add(refreshMenuResponse);
+						}
 					}
 
 					// Set result object
