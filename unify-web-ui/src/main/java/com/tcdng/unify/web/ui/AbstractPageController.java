@@ -45,6 +45,8 @@ import com.tcdng.unify.web.ClientResponse;
 import com.tcdng.unify.web.ControllerPathParts;
 import com.tcdng.unify.web.UnifyWebSessionAttributeConstants;
 import com.tcdng.unify.web.annotation.Action;
+import com.tcdng.unify.web.annotation.ResultMapping;
+import com.tcdng.unify.web.annotation.ResultMappings;
 import com.tcdng.unify.web.constant.ClosePageMode;
 import com.tcdng.unify.web.constant.ReadOnly;
 import com.tcdng.unify.web.constant.ResetOnWrite;
@@ -82,6 +84,8 @@ import com.tcdng.unify.web.ui.widget.data.TaskMonitorInfo;
  */
 @Singleton
 @UplBinding("web/reserved/upl/basepage.upl")
+@ResultMappings({
+@ResultMapping(name = "forward401", response = { "!loaddocumentresponse path:$x{application.web.401}" })})
 public abstract class AbstractPageController<T extends PageBean> extends AbstractUIController
 		implements PageController<T> {
 
@@ -117,6 +121,7 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 		final PageManager pm = getPageManager();
 		final String pageId = pm.getCurrentRequestPageId(controllerPathParts);
 		if (sessionContext != null && sessionContext.getAttribute(pageId) == null) {
+			final PageRequestContextUtil prcUtil = getPageRequestContextUtil();
 			final Page page = pm.createPage(sessionContext.getLocale(), controllerPathParts.getControllerName());
 			page.setPathParts(controllerPathParts, pageId);
 			Class<? extends PageBean> pageBeanClass = getPageBeanClass();
@@ -127,7 +132,8 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 			}
 
 			page.setBundledCategory(getBundledCategory());
-			getPageRequestContextUtil().setRequestPage(page);
+			prcUtil.setRequestPage(page);
+
 			initPage();
 
 			sessionContext.setAttribute(pageId, page);
@@ -142,11 +148,6 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 	@Override
 	public final Class<T> getPageBeanClass() {
 		return pageBeanClass;
-	}
-
-	@Override
-	public boolean isDeterminesMenu() throws UnifyException {
-		return false;
 	}
 
 	@Override
@@ -172,20 +173,29 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 	}
 
 	@Action
-	public final String indexPage() throws UnifyException {
+	public final String indexPage() throws UnifyException { 
 		final PageRequestContextUtil prcUtil = getPageRequestContextUtil();
+		boolean performIndex = true;
 		if (menuDetector != null && isDeterminesMenu()) {
 			MenuDetectInfo info = prcUtil.isWithRequestTarget()
 					? menuDetector.detectFromPath(prcUtil.getRequestPathParts().getRequestTarget())
 					: null;
 			if (info != null) {
+				if (!info.isPrivileged()) {
+					setResultMapping("forward401");
+					performIndex = false;
+				}
+				
 				setPageAttribute(PageAttributeConstants.DETECTED_MENU, info);
 			} else {
 				clearPageAttribute(PageAttributeConstants.DETECTED_MENU);
 			}
 		}
 
-		onIndexPage();
+		if (performIndex) {
+			onIndexPage();
+		}
+		
 		return prcUtil.isWithCommandResultMapping() ? prcUtil.getCommandResultMapping() : ResultMappingConstants.INDEX;
 	}
 

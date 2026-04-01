@@ -226,7 +226,7 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 									+ "]. " + clientRequest.getRequestPathParts().getControllerPathParts()));
 				}
 
-				if (isBundledModeEnabled && controller.isPageController()) {
+				if (isBundledModeEnabled && controller.isPageController()) { 
 					BundledCatType bundledCatType = controller.getBundledCategory();
 					if (bundledCatType != null && bundledCatType.isCore()) {
 						throwOperationErrorException(

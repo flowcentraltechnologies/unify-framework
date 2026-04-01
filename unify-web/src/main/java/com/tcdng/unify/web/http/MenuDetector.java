@@ -35,4 +35,5 @@ public interface MenuDetector extends UnifyComponent {
 	 * @throws UnifyException if an error occurs
 	 */
 	MenuDetectInfo detectFromPath(String path) throws UnifyException;
+
 }

@@ -27,9 +27,12 @@ public class MenuDetectInfo {
 	
 	private String menuItem;
 
-	public MenuDetectInfo(String menu, String menuItem) {
+	private boolean privileged;
+	
+	public MenuDetectInfo(String menu, String menuItem, boolean privileged) {
 		this.menu = menu;
 		this.menuItem = menuItem;
+		this.privileged = privileged;
 	}
 
 	public String getMenu() {
@@ -38,5 +41,9 @@ public class MenuDetectInfo {
 
 	public String getMenuItem() {
 		return menuItem;
+	}
+
+	public boolean isPrivileged() {
+		return privileged;
 	}
 }
