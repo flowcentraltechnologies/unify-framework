@@ -107,6 +107,11 @@ public class ListManagerImpl extends AbstractUnifyComponent implements ListManag
 	}
 
 	@Override
+	public boolean isListCommand(String listName) throws UnifyException {
+		return isComponent(listName);
+	}
+
+	@Override
 	public List<? extends Listable> getAllStaticLists(Locale locale) throws UnifyException {
 		return staticLists.get(locale);
 	}

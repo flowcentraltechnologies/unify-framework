@@ -52,6 +52,15 @@ public interface ListManager extends UnifyComponent {
 	 */
 	boolean isStaticList(String listName) throws UnifyException;
     
+	/**
+	 * Checks if list command exists.
+	 * 
+	 * @param listName the list name
+	 * @return true if exists otherwise false
+	 * @throws UnifyException if an error occurs
+	 */
+	boolean isListCommand(String listName) throws UnifyException;
+    
     /**
      * Returns a list of all static lists for a locale.
      * 
