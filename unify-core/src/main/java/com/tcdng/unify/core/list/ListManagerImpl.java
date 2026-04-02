@@ -102,6 +102,11 @@ public class ListManagerImpl extends AbstractUnifyComponent implements ListManag
 	}
 
 	@Override
+	public boolean isStaticList(String listName) throws UnifyException {
+		return staticListEnumInfos.containsKey(listName);
+	}
+
+	@Override
 	public List<? extends Listable> getAllStaticLists(Locale locale) throws UnifyException {
 		return staticLists.get(locale);
 	}
