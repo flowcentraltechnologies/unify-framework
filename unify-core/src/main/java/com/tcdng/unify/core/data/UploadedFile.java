@@ -15,7 +15,6 @@
  */
 package com.tcdng.unify.core.data;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -50,31 +49,33 @@ public class UploadedFile {
 	
 	private final boolean usesTempFile;
 	
+	private byte[] bin;
+	
 	private InputStream in;
 	
 	private OutputStream out;
 	
 	public static UploadedFile create(String filename, byte[] in) throws UnifyException {
 		final Date now = new Date();
-		return new UploadedFile(filename, now, now, new ByteArrayInputStream(in), false);
+		return new UploadedFile(filename, now, now, in, null, false);
 	}
 	
 	public static UploadedFile create(String filename, InputStream in) throws UnifyException {
 		final Date now = new Date();
-		return new UploadedFile(filename, now, now, in, false);
+		return new UploadedFile(filename, now, now, null, in, false);
 	}
 	
 	public static UploadedFile create(String filename) throws UnifyException {
 		final Date now = new Date();
-		return new UploadedFile(filename, now, now, null, true);
+		return new UploadedFile(filename, now, now, null, null, true);
 	}
 	
 	public static UploadedFile createUsingTempFile(String filename, Date creationDate, Date modificationDate,
 			InputStream in) throws UnifyException {
-		return new UploadedFile(filename, creationDate, modificationDate, in, true);
+		return new UploadedFile(filename, creationDate, modificationDate, null, in, true);
 	}
 	
-	private UploadedFile(String filename, Date creationDate, Date modificationDate, InputStream in,
+	private UploadedFile(String filename, Date creationDate, Date modificationDate, byte[] bin, InputStream in,
 			boolean usesTempFile) throws UnifyException {
 		this.detect = new byte[4];
 		this.filename = filename;
@@ -90,6 +91,7 @@ public class UploadedFile {
 				this.tempFileId = FileUtils.createTemporaryFile();
 			}
 		} else {
+			this.bin = bin;
 			this.in = in;
 		}
 	}
@@ -131,7 +133,7 @@ public class UploadedFile {
 	}
 
 	public boolean isPresent() {
-		return (usesTempFile && tempFileId != null) || (!usesTempFile && in != null);
+		return (usesTempFile && tempFileId != null) || (!usesTempFile && (bin != null || in != null));
 	}
 	
 	public byte[] getDetect() {
@@ -195,6 +197,10 @@ public class UploadedFile {
 			return baos.toByteArray();
 		}
 
+		if (bin != null) {
+			return bin;
+		}
+		
 		try {
 			return IOUtils.readAll(getIn());
 		} finally {
@@ -227,7 +233,10 @@ public class UploadedFile {
 			tempFileId = null;
 		}
 
+		bin = null;
+		
 		if (in != null) {
+			IOUtils.close(in);
 			in = null;
 		}
 
