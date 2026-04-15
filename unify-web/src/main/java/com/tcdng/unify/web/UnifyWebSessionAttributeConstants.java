@@ -37,4 +37,6 @@ public interface UnifyWebSessionAttributeConstants extends com.tcdng.unify.core.
     
     String FORWARD_HINTS= "UNIFYWEB.FORWARDHINTS";
 
+	String CONFIRM_PATHVARIABLES = "UNIFYWEB.CONFIRMPATHVARIABLES";
+
 }

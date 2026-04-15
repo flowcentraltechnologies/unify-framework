@@ -850,6 +850,7 @@ public abstract class AbstractWidget extends AbstractUplComponent implements Wid
 	}
 
 	protected void commandPost(String path) throws UnifyException {
+		clearPathVariables();
 		setRequestAttribute(UnifyWebRequestAttributeConstants.COMMAND_POSTRESPONSE_PATH, path);
 		setCommandResultMapping(ResultMappingConstants.POST_RESPONSE);
 	}
@@ -899,6 +900,11 @@ public abstract class AbstractWidget extends AbstractUplComponent implements Wid
 		return sb.toString();
 	}
 
+	private void clearPathVariables() throws UnifyException {
+		removeSessionAttribute(
+				UnifyWebSessionAttributeConstants.CONFIRM_PATHVARIABLES);
+	}
+	
 	/**
 	 * Sets the value of an attribute in associated value store, if component has
 	 * one.
