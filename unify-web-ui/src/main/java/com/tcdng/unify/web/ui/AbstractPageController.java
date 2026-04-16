@@ -88,6 +88,8 @@ import com.tcdng.unify.web.ui.widget.data.TaskMonitorInfo;
 @ResultMapping(name = "forward401", response = { "!loaddocumentresponse path:$x{application.web.401}" })})
 public abstract class AbstractPageController<T extends PageBean> extends AbstractUIController
 		implements PageController<T> {
+
+	private static final String CONFIRM_PATHVARIABLES = "confirm-pathvariables";
 	
 	@Configurable
 	private TaskLauncher taskLauncher;
@@ -287,9 +289,8 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 		if (StringUtils.isNotBlank(param)) {
 			msg = MessageFormat.format(msg, param);
 		}
-
-		setSessionAttribute(UnifyWebSessionAttributeConstants.CONFIRM_PATHVARIABLES,
-				pageRequestContextUtil.getRequestPathParts().getPathVariables());
+		
+		setSessionAttribute(CONFIRM_PATHVARIABLES, pageRequestContextUtil.getRequestPathParts().getPathVariables());
 		return showMessageBox(pageRequestContextUtil.getRequestConfirmMessageIcon(), MessageMode.YES_NO,
 				getSessionMessage("messagebox.confirmation"), msg, "/confirmResult");
 	}
@@ -300,7 +301,7 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 			return hidePopupFireConfirm();
 		}
 
-		removeSessionAttribute(UnifyWebSessionAttributeConstants.CONFIRM_PATHVARIABLES);
+		removeSessionAttribute(CONFIRM_PATHVARIABLES);
 		return hidePopup();
 	}
 
@@ -477,9 +478,8 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 
 	@SuppressWarnings("unchecked")
 	protected List<String> getPathVariables() throws UnifyException {
-		List<String> variables = (List<String>) removeSessionAttribute(
-				UnifyWebSessionAttributeConstants.CONFIRM_PATHVARIABLES);
-		return !DataUtils.isBlank(variables) ? variables : resolveRequestPage().getPathVariables();
+		List<String> variables = (List<String>) removeSessionAttribute(CONFIRM_PATHVARIABLES);
+		return !DataUtils.isBlank(variables) ? variables:resolveRequestPage().getPathVariables();
 	}
 	
 	protected String getPathVariable(int index) throws UnifyException {

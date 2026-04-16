@@ -166,10 +166,12 @@ public class TableWriter extends AbstractControlWriter {
 		}
 
 		// External control behavior
+		List<Row> writeRowList = table.getValueList();
 		int index = table.getPageItemIndex();
 		int lastIndex = index + table.getPageItemCount();
 		for (; index < lastIndex; index++) {
-			ValueStore itemValueStore = table.getValueListItem(index).getRowValueStore();
+			ValueStore itemValueStore = writeRowList.get(index).getRowValueStore();
+
 			if (multiSelectCtrl != null) {
 				multiSelectCtrl.setValueStore(itemValueStore);
 				writer.writeBehavior(multiSelectCtrl);
@@ -391,6 +393,7 @@ public class TableWriter extends AbstractControlWriter {
 
 	private void writeBodyRows(ResponseWriter writer, Table table) throws UnifyException {
 		if (table.getPageItemCount() > 0) {
+			List<Row> writeRowList = table.getValueList();
 			final boolean isWindowed = table.isWindowed();
 			int index = table.getPageItemIndex();
 			int lastIndex = index + table.getPageItemCount();
@@ -456,7 +459,7 @@ public class TableWriter extends AbstractControlWriter {
 					columnIndex++;
 				}
 
-				Row row = table.getValueListItem(index);
+				Row row = writeRowList.get(index);
 				RowValueStore rowValueStore = row.getRowValueStore();
 				if (isMultiSelect) {
 					if (row.isSelected()) {

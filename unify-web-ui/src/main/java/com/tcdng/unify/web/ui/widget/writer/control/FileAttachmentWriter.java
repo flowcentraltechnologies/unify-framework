@@ -15,6 +15,8 @@
  */
 package com.tcdng.unify.web.ui.widget.writer.control;
 
+import java.util.List;
+
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.annotation.Writes;
@@ -58,15 +60,16 @@ public class FileAttachmentWriter extends AbstractControlWriter {
 
 			boolean isContainerDisabled = fileAttachment.isContainerDisabled();
 			boolean isContainerEditable = fileAttachment.isContainerEditable();
+			List<ValueStore> valueStoreList = fileAttachment.getValueList();
 			FileUpload fileCtrl = fileAttachment.getFileCtrl();
 			Control attachCtrl = fileAttachment.getAttachCtrl();
 			Control viewCtrl = fileAttachment.getViewCtrl();
 			Control removeCtrl = fileAttachment.getRemoveCtrl();
 			final boolean adhoc = fileAttachmentsInfo.isAdhoc();
 			final boolean disabled = fileAttachmentsInfo.isDisabled();
-			final int size = fileAttachment.getValueListSize();
+			int size = valueStoreList.size();
 			for (int i = 0; i < size; i++) {
-				ValueStore valueStore = fileAttachment.getValueListStoreAt(i);
+				ValueStore valueStore = valueStoreList.get(i);
 				fileCtrl.setValueStore(valueStore);
 				attachCtrl.setValueStore(valueStore);
 				viewCtrl.setValueStore(valueStore);
@@ -153,7 +156,12 @@ public class FileAttachmentWriter extends AbstractControlWriter {
 			writer.writeContextURLParam("pViewURL", viewPath);
 		}
 
-		final int len = fileAttachment.getValueListSize();
+		int len = 0;
+		List<ValueStore> valueStoreList = fileAttachment.getValueList();
+		if (valueStoreList != null) {
+			len = valueStoreList.size();
+		}
+
 		writer.writeParam("pContId", fileAttachment.getContainerId());
 		writer.writeParam("pFileId", fileAttachment.getFileCtrl().getBaseId());
 		writer.writeParam("pAttchId", fileAttachment.getAttachCtrl().getBaseId());

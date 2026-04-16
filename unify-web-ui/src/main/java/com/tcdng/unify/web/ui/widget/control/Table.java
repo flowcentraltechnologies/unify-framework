@@ -143,10 +143,10 @@ public class Table extends AbstractValueListMultiControl<Table.Row, Object> {
             Control control = (Control) childWidgetInfo.getWidget();
 
             if (childWidgetInfo.isExternal()) {
-                control.setValueStore(getValueListItem(childBlock.getItemIndex()).getRowValueStore());
+                control.setValueStore(getValueList().get(childBlock.getItemIndex()).getRowValueStore());
             } else {
                 if (control == multiSelectCtrl) {
-                    control.setValueStore(getValueListItem(childBlock.getItemIndex()).getRowValueStore());
+                    control.setValueStore(getValueList().get(childBlock.getItemIndex()).getRowValueStore());
                 }
             }
 
@@ -259,18 +259,17 @@ public class Table extends AbstractValueListMultiControl<Table.Row, Object> {
     public void sort() throws UnifyException {
         if (columnIndex >= 0) {
             ColumnState columnState = getColumnList().get(columnIndex);
-            if (columnState != null) {
-                sortValueListItems(new RowComparator(columnState.getFieldName(), sortDirection));
+            List<Row> list = getValueList();
+            if (columnState != null && list != null && !list.isEmpty()) {
+                Collections.sort(list, new RowComparator(columnState.getFieldName(), sortDirection));
                 reIndex();
 
                 // Sort original list to
                 List<?> items = (List<?>) getValue();
-                if (items != null) {
                 if (sortDirection) {
                     DataUtils.sortAscending(items, items.get(0).getClass(), columnState.getFieldName());
                 } else {
                     DataUtils.sortDescending(items, items.get(0).getClass(), columnState.getFieldName());
-                }
                 }
             }
         }
@@ -284,7 +283,7 @@ public class Table extends AbstractValueListMultiControl<Table.Row, Object> {
 
     @Action
     public void delete() throws UnifyException {
-        removeValueListItem(getViewIndex());
+        getValueList().remove(getViewIndex());
         reIndex();
     }
     
@@ -460,66 +459,67 @@ public class Table extends AbstractValueListMultiControl<Table.Row, Object> {
     }
 
     public Object getSelectedItem() throws UnifyException {
-    	final Row row = getValueListItem(viewIndex);
-        return row != null ? row.getItem() : null;
+        if (viewIndex >= 0) {
+            List<Row> rowList = getValueList();
+            if (rowList != null && viewIndex < rowList.size()) {
+                return rowList.get(viewIndex).getItem();
+            }
+        }
+
+        return null;
     }
 
     public Integer[] getSelectedRowIndexes() throws UnifyException {
         getValue();
-        
-        final int len = getValueListSize();
-        if (len > 0) {
-            final List<Integer> indexList = new ArrayList<Integer>();
-            for (int i = 0; i < len; i++) {
-                if (getValueListItem(i).isSelected()) {
-                    indexList.add(i);
-                }
-            }
-            return DataUtils.toArray(Integer.class, indexList);
+        List<Row> rowList = getValueList();
+        if (rowList == null || rowList.isEmpty()) {
+            return DataUtils.ZEROLEN_INTEGER_ARRAY;
         }
 
-        return DataUtils.ZEROLEN_INTEGER_ARRAY;
+        List<Integer> indexList = new ArrayList<Integer>();
+        for (int i = 0; i < rowList.size(); i++) {
+            if (rowList.get(i).isSelected()) {
+                indexList.add(i);
+            }
+        }
+        return DataUtils.toArray(Integer.class, indexList);
     }
 
     @SuppressWarnings("unchecked")
-	public <T> List<T> getSelectedItems(Class<T> itemClazz) throws UnifyException {
-		getValue();
+    public <T> List<T> getSelectedItems(Class<T> itemClazz) throws UnifyException {
+        getValue();
+        List<Row> rowList = getValueList();
+        if (rowList == null || rowList.isEmpty()) {
+            return Collections.emptyList();
+        }
 
-		final int len = getValueListSize();
-		if (len > 0) {
-			final List<T> selectedItems = new ArrayList<T>();
-			for (int i = 0; i < len; i++) {
-				final Row row = getValueListItem(i);
-				if (row.isSelected()) {
-					selectedItems.add((T) row.getItem());
-				}
-			}
+        List<T> selectedItems = new ArrayList<T>();
+        for (Row row : rowList) {
+            if (row.isSelected()) {
+                selectedItems.add((T) row.getItem());
+            }
+        }
 
-			return selectedItems;
-		}
+        return selectedItems;
+    }
 
-		return Collections.emptyList();
-	}
+    public <T> List<T> getSelectedItemsColumnValues(Class<T> itemColumnClazz, String columnProperty)
+            throws UnifyException {
+        getValue();
+        List<Row> rowList = getValueList();
+        if (rowList == null || rowList.isEmpty()) {
+            return Collections.emptyList();
+        }
 
-	public <T> List<T> getSelectedItemsColumnValues(Class<T> itemColumnClazz, String columnProperty)
-			throws UnifyException {
-		getValue();
+        List<T> selectedItems = new ArrayList<T>();
+        for (Row row : rowList) {
+            if (row.isSelected()) {
+                selectedItems.add(row.getRowValueStore().retrieve(itemColumnClazz, columnProperty));
+            }
+        }
 
-		final int len = getValueListSize();
-		if (len > 0) {
-			final List<T> selectedItems = new ArrayList<T>();
-			for (int i = 0; i < len; i++) {
-				final Row row = getValueListItem(i);
-				if (row.isSelected()) {
-					selectedItems.add(row.getRowValueStore().retrieve(itemColumnClazz, columnProperty));
-				}
-			}
-
-			return selectedItems;
-		}
-
-		return Collections.emptyList();
-	}
+        return selectedItems;
+    }
 
     public int getVisibleColumnCount() {
         return visibleColumnCount;
@@ -566,8 +566,12 @@ public class Table extends AbstractValueListMultiControl<Table.Row, Object> {
     }
 
     public void pageCalculations() throws UnifyException {
-        pageCalculations(getValueListSize());
-
+        List<Row> writeRowList = getValueList();
+        if (writeRowList != null) {
+            pageCalculations(writeRowList.size());
+        } else {
+            pageCalculations(0);
+        }
         if (isPagination()) {
             naviPageStart = currentPage - 5;
             if (naviPageStart < 0) {
@@ -702,9 +706,12 @@ public class Table extends AbstractValueListMultiControl<Table.Row, Object> {
     }
 
     private void reIndex() throws UnifyException {
-        final int len = getValueListSize();
-        for (int i = 0; i < len; i++) {
-            getValueListItem(i).setIndex(i);
+        List<Row> list = getValueList();
+        if (list != null && !list.isEmpty()) {
+            int len = list.size();
+            for (int i = 0; i < len; i++) {
+                list.get(i).setIndex(i);
+            }
         }
     }
 
