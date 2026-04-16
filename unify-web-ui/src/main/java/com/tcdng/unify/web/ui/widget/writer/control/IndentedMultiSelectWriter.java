@@ -50,12 +50,11 @@ public class IndentedMultiSelectWriter extends AbstractControlWriter {
 
 		List<IndentedSelectInfo> infos = multiSelect.getIndentedSelectInfo();
 		if (!DataUtils.isBlank(infos)) {
-			List<ValueStore> valueStoreList = multiSelect.getValueList();
 			Control selectCtrl = multiSelect.getSelectCtrl();
 			selectCtrl.setEditable(true);
 			selectCtrl.setDisabled(false);
 			
-			final int size = valueStoreList.size();
+			final int size = multiSelect.valueListSize();
 			for (int i = 0; i < size; i++) {
 				writer.write("<div class=\"inrow ");
 				if (i % 2 == 0) {
@@ -66,7 +65,7 @@ public class IndentedMultiSelectWriter extends AbstractControlWriter {
 				
 				writer.write("\">");
 				IndentedSelectInfo info = infos.get(i);
-				ValueStore valueStore = valueStoreList.get(i);
+				ValueStore valueStore = multiSelect.getValueStoreAt(i);
 				selectCtrl.setValueStore(valueStore);
 				
 				for(int j = 0; j < info.getDepth(); j++) {
@@ -105,15 +104,14 @@ public class IndentedMultiSelectWriter extends AbstractControlWriter {
 		
 		List<IndentedSelectInfo> infos = multiSelect.getIndentedSelectInfo();
 		if (!DataUtils.isBlank(infos)) {
-			List<ValueStore> valueStoreList = multiSelect.getValueList();
 			Control selectCtrl = multiSelect.getSelectCtrl();
 			selectCtrl.setGroupId(null);
 			
-			final int size = valueStoreList.size();
+			final int size = multiSelect.valueListSize();
 			String[] ids = new String[size];
 			int[] depths = new int[size];
 			for (int i = 0; i < size; i++) {
-				ValueStore valueStore = valueStoreList.get(i);
+				ValueStore valueStore = multiSelect.getValueStoreAt(i);
 				selectCtrl.setValueStore(valueStore);
 				writer.writeBehavior(selectCtrl);
 				

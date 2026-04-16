@@ -34,85 +34,84 @@ import com.tcdng.unify.web.ui.widget.Control;
  * @since 4.1
  */
 @Component("ui-multidynamic")
-@UplAttributes({
-	@UplAttribute(name = "isRequiredSymbol", type = String.class, defaultVal = "*"),
-    @UplAttribute(name = "captionSuffix", type = String.class, defaultVal = ":"),
-    @UplAttribute(name = "inputStyle", type = String.class)})
-public class MultiDynamic extends AbstractValueListMultiControl<MultiDynamic.ValueStore, Input<?>> {
+@UplAttributes({ @UplAttribute(name = "isRequiredSymbol", type = String.class, defaultVal = "*"),
+		@UplAttribute(name = "captionSuffix", type = String.class, defaultVal = ":"),
+		@UplAttribute(name = "inputStyle", type = String.class) })
+public class MultiDynamic extends AbstractValueListMultiControl<MultiDynamic.Item, Input<?>> {
 
-    private DynamicField valueCtrl;
+	private DynamicField valueCtrl;
 
-    @Override
-    public void populate(DataTransferBlock transferBlock) throws UnifyException {
-        if (transferBlock != null) {
-            DataTransferBlock dynamicCtrlBlock = transferBlock.getChildBlock();
-            Control control = (Control) getChildWidgetInfo(dynamicCtrlBlock.getId()).getWidget();
-            control.setValueStore(getValueList().get(dynamicCtrlBlock.getChildBlock().getItemIndex()).getValueStore());
-            control.populate(dynamicCtrlBlock);
-        }
-    }
+	@Override
+	public void populate(DataTransferBlock transferBlock) throws UnifyException {
+		if (transferBlock != null) {
+			DataTransferBlock dynamicCtrlBlock = transferBlock.getChildBlock();
+			Control control = (Control) getChildWidgetInfo(dynamicCtrlBlock.getId()).getWidget();
+			control.setValueStore(getValueStoreAt(dynamicCtrlBlock.getChildBlock().getItemIndex()));
+			control.populate(dynamicCtrlBlock);
+		}
+	}
 
-    public String getCaptionSuffix() throws UnifyException {
-        return getUplAttribute(String.class, "captionSuffix");
-    }
+	public String getCaptionSuffix() throws UnifyException {
+		return getUplAttribute(String.class, "captionSuffix");
+	}
 
-    public String getInputStyle() throws UnifyException {
-        return getUplAttribute(String.class, "inputStyle");
-    }
+	public String getInputStyle() throws UnifyException {
+		return getUplAttribute(String.class, "inputStyle");
+	}
 
-    public String getIsRequiredSymbol() throws UnifyException {
-        return getUplAttribute(String.class, "isRequiredSymbol");
-    }
+	public String getIsRequiredSymbol() throws UnifyException {
+		return getUplAttribute(String.class, "isRequiredSymbol");
+	}
 
-    public DynamicField getValueCtrl() {
-        return valueCtrl;
-    }
+	public DynamicField getValueCtrl() {
+		return valueCtrl;
+	}
 
-    @Override
-    protected void doOnPageConstruct() throws UnifyException {
-        valueCtrl = (DynamicField) addInternalChildWidget("!ui-dynamic binding:value descriptorBinding:editor");
-    }
+	@Override
+	protected void doOnPageConstruct() throws UnifyException {
+		valueCtrl = (DynamicField) addInternalChildWidget("!ui-dynamic binding:input.value descriptorBinding:input.editor");
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    protected List<Input<?>> getItemList() throws UnifyException {
-        return (List<Input<?>>) getValue();
-    }
+	@SuppressWarnings("unchecked")
+	@Override
+	protected List<Input<?>> getItemList() throws UnifyException {
+		return (List<Input<?>>) getValue();
+	}
 
-    @Override
-    protected ValueStore newValue(Input<?> item, int index) throws UnifyException {
-        return new ValueStore(createValueStore(item, index), item.getDescription(), item.isMandatory());
-    }
+	@Override
+	protected Item newValue(Input<?> input, int index) throws UnifyException {
+		return new Item(input, input.getDescription(), input.isMandatory());
+	}
 
-    @Override
-    protected void onCreateValueList(List<ValueStore> valueList) throws UnifyException {
+	@Override
+	protected void onCreateValueList(List<Item> valueList) throws UnifyException {
 
-    }
+	}
 
-    public static class ValueStore {
+	public static class Item {
 
-        private com.tcdng.unify.core.data.ValueStore valueStore;
+		private String caption;
 
-        private String caption;
+		private Input<?> input;
 
-        private boolean required;
+		private boolean required;
 
-        public ValueStore(com.tcdng.unify.core.data.ValueStore valueStore, String caption, boolean required) {
-            this.valueStore = valueStore;
-            this.caption = caption;
-            this.required = required;
-        }
+		public Item(Input<?> input, String caption, boolean required) {
+			this.input = input;
+			this.caption = caption;
+			this.required = required;
+		}
 
-        public com.tcdng.unify.core.data.ValueStore getValueStore() {
-            return valueStore;
-        }
+		public Input<?> getInput() {
+			return input;
+		}
 
-        public String getCaption() {
-            return caption;
-        }
+		public String getCaption() {
+			return caption;
+		}
 
-        public boolean isRequired() {
-            return required;
-        }
-    }
+		public boolean isRequired() {
+			return required;
+		}
+	}
 }

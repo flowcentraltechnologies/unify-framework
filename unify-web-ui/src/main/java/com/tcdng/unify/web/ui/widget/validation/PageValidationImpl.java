@@ -30,7 +30,6 @@ import com.tcdng.unify.web.ui.widget.Widget;
 import com.tcdng.unify.web.ui.widget.container.Form;
 import com.tcdng.unify.web.ui.widget.control.DynamicField;
 import com.tcdng.unify.web.ui.widget.control.MultiDynamic;
-import com.tcdng.unify.web.ui.widget.control.MultiDynamic.ValueStore;
 import com.tcdng.unify.web.ui.widget.panel.DynamicPanel;
 import com.tcdng.unify.web.ui.widget.panel.StandalonePanel;
 
@@ -43,112 +42,111 @@ import com.tcdng.unify.web.ui.widget.panel.StandalonePanel;
 @Component("ui-validation")
 public class PageValidationImpl extends AbstractPageValidation {
 
-    @Override
-    public boolean validate(List<Widget> widgets, DataTransfer dataTransfer) throws UnifyException {
-        boolean pass = true;
-        for (Widget widget : widgets) {
-            if (widget.isVisible()) {
-                if (widget instanceof Form) {
-                    Form form = (Form) widget;
-                    Section[] sections = form.getUplAttribute(Section[].class, "section");
-                    for (Section section : sections) {
-                        List<String> longNames = section.getShallowReferencedLongNames("components");
-                        for (String longName : longNames) {
-                            Widget frmWidget = form.getWidgetByLongName(longName);
-                            if (frmWidget.isVisible()) {
-                                if (frmWidget instanceof Control) {
-                                    pass &= validateWidget((Control) frmWidget, dataTransfer);
-                                }
-                            }
-                        }
-                    }
-                } else if (widget instanceof MultiDynamic) {
-                    MultiDynamic multiDynamic = (MultiDynamic) widget;
-                    if (multiDynamic.isContainerVisible() && multiDynamic.isContainerEditable()) {
-                        List<ValueStore> list = multiDynamic.getValueList();
-                        if (list != null) {
-                            DataTransferBlock dataTransferBlock =
-                                    dataTransfer.getDataTransferBlock(multiDynamic.getId());
-                            DynamicField valueCtrl = (DynamicField) multiDynamic.getValueCtrl();
-                            while (dataTransferBlock != null) {
-                                boolean localPass = true;
-                                DataTransferBlock dynamicCtrlBlock = dataTransferBlock.getChildBlock();
-                                MultiDynamic.ValueStore store =
-                                        list.get(dynamicCtrlBlock.getChildBlock().getItemIndex());
-                                valueCtrl.setValueStore(store.getValueStore());
-                                Control control = valueCtrl.getControl();
+	@Override
+	public boolean validate(List<Widget> widgets, DataTransfer dataTransfer) throws UnifyException {
+		boolean pass = true;
+		for (Widget widget : widgets) {
+			if (widget.isVisible()) {
+				if (widget instanceof Form) {
+					Form form = (Form) widget;
+					Section[] sections = form.getUplAttribute(Section[].class, "section");
+					for (Section section : sections) {
+						List<String> longNames = section.getShallowReferencedLongNames("components");
+						for (String longName : longNames) {
+							Widget frmWidget = form.getWidgetByLongName(longName);
+							if (frmWidget.isVisible()) {
+								if (frmWidget instanceof Control) {
+									pass &= validateWidget((Control) frmWidget, dataTransfer);
+								}
+							}
+						}
+					}
+				} else if (widget instanceof MultiDynamic) {
+					MultiDynamic multiDynamic = (MultiDynamic) widget;
+					if (multiDynamic.isContainerVisible() && multiDynamic.isContainerEditable()) {
+						if (multiDynamic.valueListSize() > 0) {
+							DataTransferBlock dataTransferBlock = dataTransfer
+									.getDataTransferBlock(multiDynamic.getId());
+							DynamicField valueCtrl = (DynamicField) multiDynamic.getValueCtrl();
+							while (dataTransferBlock != null) {
+								boolean localPass = true;
+								DataTransferBlock dynamicCtrlBlock = dataTransferBlock.getChildBlock();
+								final int index = dynamicCtrlBlock.getChildBlock().getItemIndex();
+								valueCtrl.setValueStore(multiDynamic.getValueStoreAt(index));
+								Control control = valueCtrl.getControl();
 
-                                if (store.isRequired()) {
-                                    String value = getTransferValue(String.class, dynamicCtrlBlock.getChildBlock());
-                                    if (value == null || StringUtils.isBlank(value)) {
-                                        addValidationFail(control, "required",
-                                                getSessionMessage("validation.required", store.getCaption()));
-                                        localPass = false;
-                                        pass = false;
-                                    }
-                                }
+								MultiDynamic.Item item = multiDynamic.getValueItem(index);
+								if (item.isRequired()) {
+									String value = getTransferValue(String.class, dynamicCtrlBlock.getChildBlock());
+									if (value == null || StringUtils.isBlank(value)) {
+										addValidationFail(control, "required",
+												getSessionMessage("validation.required", item.getCaption()));
+										localPass = false;
+										pass = false;
+									}
+								}
 
-                                if (localPass) {
-                                    addValidationPass(control, null);
-                                }
+								if (localPass) {
+									addValidationPass(control, null);
+								}
 
-                                dataTransferBlock = dataTransferBlock.getSiblingBlock();
-                            }
-                        }
-                    }
-                } else if (widget instanceof DynamicPanel) {
-                    PageManager pageManager = getPageManager();
-                    StandalonePanel standalonePanel = ((DynamicPanel) widget).getStandalonePanel();
-                    for (String longName : standalonePanel.getPageValidationNames()) {
-                        pass &= standalonePanel.getPageWidgetValidator(pageManager, longName).validate(dataTransfer);
-                    }
-                } else if (widget instanceof Control) {
-                    pass &= validateWidget((Control) widget, dataTransfer);
-                }
-            }
-        }
+								dataTransferBlock = dataTransferBlock.getSiblingBlock();
+							}
+						}
+					}
+				} else if (widget instanceof DynamicPanel) {
+					PageManager pageManager = getPageManager();
+					StandalonePanel standalonePanel = ((DynamicPanel) widget).getStandalonePanel();
+					for (String longName : standalonePanel.getPageValidationNames()) {
+						pass &= standalonePanel.getPageWidgetValidator(pageManager, longName).validate(dataTransfer);
+					}
+				} else if (widget instanceof Control) {
+					pass &= validateWidget((Control) widget, dataTransfer);
+				}
+			}
+		}
 
-        return pass;
-    }
+		return pass;
+	}
 
-    private boolean validateWidget(Control control, DataTransfer dataTransfer) throws UnifyException {
-        DataTransferBlock dataTransferBlock = dataTransfer.getDataTransferBlock(control.getId());
-        if (dataTransferBlock != null) {
-            String caption = control.getUplAttribute(String.class, "caption");
-            String value = getTransferValue(String.class, dataTransferBlock);
+	private boolean validateWidget(Control control, DataTransfer dataTransfer) throws UnifyException {
+		DataTransferBlock dataTransferBlock = dataTransfer.getDataTransferBlock(control.getId());
+		if (dataTransferBlock != null) {
+			String caption = control.getUplAttribute(String.class, "caption");
+			String value = getTransferValue(String.class, dataTransferBlock);
 
-            if (control.getRequired().isTrue()) {
-                if (value == null || StringUtils.isBlank(value)) {
-                    addValidationFail(control, "required", getSessionMessage("validation.required", caption));
-                    return false;
-                }
-            }
+			if (control.getRequired().isTrue()) {
+				if (value == null || StringUtils.isBlank(value)) {
+					addValidationFail(control, "required", getSessionMessage("validation.required", caption));
+					return false;
+				}
+			}
 
-            if (control.isUplAttribute("minLen")) {
-                int minLen = control.getUplAttribute(int.class, "minLen");
-                if (minLen > 0) {
-                    if (value == null || value.length() < minLen) {
-                        addValidationFail(control, "minLen",
-                                getSessionMessage("validation.greaterthanorequal", caption, minLen));
-                        return false;
-                    }
-                }
-            }
+			if (control.isUplAttribute("minLen")) {
+				int minLen = control.getUplAttribute(int.class, "minLen");
+				if (minLen > 0) {
+					if (value == null || value.length() < minLen) {
+						addValidationFail(control, "minLen",
+								getSessionMessage("validation.greaterthanorequal", caption, minLen));
+						return false;
+					}
+				}
+			}
 
-            if (control.isUplAttribute("maxLen")) {
-                int maxLen = control.getUplAttribute(int.class, "maxLen");
-                if (maxLen > 0) {
-                    if (value != null && value.length() > maxLen) {
-                        addValidationFail(control, "maxLen",
-                                getSessionMessage("validation.lessthanorequal", caption, maxLen));
-                        return false;
-                    }
-                }
-            }
+			if (control.isUplAttribute("maxLen")) {
+				int maxLen = control.getUplAttribute(int.class, "maxLen");
+				if (maxLen > 0) {
+					if (value != null && value.length() > maxLen) {
+						addValidationFail(control, "maxLen",
+								getSessionMessage("validation.lessthanorequal", caption, maxLen));
+						return false;
+					}
+				}
+			}
 
-            addValidationPass(control, null);
-        }
+			addValidationPass(control, null);
+		}
 
-        return true;
-    }
+		return true;
+	}
 }
