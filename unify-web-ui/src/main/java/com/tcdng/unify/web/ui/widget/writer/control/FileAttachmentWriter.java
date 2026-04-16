@@ -64,7 +64,7 @@ public class FileAttachmentWriter extends AbstractControlWriter {
 			Control removeCtrl = fileAttachment.getRemoveCtrl();
 			final boolean adhoc = fileAttachmentsInfo.isAdhoc();
 			final boolean disabled = fileAttachmentsInfo.isDisabled();
-			final int size = fileAttachment.valueListSize();
+			final int size = fileAttachment.getValueListSize();
 			for (int i = 0; i < size; i++) {
 				ValueStore valueStore = fileAttachment.getValueStoreAt(i);
 				fileCtrl.setValueStore(valueStore);
@@ -153,7 +153,7 @@ public class FileAttachmentWriter extends AbstractControlWriter {
 			writer.writeContextURLParam("pViewURL", viewPath);
 		}
 
-		final int len = fileAttachment.valueListSize();
+		final int len = fileAttachment.getValueListSize();
 		writer.writeParam("pContId", fileAttachment.getContainerId());
 		writer.writeParam("pFileId", fileAttachment.getFileCtrl().getBaseId());
 		writer.writeParam("pAttchId", fileAttachment.getAttachCtrl().getBaseId());

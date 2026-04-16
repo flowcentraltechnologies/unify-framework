@@ -43,7 +43,7 @@ public class MultiDynamicWriter extends AbstractControlWriter {
 		writeTagAttributes(writer, multiDynamic);
 		writer.write(">");
 
-		final int len = multiDynamic.valueListSize();
+		final int len = multiDynamic.getValueListSize();
 		if (len > 0) {
 			String captionSuffix = multiDynamic.getCaptionSuffix();
 			String isRequiredSym = multiDynamic.getIsRequiredSymbol();
@@ -85,7 +85,7 @@ public class MultiDynamicWriter extends AbstractControlWriter {
 			throws UnifyException {
 		super.doWriteBehavior(writer, widget, handlers);
 		MultiDynamic multiDynamic = (MultiDynamic) widget;
-		final int len = multiDynamic.valueListSize();
+		final int len = multiDynamic.getValueListSize();
 		if (len > 0) {
 			Control valueCtrl = multiDynamic.getValueCtrl();
 			for (int i = 0; i < len; i++) {

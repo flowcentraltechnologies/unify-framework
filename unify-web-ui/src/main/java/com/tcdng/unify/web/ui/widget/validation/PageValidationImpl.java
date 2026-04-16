@@ -64,7 +64,7 @@ public class PageValidationImpl extends AbstractPageValidation {
 				} else if (widget instanceof MultiDynamic) {
 					MultiDynamic multiDynamic = (MultiDynamic) widget;
 					if (multiDynamic.isContainerVisible() && multiDynamic.isContainerEditable()) {
-						if (multiDynamic.valueListSize() > 0) {
+						if (multiDynamic.getValueListSize() > 0) {
 							DataTransferBlock dataTransferBlock = dataTransfer
 									.getDataTransferBlock(multiDynamic.getId());
 							DynamicField valueCtrl = (DynamicField) multiDynamic.getValueCtrl();

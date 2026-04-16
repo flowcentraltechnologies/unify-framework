@@ -54,7 +54,7 @@ public class IndentedMultiSelectWriter extends AbstractControlWriter {
 			selectCtrl.setEditable(true);
 			selectCtrl.setDisabled(false);
 			
-			final int size = multiSelect.valueListSize();
+			final int size = multiSelect.getValueListSize();
 			for (int i = 0; i < size; i++) {
 				writer.write("<div class=\"inrow ");
 				if (i % 2 == 0) {
@@ -107,7 +107,7 @@ public class IndentedMultiSelectWriter extends AbstractControlWriter {
 			Control selectCtrl = multiSelect.getSelectCtrl();
 			selectCtrl.setGroupId(null);
 			
-			final int size = multiSelect.valueListSize();
+			final int size = multiSelect.getValueListSize();
 			String[] ids = new String[size];
 			int[] depths = new int[size];
 			for (int i = 0; i < size; i++) {

@@ -467,7 +467,7 @@ public class Table extends AbstractValueListMultiControl<Table.Row, Object> {
     public Integer[] getSelectedRowIndexes() throws UnifyException {
         getValue();
         
-        final int len = valueListSize();
+        final int len = getValueListSize();
         if (len > 0) {
             final List<Integer> indexList = new ArrayList<Integer>();
             for (int i = 0; i < len; i++) {
@@ -485,7 +485,7 @@ public class Table extends AbstractValueListMultiControl<Table.Row, Object> {
 	public <T> List<T> getSelectedItems(Class<T> itemClazz) throws UnifyException {
 		getValue();
 
-		final int len = valueListSize();
+		final int len = getValueListSize();
 		if (len > 0) {
 			final List<T> selectedItems = new ArrayList<T>();
 			for (int i = 0; i < len; i++) {
@@ -505,7 +505,7 @@ public class Table extends AbstractValueListMultiControl<Table.Row, Object> {
 			throws UnifyException {
 		getValue();
 
-		final int len = valueListSize();
+		final int len = getValueListSize();
 		if (len > 0) {
 			final List<T> selectedItems = new ArrayList<T>();
 			for (int i = 0; i < len; i++) {
@@ -566,7 +566,7 @@ public class Table extends AbstractValueListMultiControl<Table.Row, Object> {
     }
 
     public void pageCalculations() throws UnifyException {
-        pageCalculations(valueListSize());
+        pageCalculations(getValueListSize());
 
         if (isPagination()) {
             naviPageStart = currentPage - 5;
@@ -702,7 +702,7 @@ public class Table extends AbstractValueListMultiControl<Table.Row, Object> {
     }
 
     private void reIndex() throws UnifyException {
-        final int len = valueListSize();
+        final int len = getValueListSize();
         for (int i = 0; i < len; i++) {
             getValueItem(i).setIndex(i);
         }
