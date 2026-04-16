@@ -86,7 +86,7 @@ public abstract class AbstractValueListMultiControl<T, U> extends AbstractMultiC
     	return getValueList().remove(index);
     }
     
-    private List<T> getValueList() throws UnifyException {
+    protected List<T> getValueList() throws UnifyException {
         List<U> itemList = getItemList();
         if (oldItemList != itemList || (itemList != null && itemList.size() != valueList.size())) {
             if (itemList != null && !itemList.isEmpty()) {
