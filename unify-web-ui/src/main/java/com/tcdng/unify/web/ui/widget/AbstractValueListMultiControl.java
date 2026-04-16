@@ -43,6 +43,10 @@ public abstract class AbstractValueListMultiControl<T, U> extends AbstractMultiC
     }
 
     public final ValueStore getValueListStoreAt(int index) throws UnifyException {
+    	return getValueListStore().setDataIndex(index);
+    }
+
+    public final ValueStore getValueListStore() throws UnifyException {
     	getValueList();
     	
     	if (valueStore == null) {
@@ -53,7 +57,7 @@ public abstract class AbstractValueListMultiControl<T, U> extends AbstractMultiC
     		}
     	}
     	
-    	return valueStore.setDataIndex(index);
+    	return valueStore;
     }
 
     public final T getValueListItem(int index) throws UnifyException {
