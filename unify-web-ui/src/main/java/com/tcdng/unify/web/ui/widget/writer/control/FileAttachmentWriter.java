@@ -66,7 +66,7 @@ public class FileAttachmentWriter extends AbstractControlWriter {
 			final boolean disabled = fileAttachmentsInfo.isDisabled();
 			final int size = fileAttachment.getValueListSize();
 			for (int i = 0; i < size; i++) {
-				ValueStore valueStore = fileAttachment.getValueStoreAt(i);
+				ValueStore valueStore = fileAttachment.getValueListStoreAt(i);
 				fileCtrl.setValueStore(valueStore);
 				attachCtrl.setValueStore(valueStore);
 				viewCtrl.setValueStore(valueStore);

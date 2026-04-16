@@ -51,7 +51,7 @@ public class MultiDynamicWriter extends AbstractControlWriter {
 			DynamicField valueCtrl = multiDynamic.getValueCtrl();
 			valueCtrl.setExtraStyle(multiDynamic.getInputStyle());
 			for (int i = 0; i < len; i++) {
-				MultiDynamic.Item item = multiDynamic.getValueItem(i);
+				MultiDynamic.Item item = multiDynamic.getValueListItem(i);
 				writer.write("<tr>");
 
 				writer.write("<td class=\"secLabel\"></span>");
@@ -65,7 +65,7 @@ public class MultiDynamicWriter extends AbstractControlWriter {
 				writer.write("</td>");
 
 				writer.write("<td class=\"secInput\"><div>");
-				valueCtrl.setValueStore(multiDynamic.getValueStoreAt(i));
+				valueCtrl.setValueStore(multiDynamic.getValueListStoreAt(i));
 				writer.writeStructureAndContent(valueCtrl);
 
 				writer.write("</div><div><span id=\"").write(valueCtrl.getControl().getNotificationId())
@@ -89,7 +89,7 @@ public class MultiDynamicWriter extends AbstractControlWriter {
 		if (len > 0) {
 			Control valueCtrl = multiDynamic.getValueCtrl();
 			for (int i = 0; i < len; i++) {
-				valueCtrl.setValueStore(multiDynamic.getValueStoreAt(i));
+				valueCtrl.setValueStore(multiDynamic.getValueListStoreAt(i));
 				writer.writeBehavior(valueCtrl);
 				if (multiDynamic.isContainerEditable()) {
 					addPageAlias(multiDynamic.getId(), valueCtrl);

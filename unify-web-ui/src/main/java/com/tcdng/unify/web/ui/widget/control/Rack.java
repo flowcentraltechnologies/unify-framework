@@ -135,10 +135,10 @@ public class Rack extends Table {
             if (oldIndex != viewIndex) {
                 setViewIndex(viewIndex);
                 if (swap) {
-                	swapValueItems(oldIndex, viewIndex);
+                	swapValueListItems(oldIndex, viewIndex);
                     Collections.swap(list, oldIndex, viewIndex);
                 } else {
-                	moveValueItem(viewIndex, oldIndex);
+                	moveValueListItem(viewIndex, oldIndex);
                     list.add(viewIndex, list.remove(oldIndex));
                 }
             }

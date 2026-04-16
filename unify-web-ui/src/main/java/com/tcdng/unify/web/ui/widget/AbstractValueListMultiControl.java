@@ -42,7 +42,7 @@ public abstract class AbstractValueListMultiControl<T, U> extends AbstractMultiC
         valueList = Collections.emptyList();
     }
 
-    public final ValueStore getValueStoreAt(int index) throws UnifyException {
+    public final ValueStore getValueListStoreAt(int index) throws UnifyException {
     	getValueList();
     	
     	if (valueStore == null) {
@@ -56,7 +56,7 @@ public abstract class AbstractValueListMultiControl<T, U> extends AbstractMultiC
     	return valueStore.setDataIndex(index);
     }
 
-    public final T getValueItem(int index) throws UnifyException {
+    public final T getValueListItem(int index) throws UnifyException {
 		getValueList();
 		return index >= 0 && index < valueList.size() ? valueList.get(index) : null;
 	}
@@ -65,20 +65,20 @@ public abstract class AbstractValueListMultiControl<T, U> extends AbstractMultiC
     	return getValueList().size();
     }
     
-    protected final void moveValueItem(int indexTo, int indexFrom) throws UnifyException {
+    protected final void moveValueListItem(int indexTo, int indexFrom) throws UnifyException {
     	T val = getValueList().remove(indexFrom);
     	valueList.add(indexTo, val);
     }
     
-    protected final void swapValueItems(int indexA, int indexB) throws UnifyException {
+    protected final void swapValueListItems(int indexA, int indexB) throws UnifyException {
         Collections.swap(getValueList(), indexA, indexB);
     }
     
-	protected final void sortValueItems(Comparator<T> comparator) throws UnifyException {
+	protected final void sortValueListItems(Comparator<T> comparator) throws UnifyException {
 		Collections.sort(getValueList(), comparator);
 	}
 
-    protected final T removeValueItem(int index) throws UnifyException {
+    protected final T removeValueListItem(int index) throws UnifyException {
     	return getValueList().remove(index);
     }
     

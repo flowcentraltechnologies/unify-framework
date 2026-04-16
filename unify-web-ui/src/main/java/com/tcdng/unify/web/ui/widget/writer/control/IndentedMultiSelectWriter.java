@@ -65,7 +65,7 @@ public class IndentedMultiSelectWriter extends AbstractControlWriter {
 				
 				writer.write("\">");
 				IndentedSelectInfo info = infos.get(i);
-				ValueStore valueStore = multiSelect.getValueStoreAt(i);
+				ValueStore valueStore = multiSelect.getValueListStoreAt(i);
 				selectCtrl.setValueStore(valueStore);
 				
 				for(int j = 0; j < info.getDepth(); j++) {
@@ -111,7 +111,7 @@ public class IndentedMultiSelectWriter extends AbstractControlWriter {
 			String[] ids = new String[size];
 			int[] depths = new int[size];
 			for (int i = 0; i < size; i++) {
-				ValueStore valueStore = multiSelect.getValueStoreAt(i);
+				ValueStore valueStore = multiSelect.getValueListStoreAt(i);
 				selectCtrl.setValueStore(valueStore);
 				writer.writeBehavior(selectCtrl);
 				

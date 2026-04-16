@@ -46,7 +46,7 @@ public class MultiDynamic extends AbstractValueListMultiControl<MultiDynamic.Ite
 		if (transferBlock != null) {
 			DataTransferBlock dynamicCtrlBlock = transferBlock.getChildBlock();
 			Control control = (Control) getChildWidgetInfo(dynamicCtrlBlock.getId()).getWidget();
-			control.setValueStore(getValueStoreAt(dynamicCtrlBlock.getChildBlock().getItemIndex()));
+			control.setValueStore(getValueListStoreAt(dynamicCtrlBlock.getChildBlock().getItemIndex()));
 			control.populate(dynamicCtrlBlock);
 		}
 	}

@@ -72,10 +72,10 @@ public class PageValidationImpl extends AbstractPageValidation {
 								boolean localPass = true;
 								DataTransferBlock dynamicCtrlBlock = dataTransferBlock.getChildBlock();
 								final int index = dynamicCtrlBlock.getChildBlock().getItemIndex();
-								valueCtrl.setValueStore(multiDynamic.getValueStoreAt(index));
+								valueCtrl.setValueStore(multiDynamic.getValueListStoreAt(index));
 								Control control = valueCtrl.getControl();
 
-								MultiDynamic.Item item = multiDynamic.getValueItem(index);
+								MultiDynamic.Item item = multiDynamic.getValueListItem(index);
 								if (item.isRequired()) {
 									String value = getTransferValue(String.class, dynamicCtrlBlock.getChildBlock());
 									if (value == null || StringUtils.isBlank(value)) {

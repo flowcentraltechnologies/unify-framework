@@ -169,7 +169,7 @@ public class TableWriter extends AbstractControlWriter {
 		int index = table.getPageItemIndex();
 		int lastIndex = index + table.getPageItemCount();
 		for (; index < lastIndex; index++) {
-			ValueStore itemValueStore = table.getValueItem(index).getRowValueStore();
+			ValueStore itemValueStore = table.getValueListItem(index).getRowValueStore();
 			if (multiSelectCtrl != null) {
 				multiSelectCtrl.setValueStore(itemValueStore);
 				writer.writeBehavior(multiSelectCtrl);
@@ -456,7 +456,7 @@ public class TableWriter extends AbstractControlWriter {
 					columnIndex++;
 				}
 
-				Row row = table.getValueItem(index);
+				Row row = table.getValueListItem(index);
 				RowValueStore rowValueStore = row.getRowValueStore();
 				if (isMultiSelect) {
 					if (row.isSelected()) {
