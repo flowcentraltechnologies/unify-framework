@@ -29,7 +29,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.Stack;
 
-import com.tcdng.unify.common.annotation.ColumnType;
 import com.tcdng.unify.common.database.Entity;
 import com.tcdng.unify.core.UnifyCoreErrorConstants;
 import com.tcdng.unify.core.UnifyException;
@@ -987,9 +986,10 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 
 	@Override
 	public Date getNow() throws UnifyException {
-		return getSqlStatementExecutor().executeSingleObjectResultQuery(connection, Date.class,
-				sqlDataSourceDialect.getSqlTypePolicy(ColumnType.TIMESTAMP_UTC, 0),
-				sqlDataSourceDialect.generateUTCTimestampSql(), MustMatch.TRUE);
+		return sqlDataSource.getNow();
+//		return getSqlStatementExecutor().executeSingleObjectResultQuery(connection, Date.class,
+//				sqlDataSourceDialect.getSqlTypePolicy(ColumnType.TIMESTAMP_UTC, 0),
+//				sqlDataSourceDialect.generateUTCTimestampSql(), MustMatch.TRUE);
 	}
 
 	@Override

@@ -1029,6 +1029,14 @@ public abstract class AbstractDhtmlWriter extends AbstractUplComponentWriter {
 		return pageManager;
 	}
 
+	protected final void setPageAttribute(String name, Object val) throws UnifyException {
+		getRequestContextUtil().getRequestPage().setAttribute(name, val);
+	}
+	
+	protected final <T> T getPageAttribute(Class<T> type, String name) throws UnifyException {
+		return getRequestContextUtil().getRequestPage().getAttribute(type, name);
+	}
+	
 	protected void writeStringParameter(ResponseWriter writer, String string) {
 		if (string != null && !string.trim().isEmpty()) {
 			writer.write("\"").write(string).write("\"");

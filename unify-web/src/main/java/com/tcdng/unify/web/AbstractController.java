@@ -66,8 +66,13 @@ public abstract class AbstractController extends AbstractUnifyComponent implemen
 	}
 
 	@Override
+	public boolean isDeterminesMenu() throws UnifyException {
+		return false;
+	}
+
+	@Override
 	public BundledCatType getBundledCategory() throws UnifyException {
-		return BundledCatType.BACKOFFICE;
+		return BundledCatType.CORE;
 	}
 
     @Override

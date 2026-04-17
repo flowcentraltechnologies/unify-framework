@@ -84,6 +84,17 @@ public final class FileUtils {
 	}
 
 	/**
+	 * Opens temporary file
+	 * 
+	 * @param tempFileId the temporary file ID
+	 * @return the output stream
+	 * @throws UnifyException if an error occurs
+	 */
+	public static OutputStream openTemporaryFile(String tempFileId) throws UnifyException {
+		return temp().openTemporaryFile(tempFileId);
+	}
+
+	/**
 	 * Writes all of input stream to a new temporary file.
 	 * 
 	 * @param in the input stream

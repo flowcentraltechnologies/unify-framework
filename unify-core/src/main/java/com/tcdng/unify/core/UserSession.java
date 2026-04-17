@@ -32,4 +32,10 @@ public interface UserSession {
     String getRemoteUser();
 
     String getTenantPath();
+
+	boolean isWithSessionContext();
+
+	boolean isServiceUnavailable();
+	
+	void setServiceUnavailable(boolean serviceUnavailable);
 }

@@ -104,6 +104,11 @@ public class OracleDialect extends AbstractSqlDataSourceDialect {
 	}
 
 	@Override
+	public String getCurrentTimestampSQL() {
+		return "SELECT CURRENT_TIMESTAMP FROM DUAL";
+	}
+
+	@Override
 	public boolean matchColumnDefault(String nativeVal, String defaultVal) throws UnifyException {
 		if (super.matchColumnDefault(nativeVal, defaultVal)) {
 			return true;

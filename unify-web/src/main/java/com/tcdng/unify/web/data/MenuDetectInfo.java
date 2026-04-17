@@ -13,23 +13,37 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.tcdng.unify.web.ui;
+package com.tcdng.unify.web.data;
 
 /**
- * Convenient base for bundled home page beans.
+ * Menu detect information.
  * 
  * @author The Code Department
  * @since 4.1
  */
-public abstract class AbstractBundledHomePageBean extends AbstractPageBean {
+public class MenuDetectInfo {
 
-	private String targetPath;
+	private String menu;
+	
+	private String menuItem;
 
-	public String getTargetPath() {
-		return targetPath;
+	private boolean privileged;
+	
+	public MenuDetectInfo(String menu, String menuItem, boolean privileged) {
+		this.menu = menu;
+		this.menuItem = menuItem;
+		this.privileged = privileged;
 	}
 
-	public void setTargetPath(String targetPath) {
-		this.targetPath = targetPath;
+	public String getMenu() {
+		return menu;
+	}
+
+	public String getMenuItem() {
+		return menuItem;
+	}
+
+	public boolean isPrivileged() {
+		return privileged;
 	}
 }

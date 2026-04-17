@@ -22,12 +22,10 @@ import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.annotation.Writes;
 import com.tcdng.unify.core.constant.DrCrType;
-import com.tcdng.unify.core.util.DataUtils;
 import com.tcdng.unify.web.ui.widget.EventHandler;
 import com.tcdng.unify.web.ui.widget.ResponseWriter;
 import com.tcdng.unify.web.ui.widget.Widget;
 import com.tcdng.unify.web.ui.widget.control.DebitCreditField;
-import com.tcdng.unify.web.ui.widget.control.TextField;
 
 /**
  * Debit/Credit field writer.
@@ -55,26 +53,6 @@ public class DebitCreditFieldWriter extends NumberFieldWriter {
 
         writer.write(">");
         writer.write("</button>");
-    }
-
-    @Override
-    protected String getFacadeStringValue(TextField textField) throws UnifyException {
-        BigDecimal val = textField.getValue(BigDecimal.class);
-        if (val != null) {
-            return DataUtils.convert(String.class, val.abs(), textField.getFormatter());
-        }
-
-        return null;
-    }
-
-    @Override
-    protected String getFacadeHiddenStringValue(TextField textField) throws UnifyException {
-        BigDecimal val = textField.getValue(BigDecimal.class);
-        if (val != null) {
-            return DataUtils.convert(String.class, val, null);
-        }
-
-        return null;
     }
 
     @Override

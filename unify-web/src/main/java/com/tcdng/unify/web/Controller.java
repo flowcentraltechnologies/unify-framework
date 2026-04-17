@@ -69,6 +69,13 @@ public interface Controller extends UnifyComponent {
     boolean isPageController();
     
 	/**
+	 * Returns true if this controller determines menu
+	 * 
+	 * @throws UnifyException if an error occurs
+	 */
+	boolean isDeterminesMenu() throws UnifyException;
+    
+	/**
 	 * Gets this controller's bundled category.
 	 * 
 	 * @return the bundled category type

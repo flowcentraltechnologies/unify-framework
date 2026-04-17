@@ -100,6 +100,8 @@ public class ResponseWriterImpl extends AbstractUnifyComponent implements Respon
 
 	private boolean autoStretch;
 
+	private boolean directFuncCall;
+
 	public ResponseWriterImpl() {
 		this.history = new Stack<HistoryEntry>();
 		this.dataIndex = -1;
@@ -119,6 +121,18 @@ public class ResponseWriterImpl extends AbstractUnifyComponent implements Respon
 	@Override
 	public void clearPlainResourceMode() {
 		this.plainResourceMode = false;
+	}
+
+	@Override
+	public boolean setDirectFuncCall(boolean directFuncCall) throws UnifyException {
+		final boolean current = this.directFuncCall;
+		this.directFuncCall = directFuncCall;
+		return current;
+	}
+
+	@Override
+	public boolean isDirectFuncCall() throws UnifyException {
+		return directFuncCall;
 	}
 
 	@Override
@@ -422,7 +436,7 @@ public class ResponseWriterImpl extends AbstractUnifyComponent implements Respon
 	public ResponseWriter writeJsonPathVariable(String name, String path) throws UnifyException {
 		useSecondary(128);
 		writeContextURL(path);
-		
+
 		WebStringWriter pathLsw = discardSecondary();
 		buf.append("\"").append(name).append("\":");
 		buf.appendJsonQuoted(pathLsw);
@@ -624,16 +638,21 @@ public class ResponseWriterImpl extends AbstractUnifyComponent implements Respon
 			}
 		}
 
-		if (functionAppendSym) {
-			buf.append(',');
+		if (directFuncCall) {
+			buf.append(functionName).append("({");
 		} else {
-			buf.append('[');
-			functionAppendSym = true;
-			bracketOpen = true;
+			if (functionAppendSym) {
+				buf.append(',');
+			} else {
+				buf.append('[');
+				functionAppendSym = true;
+				bracketOpen = true;
+			}
+
+			String alias = WriterUtils.getActionJSAlias(functionName);
+			buf.append("{\"fn\":\"").append(alias).append("\",\"prm\":{");
 		}
 
-		String alias = WriterUtils.getActionJSAlias(functionName);
-		buf.append("{\"fn\":\"").append(alias).append("\",\"prm\":{");
 		openFunction = true;
 		paramAppendSym = false;
 		return this;
@@ -649,7 +668,12 @@ public class ResponseWriterImpl extends AbstractUnifyComponent implements Respon
 			}
 		}
 
-		buf.append("}}");
+		if (directFuncCall) {
+			buf.append("});");
+		} else {
+			buf.append("}}");
+		}
+
 		openFunction = false;
 		return this;
 	}
@@ -926,6 +950,7 @@ public class ResponseWriterImpl extends AbstractUnifyComponent implements Respon
 		if (buf == null || !buf.isEmpty() || !history.isEmpty()) {
 			buf = new WebStringWriter(initialBufferCapacity);
 			history.clear();
+			directFuncCall = false;
 			openFunction = false;
 			functionAppendSym = false;
 			bracketOpen = false;

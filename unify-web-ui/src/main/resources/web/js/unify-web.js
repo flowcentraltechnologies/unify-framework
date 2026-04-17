@@ -2528,6 +2528,34 @@ ux.dcfInput = function(uEv) {
 	evp.hid.value = val;
 }
 
+/** Indented Multi-select */
+ux.rigIndentedSelect= function(rgp) {
+	if (rgp.pSel) {
+		const pids = rgp.pSel;
+		for (var i = 0; i < pids.length; i++) {
+			const fid = "fac_" + pids[i];
+			const evp = {uIndex:i, uPid:pids, uDep:rgp.pDep};
+			ux.addHdl(_id(fid), "change", ux.inSelectCheck, evp);	
+		}
+	}
+}
+
+ux.inSelectCheck = function(uEv) {
+	const evp = uEv.evp;
+	const deps = evp.uDep;
+	const depth = deps[evp.uIndex];
+	const box = _id(evp.uPid[evp.uIndex]);
+	const val = box.getValue();
+	for (var i = evp.uIndex + 1; i < deps.length; i++) {
+		if (deps[i] <= depth) {
+			break;
+		}
+		
+		const _box = _id(evp.uPid[i]);
+		_box.setValue(val);
+	}
+}
+
 /** Money field */
 ux.rigMoneyField = function(rgp) {
 	const id = rgp.pId;
@@ -5817,7 +5845,7 @@ ux.onSpecialKeyHdl= function(uEv) {
 	} else {
 		if (uEv.uKeyCode == uEv.evp.uSpecialKeyCode) {
 			if (UNIFY_KEY_ENTER == uEv.uKeyCode
-				&& (uEv.uShortKeyCode & UNIFY_SHIFT > 0)) {
+				&& (uEv.uShortKeyCode & (UNIFY_SHIFT | UNIFY_CTRL) > 0)) {
 				return;
 			}
 			
@@ -6024,6 +6052,7 @@ ux.init = function() {
 	ux.setfn(ux.rigPalette, "ux45");  
 	ux.setfn(ux.rigTarget, "ux46");  
 	ux.setfn(ux.rigAssignBoxSec, "ux47");  
+	ux.setfn(ux.rigIndentedSelect, "ux48");  
 }
 
 ux.setfn = function(fn, id) {

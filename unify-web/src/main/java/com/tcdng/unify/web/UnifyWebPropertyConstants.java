@@ -31,6 +31,8 @@ public interface UnifyWebPropertyConstants {
 
     String APPLICATION_500 = "application.web.500";
 
+    String APPLICATION_503 = "application.web.503";
+
     String APPLICATION_COMMON_UTILITIES = "application.web.common";
 
     String APPLICATION_THEME = "application.web.theme";
@@ -59,7 +61,4 @@ public interface UnifyWebPropertyConstants {
 
     String APPLICATION_BUNDLED_MODE_ENABLED = "application.web.bundledmode.enabled";
 
-    String APPLICATION_BUNDLED_MODE_FRONTOFFICE = "application.web.bundledmode.frontoffice";
-
-    String APPLICATION_BUNDLED_MODE_BACKOFFICE = "application.web.bundledmode.backoffice";
 }

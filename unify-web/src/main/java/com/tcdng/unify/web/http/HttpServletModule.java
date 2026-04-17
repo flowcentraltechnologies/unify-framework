@@ -27,6 +27,7 @@ import com.tcdng.unify.core.UnifyContainerConfig;
 import com.tcdng.unify.core.UnifyContainerEnvironment;
 import com.tcdng.unify.core.UnifyCoreConstants;
 import com.tcdng.unify.core.UnifyException;
+import com.tcdng.unify.core.UserSession;
 import com.tcdng.unify.core.system.UserSessionManager;
 import com.tcdng.unify.core.util.DataUtils;
 import com.tcdng.unify.core.util.IOUtils;
@@ -190,9 +191,10 @@ public class HttpServletModule  {
 			try {
 				HttpRequestHandler httpRequestHandler = getHttpRequestHandler();
 				RequestPathParts reqPathParts = httpRequestHandler.resolveRequestPath(httpRequest);
-				requestContextManager.loadRequestContext(
-						httpRequestHandler.getUserSession(this, httpRequest, httpResponse, reqPathParts),
-						httpRequest.getServletPath(), httpRequest.getRequestTarget());
+				final UserSession userSession = httpRequestHandler.getUserSession(this, httpRequest, httpResponse,
+						reqPathParts);
+				requestContextManager.loadRequestContext(userSession, httpRequest.getServletPath(),
+						httpRequest.getRequestTarget());
 				httpRequestHandler.handleRequest(type, reqPathParts, httpRequest, httpResponse);
 			} finally {
 				try {

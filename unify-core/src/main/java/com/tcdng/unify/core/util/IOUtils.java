@@ -1283,7 +1283,7 @@ public class IOUtils {
 			resp = new PostResp<String>(success ? respJson : null, success ? null : respJson, reqJson, respJson, status,
 					System.currentTimeMillis() - start);
 		} catch (Exception e) {
-			throw new UnifyException(e, UnifyCoreErrorConstants.IOUTIL_STREAM_RW_ERROR);
+			throw new UnifyException(e, UnifyCoreErrorConstants.IOUTIL_STREAM_RW_ERROR, endpoint);
 		}
 
 		return resp;
@@ -1318,6 +1318,8 @@ public class IOUtils {
 			Map<String, String> headers) throws UnifyException {
 		try (InputStream in = new ByteArrayInputStream(inArray)) {
 			return IOUtils.postStreamToEndpoint(endpoint, in, headers);
+		} catch (UnifyException e) {
+			throw e;
 		} catch (Exception e) {
 			throw new UnifyException(e, UnifyCoreErrorConstants.IOUTIL_STREAM_RW_ERROR);
 		}
@@ -1395,7 +1397,7 @@ public class IOUtils {
 			resp = new PostResp<String>(success ? respJson : null, success ? null : respJson, null, respJson, status,
 					System.currentTimeMillis() - start);
 		} catch (Exception e) {
-			throw new UnifyException(e, UnifyCoreErrorConstants.IOUTIL_STREAM_RW_ERROR);
+			throw new UnifyException(e, UnifyCoreErrorConstants.IOUTIL_STREAM_RW_ERROR, endpoint);
 		}
 
 		return resp;
@@ -1473,7 +1475,7 @@ public class IOUtils {
 			resp = new PostResp<String>(success ? respJson : null, success ? null : respJson, null, respJson, status,
 					System.currentTimeMillis() - start);
 		} catch (Exception e) {
-			throw new UnifyException(e, UnifyCoreErrorConstants.IOUTIL_STREAM_RW_ERROR);
+			throw new UnifyException(e, UnifyCoreErrorConstants.IOUTIL_STREAM_RW_ERROR, endpoint);
 		}
 
 		return resp;
@@ -1551,7 +1553,7 @@ public class IOUtils {
 			resp = new PostResp<String>(success ? respJson : null, success ? null : respJson, null, respJson, status,
 					System.currentTimeMillis() - start);
 		} catch (Exception e) {
-			throw new UnifyException(e, UnifyCoreErrorConstants.IOUTIL_STREAM_RW_ERROR);
+			throw new UnifyException(e, UnifyCoreErrorConstants.IOUTIL_STREAM_RW_ERROR, endpoint);
 		}
 
 		return resp;
@@ -1609,7 +1611,7 @@ public class IOUtils {
 				throw new Exception(rsb.toString());
 			}
 		} catch (Exception e) {
-			throw new UnifyException(e, UnifyCoreErrorConstants.IOUTIL_STREAM_RW_ERROR);
+			throw new UnifyException(e, UnifyCoreErrorConstants.IOUTIL_STREAM_RW_ERROR, endpoint);
 		}
 
 		return resp;

@@ -423,7 +423,7 @@ public abstract class AbstractUIController extends AbstractHttpClientController 
 
 		// Generate exception response
 		ResponseWriter writer = responseWriterPool.getResponseWriter(request);
-		try {
+		try { 
 			PageController<?> pageController = null;
 			ControllerPathParts respPathParts = null;
 			Page page = null;

@@ -42,6 +42,8 @@ public class ControllerPathParts {
 
 	private String operation;
 
+	private String requestTarget;
+
 	private Long resourceId;
 
 	private boolean sessionless;
@@ -118,6 +120,16 @@ public class ControllerPathParts {
 
 	public boolean isComponent(String componentLongName) {
 		return componentLongName != null && componentLongName.startsWith(controllerName);
+	}
+
+	public String getRequestTarget() {
+		return requestTarget;
+	}
+
+	public void setRequestTarget(String requestTarget) {
+		if (this.requestTarget == null) {
+			this.requestTarget = requestTarget;
+		}
 	}
 
 }

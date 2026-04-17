@@ -37,6 +37,8 @@ public abstract class AbstractHttpUserSession implements HttpUserSession {
 
 	private SessionContext sessionContext;
 
+	private boolean serviceUnavailable;
+	
 	public AbstractHttpUserSession(SessionAttributeProvider attributeProvider, Locale locale, TimeZone timeZone,
 			String sessionId, String uriBase, String contextPath, String tenantPath, String remoteHost,
 			String remoteIpAddress, String remoteUser) {
@@ -85,8 +87,13 @@ public abstract class AbstractHttpUserSession implements HttpUserSession {
 	}
 
 	@Override
+	public boolean isWithSessionContext() {
+		return sessionContext != null;
+	}
+
+	@Override
 	public boolean isUserLoggedIn() {
-		return sessionContext != null	&& sessionContext.isUserLoggedIn();
+		return sessionContext != null && sessionContext.isUserLoggedIn();
 	}
 
 	@Override
@@ -97,5 +104,15 @@ public abstract class AbstractHttpUserSession implements HttpUserSession {
 	@Override
 	public void setUserSessionManager(UserSessionManager userSessionManager) {
 		this.userSessionManager = userSessionManager;
+	}
+
+	@Override
+	public boolean isServiceUnavailable() {
+		return serviceUnavailable;
+	}
+
+	@Override
+	public void setServiceUnavailable(boolean serviceUnavailable) {
+		this.serviceUnavailable = serviceUnavailable;
 	}
 }

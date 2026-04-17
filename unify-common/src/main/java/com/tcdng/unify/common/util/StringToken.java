@@ -63,6 +63,10 @@ public abstract class StringToken {
         return type.isParam();
     }
 
+    public boolean isFieldParam() {
+        return type.isFieldParam();
+    }
+
     public boolean isFormattedParam() {
         return type.isFormattedParam();
     }

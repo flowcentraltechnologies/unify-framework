@@ -34,4 +34,5 @@ public interface UnifyCoreSessionAttributeConstants {
     String OVERRIDE_WIDGET_DATEFORMAT_FLAG = "UNIFYCORE.OVERRIDEWIDGETDATEFORMAT";
 
     String STICKY_PATHS = "UNIFYCORE.STICKYPATHS";
+
 }

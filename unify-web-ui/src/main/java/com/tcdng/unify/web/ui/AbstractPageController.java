@@ -36,6 +36,7 @@ import com.tcdng.unify.core.task.TaskMonitor;
 import com.tcdng.unify.core.task.TaskSetup;
 import com.tcdng.unify.core.upl.UplElementReferences;
 import com.tcdng.unify.core.util.ApplicationUtils;
+import com.tcdng.unify.core.util.DataUtils;
 import com.tcdng.unify.core.util.ReflectUtils;
 import com.tcdng.unify.core.util.StringUtils;
 import com.tcdng.unify.web.ClientCookie;
@@ -44,13 +45,17 @@ import com.tcdng.unify.web.ClientResponse;
 import com.tcdng.unify.web.ControllerPathParts;
 import com.tcdng.unify.web.UnifyWebSessionAttributeConstants;
 import com.tcdng.unify.web.annotation.Action;
+import com.tcdng.unify.web.annotation.ResultMapping;
+import com.tcdng.unify.web.annotation.ResultMappings;
 import com.tcdng.unify.web.constant.ClosePageMode;
 import com.tcdng.unify.web.constant.ReadOnly;
 import com.tcdng.unify.web.constant.ResetOnWrite;
 import com.tcdng.unify.web.constant.ResultMappingConstants;
 import com.tcdng.unify.web.constant.Secured;
 import com.tcdng.unify.web.constant.UnifyWebRequestAttributeConstants;
+import com.tcdng.unify.web.data.MenuDetectInfo;
 import com.tcdng.unify.web.http.LongUserSessionManager;
+import com.tcdng.unify.web.http.MenuDetector;
 import com.tcdng.unify.web.ui.widget.ContentPanel;
 import com.tcdng.unify.web.ui.widget.DataTransferWidget;
 import com.tcdng.unify.web.ui.widget.Document;
@@ -79,9 +84,11 @@ import com.tcdng.unify.web.ui.widget.data.TaskMonitorInfo;
  */
 @Singleton
 @UplBinding("web/reserved/upl/basepage.upl")
+@ResultMappings({
+@ResultMapping(name = "forward401", response = { "!loaddocumentresponse path:$x{application.web.401}" })})
 public abstract class AbstractPageController<T extends PageBean> extends AbstractUIController
 		implements PageController<T> {
-
+	
 	@Configurable
 	private TaskLauncher taskLauncher;
 
@@ -90,6 +97,9 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 
 	@Configurable
 	private WidgetCommandManager uiCommandManager;
+
+	@Configurable
+	private MenuDetector menuDetector;
 
 	private Class<T> pageBeanClass;
 
@@ -109,6 +119,7 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 		final PageManager pm = getPageManager();
 		final String pageId = pm.getCurrentRequestPageId(controllerPathParts);
 		if (sessionContext != null && sessionContext.getAttribute(pageId) == null) {
+			final PageRequestContextUtil prcUtil = getPageRequestContextUtil();
 			final Page page = pm.createPage(sessionContext.getLocale(), controllerPathParts.getControllerName());
 			page.setPathParts(controllerPathParts, pageId);
 			Class<? extends PageBean> pageBeanClass = getPageBeanClass();
@@ -119,7 +130,8 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 			}
 
 			page.setBundledCategory(getBundledCategory());
-			getPageRequestContextUtil().setRequestPage(page);
+			prcUtil.setRequestPage(page);
+
 			initPage();
 
 			sessionContext.setAttribute(pageId, page);
@@ -159,11 +171,30 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 	}
 
 	@Action
-	public final String indexPage() throws UnifyException {
-		onIndexPage();
-		return getPageRequestContextUtil().isWithCommandResultMapping()
-				? getPageRequestContextUtil().getCommandResultMapping()
-				: ResultMappingConstants.INDEX;
+	public final String indexPage() throws UnifyException { 
+		final PageRequestContextUtil prcUtil = getPageRequestContextUtil();
+		boolean performIndex = true;
+		if (menuDetector != null && isDeterminesMenu()) {
+			MenuDetectInfo info = prcUtil.isWithRequestTarget()
+					? menuDetector.detectFromPath(prcUtil.getRequestPathParts().getRequestTarget())
+					: null;
+			if (info != null) {
+				if (!info.isPrivileged()) {
+					setResultMapping("forward401");
+					performIndex = false;
+				}
+				
+				setPageAttribute(PageAttributeConstants.DETECTED_MENU, info);
+			} else {
+				clearPageAttribute(PageAttributeConstants.DETECTED_MENU);
+			}
+		}
+
+		if (performIndex) {
+			onIndexPage();
+		}
+		
+		return prcUtil.isWithCommandResultMapping() ? prcUtil.getCommandResultMapping() : ResultMappingConstants.INDEX;
 	}
 
 	@Action
@@ -256,7 +287,8 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 		if (StringUtils.isNotBlank(param)) {
 			msg = MessageFormat.format(msg, param);
 		}
-
+		
+		setSessionAttribute(UnifyWebSessionAttributeConstants.CONFIRM_PATHVARIABLES, pageRequestContextUtil.getRequestPathParts().getPathVariables());
 		return showMessageBox(pageRequestContextUtil.getRequestConfirmMessageIcon(), MessageMode.YES_NO,
 				getSessionMessage("messagebox.confirmation"), msg, "/confirmResult");
 	}
@@ -267,6 +299,7 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 			return hidePopupFireConfirm();
 		}
 
+		removeSessionAttribute(UnifyWebSessionAttributeConstants.CONFIRM_PATHVARIABLES);
 		return hidePopup();
 	}
 
@@ -428,11 +461,11 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 
 			writer.writeTo(response.getWriter());
 		} finally {
-			// Remove closed pages from session
-			getSessionContext().removeAttributes(pageRequestContextUtil.getClosedPagePaths());
-
 			// Restore writer
 			getResponseWriterPool().restore(writer);
+			
+			// Remove closed pages from session
+			getSessionContext().removeAttributes(pageRequestContextUtil.getClosedPagePaths());
 		}
 	}
 
@@ -441,8 +474,15 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 		return (T) resolveRequestPage().getPageBean();
 	}
 
+	@SuppressWarnings("unchecked")
 	protected List<String> getPathVariables() throws UnifyException {
-		return resolveRequestPage().getPathVariables();
+		List<String> variables = (List<String>) removeSessionAttribute(UnifyWebSessionAttributeConstants.CONFIRM_PATHVARIABLES);
+		return !DataUtils.isBlank(variables) ? variables:resolveRequestPage().getPathVariables();
+	}
+	
+	protected String getPathVariable(int index) throws UnifyException {
+		final List<String> variables = getPathVariables();
+		return variables != null && index >= 0 && variables.size() > index ? variables.get(index) : null;
 	}
 	
 	/**
@@ -913,7 +953,7 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 		return getPageRequestContextUtil().getRequestPage().getWidgetByLongName(clazz, longName);
 	}
 
-	protected <U> U getPageWidgetByShortName(Class<U> clazz, String shortName) throws UnifyException {
+	public <U> U getPageWidgetByShortName(Class<U> clazz, String shortName) throws UnifyException {
 		return getPageRequestContextUtil().getRequestPage().getWidgetByShortName(clazz, shortName);
 	}
 

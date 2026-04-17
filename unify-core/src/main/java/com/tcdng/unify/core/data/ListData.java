@@ -25,6 +25,8 @@ import com.tcdng.unify.common.data.Listable;
  */
 public class ListData implements Listable {
 
+	public static final ListData BLANK  = new ListData();
+	
     private String listKey;
 
     private String listDescription;
@@ -34,6 +36,10 @@ public class ListData implements Listable {
         this.listDescription = listDescription;
     }
 
+    private  ListData() {
+    	
+    }
+    
     @Override
     public String getListKey() {
         return listKey;
@@ -44,8 +50,4 @@ public class ListData implements Listable {
         return listDescription;
     }
 
-	@Override
-	public String toString() {
-		return "(" + listKey + ", " + listDescription + ")";
-	}
 }

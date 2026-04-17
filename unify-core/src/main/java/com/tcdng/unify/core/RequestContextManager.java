@@ -65,4 +65,14 @@ public interface RequestContextManager extends UnifyComponent {
      *             if an error occurs
      */
     void reset() throws UnifyException;
+    
+    /**
+     * Gets container setting
+     * 
+     * @param dataType the data type
+     * @param name the settings name
+     * @return the settings value
+     * @throws UnifyException if an error occurs
+     */
+    <T> T getContainerSetting(Class<T> dataType, String name) throws UnifyException;
 }

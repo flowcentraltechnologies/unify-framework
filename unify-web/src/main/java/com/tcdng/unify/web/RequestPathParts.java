@@ -18,6 +18,8 @@ package com.tcdng.unify.web;
 
 import java.util.List;
 
+import com.tcdng.unify.core.util.StringUtils;
+
 /**
  * Request path parts.
  * 
@@ -30,9 +32,13 @@ public class RequestPathParts {
 
     private String tenantPath;
 
-    public RequestPathParts(ControllerPathParts controllerPathParts, String tenantPath) {
+    private String targetPath;
+
+    public RequestPathParts(ControllerPathParts controllerPathParts, String tenantPath, String targetPath) {
         this.controllerPathParts = controllerPathParts;
         this.tenantPath = tenantPath;
+        this.targetPath = targetPath;
+        controllerPathParts.setRequestTarget(targetPath);
     }
 
     public RequestPathParts(ControllerPathParts controllerPathParts) {
@@ -84,7 +90,15 @@ public class RequestPathParts {
     }
 
     public boolean isWithTenantPath() {
-        return tenantPath != null;
+        return !StringUtils.isBlank(tenantPath);
+    }
+
+	public String getTargetPath() {
+		return targetPath;
+	}
+
+    public boolean isWithTargetPath() {
+        return !StringUtils.isBlank(targetPath);
     }
 
 }

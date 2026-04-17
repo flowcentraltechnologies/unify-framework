@@ -29,4 +29,5 @@ public interface PageAttributeConstants {
 
     String IN_DETACHED_WINDOW= "page::indetachedWindow";
 
+    String DETECTED_MENU = "detected-menu";
 }

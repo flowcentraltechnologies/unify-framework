@@ -20,7 +20,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.tcdng.unify.core.UnifyException;
+import com.tcdng.unify.core.constant.MimeType;
+import com.tcdng.unify.core.util.StringUtils;
 import com.tcdng.unify.web.ui.UnifyWebUIErrorConstants;
+import com.tcdng.unify.web.ui.widget.ResponseWriter;
 
 /**
  * Writer utilities.
@@ -131,6 +134,7 @@ public final class WriterUtils {
         jsAliasMap.put("ux.rigPalette", "ux45");  
         jsAliasMap.put("ux.rigTarget", "ux46");
         jsAliasMap.put("ux.rigAssignBoxSec", "ux47");  
+        jsAliasMap.put("ux.rigIndentedSelect", "ux48");  
         
         eventToJSMap = new HashMap<String, String>();
         eventToJSMap.put("onblur", "blur");
@@ -148,6 +152,28 @@ public final class WriterUtils {
     private WriterUtils() {
 
     }
+
+    public static void writeStyleSheet(ResponseWriter writer, String styleSheet) throws UnifyException {
+		writer.write("<link href=\"");
+		writer.writeContextResourceURL("/resource/file", MimeType.TEXT_CSS.template(), styleSheet);
+		writer.write("\" rel=\"stylesheet\" type=\"text/css\" media=\"screen\">");
+	}
+
+    public static void writeJavascript(ResponseWriter writer, String script, String nonce) throws UnifyException {
+		writer.write("<script src=\"");
+		writer.writeContextResourceURL("/resource/file", MimeType.TEXT_JAVASCRIPT.template(), script);
+		writer.write("\"");
+		writeNonce(writer,  nonce);
+		writer.write("></script>");
+	}
+
+    public static void writeNonce(ResponseWriter writer, String nonce) throws UnifyException {
+		if (!StringUtils.isBlank(nonce)) {
+			writer.write(" nonce=\"");
+			writer.write(nonce);
+			writer.write("\"");
+		}
+	}
 
     public static void registerJSAlias(String function, String alias) {
         jsAliasMap.put(function, alias);

@@ -61,6 +61,14 @@ public class TextAreaWriter extends AbstractControlWriter {
 		} else {
 			writeTagAttributesUsingStyleClass(writer, textArea, styleClass);
 		}
+
+		String placeholder = textArea.getPlaceholder();
+		if (!StringUtils.isBlank(placeholder))	{
+			writer.write(" placeholder=\"");
+			writer.writeWithHtmlEscape(resolveSessionMessage(placeholder));
+			writer.write("\"");
+		}		
+		
 		int columns = textArea.getColumns();
 		if (columns > 0) {
 			writer.write(" cols=\"").write(columns).write("\"");

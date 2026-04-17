@@ -16,6 +16,7 @@
 package com.tcdng.unify.web.ui.widget.writer;
 
 import com.tcdng.unify.core.UnifyException;
+import com.tcdng.unify.web.ui.PageRequestContextUtil;
 import com.tcdng.unify.web.ui.widget.Control;
 import com.tcdng.unify.web.ui.widget.EventHandler;
 import com.tcdng.unify.web.ui.widget.PushType;
@@ -33,17 +34,18 @@ public abstract class AbstractControlWriter extends AbstractWidgetWriter impleme
     @Override
     protected void doWriteBehavior(ResponseWriter writer, Widget widget, EventHandler[] handlers) throws UnifyException {
         super.doWriteBehavior(writer, widget, handlers);
-        Control control = (Control) widget;
+        final Control control = (Control) widget;
+        final PageRequestContextUtil prcu = getRequestContextUtil();
         if (control.isFocus()) {
             if (widget.isUseFacade()) {
-                getRequestContextUtil().setFocusOnWidgetId(control.getFacadeId());
+            	prcu.setFocusOnWidgetId(control.getFacadeId());
             } else {
-                getRequestContextUtil().setFocusOnWidgetId(control.getId());
+            	prcu.setFocusOnWidgetId(control.getId());
             }
         }
 
         if (widget.isNoPush()) {
-            getRequestContextUtil().addNoPushWidgetId(control.getId());
+        	prcu.addNoPushWidgetId(control.getId());
         }
     }
 

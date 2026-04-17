@@ -15,6 +15,7 @@
  */
 package com.tcdng.unify.convert.converters;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import org.apache.commons.codec.binary.Base64;
@@ -32,32 +33,46 @@ public class StringConverter extends AbstractConverter<String> {
 
     @SuppressWarnings("unchecked")
     @Override
-    protected String doConvert(Object value, ConverterFormatter<?> formatter) throws Exception {
-        if (value != null) {
-            if (value instanceof String) {
-                if (formatter != null && formatter.getDataType().isAssignableFrom(String.class)) {
-                    return ((ConverterFormatter<Object>) formatter).format(value);
-                }
+	protected String doConvert(Object value, ConverterFormatter<?> formatter) throws Exception {
+		if (value != null) {
+			if (value instanceof String) {
+				if (formatter != null && formatter.getDataType().isAssignableFrom(String.class)) {
+					return ((ConverterFormatter<Object>) formatter).format(value);
+				}
 
-                return (String) value;
-            }
+				return (String) value;
+			}
 
-            if (value instanceof byte[]) {
-            	return Base64.encodeBase64String((byte[]) value);
-            }
+			if (value instanceof byte[]) {
+				return Base64.encodeBase64String((byte[]) value);
+			}
 
-            if (formatter == null) {
-                if (value instanceof Date) {
-                    formatter = ConverterUtils.getDefaultDateTimeFormatter();
-                }
-                
-                if (formatter == null) {
-                    return String.valueOf(value);
-                }
-            }
+			if (formatter == null) {
+				if (value instanceof Date) {
+					formatter = ConverterUtils.getDefaultDateTimeFormatter();
+				}
 
-            return ((ConverterFormatter<Object>) formatter).format(value);
-        }
-        return null;
-    }
+				if (formatter == null) {
+					if (Number.class.isAssignableFrom(value.getClass())) {
+						if (!(value instanceof BigDecimal)) {
+							if (value instanceof Integer || value instanceof Long || value instanceof Byte
+									|| value instanceof Short) {
+								value = new BigDecimal(((Number) value).longValue());
+							} else {
+								value = new BigDecimal(((Number) value).doubleValue());
+							}
+						}
+
+						return ((BigDecimal) value).toPlainString();
+					}
+
+					return String.valueOf(value);
+				}
+			}
+
+			return ((ConverterFormatter<Object>) formatter).format(value);
+		}
+
+		return null;
+	}
 }

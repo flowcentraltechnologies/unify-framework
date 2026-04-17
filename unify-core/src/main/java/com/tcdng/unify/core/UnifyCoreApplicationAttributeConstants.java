@@ -26,7 +26,5 @@ public interface UnifyCoreApplicationAttributeConstants {
     String SESSION_COOKIE_NAME = "UNIFYCORE.SESSIONCOOKIE";
 
     String LONG_SESSION_COOKIE_NAME = "UNIFYCORE.LONGCOOKIE";
-    
-    String BUNDLED_CATEGORY_COOKIE_NAME = "UNIFYCORE.BUNCATCOOKIE";
 
 }

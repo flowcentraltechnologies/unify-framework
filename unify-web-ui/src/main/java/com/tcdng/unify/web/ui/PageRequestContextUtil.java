@@ -348,6 +348,20 @@ public interface PageRequestContextUtil extends UnifyComponent {
      */
     ControllerPathParts getRequestPathParts() throws UnifyException;
 
+	/**
+	 * Returns true if with request part parts otherwise false.
+	 * 
+	 * @throws UnifyException if an error occurs
+	 */
+	boolean isWithRequestPathParts() throws UnifyException;
+
+	/**
+	 * Returns true if with request targets otherwise false.
+	 * 
+	 * @throws UnifyException if an error occurs
+	 */
+	boolean isWithRequestTarget() throws UnifyException;
+    
     /**
      * Sets the response path parts information for current request context.
      * 

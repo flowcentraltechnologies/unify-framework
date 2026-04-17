@@ -97,6 +97,11 @@ public class HSqlDbDialect extends AbstractSqlDataSourceDialect {
 	}
 
 	@Override
+	public String getCurrentTimestampSQL() {
+		return "VALUES (CURRENT_TIMESTAMP)";
+	}
+
+	@Override
 	public boolean matchColumnDefault(String nativeVal, String defaultVal) throws UnifyException {
 		if (super.matchColumnDefault(nativeVal, defaultVal)) {
 			return true;

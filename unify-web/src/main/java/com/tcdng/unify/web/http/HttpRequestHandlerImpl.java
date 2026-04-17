@@ -30,6 +30,7 @@ import java.util.Map;
 
 import com.tcdng.unify.core.AbstractUnifyComponent;
 import com.tcdng.unify.core.SessionAttributeProvider;
+import com.tcdng.unify.core.UnifyCoreErrorConstants;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.UserSession;
 import com.tcdng.unify.core.annotation.Component;
@@ -56,6 +57,7 @@ import com.tcdng.unify.web.UnifyWebErrorConstants;
 import com.tcdng.unify.web.UnifyWebPropertyConstants;
 import com.tcdng.unify.web.UnifyWebSessionAttributeConstants;
 import com.tcdng.unify.web.WebApplicationComponents;
+import com.tcdng.unify.web.constant.BundledCatType;
 import com.tcdng.unify.web.constant.RequestParameterConstants;
 import com.tcdng.unify.web.constant.ReservedPageControllerConstants;
 import com.tcdng.unify.web.constant.UnifyWebRequestAttributeConstants;
@@ -93,9 +95,6 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 
 	@Configurable
 	private LongUserSessionManager longUserSessionManager;
-
-	@Configurable
-	private BundledCategoryManager bundledCategoryManager;
 
 	private FactoryMap<String, RequestPathParts> requestPathParts;
 
@@ -139,7 +138,8 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 							ReservedPageControllerConstants.DEFAULT_APPLICATION_HOME);
 				}
 
-				return new RequestPathParts(pathInfoRepository.getControllerPathParts(controllerPath), tenantPath);
+				return new RequestPathParts(pathInfoRepository.getControllerPathParts(controllerPath), tenantPath,
+						params.length > 0 ? (String) params[0] : null);
 			}
 
 		};
@@ -148,7 +148,7 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 	@Override
 	public RequestPathParts resolveRequestPath(HttpRequest httpRequest) throws UnifyException {
 		final String resolvedPath = httpRequest.getPathInfo();
-		return requestPathParts.get(resolvedPath == null ? "" : resolvedPath);
+		return requestPathParts.get(resolvedPath == null ? "" : resolvedPath, httpRequest.getRequestTarget());
 	}
 
 	@Override
@@ -226,9 +226,12 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 									+ "]. " + clientRequest.getRequestPathParts().getControllerPathParts()));
 				}
 
-				if (isBundledModeEnabled && controller.isPageController()) {
-					bundledCategoryManager.ensureSessionCategory(clientRequest, clientResponse,
-							controller.getBundledCategory());
+				if (isBundledModeEnabled && controller.isPageController()) { 
+					BundledCatType bundledCatType = controller.getBundledCategory();
+					if (bundledCatType != null && bundledCatType.isCore()) {
+						throwOperationErrorException(
+								new IllegalArgumentException("Attempt to access restricted bundle."));
+					}
 				}
 			} catch (Exception e) {
 				logError(e);
@@ -326,7 +329,15 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 		}
 
 		if (longUserSessionManager != null) {
-			longUserSessionManager.performAutoLogin(httpRequest, httpResponse, userSession);
+			try {
+				longUserSessionManager.performAutoLogin(httpRequest, httpResponse, userSession);
+			} catch (UnifyException e) {
+				if (UnifyCoreErrorConstants.IOUTIL_STREAM_RW_ERROR.equals(e.getErrorCode())) {
+					userSession.setServiceUnavailable(true);
+				} else {
+					throw e;
+				}
+			}
 		}
 
 		userSession.setUserSessionManager(httpModule.getUserSessionManager());

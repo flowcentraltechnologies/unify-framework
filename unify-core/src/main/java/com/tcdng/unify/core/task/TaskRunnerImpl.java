@@ -61,6 +61,9 @@ public class TaskRunnerImpl extends AbstractUnifyComponent implements TaskRunner
 	@Configurable
 	private UserTokenProvider userTokenProvider;
 	
+	@Configurable
+	private TaskTransactionService taskTransactionService;
+	
 	private ExecutorService processingExecutor;
 
 	private final Set<String> tasks;
@@ -196,7 +199,11 @@ public class TaskRunnerImpl extends AbstractUnifyComponent implements TaskRunner
 		if (params.isWithInDelayInMillSec()) {
 			new WaitThread(params, params.getInDelayInMillSec()).start();
 		} else {
-			processingExecutor.execute(new TaskRunnable(params));
+			try {
+				taskTransactionService.execute(processingExecutor, new TaskRunnable(params));
+			} catch (UnifyException e) {
+				logError(e);
+			}
 		}
 	}
 
@@ -205,7 +212,11 @@ public class TaskRunnerImpl extends AbstractUnifyComponent implements TaskRunner
 			if (params.isWithPeriodInMillSec()) {
 				new WaitThread(params, params.getPeriodInMillSec()).start();
 			} else {
-				processingExecutor.execute(new TaskRunnable(params));
+				try {
+					taskTransactionService.execute(processingExecutor, new TaskRunnable(params));
+				} catch (UnifyException e) {
+					logError(e);
+				}
 			}
 
 			// Repeat
@@ -235,7 +246,11 @@ public class TaskRunnerImpl extends AbstractUnifyComponent implements TaskRunner
 		@Override
 		public void run() {
 			ThreadUtils.sleep(waitMilliSecs);
-			processingExecutor.execute(new TaskRunnable(params));
+			try {
+				taskTransactionService.execute(processingExecutor, new TaskRunnable(params));
+			} catch (UnifyException e) {
+				logError(e);
+			}
 		}
 
 	}

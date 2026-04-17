@@ -13,40 +13,26 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
-package com.tcdng.unify.web.http;
+package com.tcdng.unify.web.ui.widget;
 
 import com.tcdng.unify.core.UnifyComponent;
 import com.tcdng.unify.core.UnifyException;
-import com.tcdng.unify.web.ClientRequest;
-import com.tcdng.unify.web.ClientResponse;
-import com.tcdng.unify.web.constant.BundledCatType;
 
 /**
- * Bundled category manager.
+ * I-frame HTML provider.
  * 
  * @author The Code Department
  * @since 4.1
  */
-public interface BundledCategoryManager extends UnifyComponent {
+public interface IFrameHtmlProvider extends UnifyComponent {
 
 	/**
-	 * Sets current session category.
+	 * Generates I-frame in-line HTML.
 	 * 
-	 * @param category the category to set
+	 * @param styleSheet the style sheets to use
+	 * @param script     the scripts to use
+	 * @param font       the fonts to use
 	 * @throws UnifyException if an error occurs
 	 */
-	void setSessionCategory(BundledCatType category) throws UnifyException;
-
-	/**
-	 * Ensures current session category matches request.
-	 * 
-	 * @param clientRequest  the client request
-	 * @param clientResponse the client response
-	 * @param category       the category
-	 * @throws UnifyException if an error occurs
-	 */
-	void ensureSessionCategory(ClientRequest clientRequest, ClientResponse clientResponse, BundledCatType category)
-			throws UnifyException;
-
+	String generateHtml(String[] styleSheet, String[] script, String[] font) throws UnifyException;
 }

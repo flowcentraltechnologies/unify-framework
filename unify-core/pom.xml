@@ -142,6 +142,11 @@
 		    <artifactId>commons-csv</artifactId>
 		    <version>1.10.0</version>
 		</dependency>
+		<dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-text</artifactId>
+		    <version>1.10.0</version>
+		</dependency>
 		<!-- Common HTML to PDF reporting. -->
 		<dependency>
 			<groupId>com.openhtmltopdf</groupId>
