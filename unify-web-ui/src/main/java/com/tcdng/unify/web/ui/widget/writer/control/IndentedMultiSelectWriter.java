@@ -43,20 +43,17 @@ public class IndentedMultiSelectWriter extends AbstractControlWriter {
 
 	@Override
 	protected void doWriteStructureAndContent(ResponseWriter writer, Widget widget) throws UnifyException {
-		IndentedMultiSelect multiSelect = (IndentedMultiSelect) widget;
+		final IndentedMultiSelect multiSelect = (IndentedMultiSelect) widget;
 		writer.write("<div");
 		writeTagAttributes(writer, multiSelect);
 		writer.write(">");
 
-		List<IndentedSelectInfo> infos = multiSelect.getIndentedSelectInfo();
-		if (!DataUtils.isBlank(infos)) {
-			List<ValueStore> valueStoreList = multiSelect.getValueList();
+		final int len = multiSelect.getItemCount();
+		if (len > 0) {
 			Control selectCtrl = multiSelect.getSelectCtrl();
 			selectCtrl.setEditable(true);
 			selectCtrl.setDisabled(false);
-			
-			final int size = valueStoreList.size();
-			for (int i = 0; i < size; i++) {
+			for (int i = 0; i < len; i++) {
 				writer.write("<div class=\"inrow ");
 				if (i % 2 == 0) {
 					writer.write("ineven");
@@ -65,8 +62,9 @@ public class IndentedMultiSelectWriter extends AbstractControlWriter {
 				}
 				
 				writer.write("\">");
-				IndentedSelectInfo info = infos.get(i);
-				ValueStore valueStore = valueStoreList.get(i);
+				
+				final ValueStore valueStore = multiSelect.getItemValueStoreAt(i);
+				final IndentedSelectInfo info = multiSelect.getItemAt();
 				selectCtrl.setValueStore(valueStore);
 				
 				for(int j = 0; j < info.getDepth(); j++) {
@@ -103,22 +101,20 @@ public class IndentedMultiSelectWriter extends AbstractControlWriter {
 		super.doWriteBehavior(writer, widget, handlers);
 		IndentedMultiSelect multiSelect = (IndentedMultiSelect) widget;
 		
-		List<IndentedSelectInfo> infos = multiSelect.getIndentedSelectInfo();
-		if (!DataUtils.isBlank(infos)) {
-			List<ValueStore> valueStoreList = multiSelect.getValueList();
+		final int len = multiSelect.getItemCount();
+		if (len > 0) {
 			Control selectCtrl = multiSelect.getSelectCtrl();
 			selectCtrl.setGroupId(null);
 			
-			final int size = valueStoreList.size();
-			String[] ids = new String[size];
-			int[] depths = new int[size];
-			for (int i = 0; i < size; i++) {
-				ValueStore valueStore = valueStoreList.get(i);
+			String[] ids = new String[len];
+			int[] depths = new int[len];
+			for (int i = 0; i < len; i++) {
+				final ValueStore valueStore = multiSelect.getItemValueStoreAt(i);
 				selectCtrl.setValueStore(valueStore);
 				writer.writeBehavior(selectCtrl);
 				
 				ids[i] = selectCtrl.getId();
-				depths[i] = infos.get(i).getDepth();
+				depths[i] = multiSelect.getItemAt().getDepth();
 			}
 			
 			writer.beginFunction("ux.rigIndentedSelect");

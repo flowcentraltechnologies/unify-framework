@@ -342,6 +342,15 @@ public interface ValueStore extends Iterable<ValueStore>{
      */
     boolean isSettable(String name) throws UnifyException;
 
+	/**
+	 * Checks if value object has changed in instance and in size
+	 * 
+	 * @param valObject the value object
+	 * @return true if changed otherwise false
+	 * @throws UnifyException if an error occurs
+	 */
+	boolean isChanged(Object valObject) throws UnifyException;
+    
     /**
      * Returns the value store value object.
      */
