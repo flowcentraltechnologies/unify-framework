@@ -486,6 +486,11 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 		List<String> variables = (List<String>) removeSessionAttribute(UnifyWebRequestAttributeConstants.CONFIRM_PATHVARIABLES);
 		return !DataUtils.isBlank(variables) ? variables:resolveRequestPage().getPathVariables();
 	}
+	
+	protected String getPathVariable(int index) throws UnifyException {
+		final List<String> variables = getPathVariables();
+		return variables != null && index >= 0 && variables.size() > index ? variables.get(index) : null;
+	}
 
 	/**
 	 * Executes after a page command.
