@@ -85,10 +85,10 @@ import com.tcdng.unify.web.ui.widget.data.TaskMonitorInfo;
 @Singleton
 @UplBinding("web/reserved/upl/basepage.upl")
 @ResultMappings({
-@ResultMapping(name = "forward401", response = { "!loaddocumentresponse path:$x{application.web.401}" })})
+		@ResultMapping(name = "forward401", response = { "!loaddocumentresponse path:$x{application.web.401}" }) })
 public abstract class AbstractPageController<T extends PageBean> extends AbstractUIController
 		implements PageController<T> {
-	
+
 	@Configurable
 	private TaskLauncher taskLauncher;
 
@@ -171,7 +171,7 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 	}
 
 	@Action
-	public final String indexPage() throws UnifyException { 
+	public final String indexPage() throws UnifyException {
 		final PageRequestContextUtil prcUtil = getPageRequestContextUtil();
 		boolean performIndex = true;
 		if (menuDetector != null && isDeterminesMenu()) {
@@ -183,7 +183,7 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 					setResultMapping("forward401");
 					performIndex = false;
 				}
-				
+
 				setPageAttribute(PageAttributeConstants.DETECTED_MENU, info);
 			} else {
 				clearPageAttribute(PageAttributeConstants.DETECTED_MENU);
@@ -193,7 +193,7 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 		if (performIndex) {
 			onIndexPage();
 		}
-		
+
 		return prcUtil.isWithCommandResultMapping() ? prcUtil.getCommandResultMapping() : ResultMappingConstants.INDEX;
 	}
 
@@ -275,7 +275,7 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 		if (requestCommand != null) {
 			postCommand(requestCommand.getParentLongName(), requestCommand.getCommand());
 		}
-		
+
 		return ResultMappingConstants.COMMAND;
 	}
 
@@ -287,19 +287,26 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 		if (StringUtils.isNotBlank(param)) {
 			msg = MessageFormat.format(msg, param);
 		}
-		
-		setSessionAttribute(UnifyWebSessionAttributeConstants.CONFIRM_PATHVARIABLES, pageRequestContextUtil.getRequestPathParts().getPathVariables());
+
+		setPageAttribute(UnifyWebRequestAttributeConstants.CONFIRM_PATHVARIABLES,
+				pageRequestContextUtil.getRequestPathParts().getPathVariables());
 		return showMessageBox(pageRequestContextUtil.getRequestConfirmMessageIcon(), MessageMode.YES_NO,
 				getSessionMessage("messagebox.confirmation"), msg, "/confirmResult");
 	}
 
+	@SuppressWarnings("unchecked")
 	@Action
 	public String confirmResult() throws UnifyException {
+		List<String> pathVariables = (List<String>) clearPageAttribute(
+				UnifyWebRequestAttributeConstants.CONFIRM_PATHVARIABLES);
 		if (MessageResult.YES.equals(getMessageResult())) {
+			if (!DataUtils.isBlank(pathVariables)) {
+				setSessionAttribute(UnifyWebRequestAttributeConstants.CONFIRM_PATHVARIABLES, pathVariables);
+			}
+
 			return hidePopupFireConfirm();
 		}
 
-		removeSessionAttribute(UnifyWebSessionAttributeConstants.CONFIRM_PATHVARIABLES);
 		return hidePopup();
 	}
 
@@ -463,7 +470,7 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 		} finally {
 			// Restore writer
 			getResponseWriterPool().restore(writer);
-			
+
 			// Remove closed pages from session
 			getSessionContext().removeAttributes(pageRequestContextUtil.getClosedPagePaths());
 		}
@@ -476,15 +483,10 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 
 	@SuppressWarnings("unchecked")
 	protected List<String> getPathVariables() throws UnifyException {
-		List<String> variables = (List<String>) removeSessionAttribute(UnifyWebSessionAttributeConstants.CONFIRM_PATHVARIABLES);
+		List<String> variables = (List<String>) removeSessionAttribute(UnifyWebRequestAttributeConstants.CONFIRM_PATHVARIABLES);
 		return !DataUtils.isBlank(variables) ? variables:resolveRequestPage().getPathVariables();
 	}
-	
-	protected String getPathVariable(int index) throws UnifyException {
-		final List<String> variables = getPathVariables();
-		return variables != null && index >= 0 && variables.size() > index ? variables.get(index) : null;
-	}
-	
+
 	/**
 	 * Executes after a page command.
 	 * 
