@@ -25,14 +25,14 @@ import com.tcdng.unify.core.data.ValueStore;
  * Serves as a base class for item list multi-controls.
  * 
  * @author The Code Department
- * @since 4.1
+ * @since 4.1.16
  */
 public abstract class AbstractItemListMultiControl<T> extends AbstractMultiControl {
 
 	private ValueStore valueStore;
 
 	@Override
-	public final void updateInternalState() throws UnifyException {
+	public void updateInternalState() throws UnifyException {
 		final List<T> list = getItemList();
 		if (valueStore == null || valueStore.isChanged(list)) {
 			valueStore = new BeanValueListStore(list);

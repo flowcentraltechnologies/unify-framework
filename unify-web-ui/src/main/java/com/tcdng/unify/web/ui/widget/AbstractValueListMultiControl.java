@@ -27,6 +27,7 @@ import com.tcdng.unify.core.UnifyException;
  * @author The Code Department
  * @since 4.1
  */
+@Deprecated(since = "4.1.16")
 public abstract class AbstractValueListMultiControl<T, U> extends AbstractMultiControl {
 
     private List<U> oldItemList;

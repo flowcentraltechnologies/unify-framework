@@ -17,7 +17,6 @@ package com.tcdng.unify.web.ui.widget.control;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import com.tcdng.unify.core.UnifyException;
@@ -34,7 +33,7 @@ import com.tcdng.unify.core.util.StringUtils;
 import com.tcdng.unify.web.annotation.Action;
 import com.tcdng.unify.web.font.FontSymbolManager;
 import com.tcdng.unify.web.ui.DataTransferBlock;
-import com.tcdng.unify.web.ui.widget.AbstractValueListMultiControl;
+import com.tcdng.unify.web.ui.widget.AbstractSourcedItemListMultiControl;
 import com.tcdng.unify.web.ui.widget.Control;
 import com.tcdng.unify.web.ui.widget.EventHandler;
 
@@ -64,7 +63,7 @@ import com.tcdng.unify.web.ui.widget.EventHandler;
         @UplAttribute(name = "headerEllipsis", type = boolean.class),
         @UplAttribute(name = "contentEllipsis", type = boolean.class),
         @UplAttribute(name = "rowEventHandler", type = EventHandler[].class) })
-public class Table extends AbstractValueListMultiControl<Table.Row, Object> {
+public class Table extends AbstractSourcedItemListMultiControl<Table.Row, Object> {
 
     private static final int DEFAULT_ITEMS_PER_PAGE = 50;
 
@@ -143,10 +142,10 @@ public class Table extends AbstractValueListMultiControl<Table.Row, Object> {
             Control control = (Control) childWidgetInfo.getWidget();
 
             if (childWidgetInfo.isExternal()) {
-                control.setValueStore(getValueList().get(childBlock.getItemIndex()).getRowValueStore());
+                control.setValueStore(getItemAt(childBlock.getItemIndex()).getRowValueStore());
             } else {
                 if (control == multiSelectCtrl) {
-                    control.setValueStore(getValueList().get(childBlock.getItemIndex()).getRowValueStore());
+                    control.setValueStore(getItemAt(childBlock.getItemIndex()).getRowValueStore());
                 }
             }
 
@@ -165,10 +164,6 @@ public class Table extends AbstractValueListMultiControl<Table.Row, Object> {
                 column.setAscending(true);
             }
         }
-    }
-
-    public void clear() throws UnifyException {
-        invalidateValueList();
     }
 
     public String getBodyStyle() throws UnifyException {
@@ -256,35 +251,29 @@ public class Table extends AbstractValueListMultiControl<Table.Row, Object> {
     }
 
     @Action
-    public void sort() throws UnifyException {
-        if (columnIndex >= 0) {
-            ColumnState columnState = getColumnList().get(columnIndex);
-            List<Row> list = getValueList();
-            if (columnState != null && list != null && !list.isEmpty()) {
-                Collections.sort(list, new RowComparator(columnState.getFieldName(), sortDirection));
-                reIndex();
-
-                // Sort original list to
-                List<?> items = (List<?>) getValue();
-                if (sortDirection) {
-                    DataUtils.sortAscending(items, items.get(0).getClass(), columnState.getFieldName());
-                } else {
-                    DataUtils.sortDescending(items, items.get(0).getClass(), columnState.getFieldName());
-                }
-            }
-        }
-    }
+	public void sort() throws UnifyException {
+		if (columnIndex >= 0) {
+			ColumnState columnState = getColumnList().get(columnIndex);
+			// Sort original list
+			List<?> items = (List<?>) getValue();
+			if (columnState != null && items != null && !items.isEmpty()) {
+				if (sortDirection) {
+					DataUtils.sortAscending(items, items.get(0).getClass(), columnState.getFieldName());
+				} else {
+					DataUtils.sortDescending(items, items.get(0).getClass(), columnState.getFieldName());
+				}
+			}
+		}
+	}
 
     @Action
     public void shift() throws UnifyException {
         doShift();
-        reIndex();
     }
 
     @Action
     public void delete() throws UnifyException {
-        getValueList().remove(getViewIndex());
-        reIndex();
+        ((List<?>) getValue()).remove(getViewIndex());
     }
     
     public List<String> getColumnPropertyList() throws UnifyException {
@@ -460,7 +449,7 @@ public class Table extends AbstractValueListMultiControl<Table.Row, Object> {
 
     public Object getSelectedItem() throws UnifyException {
         if (viewIndex >= 0) {
-            List<Row> rowList = getValueList();
+            final List<Row> rowList = getItemList();
             if (rowList != null && viewIndex < rowList.size()) {
                 return rowList.get(viewIndex).getItem();
             }
@@ -471,7 +460,7 @@ public class Table extends AbstractValueListMultiControl<Table.Row, Object> {
 
     public Integer[] getSelectedRowIndexes() throws UnifyException {
         getValue();
-        List<Row> rowList = getValueList();
+        final List<Row> rowList = getItemList();
         if (rowList == null || rowList.isEmpty()) {
             return DataUtils.ZEROLEN_INTEGER_ARRAY;
         }
@@ -488,7 +477,7 @@ public class Table extends AbstractValueListMultiControl<Table.Row, Object> {
     @SuppressWarnings("unchecked")
     public <T> List<T> getSelectedItems(Class<T> itemClazz) throws UnifyException {
         getValue();
-        List<Row> rowList = getValueList();
+       final  List<Row> rowList = getItemList();
         if (rowList == null || rowList.isEmpty()) {
             return Collections.emptyList();
         }
@@ -506,7 +495,7 @@ public class Table extends AbstractValueListMultiControl<Table.Row, Object> {
     public <T> List<T> getSelectedItemsColumnValues(Class<T> itemColumnClazz, String columnProperty)
             throws UnifyException {
         getValue();
-        List<Row> rowList = getValueList();
+        final List<Row> rowList = getItemList();
         if (rowList == null || rowList.isEmpty()) {
             return Collections.emptyList();
         }
@@ -566,7 +555,7 @@ public class Table extends AbstractValueListMultiControl<Table.Row, Object> {
     }
 
     public void pageCalculations() throws UnifyException {
-        List<Row> writeRowList = getValueList();
+        final List<Row> writeRowList = getItemList();
         if (writeRowList != null) {
             pageCalculations(writeRowList.size());
         } else {
@@ -680,40 +669,40 @@ public class Table extends AbstractValueListMultiControl<Table.Row, Object> {
         dataGroupId = getPrefixedId("data_");
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    protected List<Object> getItemList() throws UnifyException {
+	protected Row createItem(Object sourceObj, int index) throws UnifyException {
+        return new Row(sourceObj, index);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	protected List<Object> getSourceList() throws UnifyException {
         return (List<Object>) getValue();
-    }
+	}
 
     @Override
-    protected Row newValue(Object item, int index) throws UnifyException {
-        return new Row(item, index);
-    }
-
-    @Override
-    protected void onCreateValueList(List<Row> valueList) throws UnifyException {
+	protected void onCreateItemList(List<Row> oldItemList) throws UnifyException {
         selectedRowCount = 0;
-        for (Row row : valueList) {
+        for (Row row : oldItemList) {
             if (row.isSelected()) {
                 selectedRowCount++;
             }
         }
-    }
+	}
 
     protected void doShift() throws UnifyException {
 
     }
-
-    private void reIndex() throws UnifyException {
-        List<Row> list = getValueList();
-        if (list != null && !list.isEmpty()) {
-            int len = list.size();
-            for (int i = 0; i < len; i++) {
-                list.get(i).setIndex(i);
-            }
-        }
-    }
+//
+//    private void reIndex() throws UnifyException {
+//        List<Row> list = getItemList();
+//        if (list != null && !list.isEmpty()) {
+//            int len = list.size();
+//            for (int i = 0; i < len; i++) {
+//                list.get(i).setIndex(i);
+//            }
+//        }
+//    }
 
     public class Row implements RowState {
 
@@ -899,36 +888,36 @@ public class Table extends AbstractValueListMultiControl<Table.Row, Object> {
         }
     }
 
-    private class RowComparator implements Comparator<Row> {
-
-        private String property;
-
-        private boolean ascending;
-
-        public RowComparator(String property, boolean ascending) {
-            this.property = property;
-            this.ascending = ascending;
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public int compare(Row row1, Row row2) {
-            try {
-                if (ascending) {
-                    return DataUtils.compareForSortAscending(
-                            (Comparable<Object>) row1.getRowValueStore().retrieve(property),
-                            (Comparable<Object>) row2.getRowValueStore().retrieve(property));
-                }
-
-                return DataUtils.compareForSortDescending(
-                        (Comparable<Object>) row1.getRowValueStore().retrieve(property),
-                        (Comparable<Object>) row2.getRowValueStore().retrieve(property));
-            } catch (UnifyException e) {
-            }
-            return 0;
-        }
-
-    }
+//    private class RowComparator implements Comparator<Row> {
+//
+//        private String property;
+//
+//        private boolean ascending;
+//
+//        public RowComparator(String property, boolean ascending) {
+//            this.property = property;
+//            this.ascending = ascending;
+//        }
+//
+//        @SuppressWarnings("unchecked")
+//        @Override
+//        public int compare(Row row1, Row row2) {
+//            try {
+//                if (ascending) {
+//                    return DataUtils.compareForSortAscending(
+//                            (Comparable<Object>) row1.getRowValueStore().retrieve(property),
+//                            (Comparable<Object>) row2.getRowValueStore().retrieve(property));
+//                }
+//
+//                return DataUtils.compareForSortDescending(
+//                        (Comparable<Object>) row1.getRowValueStore().retrieve(property),
+//                        (Comparable<Object>) row2.getRowValueStore().retrieve(property));
+//            } catch (UnifyException e) {
+//            }
+//            return 0;
+//        }
+//
+//    }
 
     public List<Column> getColumnList() throws UnifyException {
         if (columnList == null) {
