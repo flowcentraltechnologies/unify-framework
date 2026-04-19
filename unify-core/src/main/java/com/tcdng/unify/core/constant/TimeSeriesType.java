@@ -30,9 +30,9 @@ public enum TimeSeriesType implements EnumConst {
 
     HOUR("HR", TimeResolutionType.MINUTE),
     DAY("DY", TimeResolutionType.HOUR),
-    DAY_OF_WEEK("DW", TimeResolutionType.HOUR),
-    DAY_OF_MONTH("DM", TimeResolutionType.HOUR),
-    DAY_OF_YEAR("DR", TimeResolutionType.HOUR),
+    DAY_OF_WEEK("DW", TimeResolutionType.DAY),
+    DAY_OF_MONTH("DM", TimeResolutionType.DAY),
+    DAY_OF_YEAR("DR", TimeResolutionType.DAY),
     WEEK("WK", TimeResolutionType.DAY),
     MONTH("MN", TimeResolutionType.WEEK),
     YEAR("YR", TimeResolutionType.MONTH);

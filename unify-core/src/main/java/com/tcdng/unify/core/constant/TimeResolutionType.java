@@ -66,7 +66,11 @@ public enum TimeResolutionType {
 		return resolution;
 	}
 	
-	public TimeResolutionType max(TimeResolutionType type) {
+	public TimeResolutionType min(TimeResolutionType type) {
 		return type != null && type.resolution < this.resolution ? type : this;
+	}
+	
+	public boolean less(TimeResolutionType type) {
+		return type != null && this.resolution < type.resolution;
 	}
 }
