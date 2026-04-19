@@ -41,4 +41,8 @@ public enum TimeResolutionType {
 	public int resolution() {
 		return resolution;
 	}
+	
+	public TimeResolutionType max(TimeResolutionType type) {
+		return type != null && type.resolution < this.resolution ? type : this;
+	}
 }
