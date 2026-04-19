@@ -38,6 +38,30 @@ public enum TimeResolutionType {
 		this.resolution = resolution;
 	}
 	
+	public boolean isMinute() {
+		return MINUTE.equals(this);
+	}
+	
+	public boolean isHour() {
+		return HOUR.equals(this);
+	}
+	
+	public boolean isDay() {
+		return DAY.equals(this);
+	}
+	
+	public boolean isWeek() {
+		return WEEK.equals(this);
+	}
+	
+	public boolean isMonth() {
+		return MONTH.equals(this);
+	}
+	
+	public boolean isYear() {
+		return YEAR.equals(this);
+	}
+	
 	public int resolution() {
 		return resolution;
 	}
