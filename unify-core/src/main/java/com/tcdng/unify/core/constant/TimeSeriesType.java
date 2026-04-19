@@ -28,19 +28,22 @@ import com.tcdng.unify.core.util.EnumUtils;
 @StaticList(name = "timeseriestypelist", description="$m{staticlist.timeseriestypelist}")
 public enum TimeSeriesType implements EnumConst {
 
-    HOUR("HR"),
-    DAY("DY"),
-    DAY_OF_WEEK("DW"),
-    DAY_OF_MONTH("DM"),
-    DAY_OF_YEAR("DR"),
-    WEEK("WK"),
-    MONTH("MN"),
-    YEAR("YR");
+    HOUR("HR", TimeResolutionType.MINUTE),
+    DAY("DY", TimeResolutionType.HOUR),
+    DAY_OF_WEEK("DW", TimeResolutionType.HOUR),
+    DAY_OF_MONTH("DM", TimeResolutionType.HOUR),
+    DAY_OF_YEAR("DR", TimeResolutionType.HOUR),
+    WEEK("WK", TimeResolutionType.DAY),
+    MONTH("MN", TimeResolutionType.WEEK),
+    YEAR("YR", TimeResolutionType.MONTH);
 
     private final String code;
 
-    private TimeSeriesType(String code) {
+    private final TimeResolutionType maxResolution;
+    
+    private TimeSeriesType(String code, TimeResolutionType maxResolution) {
         this.code = code;
+        this.maxResolution = maxResolution;
     }
 
     @Override
@@ -51,6 +54,10 @@ public enum TimeSeriesType implements EnumConst {
     @Override
     public String defaultCode() {
         return DAY.code;
+    }
+
+    public TimeResolutionType maxResolution() {
+        return maxResolution;
     }
 
     public static TimeSeriesType fromCode(String code) {
