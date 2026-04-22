@@ -36,7 +36,6 @@ import com.tcdng.unify.core.task.TaskMonitor;
 import com.tcdng.unify.core.task.TaskSetup;
 import com.tcdng.unify.core.upl.UplElementReferences;
 import com.tcdng.unify.core.util.ApplicationUtils;
-import com.tcdng.unify.core.util.DataUtils;
 import com.tcdng.unify.core.util.ReflectUtils;
 import com.tcdng.unify.core.util.StringUtils;
 import com.tcdng.unify.web.ClientCookie;
@@ -288,22 +287,13 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 			msg = MessageFormat.format(msg, param);
 		}
 
-		setPageAttribute(UnifyWebRequestAttributeConstants.CONFIRM_PATHVARIABLES,
-				pageRequestContextUtil.getRequestPathParts().getPathVariables());
 		return showMessageBox(pageRequestContextUtil.getRequestConfirmMessageIcon(), MessageMode.YES_NO,
 				getSessionMessage("messagebox.confirmation"), msg, "/confirmResult");
 	}
 
-	@SuppressWarnings("unchecked")
 	@Action
 	public String confirmResult() throws UnifyException {
-		List<String> pathVariables = (List<String>) clearPageAttribute(
-				UnifyWebRequestAttributeConstants.CONFIRM_PATHVARIABLES);
 		if (MessageResult.YES.equals(getMessageResult())) {
-			if (!DataUtils.isBlank(pathVariables)) {
-				setSessionAttribute(UnifyWebRequestAttributeConstants.CONFIRM_PATHVARIABLES, pathVariables);
-			}
-
 			return hidePopupFireConfirm();
 		}
 
@@ -481,15 +471,8 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 		return (T) resolveRequestPage().getPageBean();
 	}
 
-	@SuppressWarnings("unchecked")
 	protected List<String> getPathVariables() throws UnifyException {
-		List<String> variables = (List<String>) removeSessionAttribute(UnifyWebRequestAttributeConstants.CONFIRM_PATHVARIABLES);
-		return !DataUtils.isBlank(variables) ? variables:resolveRequestPage().getPathVariables();
-	}
-	
-	protected String getPathVariable(int index) throws UnifyException {
-		final List<String> variables = getPathVariables();
-		return variables != null && index >= 0 && variables.size() > index ? variables.get(index) : null;
+		return resolveRequestPage().getPathVariables();
 	}
 
 	/**
