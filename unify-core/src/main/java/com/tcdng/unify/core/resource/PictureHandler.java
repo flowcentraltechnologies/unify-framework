@@ -31,7 +31,7 @@ public interface PictureHandler extends ImageGenerator {
 	 * @param sourceId the source ID
 	 * @throws UnifyException if an error occurs
 	 */
-	void setSourceId(Long sourceId) throws UnifyException;
+	void setSourceId(Object sourceId) throws UnifyException;
 
 	/**
 	 * Saves picture content.
