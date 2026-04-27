@@ -24,7 +24,7 @@ import com.tcdng.unify.core.data.UploadedFile;
  * @author The Code Department
  * @since 4.1
  */
-public interface PictureHandler extends ImageGenerator {
+public interface PictureHandler<T> extends ImageGenerator {
 
 	/**
 	 * Sets the handler's source ID
@@ -32,13 +32,14 @@ public interface PictureHandler extends ImageGenerator {
 	 * @param sourceId the source ID
 	 * @throws UnifyException if an error occurs
 	 */
-	void setSourceId(Object sourceId) throws UnifyException;
+	void setSourceId(T sourceId) throws UnifyException;
 
 	/**
 	 * Saves picture content.
 	 * 
 	 * @param uploadFile the content to save
+	 * @return the storage ID
 	 * @throws UnifyException if an error occurs
 	 */
-	void save(UploadedFile uploadFile) throws UnifyException;
+	T save(UploadedFile uploadFile) throws UnifyException;
 }
