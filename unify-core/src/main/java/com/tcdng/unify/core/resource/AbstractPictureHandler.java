@@ -37,7 +37,7 @@ public abstract class AbstractPictureHandler extends AbstractImageGenerator impl
 
 	@Override
 	public boolean isReady() throws UnifyException {
-		return true;
+		return sourceId != null;
 	}
 
 	protected final Object getSourceId() {

@@ -34,6 +34,7 @@ import com.tcdng.unify.web.ui.widget.Control;
  */
 @Component("ui-picture")
 @UplAttributes({
+	@UplAttribute(name = "src", type = String.class),
 	@UplAttribute(name = "handler", type = String.class, mandatory = false),
 	@UplAttribute(name = "category", type = String.class),
 	@UplAttribute(name = "parentCategory", type = String.class),
@@ -104,14 +105,18 @@ public class Picture extends AbstractAutoRefreshMultiControl {
 
 		fileControl = (Control) addInternalChildWidget(
 				"!ui-fileupload accept:$s{image} binding:uploadedFile selectOnly:true hidden:true");
+		final String src = getUplAttribute(String.class, "src");
 		StringBuilder sb = new StringBuilder();
 		if (handler != null) {
-			sb.append("!ui-image src:$t{images/camera.png} binding:handler");
+			sb.append("!ui-image src:");
+			sb.append(!StringUtils.isBlank(src) ? src : "$t{images/camera.png}");
+			sb.append(" binding:handler");
 			appendUplAttribute(sb, "styleClass");
 			appendUplAttribute(sb, "style");
 			imageControl = (Control) addInternalChildWidget(sb.toString(), false, false);
 		} else {
-			sb.append("!ui-image src:$t{images/camera.png}");
+			sb.append("!ui-image src:");
+			sb.append(!StringUtils.isBlank(src) ? src : "$t{images/camera.png}");
 			appendUplAttribute(sb, "binding");
 			appendUplAttribute(sb, "styleClass");
 			appendUplAttribute(sb, "style");
