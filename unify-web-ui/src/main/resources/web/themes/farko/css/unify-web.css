@@ -838,7 +838,7 @@ overflow-x:hidden;overflow-y:scroll;border-top: solid 1px #A0A0A0;border-left: s
 .ui-period .pflist .selgray {background-color: #787878; color: #FFF;}
 
 /** Picture **/
-.ui-picture {max-width:200px; padding: 2px; cursor: pointer;}
+.ui-picture {max-width:200px;max-height:356px; padding: 2px; cursor: pointer;}
 .ui-picture-frame {display:inline-block;border: solid 1px #A0A0A0;padding:2px;}
 
 /** Rack */
