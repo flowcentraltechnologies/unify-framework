@@ -53,7 +53,7 @@ public class Picture extends AbstractAutoRefreshMultiControl {
 		super.populate(transferBlock);
 		if (uploadedFile != null && uploadedFile.length > 0) {
 			if (isWithHandler()) {
-				getHandler().save(uploadedFile[0].getData());
+				getHandler().save(uploadedFile[0]);
 			} else {
 				setValue(uploadedFile[0].getData());
 			}
