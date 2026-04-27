@@ -26,12 +26,12 @@ import com.tcdng.unify.core.annotation.Singleton;
  * @since 4.1
  */
 @Singleton(false)
-public abstract class AbstractPictureHandler<T> extends AbstractImageGenerator implements PictureHandler<T> {
+public abstract class AbstractPictureHandler extends AbstractImageGenerator implements PictureHandler {
 
-	private T sourceId;
+	private Object sourceId;
 	
 	@Override
-	public final void setSourceId(T sourceId) throws UnifyException {
+	public final void setSourceId(Object sourceId) throws UnifyException {
 		this.sourceId = sourceId;
 	}
 
@@ -40,7 +40,7 @@ public abstract class AbstractPictureHandler<T> extends AbstractImageGenerator i
 		return true;
 	}
 
-	protected final T getSourceId() {
+	protected final Object getSourceId() {
 		return sourceId;
 	}
 
