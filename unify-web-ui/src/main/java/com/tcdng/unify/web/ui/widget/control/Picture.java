@@ -80,7 +80,7 @@ public class Picture extends AbstractAutoRefreshMultiControl {
 
     public PictureHandler getHandler() throws UnifyException{
 		if (handler != null) {
-			final Long sourceId = getValue(Long.class);
+			final Object sourceId = getValue(Object.class);
 			handler.setSourceId(sourceId);
 		}
 		
