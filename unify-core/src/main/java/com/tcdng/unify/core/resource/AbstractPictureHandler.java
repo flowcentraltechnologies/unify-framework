@@ -31,7 +31,7 @@ public abstract class AbstractPictureHandler extends AbstractImageGenerator impl
 	private Object sourceId;
 	
 	@Override
-	public void setSourceId(Object sourceId) throws UnifyException {
+	public final void setSourceId(Object sourceId) throws UnifyException {
 		this.sourceId = sourceId;
 	}
 
@@ -40,7 +40,7 @@ public abstract class AbstractPictureHandler extends AbstractImageGenerator impl
 		return true;
 	}
 
-	protected Object getSourceId() {
+	protected final Object getSourceId() {
 		return sourceId;
 	}
 

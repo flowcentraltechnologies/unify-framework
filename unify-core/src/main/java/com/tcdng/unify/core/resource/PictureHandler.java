@@ -16,6 +16,7 @@
 package com.tcdng.unify.core.resource;
 
 import com.tcdng.unify.core.UnifyException;
+import com.tcdng.unify.core.data.UploadedFile;
 
 /**
  * An picture handler component.
@@ -36,8 +37,8 @@ public interface PictureHandler extends ImageGenerator {
 	/**
 	 * Saves picture content.
 	 * 
-	 * @param content the content to save
+	 * @param uploadFile the content to save
 	 * @throws UnifyException if an error occurs
 	 */
-	void save(byte[] content) throws UnifyException;
+	void save(UploadedFile uploadFile) throws UnifyException;
 }
