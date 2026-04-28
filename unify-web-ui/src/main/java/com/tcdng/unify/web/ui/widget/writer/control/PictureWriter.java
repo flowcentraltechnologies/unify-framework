@@ -56,7 +56,7 @@ public class PictureWriter extends AbstractAutoRefreshMultiControlWriter {
 		writer.writeParam("pContId", picture.getContainerId());
 		writer.writeParam("pFileId", picture.getFileCtrl().getId());
 		writer.writeParam("pImgId", picture.getImageCtrl().getId());
-		writer.writeParam("pEditable", picture.isContainerEditable());
+		writer.writeParam("pEditable", picture.isEditable() && !picture.isDisabled());
 		writer.writeParam("pRef", picture.getRefs());
 		writer.endFunction();
 	}
