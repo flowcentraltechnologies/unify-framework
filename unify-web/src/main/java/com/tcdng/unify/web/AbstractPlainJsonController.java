@@ -44,11 +44,7 @@ public abstract class AbstractPlainJsonController extends AbstractPlainControlle
 			final String actionName = request.getRequestPathParts().getControllerPathParts().getActionName();
 			jsonResponse = doExecute(actionName, request.getText());
 		} catch (Exception e) {
-			StringBuilder sb = new StringBuilder();
-			sb.append("{ \"serverError\":");
-			JsonUtils.write(sb, e.getMessage());
-			sb.append("}");
-			jsonResponse = sb.toString();
+			jsonResponse = getErrorResponse(e);
 		}
 
 		if (jsonResponse != null) {
@@ -75,5 +71,13 @@ public abstract class AbstractPlainJsonController extends AbstractPlainControlle
 		return null;
 	}
 
+	protected final String getErrorResponse(Exception e) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("{ \"serverError\":");
+		JsonUtils.write(sb, e.getMessage());
+		sb.append("}");
+		return sb.toString();
+	}
+	
 	protected abstract String doExecute(String actionName, String jsonRequest) throws UnifyException;
 }
