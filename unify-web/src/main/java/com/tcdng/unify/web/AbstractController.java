@@ -15,6 +15,8 @@
  */
 package com.tcdng.unify.web;
 
+import java.util.Map;
+
 import com.tcdng.unify.core.AbstractUnifyComponent;
 import com.tcdng.unify.core.SessionContext;
 import com.tcdng.unify.core.UnifyException;
@@ -29,6 +31,7 @@ import com.tcdng.unify.web.constant.Secured;
 import com.tcdng.unify.web.constant.UnifyWebRequestAttributeConstants;
 import com.tcdng.unify.web.http.HttpRequestHeaders;
 import com.tcdng.unify.web.http.HttpRequestParameters;
+import com.tcdng.unify.web.http.SimpleHttpRequestHeaders;
 
 /**
  * Abstract base controller component.
@@ -98,6 +101,14 @@ public abstract class AbstractController extends AbstractUnifyComponent implemen
 		return (HttpRequestHeaders) getRequestAttribute(UnifyWebRequestAttributeConstants.HEADERS);
 	}
 
+	protected void setHttpRequestHeaders(Map<String, String> headers) throws UnifyException {
+		setRequestAttribute(UnifyWebRequestAttributeConstants.HEADERS, new SimpleHttpRequestHeaders(headers));
+	}
+
+	protected void setHttpRequestHeaders(HttpRequestHeaders headers) throws UnifyException {
+		setRequestAttribute(UnifyWebRequestAttributeConstants.HEADERS, headers);
+	}
+	
 	protected final <T> T getHttpRequestParameter(Class<T> dataType, String paramName) throws UnifyException {
 		return DataUtils.convert(dataType, getHttpRequestParameter(paramName));
 	}
