@@ -22,7 +22,7 @@ import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Configurable;
 import com.tcdng.unify.core.constant.MimeType;
 import com.tcdng.unify.core.stream.JsonObjectStreamer;
-import com.tcdng.unify.core.util.json.JsonUtils;
+import com.tcdng.unify.web.util.HttpUtils;
 
 /**
  * Abstract plain JSON controller.
@@ -44,7 +44,7 @@ public abstract class AbstractPlainJsonController extends AbstractPlainControlle
 			final String actionName = request.getRequestPathParts().getControllerPathParts().getActionName();
 			jsonResponse = doExecute(actionName, request.getText());
 		} catch (Exception e) {
-			jsonResponse = getErrorResponse(e);
+			jsonResponse = HttpUtils.getJsonErrorResponse(e);
 		}
 
 		if (jsonResponse != null) {
@@ -69,14 +69,6 @@ public abstract class AbstractPlainJsonController extends AbstractPlainControlle
 		}
 
 		return null;
-	}
-
-	protected final String getErrorResponse(Exception e) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("{ \"serverError\":");
-		JsonUtils.write(sb, e.getMessage());
-		sb.append("}");
-		return sb.toString();
 	}
 	
 	protected abstract String doExecute(String actionName, String jsonRequest) throws UnifyException;
