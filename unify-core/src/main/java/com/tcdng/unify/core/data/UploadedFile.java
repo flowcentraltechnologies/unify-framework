@@ -102,7 +102,7 @@ public class UploadedFile {
 	
 	public OutputStream getOut() throws UnifyException {
 		if (usesTempFile && tempFileId != null && out == null) {
-			out = FileUtils.openTemporaryFile(tempFileId);
+			out = FileUtils.openTemporaryFileForWrite(tempFileId);
 		}
 		
 		return out;
@@ -256,6 +256,10 @@ public class UploadedFile {
 
 	public InputStream getIn() throws UnifyException {
 		if (in == null) {
+			if (usesTempFile && tempFileId != null) {
+				return FileUtils.openTemporaryFileForRead(tempFileId);
+			}
+
 			throw new UnifyOperationException("Uploaded file is already invalidated.");
 		}
 
