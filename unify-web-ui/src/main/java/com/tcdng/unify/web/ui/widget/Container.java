@@ -77,7 +77,7 @@ public interface Container extends DataTransferWidget, WidgetContainer {
      * @exception UnifyException
      *                if component with long name is unknown
      */
-    Widget getWidgetByLongName(String longName) throws UnifyException;
+	Widget getWidgetByLongName(String longName) throws UnifyException;
 
     /**
      * Returns true if widget with supplied long name exists in this container.
