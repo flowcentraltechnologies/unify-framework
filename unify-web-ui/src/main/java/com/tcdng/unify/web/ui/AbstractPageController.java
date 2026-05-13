@@ -128,7 +128,6 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 				page.setPageBean(ReflectUtils.newInstance(pageBeanClass));
 			}
 
-			page.setBundledCategory(getBundledCategory());
 			prcUtil.setRequestPage(page);
 
 			initPage();

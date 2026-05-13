@@ -17,7 +17,6 @@ package com.tcdng.unify.web;
 
 import com.tcdng.unify.core.UnifyComponent;
 import com.tcdng.unify.core.UnifyException;
-import com.tcdng.unify.web.constant.BundledCatType;
 
 /**
  * Component interface that must be implemented by every controller class.
@@ -79,12 +78,5 @@ public interface Controller extends UnifyComponent {
 	 * @throws UnifyException if an error occurs
 	 */
 	boolean isDeterminesMenu() throws UnifyException;
-    
-	/**
-	 * Gets this controller's bundled category.
-	 * 
-	 * @return the bundled category type
-	 * @throws UnifyException if an error occurs
-	 */
-    BundledCatType getBundledCategory() throws UnifyException;
+
 }
