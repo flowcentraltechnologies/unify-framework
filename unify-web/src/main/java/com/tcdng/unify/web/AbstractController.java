@@ -69,6 +69,11 @@ public abstract class AbstractController extends AbstractUnifyComponent implemen
 	}
 
 	@Override
+	public boolean isMultiplePagesPerSession() {
+		return false;
+	}
+
+	@Override
 	public boolean isDeterminesMenu() throws UnifyException {
 		return false;
 	}

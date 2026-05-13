@@ -89,8 +89,6 @@ public class PageManagerImpl extends AbstractUnifyComponent implements PageManag
 	private List<String> documentTagLines;
 
 	private String pageNamePrefix;
-
-	private boolean isSinglePageInstance;
 	
 	public PageManagerImpl() {
 		this.expandedReferences = new HashMap<String, List<String>>();
@@ -290,8 +288,9 @@ public class PageManagerImpl extends AbstractUnifyComponent implements PageManag
 
 	@Override
 	public String getCurrentRequestPageId(ControllerPathParts controllerPathParts) throws UnifyException {
-		return isSinglePageInstance ? controllerPathParts.getControllerPathId()
-				: WebPathUtils.getPageId(controllerPathParts.getControllerPathId(), getRequestClientPageId());
+		return controllerPathParts.isMultiplePagesPerSession()
+				? WebPathUtils.getPageId(controllerPathParts.getControllerPathId(), getRequestClientPageId())
+				: controllerPathParts.getControllerPathId();
 	}
 
 	@Override
@@ -513,9 +512,6 @@ public class PageManagerImpl extends AbstractUnifyComponent implements PageManag
 				documentTagLines.addAll(tagLines);
 			}
 		}
-
-		isSinglePageInstance = getContainerSetting(boolean.class,
-				UnifyWebPropertyConstants.APPLICATION_SINGLE_PAGE_INSTANCE_ENABLED, true);
 	}
 
 	@Override

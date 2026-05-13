@@ -68,6 +68,11 @@ public interface Controller extends UnifyComponent {
      */
     boolean isPageController();
     
+    /**
+     * Returns true if controller supports multiple pages per session.
+     */
+    boolean isMultiplePagesPerSession();
+    
 	/**
 	 * Returns true if this controller determines menu
 	 * 

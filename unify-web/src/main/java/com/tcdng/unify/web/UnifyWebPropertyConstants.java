@@ -61,6 +61,4 @@ public interface UnifyWebPropertyConstants {
 
     String APPLICATION_BUNDLED_MODE_ENABLED = "application.web.bundledmode.enabled";
 
-    String APPLICATION_SINGLE_PAGE_INSTANCE_ENABLED = "application.web.singlepageinstance.enabled";
-
 }
