@@ -90,6 +90,8 @@ public class PageManagerImpl extends AbstractUnifyComponent implements PageManag
 
 	private String pageNamePrefix;
 
+	private boolean isSinglePageInstance;
+	
 	public PageManagerImpl() {
 		this.expandedReferences = new HashMap<String, List<String>>();
 		this.valueReferences = new HashMap<String, List<String>>();
@@ -288,7 +290,8 @@ public class PageManagerImpl extends AbstractUnifyComponent implements PageManag
 
 	@Override
 	public String getCurrentRequestPageId(ControllerPathParts controllerPathParts) throws UnifyException {
-		return WebPathUtils.getPageId(controllerPathParts.getControllerPathId(), getRequestClientPageId());
+		return isSinglePageInstance ? controllerPathParts.getControllerPathId()
+				: WebPathUtils.getPageId(controllerPathParts.getControllerPathId(), getRequestClientPageId());
 	}
 
 	@Override
@@ -500,16 +503,19 @@ public class PageManagerImpl extends AbstractUnifyComponent implements PageManag
 		if (fonts != null) {
 			documentFonts = Collections.unmodifiableList(fonts);
 		}
-		
+
 		List<String> tags = DataUtils.convert(ArrayList.class, String.class,
 				getContainerSetting(Object.class, UnifyWebPropertyConstants.APPLICATION_DOCUMENT_TAG));
 		if (!DataUtils.isBlank(tags)) {
 			documentTagLines = new ArrayList<String>();
-			for (String tag: tags) {
+			for (String tag : tags) {
 				List<String> tagLines = IOUtils.readFileResourceLines(tag, getWorkingPath());
 				documentTagLines.addAll(tagLines);
 			}
 		}
+
+		isSinglePageInstance = getContainerSetting(boolean.class,
+				UnifyWebPropertyConstants.APPLICATION_SINGLE_PAGE_INSTANCE_ENABLED, true);
 	}
 
 	@Override
