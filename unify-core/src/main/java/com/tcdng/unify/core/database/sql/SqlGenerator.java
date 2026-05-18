@@ -17,6 +17,7 @@ package com.tcdng.unify.core.database.sql;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.tcdng.unify.core.UnifyComponent;
 import com.tcdng.unify.core.UnifyException;
@@ -42,7 +43,7 @@ public interface SqlGenerator extends UnifyComponent {
 	 * @return the field type SQL
 	 * @throws UnifyException if an error occurs
 	 */
-	String generateFieldTypeSql(SqlFieldTypeInfo info) throws UnifyException;
+	Optional<String> generateFieldTypeSql(SqlFieldTypeInfo info) throws UnifyException;
 	
 	/**
 	 * Generates a native get table check constraints SQL for specified record type.

@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import com.tcdng.unify.common.annotation.ColumnType;
@@ -219,19 +220,21 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 	}
 
 	@Override
-	public String generateFieldTypeSql(SqlFieldTypeInfo info) throws UnifyException {
-		StringBuilder sb = new StringBuilder();
-		SqlDataTypePolicy sqlDataTypePolicy = getSqlTypePolicy(info.getColumnType(),
-				info.getLength());
-		sqlDataTypePolicy.appendTypeSql(sb, info.getLength(), info.getPrecision(),
-				info.getScale());
-		if (info.isPrimaryKey() || !info.isNullable()) {
-			sb.append(" NOT NULL");
-		} else {
-			sb.append(" NULL");
+	public Optional<String> generateFieldTypeSql(SqlFieldTypeInfo info) throws UnifyException {
+		if (info != null && info.getColumnType() != null) {
+			StringBuilder sb = new StringBuilder();
+			SqlDataTypePolicy sqlDataTypePolicy = getSqlTypePolicy(info.getColumnType(), info.getLength());
+			sqlDataTypePolicy.appendTypeSql(sb, info.getLength(), info.getPrecision(), info.getScale());
+			if (info.isPrimaryKey() || !info.isNullable()) {
+				sb.append(" NOT NULL");
+			} else {
+				sb.append(" NULL");
+			}
+
+			return Optional.ofNullable(sb.toString());
 		}
-		
-		return sb.toString();
+
+		return Optional.empty();
 	}
 
 	@Override
