@@ -546,6 +546,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 		} else {
 			sb.append(' ');
 		}
+
 		sb.append("DROP ").append(sqlFieldSchemaInfo.getPreferredColumnName());
 		return sb.toString();
 	}
