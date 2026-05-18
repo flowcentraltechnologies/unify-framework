@@ -219,6 +219,22 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 	}
 
 	@Override
+	public String generateFieldTypeSql(SqlFieldTypeInfo info) throws UnifyException {
+		StringBuilder sb = new StringBuilder();
+		SqlDataTypePolicy sqlDataTypePolicy = getSqlTypePolicy(info.getColumnType(),
+				info.getLength());
+		sqlDataTypePolicy.appendTypeSql(sb, info.getLength(), info.getPrecision(),
+				info.getScale());
+		if (info.isPrimaryKey() || !info.isNullable()) {
+			sb.append(" NOT NULL");
+		} else {
+			sb.append(" NULL");
+		}
+		
+		return sb.toString();
+	}
+
+	@Override
 	public String generateAllCreateSql(SqlEntitySchemaInfo sqlEntitySchemaInfo, ForeignConstraints foreignConstraints,
 			UniqueConstraints uniqueConstraints, Indexes indexes, Views views, PrintFormat format)
 			throws UnifyException {
@@ -1951,7 +1967,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 			}
 		}
 	}
-
+	
 	protected final void appendColumnAndTypeSql(StringBuilder sb, SqlFieldSchemaInfo sqlFieldSchemaInfo,
 			SqlColumnAlterInfo sqlColumnAlterInfo) throws UnifyException {
 		SqlDataTypePolicy sqlDataTypePolicy = getSqlTypePolicy(sqlFieldSchemaInfo.getColumnType(),

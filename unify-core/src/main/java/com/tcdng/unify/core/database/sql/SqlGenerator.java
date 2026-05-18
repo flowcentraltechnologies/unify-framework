@@ -34,7 +34,16 @@ import com.tcdng.unify.core.constant.Views;
  * @since 4.1
  */
 public interface SqlGenerator extends UnifyComponent {
-
+	
+	/**
+	 * Generates a field type SQL
+	 * 
+	 * @param info the field type information
+	 * @return the field type SQL
+	 * @throws UnifyException if an error occurs
+	 */
+	String generateFieldTypeSql(SqlFieldTypeInfo info) throws UnifyException;
+	
 	/**
 	 * Generates a native get table check constraints SQL for specified record type.
 	 * 
