@@ -41,6 +41,7 @@ import com.tcdng.unify.web.ui.widget.Control;
 		@UplAttribute(name = "color", type = boolean.class, defaultVal = "true"),
 		@UplAttribute(name = "size", type = boolean.class, defaultVal = "true"),
 		@UplAttribute(name = "align", type = boolean.class, defaultVal = "true"),
+        @UplAttribute(name = "options", type = String.class),
 		@UplAttribute(name = "spellCheck", type = boolean.class) })
 public class RichTextEditor extends AbstractMultiControl {
 
@@ -114,6 +115,10 @@ public class RichTextEditor extends AbstractMultiControl {
 	public boolean isFormat() throws UnifyException {
 		return getUplAttribute(boolean.class, "format");
 	}
+
+	public String getOptions() throws UnifyException {
+        return getUplAttribute(String.class, "options");
+    }
 
 	public boolean isColor() throws UnifyException {
 		return getUplAttribute(boolean.class, "color");

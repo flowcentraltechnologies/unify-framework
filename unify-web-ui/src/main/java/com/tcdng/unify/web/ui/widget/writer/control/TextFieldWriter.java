@@ -56,6 +56,10 @@ public class TextFieldWriter extends AbstractControlWriter {
 			writer.writeParam("pId", textField.getId());
 		}
 
+		if (!StringUtils.isBlank(textField.getOptions())) {
+			writer.writeParam("pOpts", textField.getOptions());
+		}
+		
 		writer.writeParam("pHid", textField.getId());
 		writer.writeParam("pMimic", textField.isHiddenMimic());
 		writer.writeResolvedParam("pRegex", "\"" + getFormatRegex(textField) + "\"");

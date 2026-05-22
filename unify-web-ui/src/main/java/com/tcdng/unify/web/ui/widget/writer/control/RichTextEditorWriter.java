@@ -19,6 +19,7 @@ import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.annotation.Writes;
 import com.tcdng.unify.core.util.DataUtils;
+import com.tcdng.unify.core.util.StringUtils;
 import com.tcdng.unify.web.ui.widget.Control;
 import com.tcdng.unify.web.ui.widget.EventHandler;
 import com.tcdng.unify.web.ui.widget.ResponseWriter;
@@ -139,6 +140,10 @@ public class RichTextEditorWriter extends AbstractControlWriter {
 		if (editor.isLink()) {
 			writer.writeParam("pLnkId", editor.getLinkCtrl().getId());
 			writer.writeParam("pUrlId", editor.getUrlCtrl().getId());
+		}
+		
+		if (!StringUtils.isBlank(editor.getOptions())) {
+			writer.writeParam("pOpts", editor.getOptions());
 		}
 
 		writer.writeParam("pEdtId", editor.getEditorId());

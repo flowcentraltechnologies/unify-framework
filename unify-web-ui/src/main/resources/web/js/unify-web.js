@@ -106,6 +106,8 @@ ux.pageresets = {};
 ux.confirmstore = {};
 ux.extensionregistry = {};
 
+ux.textoptions = null;
+
 ux.lastUserActTime=0;
 
 ux.fnaliases = [];
@@ -3043,152 +3045,47 @@ ux.sfSelect = function(uEv) {
 	sf.setActual(val, true);
 }
 
-/** Options Text Area */
-ux.rigOptionsTextArea = function(rgp) {
+/** Text Options */
+ux.rigTextOptions= function(rgp) {
 	const id = rgp.pId;
-	const ota = _id(id);
-	if (ota) {
-		ota._norm = rgp.pNormCls;
-		ota._sel = rgp.pSelCls;
-		ota._selIdx = -1;
-		ota._oldSelIdx = -1;
-		ota._iCnt = rgp.pICnt;
-		ota._selectIds = rgp.pLabelIds;
-		ota._keys = rgp.pKeys;
-		ota._labels = rgp.pLabels;
-		ota._lastKeyHit = Date.now();
-		ota._frm = _id(rgp.pFrmId);
-		ota._list = _id(rgp.pLstId);
-		ota._pop = rgp.pEnabled;
-		
-		ota.selectOpt = function(idx, choose, fire) {
-			if (this._pop) {
-				if(this._oldSelIdx != idx) {
-					const label = _id(this._selectIds[idx]);
-					const olabel = _id(this._selectIds[this._oldSelIdx]);
-					label.className = this._sel;
-					if (olabel) {
-						olabel.className = this._norm;
-					}
-					
-					this._oldSelIdx = index;
-					if (!choose) {
-						ux.listScrollToLabel(ota, label);
-					}
-				}
-			}
-			
-			if (choose) {
-				this._selIdx = idx;
-				var pos = ux.getCaretPosition(ota);
-				var string = this.value;
-				var token = "{" + this._keys[idx] + "}";
-				var spos = pos.start + token.length;
-				string = string.substring(0, pos.start) + token + string.substring(pos.end);
-				this.value = string;
-				ux.setCaretPosition(ota, spos, spos);
-				this.focus();
-			}
-		};
-		
-		const evp = {};
-		evp.uTrg = ota;
-		evp.popupId=rgp.pPopupId;
-		evp.frameId=rgp.pId;
-		evp.stayOpenForMillSec = 0;
-		evp.showHdl = "ux42";
-		evp.showParam=rgp.pFrmId;
-		ux.addHdl(ota, "keypress", ux.otaTxtKeypress, evp);
-		ux.addHdl(ota, "keydown", ux.otaTxtKeydown, evp);	
-		if (rgp.pScrEnd) {
-			ota.scrollTop = ota.scrollHeight;
+	const rto = _id(id);
+	if (rto) {
+		const alias = rgp.pAlias;
+		const keys = rgp.pKeys;
+		for (var i = 0; i< keys.length; i++) {
+			const evp = {alias:alias, key:keys[i]};
+			ux.addHdl(_id(id + 'n' + i), "click", ux.rtoSelect, evp);
 		}
 		
-		ux.listWirePopFrame(ota, rgp);
+		const pop = {};
+		pop.uTrg = rto;
+		pop.popupId=rgp.pId;
+		pop.relFrameId=rgp.pFrmId;
+		pop.stayOpenForMillSec = 0;
+		ux.textoptions.set(alias, pop);
 	}
 }
 
-ux.otaTxtKeypress = function(uEv) {
-
-}
-
-ux.otaTxtKeydown = function(uEv) {
-	if (uEv.shiftKey && uEv.uKeyCode == UNIFY_KEY_SPACE) {
-		ux.doOpenPopup(uEv.evp);
-		uEv.uStop();
-		return;
+ux.rtoSelect = function(uEv) {
+	const evp = uEv.evp;
+	const pop = ux.textoptions.get(evp.alias);
+	if (pop.src) {
+		if (pop.rich) {
+			const sel = window.getSelection();
+			const rng = sel.getRangeAt(0);
+			const txt = document.createTextNode(evp.key);
+			rng.deleteContents();
+			rng.insertNode(txt);
+			rng.setStartAfter(txt);
+			rng.setEndAfter(txt);
+			sel.removeAllRanges();
+			sel.addRange(rng)
+		} else {
+			ux.setTextAtPosition(pop.src, pop.caret.start, pop.caret.end, evp.key);
+		}
 	}
 	
-	const ota = uEv.uTrg;
-	var txt = ota.value;
-	var pos = ux.getCaretPosition(ota);
-	if (pos.start != pos.end) {
-		if (uEv.uKeyCode == UNIFY_KEY_BACKSPACE || uEv.uKeyCode == UNIFY_KEY_DELETE) {
-			pos.start = ux.otaTokenStart(txt, pos.start);
-			pos.end = ux.otaTokenEnd(txt, pos.end);
-			ota.value = txt.substring(0, pos.start) + txt.substring(pos.end);
-			ux.setCaretPosition(ota, pos.start, pos.start);
-			uEv.uStop();
-		}
-	} else {
-		if (uEv.uKeyCode == UNIFY_KEY_BACKSPACE || uEv.uKeyCode == UNIFY_KEY_DELETE) {
-			var i = pos.start;
-			if (uEv.uKeyCode == UNIFY_KEY_BACKSPACE) {
-				i--;
-			}
-
-			if (i >= 0) {
-				var ch = txt.charAt(i);
-				if (ch == '}') {
-					pos.start = ux.otaTokenStart(txt, i);
-				} else if (ch == '{') {
-					pos.start = i;
-					pos.end = ux.otaTokenEnd(txt, pos.end);
-				} else {
-					pos.start = ux.otaTokenStart(txt, i);
-					pos.end = ux.otaTokenEnd(txt, pos.end);
-				}
-				
-				if (pos.start != pos.end) {
-					ota.value = txt.substring(0, pos.start) + txt.substring(pos.end);
-					ux.setCaretPosition(ota, pos.start, pos.start);
-					uEv.uStop();
-				}
-			}
-		}
-	}
-}
-
-ux.otaTokenStart = function(txt, start) {
-	var i = start;
-	while((--i) >= 0) {
-		var ch = txt.charAt(i);
-		if(ch == '{') {
-			return i;
-		} else if (ch == '}') {
-			break;
-		}
-	}
-	return start;
-}
-
-ux.otaTokenEnd = function(txt, end) {
-	i = end;
-	while(i < txt.length) {
-		var ch = txt.charAt(i++);
-		if (ch == '}') {
-			return i;
-		} else if (ch == '{') {
-			break;
-		}
-	}
-
-	return end;
-}
-
-
-ux.optionsTextAreaOnShow = function(frmId) {
-	ux.setFocus({wdgid: frmId});
+	ux.hidePopup(null);
 }
 
 /** Rich Text Editor */
@@ -3213,11 +3110,18 @@ ux.rigRichTextEditor = function(rgp) {
 	ux.richLinkSet({rc:rc, id:rgp.pLnkId, uid:rgp.pUrlId});
 
 	const prm = {rc:rc};
-	ux.addHdl(_id(eid), 'focusout', ux.richRangeHdl, prm);
-	ux.addHdl(_id(eid), 'input', ux.richInpHdl, prm);
+	const edit = _id(eid);
+	ux.addHdl(edit, 'focusout', ux.richRangeHdl, prm);
+	ux.addHdl(edit, 'input', ux.richInpHdl, prm);
+	if (rgp.pOpts) {
+		const evp = {list:rgp.pOpts, src:edit};
+		ux.addHdl(edit, "keydown", ux.textInputOpts,
+				evp);
+	}
 
-	if (_id(vid).value) {
-		_id(eid).innerHTML = _id(vid).value;
+	const vido = _id(vid);
+	if (vido.value) {
+		edit.innerHTML = vido.value;
 	}
 }
 
@@ -5499,6 +5403,7 @@ ux.setTextRegexFormatting = function(prm) {
 		
 		ux.addHdl(elem, "keypress", ux.textInputKeypress,
 				evp);
+		evp.list = prm.pOpts;
 		ux.addHdl(elem,  "keydown", ux.textInputKeydown,
 				evp);
 		if (prm.pMimic || prm.pCase) {
@@ -5506,6 +5411,32 @@ ux.setTextRegexFormatting = function(prm) {
 					evp);
 		}
 	}
+}
+
+ux.textInputOpts = function(uEv) {
+	if (uEv.shiftKey && uEv.uKeyCode == UNIFY_KEY_SPACE) {
+		const evp = uEv.evp;
+		const trg = uEv.uTrg;
+		const src = evp.src ? evp.src : trg;
+		const pos = evp.src ? null: ux.getCaretPosition(src);
+		const rec = src.getBoundingClientRect();
+		if (rec) {
+			const loc = {x:rec.left, y:rec.bottom};		
+			const pop = ux.textoptions.get(evp.list);
+			if (pop) {
+				pop.src = src;
+				pop.caret = pos;
+				pop.uLoc = loc;
+				pop.rich = evp.src ? true: false;
+				ux.doOpenPopup(pop);
+			}
+		}
+
+		uEv.uStop();
+		return true;
+	}
+	
+	return false;
 }
 
 ux.textInputFocus = function(uEv) {
@@ -5602,6 +5533,10 @@ ux.textInputKeyup = function(uEv) {
 }
 
 ux.textInputKeydown = function(uEv) {
+	if (ux.textInputOpts(uEv)) {
+		return;
+	}
+	
 	var trgObj = uEv.uTrg;
 	if (uEv.uChar && !trgObj.readOnly) {
 		var evp = uEv.evp;
@@ -5955,6 +5890,7 @@ ux.setHiddenValues = function(references, hiddenValues) {
 /** Document functions and event handlers */
 ux.init = function() {
 	ux.resizeTimeout = null;
+	ux.textoptions = new Map();
 	// Set document keydown handler
 	ux.addHdl(document, "keydown", ux.documentKeydownHdl,
 					{});
@@ -6053,6 +5989,7 @@ ux.init = function() {
 	ux.setfn(ux.rigTarget, "ux46");  
 	ux.setfn(ux.rigAssignBoxSec, "ux47");  
 	ux.setfn(ux.rigIndentedSelect, "ux48");  
+	ux.setfn(ux.rigTextOptions, "ux49");  
 }
 
 ux.setfn = function(fn, id) {
