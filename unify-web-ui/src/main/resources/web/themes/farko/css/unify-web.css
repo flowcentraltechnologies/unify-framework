@@ -789,7 +789,7 @@ overflow-x:hidden;overflow-y:scroll;border-top: solid 1px #A0A0A0;border-left: s
 .ui-name {}
 
 /** Text options */
-.ui-textoptions {position:absolute;display:none; width:auto; z-index: 300;color:#000;min-width: 180px !important;}
+.ui-textoptions {position:fixed;display:none; width:auto; z-index: 300;color:#000;min-width: 180px !important;}
 .ui-textoptions .toborder {width:100%;max-height:280px; border: solid 1px #A0A0A0; background-color: #FFF;}
 .ui-textoptions .tolist a {display:block; padding:6px 4px; color:#2C2C2C;white-space:nowrap;
 	background-color: transparent; border: 0px; text-decoration: none;}
