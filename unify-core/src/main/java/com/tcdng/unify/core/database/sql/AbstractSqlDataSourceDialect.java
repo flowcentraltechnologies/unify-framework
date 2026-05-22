@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import com.tcdng.unify.common.annotation.ColumnType;
@@ -216,6 +217,24 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 	public boolean matchColumnDefault(String nativeVal, String defaultVal) throws UnifyException {
 		return DataUtils.equals(nativeVal, defaultVal)
 				|| (defaultVal == null && "NULL".equalsIgnoreCase(String.valueOf(nativeVal)));
+	}
+
+	@Override
+	public Optional<String> generateFieldTypeSql(SqlFieldTypeInfo info) throws UnifyException {
+		if (info != null && info.getColumnType() != null) {
+			StringBuilder sb = new StringBuilder();
+			SqlDataTypePolicy sqlDataTypePolicy = getSqlTypePolicy(info.getColumnType(), info.getLength());
+			sqlDataTypePolicy.appendTypeSql(sb, info.getLength(), info.getPrecision(), info.getScale());
+			if (info.isPrimaryKey() || !info.isNullable()) {
+				sb.append(" NOT NULL");
+			} else {
+				sb.append(" NULL");
+			}
+
+			return Optional.ofNullable(sb.toString());
+		}
+
+		return Optional.empty();
 	}
 
 	@Override
@@ -527,6 +546,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 		} else {
 			sb.append(' ');
 		}
+
 		sb.append("DROP ").append(sqlFieldSchemaInfo.getPreferredColumnName());
 		return sb.toString();
 	}
@@ -1951,7 +1971,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 			}
 		}
 	}
-
+	
 	protected final void appendColumnAndTypeSql(StringBuilder sb, SqlFieldSchemaInfo sqlFieldSchemaInfo,
 			SqlColumnAlterInfo sqlColumnAlterInfo) throws UnifyException {
 		SqlDataTypePolicy sqlDataTypePolicy = getSqlTypePolicy(sqlFieldSchemaInfo.getColumnType(),

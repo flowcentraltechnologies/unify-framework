@@ -16,6 +16,7 @@
 package com.tcdng.unify.web.ui.widget.writer.container;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import com.tcdng.unify.core.UnifyCorePropertyConstants;
@@ -29,7 +30,6 @@ import com.tcdng.unify.core.util.RandomUtils;
 import com.tcdng.unify.core.util.StringUtils;
 import com.tcdng.unify.web.ControllerPathParts;
 import com.tcdng.unify.web.UnifyWebRequestAttributeConstants;
-import com.tcdng.unify.web.constant.BundledCatType;
 import com.tcdng.unify.web.constant.ClientSyncNameConstants;
 import com.tcdng.unify.web.ui.PagePathInfoRepository;
 import com.tcdng.unify.web.ui.util.WriterUtils;
@@ -110,14 +110,14 @@ public class DocumentWriter extends AbstractPageWriter {
 			}
 		}
 
-		final BundledCatType bundledCatType = document.getBundledCategory();
+		final String res = document.getResourcePrefix();
 		for (String styleSheet : getPageManager().getDocumentStyleSheets()) {
-			final BundledCatType prefixCatType = BundledCatType.fromPrefix(styleSheet);
-			if (!bundledCatType.equals(prefixCatType)) {
+			final Optional<String> optional = getResourcePrefix(styleSheet);
+			if (optional.isPresent() && !optional.get().equals(res)) {
 				continue;
 			}
 
-			styleSheet = BundledCatType.stripPrefix(styleSheet);
+			styleSheet = stripResourcePrefix(styleSheet);
 			if (!excludeStyleSheet.contains(styleSheet)) {
 				WriterUtils.writeStyleSheet(writer, styleSheet);
 				excludeStyleSheet.add(styleSheet); // Avoid duplication
@@ -142,12 +142,12 @@ public class DocumentWriter extends AbstractPageWriter {
 		}
 
 		for (String script : getPageManager().getDocumentsScripts()) {
-			final BundledCatType prefixCatType = BundledCatType.fromPrefix(script);
-			if (!bundledCatType.equals(prefixCatType)) {
+			final Optional<String> optional = getResourcePrefix(script);
+			if (optional.isPresent() && !optional.get().equals(res)) {
 				continue;
 			}
 
-			script = BundledCatType.stripPrefix(script);
+			script = stripResourcePrefix(script);
 			if (!excludeScripts.contains(script)) {
 				WriterUtils.writeJavascript(writer, script, nonce);
 				excludeScripts.add(script); // Avoid duplication
@@ -292,6 +292,24 @@ public class DocumentWriter extends AbstractPageWriter {
 
 	}
 
+	private Optional<String> getResourcePrefix(String resource) {
+		final int index = resource.indexOf("::");
+		if (index > 0) {
+			return Optional.of(resource.substring(0, index));
+		}
+		
+		return Optional.empty();
+	}
+
+	private String stripResourcePrefix(String resource) {
+		final int index = resource.indexOf("::");
+		if (index > 0) {
+			return resource.substring(index + 2);
+		}
+		
+		return resource;
+	}
+	
 	private void writeEmbeddedStyle(ResponseWriter writer, BasicDocument document) throws UnifyException {
 		writer.write("<style>");
 		// Write custom check box images

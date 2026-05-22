@@ -57,13 +57,22 @@ public interface TemporaryFileManager extends BusinessService {
 	String createTemporaryFile() throws UnifyException;
 
 	/**
-	 * Opens temporary file
+	 * Opens temporary file for write.
 	 * 
 	 * @param tempFileId the temporary file ID
 	 * @return the output stream
 	 * @throws UnifyException if an error occurs
 	 */
-	OutputStream openTemporaryFile(String tempFileId) throws UnifyException;
+	OutputStream openTemporaryFileForWrite(String tempFileId) throws UnifyException;
+
+	/**
+	 * Opens temporary file for read.
+	 * 
+	 * @param tempFileId the temporary file ID
+	 * @return the input stream
+	 * @throws UnifyException if an error occurs
+	 */
+	InputStream openTemporaryFileForRead(String tempFileId) throws UnifyException;
 	
 	/**
 	 * Writes all of input stream to a new temporary file.

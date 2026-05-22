@@ -850,7 +850,6 @@ public abstract class AbstractWidget extends AbstractUplComponent implements Wid
 	}
 
 	protected void commandPost(String path) throws UnifyException {
-		removeSessionAttribute(UnifyWebSessionAttributeConstants.CONFIRM_PATHVARIABLES);
 		setRequestAttribute(UnifyWebRequestAttributeConstants.COMMAND_POSTRESPONSE_PATH, path);
 		setCommandResultMapping(ResultMappingConstants.POST_RESPONSE);
 	}

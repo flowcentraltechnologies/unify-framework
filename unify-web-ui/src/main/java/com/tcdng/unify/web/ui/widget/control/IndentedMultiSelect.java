@@ -20,9 +20,8 @@ import java.util.List;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.data.IndentedSelectInfo;
-import com.tcdng.unify.core.data.ValueStore;
 import com.tcdng.unify.web.ui.DataTransferBlock;
-import com.tcdng.unify.web.ui.widget.AbstractValueListMultiControl;
+import com.tcdng.unify.web.ui.widget.AbstractItemListMultiControl;
 import com.tcdng.unify.web.ui.widget.Control;
 
 /**
@@ -32,7 +31,7 @@ import com.tcdng.unify.web.ui.widget.Control;
  * @since 4.1
  */
 @Component("ui-indentedmultiselect")
-public class IndentedMultiSelect extends AbstractValueListMultiControl<ValueStore, IndentedSelectInfo> {
+public class IndentedMultiSelect extends AbstractItemListMultiControl<IndentedSelectInfo> {
 
 	private Control selectCtrl;
 
@@ -40,14 +39,8 @@ public class IndentedMultiSelect extends AbstractValueListMultiControl<ValueStor
 	public void populate(DataTransferBlock transferBlock) throws UnifyException {
 		if (transferBlock != null) {
 			DataTransferBlock nextBlock = transferBlock.getChildBlock();
-			getIndentedSelectInfo().get(nextBlock.getItemIndex())
-					.setSelected(Boolean.valueOf((String) nextBlock.getValue()));
+			getItemAt(nextBlock.getItemIndex()).setSelected(Boolean.valueOf((String) nextBlock.getValue()));
 		}
-	}
-
-	@SuppressWarnings("unchecked")
-	public List<IndentedSelectInfo> getIndentedSelectInfo() throws UnifyException {
-		return (List<IndentedSelectInfo>) getValue(List.class);
 	}
 
 	public Control getSelectCtrl() {
@@ -55,23 +48,14 @@ public class IndentedMultiSelect extends AbstractValueListMultiControl<ValueStor
 	}
 
 	@Override
-	protected List<IndentedSelectInfo> getItemList() throws UnifyException {
-		return getIndentedSelectInfo();
-	}
-
-	@Override
-	protected ValueStore newValue(IndentedSelectInfo item, int index) throws UnifyException {
-		return createValueStore(item, index);
-	}
-
-	@Override
-	protected void onCreateValueList(List<ValueStore> valueList) throws UnifyException {
-		
-	}
-
-	@Override
 	protected void doOnPageConstruct() throws UnifyException {
 		selectCtrl = (Control) addInternalChildWidget("!ui-checkbox binding:selected");
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	protected List<IndentedSelectInfo> getItemList() throws UnifyException {
+		return (List<IndentedSelectInfo>) getValue(List.class);
 	}
 
 }

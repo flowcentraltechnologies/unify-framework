@@ -59,6 +59,4 @@ public interface UnifyWebPropertyConstants {
 
     String APPLICATION_WEB_BROWSER_LOCALE = "application.web.browser.locale";
 
-    String APPLICATION_BUNDLED_MODE_ENABLED = "application.web.bundledmode.enabled";
-
 }

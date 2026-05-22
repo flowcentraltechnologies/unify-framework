@@ -34,6 +34,7 @@ import com.tcdng.unify.web.ui.widget.Control;
  */
 @Component("ui-picture")
 @UplAttributes({
+	@UplAttribute(name = "src", type = String.class),
 	@UplAttribute(name = "handler", type = String.class, mandatory = false),
 	@UplAttribute(name = "category", type = String.class),
 	@UplAttribute(name = "parentCategory", type = String.class),
@@ -53,7 +54,7 @@ public class Picture extends AbstractAutoRefreshMultiControl {
 		super.populate(transferBlock);
 		if (uploadedFile != null && uploadedFile.length > 0) {
 			if (isWithHandler()) {
-				getHandler().save(uploadedFile[0].getData());
+				setValue(getHandler().save(uploadedFile[0]));
 			} else {
 				setValue(uploadedFile[0].getData());
 			}
@@ -80,8 +81,7 @@ public class Picture extends AbstractAutoRefreshMultiControl {
 
     public PictureHandler getHandler() throws UnifyException{
 		if (handler != null) {
-			final Long sourceId = getValue(Long.class);
-			handler.setSourceId(sourceId);
+			handler.setSourceId( getValue(Object.class));
 		}
 		
 		return handler;
@@ -105,14 +105,18 @@ public class Picture extends AbstractAutoRefreshMultiControl {
 
 		fileControl = (Control) addInternalChildWidget(
 				"!ui-fileupload accept:$s{image} binding:uploadedFile selectOnly:true hidden:true");
+		final String src = getUplAttribute(String.class, "src");
 		StringBuilder sb = new StringBuilder();
 		if (handler != null) {
-			sb.append("!ui-image src:$t{images/camera.png} binding:handler");
+			sb.append("!ui-image src:");
+			sb.append(!StringUtils.isBlank(src) ? src : "$t{images/camera.png}");
+			sb.append(" binding:handler");
 			appendUplAttribute(sb, "styleClass");
 			appendUplAttribute(sb, "style");
 			imageControl = (Control) addInternalChildWidget(sb.toString(), false, false);
 		} else {
-			sb.append("!ui-image src:$t{images/camera.png}");
+			sb.append("!ui-image src:");
+			sb.append(!StringUtils.isBlank(src) ? src : "$t{images/camera.png}");
 			appendUplAttribute(sb, "binding");
 			appendUplAttribute(sb, "styleClass");
 			appendUplAttribute(sb, "style");

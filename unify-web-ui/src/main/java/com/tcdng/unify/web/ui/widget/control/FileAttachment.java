@@ -15,6 +15,7 @@
  */
 package com.tcdng.unify.web.ui.widget.control;
 
+import java.util.Collections;
 import java.util.List;
 
 import com.tcdng.unify.core.UnifyException;
@@ -26,7 +27,6 @@ import com.tcdng.unify.core.constant.FileAttachmentType;
 import com.tcdng.unify.core.data.FileAttachmentInfo;
 import com.tcdng.unify.core.data.FileAttachmentsInfo;
 import com.tcdng.unify.core.data.UploadedFile;
-import com.tcdng.unify.core.data.ValueStore;
 import com.tcdng.unify.core.system.SequenceNumberService;
 import com.tcdng.unify.core.util.FileUtils;
 import com.tcdng.unify.core.util.StringUtils;
@@ -34,7 +34,7 @@ import com.tcdng.unify.web.annotation.Action;
 import com.tcdng.unify.web.constant.ResultMappingConstants;
 import com.tcdng.unify.web.constant.UnifyWebRequestAttributeConstants;
 import com.tcdng.unify.web.ui.DataTransferBlock;
-import com.tcdng.unify.web.ui.widget.AbstractValueListMultiControl;
+import com.tcdng.unify.web.ui.widget.AbstractItemListMultiControl;
 import com.tcdng.unify.web.ui.widget.Control;
 
 /**
@@ -44,9 +44,10 @@ import com.tcdng.unify.web.ui.widget.Control;
  * @since 4.1
  */
 @Component("ui-fileattachment")
-@UplAttributes({ @UplAttribute(name = "handler", type = String.class),
-		@UplAttribute(name = "viewPath", type = String.class) })
-public class FileAttachment extends AbstractValueListMultiControl<ValueStore, FileAttachmentInfo> {
+@UplAttributes({
+	@UplAttribute(name = "handler", type = String.class),
+	@UplAttribute(name = "viewPath", type = String.class) })
+public class FileAttachment extends AbstractItemListMultiControl<FileAttachmentInfo> {
 
 	private static final String ADHOC_FILENAME_PREFIX = "__adhoc";
 
@@ -120,8 +121,6 @@ public class FileAttachment extends AbstractValueListMultiControl<ValueStore, Fi
 		if (!fileAttachmentsInfo.isNormalized()) {
 			fileAttachmentsInfo.attach(getNextAdhocName());
 		}
-
-		invalidateValueList();
 	}
 
 	@Override
@@ -188,17 +187,7 @@ public class FileAttachment extends AbstractValueListMultiControl<ValueStore, Fi
 			return fileAttachmentsInfo.getAttachmentInfoList();
 		}
 
-		return null;
-	}
-
-	@Override
-	protected ValueStore newValue(FileAttachmentInfo item, int index) throws UnifyException {
-		return createValueStore(item, index);
-	}
-
-	@Override
-	protected void onCreateValueList(List<ValueStore> valueList) throws UnifyException {
-
+		return Collections.emptyList();
 	}
 
 	private String getNextAdhocName() throws UnifyException {

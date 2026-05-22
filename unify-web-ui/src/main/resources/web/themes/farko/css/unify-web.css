@@ -73,12 +73,12 @@ z-index:400;}
 /** Panel layout */
 .ui-tabular {display:table;}
 .ui-tabular .lrow {display:table-row;}
-.ui-tabular .lcellt {display:table-cell; vertical-align: top;}
-.ui-tabular .lcellm {display:table-cell; vertical-align: middle;}
-.ui-tabular .lcellb {display:table-cell; vertical-align: bottom;}
-.ui-tabular .lcelltp {display:table-cell; padding: 2px; vertical-align: top;}
-.ui-tabular .lcellmp {display:table-cell; padding: 2px; vertical-align: middle;}
-.ui-tabular .lcellbp {display:table-cell; padding: 2px; vertical-align: bottom;}
+.ui-tabular .lcellt {display:table-cell; vertical-align: top;height:100%;}
+.ui-tabular .lcellm {display:table-cell; vertical-align: middle;height:100%;}
+.ui-tabular .lcellb {display:table-cell; vertical-align: bottom;height:100%;}
+.ui-tabular .lcelltp {display:table-cell; padding: 2px; vertical-align: top;height:100%;}
+.ui-tabular .lcellmp {display:table-cell; padding: 2px; vertical-align: middle;height:100%;}
+.ui-tabular .lcellbp {display:table-cell; padding: 2px; vertical-align: bottom;height:100%;}
 .ui-tabular .llabel {}
 .ui-tabular .llabelinl {display:inline-block; padding-right:4px;}
 .ui-tabular .lcontent {display:block; width:100%; height:100%;}
@@ -788,22 +788,12 @@ overflow-x:hidden;overflow-y:scroll;border-top: solid 1px #A0A0A0;border-left: s
 /** Name field */
 .ui-name {}
 
-/** Options Text Area */
-.ui-optionstextarea {position:relative}
-
-.ui-optionstextarea .otatext {resize: none; word-wrap:break-word;}
-.ui-optionstextarea .otaborder {width:100%;max-height:280px; border: solid 1px #A0A0A0; background-color: #FFF;}
-.ui-optionstextarea .otalist a {display:block; padding:6px 4px; color:#2C2C2C;white-space:nowrap;
+/** Text options */
+.ui-textoptions {position:fixed;display:none; width:auto; z-index: 300;color:#000;min-width: 180px !important;}
+.ui-textoptions .toborder {width:100%;max-height:280px; border: solid 1px #A0A0A0; background-color: #FFF;}
+.ui-textoptions .tolist a {display:block; padding:6px 4px; color:#2C2C2C;white-space:nowrap;
 	background-color: transparent; border: 0px; text-decoration: none;}
-.ui-optionstextarea .otalist .norm {}
-.ui-optionstextarea .otalist .norm:hover {background-color: #B2B2B2; color: #FFF;}
-.ui-optionstextarea .otalist .sel {background-color: #5970B2; color: #FFF;}
-.ui-optionstextarea .otalist .selred {background-color: #C03333; color: #FFF;}
-.ui-optionstextarea .otalist .selblue {background-color: #3378C0; color: #FFF;}
-.ui-optionstextarea .otalist .selgreen {background-color: #33C078; color: #FFF;}
-.ui-optionstextarea .otalist .selyellow {background-color: #C0B800; color: #FFF;}
-.ui-optionstextarea .otalist .selorange {background-color: #C07833; color: #FFF;}
-.ui-optionstextarea .otalist .selgray {background-color: #787878; color: #FFF;}
+.ui-textoptions .tolist a:hover {color:#ffffff;background-color:#5970B2;}
 
 /** Palette */
 .ui-palette {}
@@ -838,7 +828,7 @@ overflow-x:hidden;overflow-y:scroll;border-top: solid 1px #A0A0A0;border-left: s
 .ui-period .pflist .selgray {background-color: #787878; color: #FFF;}
 
 /** Picture **/
-.ui-picture {width:180px; height:180px; padding: 2px; cursor: pointer;}
+.ui-picture {max-width:200px;max-height:356px; padding: 2px; cursor: pointer;}
 .ui-picture-frame {display:inline-block;border: solid 1px #A0A0A0;padding:2px;}
 
 /** Rack */

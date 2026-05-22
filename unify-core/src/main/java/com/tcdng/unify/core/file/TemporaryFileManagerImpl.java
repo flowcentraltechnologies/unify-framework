@@ -94,10 +94,24 @@ public class TemporaryFileManagerImpl extends AbstractBusinessService implements
 	}
 
 	@Override
-	public OutputStream openTemporaryFile(String tempFileId) throws UnifyException {
+	public OutputStream openTemporaryFileForWrite(String tempFileId) throws UnifyException {
 		try {
 			final TempFile tempFile = tempfiles.get(tempFileId);
 			return Files.newOutputStream(tempFile.getTempFile(), StandardOpenOption.WRITE);
+		} catch (UnifyException e) {
+			throw e;
+		} catch (IOException e) {
+			throwOperationErrorException(e);
+		}
+		
+		return null;
+	}
+
+	@Override
+	public InputStream openTemporaryFileForRead(String tempFileId) throws UnifyException {
+		try {
+			final TempFile tempFile = tempfiles.get(tempFileId);
+			return Files.newInputStream(tempFile.getTempFile(), StandardOpenOption.READ);
 		} catch (UnifyException e) {
 			throw e;
 		} catch (IOException e) {

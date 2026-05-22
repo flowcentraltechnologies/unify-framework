@@ -219,6 +219,11 @@ public abstract class AbstractArrayValueStore<T> extends AbstractValueStore {
     }
 
     @Override
+	public boolean isChanged(Object valObject) throws UnifyException {
+		return storage != valObject;
+	}
+
+	@Override
     public Object getValueObjectAtDataIndex() {
         return storage != null && dataIndex >= 0 ? storage[dataIndex] : null;
     }
@@ -235,6 +240,10 @@ public abstract class AbstractArrayValueStore<T> extends AbstractValueStore {
 
     @Override
     protected void doSetDataIndex(int dataIndex) {
+    	if (storage == null || dataIndex < 0 || dataIndex >= storage.length) {
+    		throw new IllegalArgumentException("Supplied data index is out of bounds.");
+    	}
+    	
         this.dataIndex = dataIndex;
     }
 

@@ -15,8 +15,6 @@
  */
 package com.tcdng.unify.web.ui.widget.writer.control;
 
-import java.util.List;
-
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.annotation.Writes;
@@ -60,23 +58,19 @@ public class FileAttachmentWriter extends AbstractControlWriter {
 
 			boolean isContainerDisabled = fileAttachment.isContainerDisabled();
 			boolean isContainerEditable = fileAttachment.isContainerEditable();
-			List<ValueStore> valueStoreList = fileAttachment.getValueList();
 			FileUpload fileCtrl = fileAttachment.getFileCtrl();
 			Control attachCtrl = fileAttachment.getAttachCtrl();
 			Control viewCtrl = fileAttachment.getViewCtrl();
 			Control removeCtrl = fileAttachment.getRemoveCtrl();
 			final boolean adhoc = fileAttachmentsInfo.isAdhoc();
 			final boolean disabled = fileAttachmentsInfo.isDisabled();
-			int size = valueStoreList.size();
-			for (int i = 0; i < size; i++) {
-				ValueStore valueStore = valueStoreList.get(i);
+			final int len = fileAttachment.getItemCount();
+			for (int i = 0; i < len; i++) {
+				final ValueStore valueStore = fileAttachment.getItemValueStoreAt(i);
 				fileCtrl.setValueStore(valueStore);
 				attachCtrl.setValueStore(valueStore);
 				viewCtrl.setValueStore(valueStore);
 				removeCtrl.setValueStore(valueStore);
-
-				FileAttachmentInfo fileAttachmentInfo = (FileAttachmentInfo) valueStore.getValueObject();
-
 				// Row
 				if (i % 2 == 0) {
 					writer.write("<div class=\"faodd\">");
@@ -89,6 +83,8 @@ public class FileAttachmentWriter extends AbstractControlWriter {
 				writer.writeStructureAndContent(fileCtrl);
 
 				writer.write("<div style=\"display:table;width:100%;\"><div style=\"display:table-row;\">");
+
+				final FileAttachmentInfo fileAttachmentInfo = fileAttachment.getItemAt();
 				if (!adhoc) {
 					String description = fileAttachmentInfo.getDescription();
 					if (description == null) {
@@ -156,12 +152,7 @@ public class FileAttachmentWriter extends AbstractControlWriter {
 			writer.writeContextURLParam("pViewURL", viewPath);
 		}
 
-		int len = 0;
-		List<ValueStore> valueStoreList = fileAttachment.getValueList();
-		if (valueStoreList != null) {
-			len = valueStoreList.size();
-		}
-
+		final int len = fileAttachment.getItemCount();
 		writer.writeParam("pContId", fileAttachment.getContainerId());
 		writer.writeParam("pFileId", fileAttachment.getFileCtrl().getBaseId());
 		writer.writeParam("pAttchId", fileAttachment.getAttachCtrl().getBaseId());

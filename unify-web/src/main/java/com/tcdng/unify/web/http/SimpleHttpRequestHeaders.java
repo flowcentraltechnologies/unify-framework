@@ -13,33 +13,38 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.tcdng.unify.core.resource;
+package com.tcdng.unify.web.http;
 
-import com.tcdng.unify.core.UnifyException;
-import com.tcdng.unify.core.data.UploadedFile;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Map;
 
 /**
- * An picture handler component.
+ * Simple request header.
  * 
  * @author The Code Department
  * @since 4.1
  */
-public interface PictureHandler extends ImageGenerator {
+public class SimpleHttpRequestHeaders implements HttpRequestHeaders {
 
-	/**
-	 * Sets the handler's source ID
-	 * 
-	 * @param sourceId the source ID
-	 * @throws UnifyException if an error occurs
-	 */
-	void setSourceId(Object sourceId) throws UnifyException;
+	private Map<String, String> headers;
 
-	/**
-	 * Saves picture content.
-	 * 
-	 * @param uploadFile the content to save
-	 * @return the source ID
-	 * @throws UnifyException if an error occurs
-	 */
-	Object save(UploadedFile uploadFile) throws UnifyException;
+	public SimpleHttpRequestHeaders(Map<String, String> headers) {
+		if (headers == null) {
+			throw new IllegalArgumentException("Argument 'headers' can not be null;");
+		}
+
+		this.headers = headers;
+	}
+
+	@Override
+	public String getHeader(String name) {
+		return headers.get(name);
+	}
+
+	@Override
+	public Enumeration<String> getNames() {
+		return Collections.enumeration(headers.keySet());
+	}
+
 }

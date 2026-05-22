@@ -24,6 +24,7 @@ import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.UnifyOperationException;
 import com.tcdng.unify.core.util.CalendarUtils;
 import com.tcdng.unify.core.util.StringUtils;
+import com.tcdng.unify.core.util.json.JsonUtils;
 import com.tcdng.unify.web.http.HttpPart;
 import com.tcdng.unify.web.http.HttpRequestHeaderConstants;
 import com.tcdng.unify.web.http.HttpRequestHeaders;
@@ -46,6 +47,14 @@ public final class HttpUtils {
     private HttpUtils() {
         
     }
+
+	public static final String getJsonErrorResponse(Exception e) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("{ \"serverError\":");
+		JsonUtils.write(sb, e.getMessage());
+		sb.append("}");
+		return sb.toString();
+	}
 
 	public static String getUploadHeader(ContentDisposition contentDisposition) {
 		final SimpleDateFormat format = new SimpleDateFormat(DATETIME_FORMAT);

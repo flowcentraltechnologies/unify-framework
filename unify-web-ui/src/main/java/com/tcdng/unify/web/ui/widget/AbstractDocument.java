@@ -32,13 +32,18 @@ import com.tcdng.unify.core.util.StringUtils;
         @UplAttribute(name = "footerPanel", type = String.class),
         @UplAttribute(name = "menuPanel", type = String.class),
         @UplAttribute(name = "contentPanel", type = String.class),
+        @UplAttribute(name = "resourcePrefix", type = String.class),
         @UplAttribute(name = "pushUpdate", type = boolean.class),
         @UplAttribute(name = "pushUpdateBinding", type = String.class)})
 public abstract class AbstractDocument extends AbstractHtmlPage implements Document {
-
+	
     @Override
     public String getLatencyPanelId() throws UnifyException {
         return getPrefixedId("latency_");
+    }
+
+    public String getResourcePrefix() throws UnifyException {
+        return getUplAttribute(String.class, "resourcePrefix");
     }
 
     public boolean isPushUpdate() throws UnifyException{

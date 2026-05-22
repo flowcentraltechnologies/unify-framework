@@ -57,7 +57,6 @@ import com.tcdng.unify.web.UnifyWebErrorConstants;
 import com.tcdng.unify.web.UnifyWebPropertyConstants;
 import com.tcdng.unify.web.UnifyWebSessionAttributeConstants;
 import com.tcdng.unify.web.WebApplicationComponents;
-import com.tcdng.unify.web.constant.BundledCatType;
 import com.tcdng.unify.web.constant.RequestParameterConstants;
 import com.tcdng.unify.web.constant.ReservedPageControllerConstants;
 import com.tcdng.unify.web.constant.UnifyWebRequestAttributeConstants;
@@ -99,8 +98,6 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 	private FactoryMap<String, RequestPathParts> requestPathParts;
 
 	private boolean isTenantPathEnabled;
-
-	private boolean isBundledModeEnabled;
 
 	private boolean isNoCachingEnabled;
 
@@ -224,14 +221,6 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 					throwOperationErrorException(
 							new IllegalArgumentException("Referer required for controller type [" + controller.getName()
 									+ "]. " + clientRequest.getRequestPathParts().getControllerPathParts()));
-				}
-
-				if (isBundledModeEnabled && controller.isPageController()) { 
-					BundledCatType bundledCatType = controller.getBundledCategory();
-					if (bundledCatType != null && bundledCatType.isCore()) {
-						throwOperationErrorException(
-								new IllegalArgumentException("Attempt to access restricted bundle."));
-					}
 				}
 			} catch (Exception e) {
 				logError(e);
@@ -380,8 +369,6 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 	protected void onInitialize() throws UnifyException {
 		isTenantPathEnabled = getContainerSetting(boolean.class,
 				UnifyWebPropertyConstants.APPLICATION_TENANT_PATH_ENABLED, false);
-		isBundledModeEnabled = getContainerSetting(boolean.class,
-				UnifyWebPropertyConstants.APPLICATION_BUNDLED_MODE_ENABLED, false);
 		isNoCachingEnabled = getContainerSetting(boolean.class, UnifyWebPropertyConstants.APPLICATION_WEB_NO_CACHING,
 				false);
 	}

@@ -123,8 +123,11 @@ public class ControllerFinderImpl extends AbstractUnifyComponent implements Cont
 			}
 
 			Controller controller = (Controller) getComponent(_actualControllerName);
-			if (controller.isPageController() && StringUtils.isBlank(getRequestClientPageId())) {
-				setRequestClientPageId(RandomUtils.generateRandomAlphanumeric(UnifyWebRequestAttributeConstants.PID_SIZE));
+			if (controller.isPageController()) {
+				controllerPathParts.setMultiplePagesPerSession(controller.isMultiplePagesPerSession());
+				if (StringUtils.isBlank(getRequestClientPageId())) {
+					setRequestClientPageId(RandomUtils.generateRandomAlphanumeric(UnifyWebRequestAttributeConstants.PID_SIZE));
+				}
 			}
 
 			controller.ensureContextResources(controllerPathParts);

@@ -48,6 +48,8 @@ public class ControllerPathParts {
 
 	private boolean sessionless;
 
+	private boolean multiplePagesPerSession;
+
 	public ControllerPathParts(DocPathParts docPathParts, String controllerPath, String controllerPathId,
 			String controllerName, List<String> pathVariables, String actionName, String operation, Long resourceId,
 			boolean sessionless) {
@@ -104,6 +106,14 @@ public class ControllerPathParts {
 
 	public boolean isSessionless() {
 		return sessionless;
+	}
+
+	public boolean isMultiplePagesPerSession() {
+		return multiplePagesPerSession;
+	}
+
+	public void setMultiplePagesPerSession(boolean multiplePagesPerSession) {
+		this.multiplePagesPerSession = multiplePagesPerSession;
 	}
 
 	public boolean isVariablePath() {

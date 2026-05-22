@@ -15,11 +15,10 @@
  */
 package com.tcdng.unify.web.ui.widget.writer.control;
 
-import java.util.List;
-
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.annotation.Writes;
+import com.tcdng.unify.core.data.ValueStore;
 import com.tcdng.unify.web.ui.widget.Control;
 import com.tcdng.unify.web.ui.widget.EventHandler;
 import com.tcdng.unify.web.ui.widget.ResponseWriter;
@@ -44,30 +43,31 @@ public class MultiDynamicWriter extends AbstractControlWriter {
 		writer.write("<div");
 		writeTagAttributes(writer, multiDynamic);
 		writer.write(">");
-		List<MultiDynamic.ValueStore> valueStoreList = multiDynamic.getValueList();
-		if (valueStoreList != null) {
+		final int len = multiDynamic.getItemCount();
+		if (len > 0) {
 			String captionSuffix = multiDynamic.getCaptionSuffix();
 			String isRequiredSym = multiDynamic.getIsRequiredSymbol();
 			writer.write("<table style:\"width:100%;\">");
 			DynamicField valueCtrl = multiDynamic.getValueCtrl();
-			int len = valueStoreList.size();
 			valueCtrl.setExtraStyle(multiDynamic.getInputStyle());
 			for (int i = 0; i < len; i++) {
-				MultiDynamic.ValueStore itemValueStore = valueStoreList.get(i);
+				ValueStore valueStore = multiDynamic.getItemValueStoreAt(i);
+				MultiDynamic.Item item = multiDynamic.getItemAt();
+				
 				writer.write("<tr>");
 
 				writer.write("<td class=\"secLabel\"></span>");
-				writer.write(itemValueStore.getValueStore().retrieve("description")).write(captionSuffix);
+				writer.write(item.getCaption()).write(captionSuffix);
 				writer.write("</span></td>");
 
 				writer.write("<td class=\"secInputReq\">");
-				if (itemValueStore.isRequired()) {
+				if (item.isRequired()) {
 					writer.write("<span>").write(isRequiredSym).write("</span>");
 				}
 				writer.write("</td>");
 
 				writer.write("<td class=\"secInput\"><div>");
-				valueCtrl.setValueStore(itemValueStore.getValueStore());
+				valueCtrl.setValueStore(valueStore);
 				writer.writeStructureAndContent(valueCtrl);
 
 				writer.write("</div><div><span id=\"").write(valueCtrl.getControl().getNotificationId())
@@ -86,12 +86,12 @@ public class MultiDynamicWriter extends AbstractControlWriter {
 			throws UnifyException {
 		super.doWriteBehavior(writer, widget, handlers);
 		MultiDynamic multiDynamic = (MultiDynamic) widget;
-		List<MultiDynamic.ValueStore> valueStoreList = multiDynamic.getValueList();
-		if (valueStoreList != null) {
+		final int len = multiDynamic.getItemCount();
+		if (len > 0) {
 			Control valueCtrl = multiDynamic.getValueCtrl();
-			int len = valueStoreList.size();
 			for (int i = 0; i < len; i++) {
-				valueCtrl.setValueStore(valueStoreList.get(i).getValueStore());
+				ValueStore valueStore = multiDynamic.getItemValueStoreAt(i);
+				valueCtrl.setValueStore(valueStore);
 				writer.writeBehavior(valueCtrl);
 				if (multiDynamic.isContainerEditable()) {
 					addPageAlias(multiDynamic.getId(), valueCtrl);
