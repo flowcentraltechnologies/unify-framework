@@ -235,6 +235,8 @@ public class UserSessionManagerImpl extends AbstractBusinessService implements U
 
         private SessionContext sessionContext;
 
+    	private boolean serviceUnavailable;
+
         public LocalUserSession(SessionContext sessionContext) {
             this.sessionContext = sessionContext;
         }
@@ -263,5 +265,20 @@ public class UserSessionManagerImpl extends AbstractBusinessService implements U
         public String getTenantPath() {
             return sessionContext.getTenantPath();
         }
+
+		@Override
+		public boolean isWithSessionContext() {
+			return sessionContext != null;
+		}
+
+		@Override
+		public boolean isServiceUnavailable() {
+			return serviceUnavailable;
+		}
+
+		@Override
+		public void setServiceUnavailable(boolean serviceUnavailable) {
+			this.serviceUnavailable = serviceUnavailable;
+		}
     }
 }

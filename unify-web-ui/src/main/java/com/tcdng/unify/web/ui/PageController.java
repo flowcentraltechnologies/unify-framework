@@ -101,4 +101,5 @@ public interface PageController<T extends PageBean> extends UIController {
      *                        if an error occurs
      */
     String executePageCall(String actionName) throws UnifyException;
+
 }

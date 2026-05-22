@@ -348,7 +348,7 @@ public interface Widget extends UplComponent {
      *                        if an error occurs.
      */
     <T, U extends Collection<T>> U getValue(Class<U> clazz, Class<T> dataClass) throws UnifyException;
-
+    
     /**
      * Returns this component's containing panel.
      * 
@@ -418,6 +418,19 @@ public interface Widget extends UplComponent {
      *                        if an error occurs
      */
     boolean isMasked() throws UnifyException;
+
+    /**
+     * Sets the in-repeat flag.
+     * 
+     * @param inRepeat
+     *                   the flag to set
+     */
+    void setInRepeat(boolean inRepeat);
+
+    /**
+     * Returns the in-repeat flag.
+     */
+    boolean isInRepeat();
 
     /**
      * Sets the conforming flag. A conforming component's
@@ -574,8 +587,10 @@ public interface Widget extends UplComponent {
     /**
      * Returns true if component's rendered element supports stretching
      * otherwise false. Subclasses should override this if necessary.
+     * @throws UnifyException
+     *                        if an error occurs
      */
-    boolean isSupportStretch();
+    boolean isSupportStretch() throws UnifyException;
 
     /**
      * Returns true if component's data should not be pushed from client to server

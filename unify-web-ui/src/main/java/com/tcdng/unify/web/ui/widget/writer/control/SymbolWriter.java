@@ -18,6 +18,7 @@ package com.tcdng.unify.web.ui.widget.writer.control;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.annotation.Writes;
+import com.tcdng.unify.core.util.StringUtils;
 import com.tcdng.unify.web.ui.widget.ResponseWriter;
 import com.tcdng.unify.web.ui.widget.TargetControl;
 import com.tcdng.unify.web.ui.widget.control.Symbol;
@@ -37,11 +38,15 @@ public class SymbolWriter extends AbstractTargetControlWriter {
     protected void doWriteTargetControl(ResponseWriter writer, TargetControl targetControl) throws UnifyException {
         Symbol symbolWidget = (Symbol) targetControl;
         writer.write("<button type=\"button\"");
-        writeTagAttributesWithTrailingExtraStyleClass(writer, symbolWidget, "g_fsm");
+        writeTagAttributes(writer, symbolWidget);
         writer.write("/>");
         if (isWithFontSymbolManager()) {
-            String symbol = symbolWidget.getUplAttribute(String.class, "symbol");
-            writer.write(resolveSymbolHtmlHexCode(symbol));
+        	String symbol = symbolWidget.getValue(String.class);
+            if (StringUtils.isBlank(symbol)) {
+            	symbol = symbolWidget.getUplAttribute(String.class, "symbol");
+            }
+            
+            writeFontIcon(writer, symbol);
         } else {
             writer.write("&#x25e6;");
         }

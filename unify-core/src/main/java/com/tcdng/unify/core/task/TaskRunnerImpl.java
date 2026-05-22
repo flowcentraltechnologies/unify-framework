@@ -61,6 +61,9 @@ public class TaskRunnerImpl extends AbstractUnifyComponent implements TaskRunner
 	@Configurable
 	private UserTokenProvider userTokenProvider;
 	
+	@Configurable
+	private TaskTransactionService taskTransactionService;
+	
 	private ExecutorService processingExecutor;
 
 	private final Set<String> tasks;
@@ -79,26 +82,22 @@ public class TaskRunnerImpl extends AbstractUnifyComponent implements TaskRunner
 	
 	@Override
 	public boolean start(int maxRunThread, boolean permitMultiple) {
-		logDebug("Starting task runner [{0}] with maximum run threads [{1}]...", this, maxRunThread);
 		if (!this.started) {
 			synchronized (this) {
 				if (!this.started) {
 					this.processingExecutor = Executors.newFixedThreadPool(maxRunThread <= 0 ? 1 : maxRunThread);
 					this.permitMultiple = permitMultiple;
 					this.started = true;
-					logDebug("Task runner [{0}] is successfully started.", this);
 					return true;
 				}
 			}
 		}
 
-		logDebug("Task runner [{0}] is already started.", this);
 		return false;
 	}
 
 	@Override
 	public void stop() {
-		logDebug("Stopping task runner [{0}] ...", this);
 		if (started) {
 			synchronized (this) {
 				if (started) {
@@ -112,13 +111,10 @@ public class TaskRunnerImpl extends AbstractUnifyComponent implements TaskRunner
 						logSevere(e);
 					}
 
-					logDebug("Task runner [{0}] is successfully stopped.", this);
 					return;
 				}
 			}
 		}
-
-		logDebug("Task runner [{0}] is already stopped.", this);
 	}
 
 	@Override
@@ -161,16 +157,6 @@ public class TaskRunnerImpl extends AbstractUnifyComponent implements TaskRunner
 	private TaskMonitor internalSchedule(TaskableMethodConfig tmc, String actualTaskName, String taskName,
 			Map<String, Object> parameters, boolean _permitMultiple, boolean logMessages, long inDelayInMillSec,
 			long periodInMillSec, int numberOfTimes) throws UnifyException {
-		if (numberOfTimes > 0) {
-			logDebug(
-					"Scheduling task [{0} - {1}] for execution [{2}] time(s) with initial delay [{3}ms] and repeat period [{4}ms]...",
-					actualTaskName, taskName, numberOfTimes, inDelayInMillSec, periodInMillSec);
-		} else {
-			logDebug(
-					"Scheduling task [{0} - {1}] for continuous execution with initial delay [{2}ms] and repeat period [{3}ms]...",
-					actualTaskName, taskName, inDelayInMillSec, periodInMillSec);
-		}
-
 		TaskMonitorImpl tm = new TaskMonitorImpl(actualTaskName, logMessages, numberOfTimes);
 		if (isRunning()) {
 			synchronized (this) {
@@ -190,7 +176,6 @@ public class TaskRunnerImpl extends AbstractUnifyComponent implements TaskRunner
 			throwOperationErrorException(new IllegalStateException("Task runner is not started."));
 		}
 
-		logDebug("Scheduling of task [{0}] completed with permitted [{1}].", actualTaskName, !tm.isNotPermitted());
 		return tm;
 	}
 
@@ -214,7 +199,11 @@ public class TaskRunnerImpl extends AbstractUnifyComponent implements TaskRunner
 		if (params.isWithInDelayInMillSec()) {
 			new WaitThread(params, params.getInDelayInMillSec()).start();
 		} else {
-			processingExecutor.execute(new TaskRunnable(params));
+			try {
+				taskTransactionService.execute(processingExecutor, new TaskRunnable(params));
+			} catch (UnifyException e) {
+				logError(e);
+			}
 		}
 	}
 
@@ -223,7 +212,11 @@ public class TaskRunnerImpl extends AbstractUnifyComponent implements TaskRunner
 			if (params.isWithPeriodInMillSec()) {
 				new WaitThread(params, params.getPeriodInMillSec()).start();
 			} else {
-				processingExecutor.execute(new TaskRunnable(params));
+				try {
+					taskTransactionService.execute(processingExecutor, new TaskRunnable(params));
+				} catch (UnifyException e) {
+					logError(e);
+				}
 			}
 
 			// Repeat
@@ -253,7 +246,11 @@ public class TaskRunnerImpl extends AbstractUnifyComponent implements TaskRunner
 		@Override
 		public void run() {
 			ThreadUtils.sleep(waitMilliSecs);
-			processingExecutor.execute(new TaskRunnable(params));
+			try {
+				taskTransactionService.execute(processingExecutor, new TaskRunnable(params));
+			} catch (UnifyException e) {
+				logError(e);
+			}
 		}
 
 	}

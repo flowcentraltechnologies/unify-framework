@@ -36,6 +36,11 @@ import com.tcdng.unify.web.ui.widget.AbstractTargetControl;
     @UplAttribute(name = "alwaysFetch", type = boolean.class) })
 public class Image extends AbstractTargetControl {
 
+    @Override
+	public boolean isSupportStretch() throws UnifyException {
+		return false;
+	}
+
     public String getSrc() throws UnifyException {
         return getUplAttribute(String.class, "src", "srcBinding");
     }

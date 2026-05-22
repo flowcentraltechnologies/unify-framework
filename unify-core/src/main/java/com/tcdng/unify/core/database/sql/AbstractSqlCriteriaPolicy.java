@@ -20,6 +20,7 @@ import com.tcdng.unify.common.constants.EnumConst;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.criterion.Restriction;
 import com.tcdng.unify.core.criterion.RestrictionType;
+import com.tcdng.unify.core.database.NativeTranslator;
 import com.tcdng.unify.core.util.DataUtils;
 
 /**
@@ -40,9 +41,9 @@ public abstract class AbstractSqlCriteriaPolicy implements SqlCriteriaPolicy {
     }
 
     @Override
-    public void translate(StringBuilder sql, String tableName, String columnName, Object param1, Object param2)
+    public void translate(NativeTranslator translator, StringBuilder sql, String tableName, String columnName, Object param1, Object param2)
             throws UnifyException {
-        doTranslate(sql, tableName, columnName, param1 != null ? resolveParam(tableName, param1) : null,
+        doTranslate(translator, sql, tableName, columnName, param1 != null ? resolveParam(tableName, param1) : null,
                 param2 != null ? resolveParam(tableName, param2) : null);
     }
 
@@ -88,19 +89,25 @@ public abstract class AbstractSqlCriteriaPolicy implements SqlCriteriaPolicy {
     /**
      * Converts a value to its native SQL string equivalent.
      * 
+     * @param translator native translator (optional)
      * @param val
      *            the value to convert
      * @return the converted value
      * @throws UnifyException
      *             if an error occurs
      */
-    protected String getNativeSqlParam(Object val) throws UnifyException {
+    protected String getNativeSqlParam(NativeTranslator translator, Object val) throws UnifyException {
         if (val instanceof SqlViewColumnInfo) {
             SqlViewColumnInfo sqlViewColumnInfo = (SqlViewColumnInfo) val;
             return sqlViewColumnInfo.getTableAlias() + "." + sqlViewColumnInfo.getColumnName();
         }
 
-        return rootPolicies.translateToNativeSqlParam(val);
+        String translation = null;
+        if (val != null && translator != null) {
+        	translation = translator.translateToNativeSqlParam(val);
+        }
+        
+        return translation != null ? translation : rootPolicies.translateToNativeSqlParam(val);
     }
 
     /**
@@ -152,8 +159,8 @@ public abstract class AbstractSqlCriteriaPolicy implements SqlCriteriaPolicy {
         return param instanceof EnumConst? ((EnumConst) param).code(): param;
     }
 
-    protected abstract void doTranslate(StringBuilder sql, String tableName, String columnName, Object param1,
-            Object param2) throws UnifyException;
+	protected abstract void doTranslate(NativeTranslator translator, StringBuilder sql, String tableName,
+			String columnName, Object param1, Object param2) throws UnifyException;
 
     protected SqlDataSourceDialectPolicies getRootPolicies() {
         return rootPolicies;

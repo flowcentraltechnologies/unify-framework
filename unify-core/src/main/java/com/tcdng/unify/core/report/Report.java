@@ -32,6 +32,7 @@ import com.tcdng.unify.core.constant.VAlignType;
 import com.tcdng.unify.core.constant.XOffsetType;
 import com.tcdng.unify.core.constant.YOffsetType;
 import com.tcdng.unify.core.criterion.RestrictionType;
+import com.tcdng.unify.core.data.FileOutputSettings;
 import com.tcdng.unify.core.database.sql.SqlJoinType;
 import com.tcdng.unify.core.util.DataUtils;
 import com.tcdng.unify.core.util.StringUtils;
@@ -88,6 +89,8 @@ public class Report {
 
 	private String groupSummationLegend;
 
+	private FileOutputSettings outputSettings;
+
 	private boolean mapCollection;
 
 	private boolean dynamicDataSource;
@@ -110,10 +113,10 @@ public class Report {
 			String theme, List<?> beanCollection, ReportTable table, List<ReportTableJoin> joins,
 			List<ReportColumn> columns, List<ReportPlacement> placements, List<ReportHtml> embeddedHtmls,
 			Object customObject, ReportFilter filter, ReportFormat format, ReportLayoutType layout,
-			ReportParameters reportParameters, ReportPageProperties pageProperties, String summationLegend,
-			String groupSummationLegend, boolean mapCollection, boolean dynamicDataSource, boolean printColumnNames,
-			boolean printGroupColumnNames, boolean invertGroupColors, boolean showParameterHeader,
-			boolean showGrandFooter, boolean underlineRows, boolean shadeOddRows) {
+			ReportParameters reportParameters, ReportPageProperties pageProperties, FileOutputSettings outputSettings,
+			String summationLegend, String groupSummationLegend, boolean mapCollection, boolean dynamicDataSource,
+			boolean printColumnNames, boolean printGroupColumnNames, boolean invertGroupColors,
+			boolean showParameterHeader, boolean showGrandFooter, boolean underlineRows, boolean shadeOddRows) {
 		this.code = code;
 		this.title = title;
 		this.template = template;
@@ -133,6 +136,7 @@ public class Report {
 		this.layout = layout;
 		this.reportParameters = reportParameters;
 		this.pageProperties = pageProperties;
+		this.outputSettings = outputSettings;
 		this.summationLegend = summationLegend;
 		this.groupSummationLegend = groupSummationLegend;
 		this.mapCollection = mapCollection;
@@ -220,6 +224,10 @@ public class Report {
 
 	public ReportPageProperties getPageProperties() {
 		return pageProperties;
+	}
+
+	public FileOutputSettings getOutputSettings() {
+		return outputSettings;
 	}
 
 	public String getSummationLegend() {
@@ -435,6 +443,8 @@ public class Report {
 
 		private String groupSummationLegend;
 
+		private FileOutputSettings outputSettings;
+
 		private boolean mapCollection;
 
 		private boolean dynamicDataSource;
@@ -472,6 +482,11 @@ public class Report {
 
 		public Builder pageProperties(ReportPageProperties pageProperties) {
 			this.pageProperties = pageProperties;
+			return this;
+		}
+
+		public Builder outputSettings(FileOutputSettings outputSettings) {
+			this.outputSettings = outputSettings;
 			return this;
 		}
 
@@ -799,9 +814,10 @@ public class Report {
 			Report report = new Report(code, title, template, processor, dataSource, query, theme, beanCollection,
 					table, Collections.unmodifiableList(joins), DataUtils.unmodifiableList(columns),
 					DataUtils.unmodifiableList(placements), DataUtils.unmodifiableList(embeddedHtmls.values()),
-					customObject, rootFilter, format, layout, reportParameters, pageProperties, summationLegend,
-					groupSummationLegend, mapCollection, dynamicDataSource, printColumnNames, printGroupColumnNames,
-					invertGroupColors, showParameterHeader, showGrandFooter, underlineRows, shadeOddRows);
+					customObject, rootFilter, format, layout, reportParameters, pageProperties, outputSettings,
+					summationLegend, groupSummationLegend, mapCollection, dynamicDataSource, printColumnNames,
+					printGroupColumnNames, invertGroupColors, showParameterHeader, showGrandFooter, underlineRows,
+					shadeOddRows);
 			return report;
 		}
 	}

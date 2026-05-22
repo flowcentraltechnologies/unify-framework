@@ -273,16 +273,30 @@ public final class StringUtils {
 	/**
 	 * Split a string into tokens using supplied character character.
 	 * 
-	 * @param string the string to split
+	 * @param text the string to split
 	 * @param ch     the character to use
 	 * @return the result tokens
 	 */
-	public static String[] charSplit(String string, char ch) {
-		if (string != null) {
-			List<String> list = StringUtils.charToListSplit(string, ch);
-			if (list != null) {
-				return list.toArray(new String[list.size()]);
-			}
+	public static String[] charSplit(String text, final char ch) {
+		if (text != null) {
+			final int len = text.length();
+	        int parts = 1;
+	        for (int i = 0; i < len; i++) {
+	            if (text.charAt(i) == ch) {
+	            	parts++;
+	            }
+	        }
+	        
+	        String[] result = new String[parts];
+	        int start = 0, index = 0;
+	        for (int i = 0; i < len; i++) {
+	            if (text.charAt(i) == ch) {
+	                result[index++] = text.substring(start, i);
+	                start = i + 1;
+	            }
+	        }
+	        result[index] = text.substring(start);
+	        return result;
 		}
 
 		return DataUtils.ZEROLEN_STRING_ARRAY;
@@ -772,7 +786,7 @@ public final class StringUtils {
 	 */
 	public static String flatten(String text) {
 		if (text != null) {
-			return text.replaceAll(" ", "_").replaceAll("[\"']", "").toLowerCase();
+			return text.replaceAll(" ", "_").replaceAll("-", "_").replaceAll("[\"']", "").toLowerCase();
 		}
 		return null;
 	}
@@ -842,6 +856,39 @@ public final class StringUtils {
 		if (objects.size() > 0) {
 			StringBuilder sb = new StringBuilder();
 			for (Object object : objects) {
+				if (object != null) {
+					sb.append(object);
+				}
+			}
+			return sb.toString();
+		}
+
+		return "";
+	}
+
+	/**
+	 * Builds a string by concatenating supplied objects separated by supplied
+	 * character.
+	 * 
+	 * @param ch      the separator character
+	 * @param objects the composing objects
+	 * @return the built string
+	 */
+	public static String concatenateUsingSeparatorFixed(char ch, Object... objects) {
+		if (objects.length == 1) {
+			return String.valueOf(objects[0]);
+		}
+
+		if (objects.length > 0) {
+			StringBuilder sb = new StringBuilder();
+			boolean appendSym = false;
+			for (Object object : objects) {
+				if (appendSym) {
+					sb.append(ch);
+				} else {
+					appendSym = true;
+				}
+
 				if (object != null) {
 					sb.append(object);
 				}

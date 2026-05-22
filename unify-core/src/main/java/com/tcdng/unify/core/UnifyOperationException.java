@@ -26,12 +26,12 @@ public class UnifyOperationException extends UnifyException {
 
     private static final long serialVersionUID = -3845989079792236780L;
 
-    public UnifyOperationException(Throwable cause, Object... errorParams) {
-        super(cause, UnifyCoreErrorConstants.COMPONENT_OPERATION_ERROR, errorParams);
+    public UnifyOperationException(Throwable cause) {
+        super(cause, UnifyCoreErrorConstants.COMPONENT_OPERATION_ERROR, cause.getMessage());
     }
 
-    public UnifyOperationException(Object... errorParams) {
-        super(UnifyCoreErrorConstants.COMPONENT_OPERATION_ERROR, errorParams);
+    public UnifyOperationException(String message) {
+        super(UnifyCoreErrorConstants.COMPONENT_OPERATION_ERROR, message);
     }
 
 }

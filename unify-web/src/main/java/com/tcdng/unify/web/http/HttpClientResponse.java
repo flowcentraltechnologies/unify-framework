@@ -69,7 +69,7 @@ public class HttpClientResponse implements ClientResponse {
             }
             return outputStream;
         } catch (IOException e) {
-            throw new UnifyOperationException(e, getClass().getSimpleName());
+            throw new UnifyOperationException(e);
         }
     }
 
@@ -82,7 +82,7 @@ public class HttpClientResponse implements ClientResponse {
             }
             return writer;
         } catch (IOException e) {
-            throw new UnifyOperationException(e, getClass().getSimpleName());
+            throw new UnifyOperationException(e);
         }
     }
 

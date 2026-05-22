@@ -15,6 +15,7 @@
  */
 package com.tcdng.unify.core.data;
 
+import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.constant.FileAttachmentType;
 import com.tcdng.unify.core.util.StringUtils;
 
@@ -34,7 +35,7 @@ public class FileAttachmentInfo {
 
     private FileAttachmentType type;
 
-    private byte[] attachment;
+    private UploadedFile attachment;
 
     private boolean present;
     
@@ -96,11 +97,11 @@ public class FileAttachmentInfo {
         this.filename = filename;
     }
 
-    public byte[] getAttachment() {
+    public UploadedFile getAttachment() {
         return attachment;
     }
 
-    public void setAttachment(byte[] attachment) {
+    public void setAttachment(UploadedFile attachment) {
         this.attachment = attachment;
     }
 
@@ -120,9 +121,9 @@ public class FileAttachmentInfo {
         return StringUtils.isBlank(this.description);
     }
 
-    public int size() {
+    public long size() throws UnifyException {
         if (this.attachment != null) {
-            return this.attachment.length;
+            return this.attachment.size();
         }
 
         return 0;

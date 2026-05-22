@@ -38,4 +38,22 @@ public final class WebPathUtils {
     	return index >= 0 ? pageId.substring(0, index) : pageId;
     }
 
+    
+	public static String stripOffCID(String queryString) {
+		if (queryString != null) {
+
+			int index = queryString.indexOf("__=cid");
+			if (index > 0) {
+				final String start = queryString.substring(0, index);
+				final int eindex = queryString.indexOf('&', index);
+				final String end = eindex > 0 ? queryString.substring(eindex + 1) : "";
+				int sindex = start.lastIndexOf('&');
+				return sindex > 0 ? start.substring(0, sindex + (end.isEmpty() ? 0 : 1)) + end : end;
+			}
+
+			return queryString;
+		}
+
+		return null;
+	}
 }

@@ -16,11 +16,14 @@
 
 package com.tcdng.unify.web.ui.widget.control;
 
+import java.math.BigDecimal;
+
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.annotation.UplAttribute;
 import com.tcdng.unify.core.annotation.UplAttributes;
 import com.tcdng.unify.core.constant.DrCrType;
+import com.tcdng.unify.core.util.DataUtils;
 import com.tcdng.unify.web.constant.ExtensionType;
 
 /**
@@ -51,7 +54,27 @@ public class DebitCreditField extends DecimalField {
         return true;
     }
 
-    public String getButtonId() throws UnifyException {
+    @Override
+	public String getFacadeStringValue() throws UnifyException {
+        BigDecimal val = getValue(BigDecimal.class);
+        if (val != null) {
+            return DataUtils.convert(String.class, val.abs(), getFormatter());
+        }
+
+        return null;
+	}
+
+	@Override
+	public String getFacadeHiddenStringValue() throws UnifyException {
+        BigDecimal val = getValue(BigDecimal.class);
+        if (val != null) {
+            return DataUtils.convert(String.class, val, null);
+        }
+
+        return null;
+	}
+
+	public String getButtonId() throws UnifyException {
         return getPrefixedId("btn_");
     }
 

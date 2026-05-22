@@ -246,6 +246,14 @@ public interface ValueStore extends Iterable<ValueStore>{
      */
     void storeOnNull(int storageIndex, String name, Object value, Formatter<?> formatter) throws UnifyException;
 
+	/**
+	 * Gets valuestore values by name.
+	 * 
+	 * @return the values
+	 * @throws UnifyException if an error occurs
+	 */
+	Map<String, Object> getValues() throws UnifyException;
+
     /**
      * Gets temporary value from store using supplied name.
      * 
@@ -334,6 +342,15 @@ public interface ValueStore extends Iterable<ValueStore>{
      */
     boolean isSettable(String name) throws UnifyException;
 
+	/**
+	 * Checks if value object has changed in instance and in size
+	 * 
+	 * @param valObject the value object
+	 * @return true if changed otherwise false
+	 * @throws UnifyException if an error occurs
+	 */
+	boolean isChanged(Object valObject) throws UnifyException;
+    
     /**
      * Returns the value store value object.
      */
@@ -378,7 +395,7 @@ public interface ValueStore extends Iterable<ValueStore>{
      * @param dataIndex
      *                  the data index to set
      */
-    void setDataIndex(int dataIndex);
+    ValueStore setDataIndex(int dataIndex);
 
     /**
      * Returns the value store data prefix.

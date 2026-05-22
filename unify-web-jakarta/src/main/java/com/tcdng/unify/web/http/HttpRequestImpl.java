@@ -22,10 +22,12 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TimeZone;
 
 import com.tcdng.unify.core.SessionAttributeProvider;
@@ -46,6 +48,10 @@ public class HttpRequestImpl implements HttpRequest {
 
     private HttpServletRequest request;
 
+	private List<ClientCookie> cookieList;
+
+	private Map<String, ClientCookie> cookieMap;
+
     public HttpRequestImpl(HttpServletRequest request) {
         this.request = request;
     }
@@ -56,9 +62,19 @@ public class HttpRequestImpl implements HttpRequest {
     }
 
     @Override
+	public Locale getPreferredLocale() {
+		return request.getLocale();
+	}
+
+	@Override
     public String getPathInfo() {
         return request.getPathInfo();
     }
+
+	@Override
+	public String getQueryString() {
+		return request.getQueryString();
+	}
 
     @Override
     public String getCharacterEncoding() {
@@ -71,6 +87,12 @@ public class HttpRequestImpl implements HttpRequest {
     }
 
     @Override
+	public Enumeration<String> getNames() {
+		// TODO Auto-generated method stub
+		return request.getHeaderNames();
+	}
+
+	@Override
     public String getParameter(String paramName) {
         return request.getParameter(paramName);
     }
@@ -81,6 +103,17 @@ public class HttpRequestImpl implements HttpRequest {
     }
 
     @Override
+	public String getRequestURI() {
+		return request.getRequestURI();
+	}
+
+	@Override
+	public String getRequestTarget() {
+		final String queryString = request.getQueryString();
+		return queryString == null ? request.getRequestURI() : request.getRequestURI() + "?" + queryString;
+	}
+
+	@Override
     public InputStream getInputStream() throws IOException {
         return request.getInputStream();
     }
@@ -100,21 +133,57 @@ public class HttpRequestImpl implements HttpRequest {
         return partList;
     }
 
-    @Override
-    public List<ClientCookie> getCookies() {
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null && cookies.length > 0) {
-            List<ClientCookie> list = new ArrayList<ClientCookie>();
-            for (Cookie cookie : cookies) {
-                list.add(new ClientCookie(cookie.getDomain(), cookie.getPath(), cookie.getName(), cookie.getValue(),
-                        cookie.getMaxAge()));
-            }
+	@Override
+	public List<ClientCookie> getCookies() {
+		if (cookieList == null) {
+			synchronized (this) {
+				if (cookieList == null) {
+					cookieList = Collections.emptyList();
+					Cookie[] cookies = request.getCookies();
+					if (cookies != null && cookies.length > 0) {
+						cookieList = new ArrayList<ClientCookie>();
+						for (Cookie cookie : cookies) {
+							cookieList.add(new ClientCookie(cookie.getDomain(), cookie.getPath(), cookie.getName(),
+									cookie.getValue(), cookie.getMaxAge()));
+						}
 
-            return list;
-        }
+						cookieList = Collections.unmodifiableList(cookieList);
+					}
 
-        return Collections.emptyList();
-    }
+				}
+			}
+		}
+
+		return cookieList;
+	}
+
+	@Override
+	public Optional<ClientCookie> getCookie(String name) {
+		if (cookieMap == null) {
+			synchronized (this) {
+				if (cookieMap == null) {
+					cookieMap = Collections.emptyMap();
+					Cookie[] cookies = request.getCookies();
+					if (cookies != null && cookies.length > 0) {
+						cookieMap = new HashMap<String, ClientCookie>();
+						for (Cookie cookie : cookies) {
+							cookieMap.put(cookie.getName(), new ClientCookie(cookie.getDomain(), cookie.getPath(),
+									cookie.getName(), cookie.getValue(), cookie.getMaxAge()));
+						}
+
+						cookieMap = Collections.unmodifiableMap(cookieMap);
+					}
+				}
+			}
+		}
+
+		return Optional.ofNullable(cookieMap.get(name));
+	}
+
+	@Override
+	public boolean isWithCookie(String name) {
+		return getCookie(name).isPresent();
+	}
 
     @Override
     public String getRemoteAddr() {

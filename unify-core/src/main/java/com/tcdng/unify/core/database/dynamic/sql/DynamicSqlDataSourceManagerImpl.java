@@ -39,6 +39,7 @@ import com.tcdng.unify.core.database.sql.SqlColumnInfo;
 import com.tcdng.unify.core.database.sql.SqlDataSource;
 import com.tcdng.unify.core.database.sql.SqlTableInfo;
 import com.tcdng.unify.core.database.sql.SqlTableType;
+import com.tcdng.unify.core.util.StringUtils;
 
 /**
  * Default implementation of dynamic SQL data source manager.
@@ -210,17 +211,22 @@ public class DynamicSqlDataSourceManagerImpl extends AbstractSqlDataSourceManage
         terminateAll();
     }
 
-    private SqlDataSource getDynamicSqlDataSource(String dataSourceConfigName) throws UnifyException {
-    	if (isComponent(dataSourceConfigName)) {
-    		return getComponent(SqlDataSource.class, dataSourceConfigName);
-    	}
-    	
-        if (!dynamicSqlDataSourceMap.isKey(dataSourceConfigName)) {
-            throw new UnifyException(UnifyCoreErrorConstants.DYNAMIC_DATASOURCE_IS_UNKNOWN, dataSourceConfigName);
-        }
+	private SqlDataSource getDynamicSqlDataSource(String dataSourceConfigName) throws UnifyException {
+		final List<String> sources = StringUtils.charToListSplit(dataSourceConfigName, ',');
+		for (String source : sources) {
+			if (isComponent(source)) {
+				return getComponent(SqlDataSource.class, source);
+			}
+		}
 
-        return dynamicSqlDataSourceMap.get(dataSourceConfigName);
-    }
+		for (String source : sources) {
+			if (dynamicSqlDataSourceMap.isKey(source)) {
+				return dynamicSqlDataSourceMap.get(source);
+			}
+		}
+
+		throw new UnifyException(UnifyCoreErrorConstants.DYNAMIC_DATASOURCE_IS_UNKNOWN, dataSourceConfigName);
+	}
 
 	private void createAndInitDynamicSqlDataSource(DynamicSqlDataSourceConfig dynamicSqlDataSourceConfig)
 			throws UnifyException {

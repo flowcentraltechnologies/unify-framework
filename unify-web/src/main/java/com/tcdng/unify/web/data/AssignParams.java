@@ -41,13 +41,19 @@ public class AssignParams extends AbstractListParam {
 
 	private final String filterId2;
 
+	private final String searchText1;
+
+	private final String searchText2;
+
 	public AssignParams(Long assignBaseId, List<? extends Object> assignedIdList, String rule, String filterId1,
-			String filterId2) {
+			String filterId2, String searchText1, String searchText2) {
 		this.assignBaseId = assignBaseId;
 		this.assignedIdList = assignedIdList;
 		this.rule = rule;
 		this.filterId1 = filterId1;
 		this.filterId2 = filterId2;
+		this.searchText1 = searchText1;
+		this.searchText2 = searchText2;
 	}
 
 	public AssignParams(List<? extends Object> assignedIdList) {
@@ -56,6 +62,8 @@ public class AssignParams extends AbstractListParam {
 		this.rule = null;
 		this.filterId1 = null;
 		this.filterId2 = null;
+		this.searchText1 = null;
+		this.searchText2 = null;
 	}
 
 	public Long getAssignBaseId() {
@@ -89,6 +97,14 @@ public class AssignParams extends AbstractListParam {
 
 	public <T> T getFilterId2(Class<T> dataType) throws UnifyException {
 		return DataUtils.convert(dataType, filterId2);
+	}
+
+	public String getSearchText1() {
+		return searchText1;
+	}
+
+	public String getSearchText2() {
+		return searchText2;
 	}
 
 	public boolean isAssignedIdList() {

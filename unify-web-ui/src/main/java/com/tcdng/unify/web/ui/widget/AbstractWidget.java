@@ -25,6 +25,7 @@ import com.tcdng.unify.core.ViewDirective;
 import com.tcdng.unify.core.annotation.UplAttribute;
 import com.tcdng.unify.core.annotation.UplAttributes;
 import com.tcdng.unify.core.data.FileAttachmentInfo;
+import com.tcdng.unify.core.data.IndexedTarget;
 import com.tcdng.unify.core.data.ValueStore;
 import com.tcdng.unify.core.database.Query;
 import com.tcdng.unify.core.upl.AbstractUplComponent;
@@ -45,6 +46,7 @@ import com.tcdng.unify.web.ui.constant.WidgetTempValueConstants;
 import com.tcdng.unify.web.ui.util.WidgetUtils;
 import com.tcdng.unify.web.ui.widget.data.Hint.MODE;
 import com.tcdng.unify.web.ui.widget.data.Popup;
+import com.tcdng.unify.web.ui.widget.data.RefreshSection;
 import com.tcdng.unify.web.ui.widget.panel.StandalonePanel;
 
 /**
@@ -57,14 +59,12 @@ import com.tcdng.unify.web.ui.widget.panel.StandalonePanel;
 		@UplAttribute(name = "binding", type = String.class),
 		@UplAttribute(name = "styleClass", type = String.class, defaultVal = "$e{}"),
 		@UplAttribute(name = "styleClassBinding", type = String.class),
-		@UplAttribute(name = "style", type = String.class),
-		@UplAttribute(name = "caption", type = String.class),
+		@UplAttribute(name = "style", type = String.class), @UplAttribute(name = "caption", type = String.class),
 		@UplAttribute(name = "captionBinding", type = String.class),
 		@UplAttribute(name = "captionParamBinding", type = String.class),
 		@UplAttribute(name = "columnStyle", type = String.class),
 		@UplAttribute(name = "columnSelectSummary", type = boolean.class),
-		@UplAttribute(name = "hint", type = String.class),
-		@UplAttribute(name = "hintBinding", type = String.class),
+		@UplAttribute(name = "hint", type = String.class), @UplAttribute(name = "hintBinding", type = String.class),
 		@UplAttribute(name = "readOnly", type = boolean.class, defaultVal = "false"),
 		@UplAttribute(name = "disabled", type = boolean.class, defaultVal = "false"),
 		@UplAttribute(name = "ignoreParentState", type = boolean.class, defaultVal = "false"),
@@ -74,13 +74,14 @@ import com.tcdng.unify.web.ui.widget.panel.StandalonePanel;
 		@UplAttribute(name = "valueStoreMemory", type = boolean.class, defaultVal = "false"),
 		@UplAttribute(name = "behaviorAlways", type = boolean.class, defaultVal = "false"),
 		@UplAttribute(name = "copyEventHandlers", type = boolean.class, defaultVal = "false"),
+		@UplAttribute(name = "autoStretch", type = boolean.class, defaultVal = "true"),
 		@UplAttribute(name = "eventHandler", type = EventHandler[].class) })
 public abstract class AbstractWidget extends AbstractUplComponent implements Widget {
 
 	private static final EventHandler[] ZERO_EVENT_HANDLERS = new EventHandler[0];
-	
+
 	private EventHandler[] handlers;
-	
+
 	private String id;
 
 	private String groupId;
@@ -103,10 +104,11 @@ public abstract class AbstractWidget extends AbstractUplComponent implements Wid
 
 	private boolean visible;
 
+	private boolean inRepeat;
+
 	public AbstractWidget() {
 		this.tabIndex = -1;
 		this.conforming = true;
-		this.disabled = false;
 		this.editable = true;
 		this.visible = true;
 	}
@@ -195,26 +197,26 @@ public abstract class AbstractWidget extends AbstractUplComponent implements Wid
 
 	@Override
 	public EventHandler[] getEventHandlers() throws UnifyException {
-		if (handlers == null) { 
-			synchronized(this) {
+		if (handlers == null) {
+			synchronized (this) {
 				if (handlers == null) {
 					handlers = getUplAttribute(EventHandler[].class, "eventHandler");
 					if (handlers == null) {
 						handlers = ZERO_EVENT_HANDLERS;
 					}
-					
+
 					if (handlers.length > 0 && getUplAttribute(boolean.class, "copyEventHandlers")) {
 						EventHandler[] _handlers = new EventHandler[handlers.length];
 						for (int i = 0; i < handlers.length; i++) {
 							_handlers[i] = handlers[i].wrap();
 						}
-						
+
 						handlers = _handlers;
 					}
 				}
 			}
 		}
-		
+
 		return handlers;
 	}
 
@@ -350,7 +352,7 @@ public abstract class AbstractWidget extends AbstractUplComponent implements Wid
 	@Override
 	public void useRecallMemory(Widget srcWidget) throws UnifyException {
 		if (srcWidget instanceof AbstractWidget) {
-			valueStoreMem = ((AbstractWidget) srcWidget).valueStoreMem;		
+			valueStoreMem = ((AbstractWidget) srcWidget).valueStoreMem;
 		}
 	}
 
@@ -482,6 +484,16 @@ public abstract class AbstractWidget extends AbstractUplComponent implements Wid
 	}
 
 	@Override
+	public void setInRepeat(boolean inRepeat) {
+		this.inRepeat = inRepeat;
+	}
+
+	@Override
+	public boolean isInRepeat() {
+		return inRepeat;
+	}
+
+	@Override
 	public boolean isBehaviorAlways() throws UnifyException {
 		return getUplAttribute(boolean.class, "behaviorAlways");
 	}
@@ -517,7 +529,7 @@ public abstract class AbstractWidget extends AbstractUplComponent implements Wid
 	}
 
 	@Override
-	public void setTabIndex(int tabIndex)  throws UnifyException {
+	public void setTabIndex(int tabIndex) throws UnifyException {
 		this.tabIndex = tabIndex;
 	}
 
@@ -528,6 +540,13 @@ public abstract class AbstractWidget extends AbstractUplComponent implements Wid
 
 	@Override
 	public Object getValue() throws UnifyException {
+		if (inRepeat) {
+			IndexedTarget target = getIndexedTarget();
+			if (target != null && target.isValidValueIndex()) {
+				return getValueStore().setDataIndex(target.getValueIndex()).getValueObjectAtDataIndex();
+			}
+		}
+
 		return getValue(getUplAttribute(String.class, "binding"));
 	}
 
@@ -562,8 +581,8 @@ public abstract class AbstractWidget extends AbstractUplComponent implements Wid
 	}
 
 	@Override
-	public boolean isSupportStretch() {
-		return true;
+	public boolean isSupportStretch() throws UnifyException {
+		return getUplAttribute(boolean.class, "autoStretch");
 	}
 
 	@Override
@@ -674,14 +693,14 @@ public abstract class AbstractWidget extends AbstractUplComponent implements Wid
 
 	protected String getHttpRequestHeader(String headerName) throws UnifyException {
 		HttpRequestHeaders headers = getHttpRequestHeaders();
-		return headers != null? headers.getHeader(headerName) : null;
+		return headers != null ? headers.getHeader(headerName) : null;
 	}
 
 	protected String getHttpRequestParameter(String paramName) throws UnifyException {
 		HttpRequestParameters parameters = getHttpRequestParameters();
-		return parameters != null? parameters.getParameter(paramName) : null;
+		return parameters != null ? parameters.getParameter(paramName) : null;
 	}
-	
+
 	protected boolean isTempValue(String name) throws UnifyException {
 		return valueStore != null ? valueStore.isTempValue(name) : false;
 	}
@@ -767,6 +786,14 @@ public abstract class AbstractWidget extends AbstractUplComponent implements Wid
 		return getRequestContextUtil().getRequestTargetValue(clazz);
 	}
 
+	protected IndexedTarget getIndexedTarget() throws UnifyException {
+		return DataUtils.convert(IndexedTarget.class, getRequestContextUtil().getRequestTargetValue(String.class));
+	}
+
+	protected IndexedTarget getIndexedTarget(String target) throws UnifyException {
+		return DataUtils.convert(IndexedTarget.class, target);
+	}
+
 	protected String getRequestCommandTag() throws UnifyException {
 		return getRequestContextUtil().getRequestCommandTag();
 	}
@@ -782,6 +809,10 @@ public abstract class AbstractWidget extends AbstractUplComponent implements Wid
 	protected void commandRefreshPanels(String... panelLongName) throws UnifyException {
 		getRequestContextUtil().setResponseRefreshPanels(panelLongName);
 		setCommandResultMapping(ResultMappingConstants.REFRESH_PANELS);
+	}
+
+	protected void commandRefreshPanelAndHidePopup() throws UnifyException {
+		setCommandResultMapping(ResultMappingConstants.REFRESH_HIDE_POPUP);
 	}
 
 	protected void commandRefreshPanelsAndHidePopup(String... panelLongName) throws UnifyException {
@@ -823,17 +854,21 @@ public abstract class AbstractWidget extends AbstractUplComponent implements Wid
 		setCommandResultMapping(ResultMappingConstants.POST_RESPONSE);
 	}
 
-	protected void showAttachment(FileAttachmentInfo fileAttachmentInfo)  throws UnifyException {
+	protected void showAttachment(FileAttachmentInfo fileAttachmentInfo) throws UnifyException {
 		setRequestAttribute(UnifyWebRequestAttributeConstants.FILEATTACHMENTS_INFO, fileAttachmentInfo);
 		setCommandResultMapping(ResultMappingConstants.SHOW_ATTACHMENT);
 	}
-	
+
 	protected void refreshApplicationMenu() throws UnifyException {
 		setSessionAttribute(UnifyWebSessionAttributeConstants.REFRESH_MENU, Boolean.TRUE);
 	}
 
 	protected void setCommandResultMapping(String resultMappingName) throws UnifyException {
 		getRequestContextUtil().setCommandResultMapping(resultMappingName);
+	}
+
+	protected boolean isWithCommandResultMapping() throws UnifyException {
+		return getRequestContextUtil().isWithCommandResultMapping();
 	}
 
 	protected void setCommandResponsePath(TargetPath targetPath) throws UnifyException {
@@ -855,10 +890,6 @@ public abstract class AbstractWidget extends AbstractUplComponent implements Wid
 	protected final String getContextURL(String path) throws UnifyException {
 		RequestContext requestContext = getRequestContext();
 		StringBuilder sb = new StringBuilder();
-		if (getRequestContextUtil().isRemoteViewer()) {
-			sb.append(getSessionContext().getUriBase());
-		}
-
 		sb.append(requestContext.getContextPath());
 		if (requestContext.isWithTenantPath()) {
 			sb.append(requestContext.getTenantPath());
@@ -897,12 +928,15 @@ public abstract class AbstractWidget extends AbstractUplComponent implements Wid
 	}
 
 	protected <T> T getUplAttribute(Class<T> type, String attribute, String bindingAttribute) throws UnifyException {
-        String binding = getUplAttribute(String.class, bindingAttribute);
-        if (StringUtils.isNotBlank(binding)) {
-            return getValue(type, binding);
-        }
-        
-        return getUplAttribute(type, attribute);
+		String binding = getUplAttribute(String.class, bindingAttribute);
+		if (StringUtils.isNotBlank(binding)) {
+			final T t =  getValue(type, binding);
+			if (t != null) {
+				return t;
+			}
+		}
+
+		return getUplAttribute(type, attribute);
 	}
 
 	/**
@@ -913,7 +947,7 @@ public abstract class AbstractWidget extends AbstractUplComponent implements Wid
 	 * @throws UnifyException if an error occurs
 	 */
 	protected void hintUser(String messageKey, Object... params) throws UnifyException {
-		getRequestContextUtil().hintUser(MODE.INFO, messageKey, params);
+		getRequestContextUtil().hintUser(MODE.PASS, messageKey, params);
 	}
 
 	/**
@@ -944,6 +978,12 @@ public abstract class AbstractWidget extends AbstractUplComponent implements Wid
 		}
 	}
 
+	protected void commandRefreshSection(String sectionId) throws UnifyException {
+        setRequestAttribute(UnifyWebRequestAttributeConstants.REFRESH_SECTION,
+                new RefreshSection(this, sectionId));
+        setCommandResultMapping(ResultMappingConstants.REFRESH_SECTION);
+	}
+	
 	private String getWorkId() throws UnifyException {
 		return getPrefixedId("wrk_");
 	}

@@ -270,8 +270,11 @@ public final class CalendarUtils {
 	 * 
 	 * @param date the supplied date
 	 */
-	public static Date getMidnightDate(Date date) {
-		return getMidnightDate(date, Locale.getDefault());
+	public static Date addDays(Date date, int days) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		cal.add(Calendar.DAY_OF_YEAR, days);
+		return cal.getTime();
 	}
 
 	/**
@@ -280,11 +283,8 @@ public final class CalendarUtils {
 	 * 
 	 * @param date the supplied date
 	 */
-	public static Date addDays(Date date, int days) {
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(date);
-		cal.add(Calendar.DAY_OF_YEAR, days);
-		return cal.getTime();
+	public static Date getMidnightDate(Date date) {
+		return getMidnightDate(date, Locale.getDefault());
 	}
 
 	/**
@@ -332,6 +332,63 @@ public final class CalendarUtils {
 		Calendar cal = Calendar.getInstance(locale);
 		cal.setTime(date);
 		cal.set(Calendar.HOUR_OF_DAY, 23);
+		cal.set(Calendar.MINUTE, 59);
+		cal.set(Calendar.SECOND, 59);
+		cal.set(Calendar.MILLISECOND, 999);
+		return cal.getTime();
+	}
+
+	/**
+	 * Returns the zero-minute date for a specified date using default locale.
+	 * 
+	 * @param date the supplied date
+	 */
+	public static Date getZeroMinuteDate(Date date) {
+		return getZeroMinuteDate(date, Locale.getDefault());
+	}
+
+	/**
+	 * Returns the zero-minute date for a specified date using specified locale.
+	 * 
+	 * @param date   the supplied date
+	 * @param locale the locale
+	 */
+	public static Date getZeroMinuteDate(Date date, Locale locale) {
+		if (date == null) {
+			return null;
+		}
+
+		Calendar cal = Calendar.getInstance(locale);
+		cal.setTime(date);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+		return cal.getTime();
+	}
+
+	/**
+	 * Returns the last minute date value of supplied date using default locale. A
+	 * last second date is any date at 11:59:00PM.
+	 * 
+	 * @param date the date convert
+	 */
+	public static Date getLastMinuteDate(Date date) {
+		return getLastMinuteDate(date, Locale.getDefault());
+	}
+
+	/**
+	 * Returns the last minute date value of supplied date using specified locale. A
+	 * last second date is any date at 11:59:00PM.
+	 * 
+	 * @param date   the date convert
+	 * @param locale the locale
+	 */
+	public static Date getLastMinuteDate(Date date, Locale locale) {
+		if (date == null) {
+			return null;
+		}
+		Calendar cal = Calendar.getInstance(locale);
+		cal.setTime(date);
 		cal.set(Calendar.MINUTE, 59);
 		cal.set(Calendar.SECOND, 59);
 		cal.set(Calendar.MILLISECOND, 999);

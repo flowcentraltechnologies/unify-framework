@@ -101,6 +101,11 @@ public class PostgreSqlDialect extends AbstractSqlDataSourceDialect {
 	}
 
 	@Override
+	public String getCurrentTimestampSQL() {
+		return "SELECT CURRENT_TIMESTAMP";
+	}
+
+	@Override
 	public boolean matchColumnDefault(String nativeVal, String defaultVal) throws UnifyException {
 		if (super.matchColumnDefault(nativeVal, defaultVal)) {
 			return true;
@@ -345,6 +350,11 @@ public class PostgreSqlDialect extends AbstractSqlDataSourceDialect {
 		sb.append(", ALTER COLUMN ").append(sqlColumnInfo.getColumnName());
 		sb.append(" DROP NOT NULL");
 		return sb.toString();
+	}
+
+	@Override
+	public final boolean isAllObjectsInLowerCase() {
+		return true;
 	}
 
 	@Override

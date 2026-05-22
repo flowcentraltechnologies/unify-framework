@@ -478,9 +478,14 @@ public class SqlEntityInfoFactoryImpl extends AbstractSqlEntityInfoFactory {
 										searchClass, field);
 							}
 
-							if (StringUtils.isNotBlank(AnnotationUtils.getAnnotationString(ca.name()))) {
+							if (StringUtils.isNotBlank(AnnotationUtils.getAnnotationString(ca.value()))) {
+								column = ca.value();
+							}
+							
+							if (StringUtils.isBlank(column) && StringUtils.isNotBlank(AnnotationUtils.getAnnotationString(ca.name()))) {
 								column = ca.name();
 							}
+							
 							columnType = ca.type();
 
 							String transformerName = AnnotationUtils.getAnnotationString(ca.transformer());
@@ -1057,9 +1062,14 @@ public class SqlEntityInfoFactoryImpl extends AbstractSqlEntityInfoFactory {
 									entityClass, field);
 						}
 
-						if (StringUtils.isNotBlank(AnnotationUtils.getAnnotationString(ca.name()))) {
+						if (StringUtils.isNotBlank(AnnotationUtils.getAnnotationString(ca.value()))) {
+							column = ca.value();
+						}
+						
+						if (StringUtils.isBlank(column) && StringUtils.isNotBlank(AnnotationUtils.getAnnotationString(ca.name()))) {
 							column = ca.name();
 						}
+
 						columnType = ca.type(); // Overrides default
 												// AUTO
 												// type

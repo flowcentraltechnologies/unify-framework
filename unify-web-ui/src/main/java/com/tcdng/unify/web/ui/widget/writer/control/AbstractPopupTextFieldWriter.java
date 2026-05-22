@@ -75,14 +75,14 @@ public abstract class AbstractPopupTextFieldWriter extends TextFieldWriter {
 		AbstractPopupTextField popupTextField = (AbstractPopupTextField) widget;
 		writer.write("<button tabindex=\"-1\"");
 		writeTagId(writer, popupTextField.getPopupButtonId());
-		writeTagStyleClass(writer, "tpbutton g_fsm");
+		writeTagStyleClass(writer, "tpbutton");
 		if (popupTextField.isContainerDisabled()) {
 			writer.write(" disabled");
 		}
 		writer.write(">");
 
 		if (isWithFontSymbolManager()) {
-			writer.write(resolveSymbolHtmlHexCode(popupTextField.getButtonSymbol()));
+			writeFontIcon(writer, popupTextField.getButtonSymbol());
 		} else {
 			writer.write("<img src=\"");
 			writer.writeFileImageContextURL(popupTextField.getButtonImageSrc());

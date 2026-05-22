@@ -37,7 +37,6 @@ public class ValidationErrorResponse extends AbstractJsonPageControllerResponse 
 
     @Override
     protected void doGenerate(ResponseWriter writer, Page page) throws UnifyException {
-        logDebug("Preparing validation error response: path ID = [{0}]", page.getPathId());
         StringBuilder htmlSb = new StringBuilder();
         writer.write(",\"validationInfo\":[");
         boolean appendSymbol = false;
@@ -54,7 +53,6 @@ public class ValidationErrorResponse extends AbstractJsonPageControllerResponse 
             writer.write(",\"pNotfId\":\"").write(validationInfo.getNotificationId()).write("\"");
             if (!validationInfo.isPass()) {
                 String message = validationInfo.getMessage();
-                logDebug("Preparing validation error response: error = [{0}]", message);
                 if (htmlSb.length() == 0) {
                     writer.write(",\"setFocus\":true");
                     htmlSb.append(true);

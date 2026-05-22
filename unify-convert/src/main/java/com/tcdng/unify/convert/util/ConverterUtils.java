@@ -37,6 +37,7 @@ import java.util.Set;
 
 import com.tcdng.unify.common.constants.EnumConst;
 import com.tcdng.unify.common.util.EnumUtils;
+import com.tcdng.unify.convert.constants.ConverterTypeConstants;
 import com.tcdng.unify.convert.converters.BigDecimalConverter;
 import com.tcdng.unify.convert.converters.BooleanConverter;
 import com.tcdng.unify.convert.converters.ByteArrayConverter;
@@ -67,7 +68,7 @@ public final class ConverterUtils {
 
 	public static final Object[] ZEROLEN_OBJECT_ARRAY = new Object[0];
 
-	private static ConverterFormatter<?> defaultDateTimeFormatter;
+	private static final Map<String, ConverterFormatter<?>> classToDefaultFormatters = new HashMap<String, ConverterFormatter<?>>();
 
 	private static final Map<Class<?>, Converter<?>> classToConverterMap;
 
@@ -92,12 +93,12 @@ public final class ConverterUtils {
 		map.put(Double.class, new DoubleConverter());
 		map.put(BigDecimal.class, new BigDecimalConverter());
 		map.put(Date.class, new DateConverter());
-        map.put(org.joda.time.LocalDate.class, new JodaLocalDateConverter());
-        map.put(org.joda.time.LocalDateTime.class, new JodaLocalDateTimeConverter());
-        map.put(java.time.LocalDate.class, new LocalDateConverter());
-        map.put(java.time.LocalDateTime.class, new LocalDateTimeConverter());
+		map.put(org.joda.time.LocalDate.class, new JodaLocalDateConverter());
+		map.put(org.joda.time.LocalDateTime.class, new JodaLocalDateTimeConverter());
+		map.put(java.time.LocalDate.class, new LocalDateConverter());
+		map.put(java.time.LocalDateTime.class, new LocalDateTimeConverter());
 		map.put(String.class, new StringConverter());
-		classToConverterMap = map; 
+		classToConverterMap = map;
 	}
 
 	private static final Map<Class<?>, Class<?>> classToWrapperMap;
@@ -150,12 +151,20 @@ public final class ConverterUtils {
 		classToConverterMap.put(clazz, converter);
 	}
 
-	public static void registerDefaultFormatters(ConverterFormatter defaultDateTimeFormatter) {
-		ConverterUtils.defaultDateTimeFormatter = defaultDateTimeFormatter;
+	public static void registerDefaultFormatter(String name, ConverterFormatter defaultFormatter) {
+		classToDefaultFormatters.put(name, defaultFormatter);
+	}
+
+	public static ConverterFormatter getDefaultDateFormatter() {
+		return classToDefaultFormatters.get(ConverterTypeConstants.DATE);
 	}
 
 	public static ConverterFormatter getDefaultDateTimeFormatter() {
-		return defaultDateTimeFormatter;
+		return classToDefaultFormatters.get(ConverterTypeConstants.DATETIME);
+	}
+
+	public static ConverterFormatter getDefaultDecimalFormatter() {
+		return classToDefaultFormatters.get(ConverterTypeConstants.DECIMAL);
 	}
 
 	/**
@@ -270,9 +279,13 @@ public final class ConverterUtils {
 				}
 			} else {
 				if (value.getClass().isArray() && Array.getLength(value) == 1) {
-					result = classToConverterMap.get(targetClazz).convert(Array.get(value, 0), formatter);
+					result = classToConverterMap.containsKey(targetClazz)
+							? classToConverterMap.get(targetClazz).convert(Array.get(value, 0), formatter)
+							: null;
 				} else {
-					result = classToConverterMap.get(targetClazz).convert(value, formatter);
+					result = classToConverterMap.containsKey(targetClazz)
+							? classToConverterMap.get(targetClazz).convert(value, formatter)
+							: null;
 				}
 			}
 
@@ -478,36 +491,36 @@ public final class ConverterUtils {
 	}
 
 	public static Date getFromJodaLocalDate(org.joda.time.LocalDate date) {
-    	return date.toDate();
-    }
-    
+		return date.toDate();
+	}
+
 	public static Date getFromJodaLocalDateTime(org.joda.time.LocalDateTime date) {
-    	return date.toDate();
-    }
-   
+		return date.toDate();
+	}
+
 	public static Date getFromLocalDate(LocalDate date) {
-    	return Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
-    }
-    
+		return Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
+	}
+
 	public static Date getFromLocalDateTime(LocalDateTime date) {
-    	return Date.from(date.atZone(ZoneId.systemDefault()).toInstant());
-    }
-	
+		return Date.from(date.atZone(ZoneId.systemDefault()).toInstant());
+	}
+
 	public static org.joda.time.LocalDate getJodaLocalDate(Date date) {
-    	return new org.joda.time.LocalDate(date);
-    }
-    
+		return new org.joda.time.LocalDate(date);
+	}
+
 	public static org.joda.time.LocalDateTime getJodaLocalDateTime(Date date) {
-    	return new org.joda.time.LocalDateTime(date);
-    }
-   
+		return new org.joda.time.LocalDateTime(date);
+	}
+
 	public static LocalDate getLocalDate(Date date) {
-    	return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-    }
-    
+		return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+	}
+
 	public static LocalDateTime getLocalDateTime(Date date) {
-    	return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-    }
+		return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+	}
 
 	private static Object getValueObjectArray(Object value, ConverterFormatter<?> formatter) throws Exception {
 		if (value.getClass().isArray()) {

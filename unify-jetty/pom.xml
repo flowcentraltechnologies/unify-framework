@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.tcdng.unify</groupId>
 		<artifactId>unify</artifactId>
-		<version>4.1.0</version>
+		<version>4.1.16</version>
 	</parent>
 
 	<artifactId>unify-jetty</artifactId>
@@ -32,14 +32,14 @@
 	</developers>
 
     <scm>
-        <connection>scm:git:git://github.com/tcdng/unify-framework.git</connection>
-        <developerConnection>scm:git:ssh://github.com:tcdng/unify-framework.git</developerConnection>
-        <url>http://github.com/tcdng/unify-framework/tree/master</url>
+        <connection>scm:git:git://github.com/flowcentraltechnologies/unify-framework.git</connection>
+        <developerConnection>scm:git:ssh://github.com:flowcentraltechnologies/unify-framework.git</developerConnection>
+        <url>http://github.com/flowcentraltechnologies/unify-framework/tree/master</url>
     </scm>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<jetty.version>9.4.41.v20210516</jetty.version>
+		<jetty.version>9.4.58.v20250814</jetty.version>
 	</properties>
 
     <build>

@@ -66,6 +66,13 @@ public interface SqlDataSourceDialect extends DataSourceDialect, SqlGenerator {
 	List<SqlEntityInfo> getSqlEntityInfos() throws UnifyException;
 
 	/**
+	 * Gets the current time SQL
+	 * 
+	 * @return the timestamp SQL
+	 */
+	String getCurrentTimestampSQL();
+	
+	/**
 	 * Gets the data source dialect default schema.
 	 * 
 	 * @return the default schema

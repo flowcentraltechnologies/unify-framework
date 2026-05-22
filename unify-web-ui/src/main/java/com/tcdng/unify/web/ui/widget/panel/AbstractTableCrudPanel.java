@@ -259,7 +259,7 @@ public abstract class AbstractTableCrudPanel<T extends Entity> extends AbstractP
     }
 
     protected void showPopup() throws UnifyException {
-        commandShowPopup(getWidgetByShortName("simpleCrudPopup").getLongName());
+    	commandShowPopupByShortName("simpleCrudPopup");
     }
 
     protected void hidePopup() throws UnifyException {

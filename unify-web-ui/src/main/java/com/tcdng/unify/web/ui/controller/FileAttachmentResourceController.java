@@ -21,7 +21,7 @@ import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.data.FileAttachmentInfo;
 import com.tcdng.unify.core.data.FileAttachmentsInfo;
-import com.tcdng.unify.core.util.IOUtils;
+import com.tcdng.unify.core.data.UploadedFile;
 import com.tcdng.unify.web.constant.Secured;
 import com.tcdng.unify.web.ui.AbstractPageResourceController;
 import com.tcdng.unify.web.ui.widget.control.FileAttachmentHandler;
@@ -46,27 +46,26 @@ public class FileAttachmentResourceController extends AbstractPageResourceContro
 
     @Override
     public String execute(OutputStream outputStream) throws UnifyException {
-        byte[] data = null;
+        UploadedFile uploadedFile = null;
         Object resource = removeSessionAttribute(getResourceName());
         if (resource instanceof FileAttachmentsInfo) {
             FileAttachmentsInfo fileAttachmentsInfo = (FileAttachmentsInfo) resource;
             FileAttachmentInfo fileAttachmentInfo = fileAttachmentsInfo.getSelectedAttachmentInfo();
-            data = fileAttachmentInfo.getAttachment();
-            if (data == null) {
+            uploadedFile = fileAttachmentInfo.getAttachment();
+            if (uploadedFile == null) {
                 String handler = fileAttachmentsInfo.getHandlerName();
                 if (handler != null) {
                     FileAttachmentHandler fileAttachmentHandler = (FileAttachmentHandler) getComponent(handler);
                     FileAttachmentInfo viewFileAttachmentInfo = fileAttachmentHandler
                             .handleView(fileAttachmentsInfo.getParentId(), fileAttachmentInfo);
-                    data = viewFileAttachmentInfo.getAttachment();
+                    uploadedFile = viewFileAttachmentInfo.getAttachment();
                 }
             }
         } else {
-            data = ((FileAttachmentInfo) resource).getAttachment();
+        	uploadedFile = ((FileAttachmentInfo) resource).getAttachment();
         }
 
-        IOUtils.writeAll(outputStream, data);
-        
+        uploadedFile.writeAllAndInvalidate(outputStream);
         return null;
     }
 

@@ -102,10 +102,8 @@ public class ClientSyncManagerImpl extends AbstractBusinessService implements Cl
 	@Periodic(PeriodicType.NORMAL)
 	@Synchronized(EXPIRATION_HOUSEKEEP_LOCK)
 	public void performExpirationHouseKeeping(TaskMonitor taskMonitor) throws UnifyException {
-		logDebug("Performing expiration housekeeping...");
-		Date now = db().getNow();
-		Date expiryTime = CalendarUtils.getDateWithOffset(now, -expirationInMilliSeconds);
-		int count = 0;
+		final Date now = db().getNow();
+		final Date expiryTime = CalendarUtils.getDateWithOffset(now, -expirationInMilliSeconds);
 		for (String sessionId : new ArrayList<String>(sessions.keySet())) {
 			ClientSyncSession session = sessions.get(sessionId);
 			if (session.isInvalidated() || expiryTime.after(session.lastClientCallOn())) {
@@ -113,12 +111,8 @@ public class ClientSyncManagerImpl extends AbstractBusinessService implements Cl
 				pageEventBroadcaster.processClientEvent(
 						new ClientEventMsg(session.getClientId(), ClientSyncCommandConstants.EXPIRE, null));
 				pageEventBroadcaster.unregisterClient(session.getClientId());
-
-				count++;
 			}
 		}
-
-		logDebug("[{0}] client synchronization session(s) expired.", count);
 	}
 
 	@Override

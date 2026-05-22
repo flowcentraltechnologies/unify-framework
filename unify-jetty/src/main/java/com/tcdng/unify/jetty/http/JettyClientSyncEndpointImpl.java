@@ -15,8 +15,6 @@
  */
 package com.tcdng.unify.jetty.http;
 
-import java.util.UUID;
-
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
@@ -37,12 +35,6 @@ import com.tcdng.unify.web.ServerEventMsg;
  */
 @WebSocket
 public class JettyClientSyncEndpointImpl extends AbstractClientSyncEndpoint {
-
-	private final String sessionId;
-	
-	public JettyClientSyncEndpointImpl() {
-		this.sessionId = UUID.randomUUID().toString();
-	}
 	
 	@OnWebSocketConnect
 	public void onOpen(Session session) {

@@ -46,6 +46,11 @@ public class HttpResponseImpl implements HttpResponse {
     }
 
     @Override
+	public void setDateHeader(String key, long val) {
+    	response.setDateHeader(key, val);
+	}
+
+	@Override
     public void setContentType(String contentType) {
         response.setContentType(contentType);
     }
@@ -93,6 +98,7 @@ public class HttpResponseImpl implements HttpResponse {
 	@Override
     public void setCookie(String name, String val) {
         Cookie cookie = new Cookie(name, val);
+        cookie.setPath("/");
         response.addCookie(cookie);
     }
 
@@ -103,6 +109,7 @@ public class HttpResponseImpl implements HttpResponse {
             cookie.setMaxAge(maxAge);
         }
         
+        cookie.setPath("/");
         response.addCookie(cookie);
     }
 

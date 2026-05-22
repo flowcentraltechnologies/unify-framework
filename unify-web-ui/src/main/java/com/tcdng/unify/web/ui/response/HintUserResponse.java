@@ -41,27 +41,16 @@ public class HintUserResponse extends AbstractJsonPageControllerResponse {
 
     @Override
     protected void doGenerate(ResponseWriter writer, Page page) throws UnifyException {
-        logDebug("Preparing hint user response: path ID = [{0}]", page.getPathId());
         Hints hints = getRequestContextUtil().getUserHints();
         if (hints != null && hints.isPresent()) {
             writer.write(",\"hintUserHtml\":");
             StringBuilder hsb = new StringBuilder();
             hsb.append("<div class=\"ui-user-hint\">");
             for (Hint hint : hints.getHints()) {
-                hsb.append("<span class=\"");
-                switch (hint.getMode()) {
-                    case ERROR:
-                        hsb.append("ui-user-hint-error");
-                        break;
-                    case INFO:
-                        hsb.append("ui-user-hint-info");
-                        break;
-                    case WARNING:
-                    default:
-                        hsb.append("ui-user-hint-warning");
-                        break;
-                }
-                hsb.append("\">");
+				final Hint.MODE mode = hint.getMode(); 
+                hsb.append("<span class=\"ui-user-hint-bac\" style=\"border-color:");
+                hsb.append(mode.normal()).append(";background-color:").append(mode.light()).append(";\"");
+                hsb.append(">");
                 hsb.append(hint.getMessage());
                 hsb.append("</span>");
             }

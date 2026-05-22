@@ -97,6 +97,11 @@ public class HSqlDbDialect extends AbstractSqlDataSourceDialect {
 	}
 
 	@Override
+	public String getCurrentTimestampSQL() {
+		return "VALUES (CURRENT_TIMESTAMP)";
+	}
+
+	@Override
 	public boolean matchColumnDefault(String nativeVal, String defaultVal) throws UnifyException {
 		if (super.matchColumnDefault(nativeVal, defaultVal)) {
 			return true;
@@ -129,6 +134,10 @@ public class HSqlDbDialect extends AbstractSqlDataSourceDialect {
 	@Override
 	public String generateDropCheckConstraintSql(SqlEntitySchemaInfo sqlEntitySchemaInfo, String checkName,
 			PrintFormat format) throws UnifyException {
+		if ("PUBLIC".equals(checkName)) {
+			return "";
+		}
+		
 		StringBuilder sb = new StringBuilder();
 		sb.append("ALTER TABLE \'").append(sqlEntitySchemaInfo.getSchemaTableName()).append("\' DROP CONSTRAINT \'")
 				.append(checkName).append("\'");
@@ -426,7 +435,7 @@ public class HSqlDbDialect extends AbstractSqlDataSourceDialect {
 				st = connection.createStatement();
 				st.execute("SHUTDOWN");
 			} catch (SQLException e) {
-				throw new UnifyOperationException(e, getName());
+				throw new UnifyOperationException(e);
 			} finally {
 				SqlUtils.close(st);
 			}

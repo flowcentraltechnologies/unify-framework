@@ -16,6 +16,7 @@
 
 package com.tcdng.unify.core.data;
 
+import java.util.Collections;
 import java.util.List;
 
 import com.tcdng.unify.core.UnifyException;
@@ -32,21 +33,21 @@ import com.tcdng.unify.core.util.ReflectUtils;
 public class BeanValueListStore extends AbstractListValueStore<Object> {
 
     public BeanValueListStore(List<? extends Object> storage) {
-        this(storage, null, 0);
+        this(storage != null ? storage : Collections.emptyList(), null, 0);
     }
 
     public BeanValueListStore(List<? extends Object> storage, String dataMarker, int dataIndex) {
-        super(storage, dataMarker, dataIndex);
+        super(storage != null ? storage : Collections.emptyList(), dataMarker, dataIndex);
     }
 
     @Override
     protected boolean doSettable(Object storage, String property) throws UnifyException {
-        return storage != null && ReflectUtils.isSettableField(storage.getClass(), property);
+        return ReflectUtils.isSettableField(storage.getClass(), property);
     }
 
     @Override
     protected boolean doGettable(Object storage, String property) throws UnifyException {
-        return storage != null && ReflectUtils.isGettableField(storage.getClass(), property);
+        return ReflectUtils.isGettableField(storage.getClass(), property);
     }
 
     @Override

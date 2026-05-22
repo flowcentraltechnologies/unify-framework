@@ -27,6 +27,8 @@ import com.tcdng.unify.core.UnifyCoreErrorConstants;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.util.IOUtils;
+import com.tcdng.unify.core.util.RandomUtils;
+import com.tcdng.unify.core.util.StringUtils;
 
 /**
  * Default implementation of a controller finder.
@@ -59,51 +61,81 @@ public class ControllerFinderImpl extends AbstractUnifyComponent implements Cont
 	}
 
 	@Override
-	public Controller findController(ControllerPathParts controllerPathParts) throws UnifyException {
-		logDebug("Finding controller for path [{0}]...", controllerPathParts.getControllerPath());
-		logDebug("Path variables [{0}]...", controllerPathParts.getPathVariables());
+	public HttpUploadController findHttpUploadController(ControllerPathParts controllerPathParts)
+			throws UnifyException {
+		final String _actualControllerName = getActualControllerName(controllerPathParts.getControllerName());
+		UnifyComponentConfig unifyComponentConfig = getComponentConfig(_actualControllerName);
+		return unifyComponentConfig != null
+				&& HttpUploadController.class.isAssignableFrom(unifyComponentConfig.getType())
+						? (HttpUploadController) getComponent(_actualControllerName)
+						: null;
+	}
 
-		if (controllerPathParts.isWithDocPathParts()) {
-			DocPathParts docPathParts = controllerPathParts.getDocPathParts();
-			if (isComponent(docPathParts.getDocControllerName())) {
-				Controller controller = (Controller) getComponent(docPathParts.getDocControllerName());
-				if (controller instanceof DocumentController) {
-					return controller;
+	@Override
+	public HttpDownloadController findHttpDownloadController(ControllerPathParts controllerPathParts)
+			throws UnifyException {
+		final String _actualControllerName = getActualControllerName(controllerPathParts.getControllerName());
+		UnifyComponentConfig unifyComponentConfig = getComponentConfig(_actualControllerName);
+		return unifyComponentConfig != null
+				&& HttpDownloadController.class.isAssignableFrom(unifyComponentConfig.getType())
+						? (HttpDownloadController) getComponent(_actualControllerName)
+						: null;
+	}
+
+	@Override
+	public Controller findController(ControllerPathParts controllerPathParts) throws UnifyException {
+		try {
+			if (controllerPathParts.isWithDocPathParts()) {
+				DocPathParts docPathParts = controllerPathParts.getDocPathParts();
+				if (isComponent(docPathParts.getDocControllerName())) {
+					Controller controller = (Controller) getComponent(docPathParts.getDocControllerName());
+					if (controller instanceof DocumentController) {
+						return controller;
+					}
 				}
 			}
-		}
-		
-		final String controllerName = controllerPathParts.getControllerName();
-		final String _actualControllerName = getActualControllerName(controllerName);
-		UnifyComponentConfig unifyComponentConfig = getComponentConfig(Controller.class, _actualControllerName);
 
-		final String path = controllerPathParts.getControllerPath();
-		if (unifyComponentConfig == null) {
-			// May be a class-loader resource or a real path request
-			final String cpath = path.startsWith("/") ? path.substring(1) : path;
-			if (IOUtils.isClassLoaderResource(cpath)) {
-				ResourceController classLoaderController = (ResourceController) getComponent(
-						WebApplicationComponents.APPLICATION_CLASSLOADERRESOURCECONTROLLER);
-				classLoaderController.setResourceName(cpath);
-				return classLoaderController;
+			final String controllerName = controllerPathParts.getControllerName();
+			final String _actualControllerName = getActualControllerName(controllerName);
+			UnifyComponentConfig unifyComponentConfig = getComponentConfig(Controller.class, _actualControllerName);
+
+			final String path = controllerPathParts.getControllerPath();
+			if (unifyComponentConfig == null) {
+				// May be a class-loader resource or a real path request
+				final String cpath = path.startsWith("/") ? path.substring(1) : path;
+				if (IOUtils.isClassLoaderResource(cpath)) {
+					ResourceController classLoaderController = (ResourceController) getComponent(
+							WebApplicationComponents.APPLICATION_CLASSLOADERRESOURCECONTROLLER);
+					classLoaderController.setResourceName(cpath);
+					return classLoaderController;
+				}
+
+				if (IOUtils.isRealPathResource(getUnifyComponentContext().getWorkingPath(), path)) {
+					ResourceController realPathController = (ResourceController) getComponent(
+							WebApplicationComponents.APPLICATION_REALPATHRESOURCECONTROLLER);
+					realPathController.setResourceName(path);
+					return realPathController;
+				}
 			}
 
-			if (IOUtils.isRealPathResource(getUnifyComponentContext().getWorkingPath(), path)) {
-				ResourceController realPathController = (ResourceController) getComponent(
-						WebApplicationComponents.APPLICATION_REALPATHRESOURCECONTROLLER);
-				realPathController.setResourceName(path);
-				return realPathController;
+			if (unifyComponentConfig == null) {
+				throw new UnifyException(UnifyCoreErrorConstants.COMPONENT_UNKNOWN_COMP, path);
 			}
-		}
 
-		if (unifyComponentConfig == null) {
-			throw new UnifyException(UnifyCoreErrorConstants.COMPONENT_UNKNOWN_COMP, path);
-		}
+			Controller controller = (Controller) getComponent(_actualControllerName);
+			if (controller.isPageController()) {
+				controllerPathParts.setMultiplePagesPerSession(controller.isMultiplePagesPerSession());
+				if (StringUtils.isBlank(getRequestClientPageId())) {
+					setRequestClientPageId(RandomUtils.generateRandomAlphanumeric(UnifyWebRequestAttributeConstants.PID_SIZE));
+				}
+			}
 
-		Controller controller = (Controller) getComponent(_actualControllerName);
-		controller.ensureContextResources(controllerPathParts);
-		logDebug("Controller for name [{0}] found", controllerName);
-		return controller;
+			controller.ensureContextResources(controllerPathParts);
+			return controller;
+		} catch (UnifyException e) {
+			logError("Error finding controller for path [{0}]...", controllerPathParts.getControllerPath());
+			throw e;
+		}
 	}
 
 	@Override

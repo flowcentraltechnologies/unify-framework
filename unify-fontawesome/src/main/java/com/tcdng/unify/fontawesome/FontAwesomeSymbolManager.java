@@ -32,11 +32,23 @@ import com.tcdng.unify.web.font.AbstractFontSymbolManager;
 @Component(FontAwesomeApplicationComponents.FONTAWESOME_FONTSYMBOLMANAGER)
 public class FontAwesomeSymbolManager extends AbstractFontSymbolManager {
 
-    @Override
-    public List<String> getFontResources() throws UnifyException {
-        // Currently uses font awesome 5.14.1
-        return Arrays.asList("webfonts/fa-solid-900.woff", "webfonts/fa-regular-400.woff");
-    }
+	@Override
+	public List<String> getFontResources() throws UnifyException {
+		// Currently uses font awesome 7.0.0
+		return Arrays.asList(
+				"webfonts/fa-solid-900.woff2",
+				"webfonts/fa-regular-400.woff2",
+				"webfonts/fa-brands-400.woff2");
+	}
+
+	@Override
+	public List<String> getRegularFontResources() throws UnifyException {
+		// Currently uses font awesome 7.0.0
+		return Arrays.asList(
+				"webfonts/fa-regular-400.woff2",
+				"webfonts/fa-solid-900.woff2",
+				"webfonts/fa-brands-400.woff2");
+	}
 
     @Override
     protected void onInitialize() throws UnifyException {
@@ -55,7 +67,6 @@ public class FontAwesomeSymbolManager extends AbstractFontSymbolManager {
         registerSymbol("angle-left", "f104");
         registerSymbol("angle-right", "f105");
         registerSymbol("angle-up", "f106");
-        registerSymbol("angle-up", "f106");
         registerSymbol("application", "f3fa");
         registerSymbol("archive", "f187");
         registerSymbol("arrow-down", "f063");
@@ -68,6 +79,7 @@ public class FontAwesomeSymbolManager extends AbstractFontSymbolManager {
         registerSymbol("bell", "f0f3");
         registerSymbol("bell-slash", "f1f6");
         registerSymbol("bold", "f032");
+        registerSymbol("bomb", "f1e2");
         registerSymbol("buffer", "f837");
         registerSymbol("calendar", "f133");
         registerSymbol("calendar-alt", "f073");
@@ -79,6 +91,8 @@ public class FontAwesomeSymbolManager extends AbstractFontSymbolManager {
         registerSymbol("chart-area", "f1fe");
         registerSymbol("chart-bar", "f080");
         registerSymbol("chart-pie", "f200");
+        registerSymbol("chat", "f075");
+        registerSymbol("chats", "f086");
         registerSymbol("chevron-circle-down", "f13a");
         registerSymbol("chevron-circle-left", "f137");
         registerSymbol("chevron-circle-right", "f138");
@@ -87,13 +101,19 @@ public class FontAwesomeSymbolManager extends AbstractFontSymbolManager {
         registerSymbol("chevron-left", "f053");
         registerSymbol("chevron-right", "f054");
         registerSymbol("chevron-up", "f077");
+        registerSymbol("clipboard", "f328");
         registerSymbol("clipboard-check", "f46c");
+        registerSymbol("clipboard-list", "f46d");
         registerSymbol("circle-arrow-down", "f358");
         registerSymbol("circle-arrow-left", "f359");
         registerSymbol("circle-arrow-right", "f35a");
         registerSymbol("circle-arrow-up", "f35b");
+        registerSymbol("circle-check", "f058");
+        registerSymbol("circle-info", "f05a");
+        registerSymbol("circle-nodes", "e4e2");
         registerSymbol("circle-pause", "f28b");
         registerSymbol("clock", "f017");
+        registerSymbol("clone", "f24d");
         registerSymbol("cloud", "f0c2");
         registerSymbol("cloud-download", "f381");
         registerSymbol("cloud-upload", "f382");
@@ -107,6 +127,7 @@ public class FontAwesomeSymbolManager extends AbstractFontSymbolManager {
         registerSymbol("cross", "f00d");
         registerSymbol("cubes", "f1b3");
         registerSymbol("cut", "f0c4");
+        registerSymbol("dashboard", "f201");
         registerSymbol("database", "f1c0");
         registerSymbol("desktop", "f108");
         registerSymbol("diff", "f53e");
@@ -123,17 +144,23 @@ public class FontAwesomeSymbolManager extends AbstractFontSymbolManager {
         registerSymbol("exclamation-circle", "f06a");
         registerSymbol("expand", "f065");
         registerSymbol("file", "f15b");
+        registerSymbol("file-audio", "f1c7");
         registerSymbol("file-alt", "f15c");
+        registerSymbol("file-code", "f1c9");
         registerSymbol("file-contract", "f56c");
+        registerSymbol("file-csv", "f6dd");
         registerSymbol("file-download", "f56d");
         registerSymbol("file-edit", "f31c");
         registerSymbol("file-excel", "f1c3");
         registerSymbol("file-export", "f56e");
+        registerSymbol("file-fragment", "e697");
+        registerSymbol("file-image", "f1c5");
         registerSymbol("file-import", "f56f");
         registerSymbol("file-invoice", "f570");
         registerSymbol("file-pdf", "f1c1");
         registerSymbol("file-plus", "f477");
         registerSymbol("file-upload", "f574");
+        registerSymbol("file-video", "f1c8");
         registerSymbol("file-word", "f1c2");
         registerSymbol("filter", "f0b0");
         registerSymbol("flag", "f024");
@@ -157,14 +184,18 @@ public class FontAwesomeSymbolManager extends AbstractFontSymbolManager {
         registerSymbol("key", "f084");
         registerSymbol("laptop-house", "e066");
         registerSymbol("laugh", "f599");
+        registerSymbol("lightbulb", "f0eb");
         registerSymbol("link", "f0c1");
         registerSymbol("list", "f03a");
+        registerSymbol("list-unordered", "f0ca");
+        registerSymbol("list-ordered", "f0cb");
         registerSymbol("lock", "f023");
         registerSymbol("logs", "f46d");
         registerSymbol("man", "f183");
         registerSymbol("magic", "f0d0");
         registerSymbol("mail", "f0e0");
         registerSymbol("mail-bulk", "f674");
+        registerSymbol("message", "f27a");
         registerSymbol("minus", "f068");
         registerSymbol("minus-square", "f146");
         registerSymbol("money-bill", "f0d6");
@@ -174,6 +205,7 @@ public class FontAwesomeSymbolManager extends AbstractFontSymbolManager {
         registerSymbol("outdent", "f03b");
         registerSymbol("paint-brush", "f1fc");
         registerSymbol("paper-clip", "f0c6");
+        registerSymbol("paper-plane", "f1d8");
         registerSymbol("parachute-box", "f4cd");
         registerSymbol("pen-nib", "f5ad");
         registerSymbol("play", "f04b");
@@ -183,17 +215,21 @@ public class FontAwesomeSymbolManager extends AbstractFontSymbolManager {
         registerSymbol("project-diagram", "f542");
         registerSymbol("question", "f128");
         registerSymbol("question-circle", "f059");
+        registerSymbol("radiation", "f7b9");
         registerSymbol("redo", "f01e");
         registerSymbol("redo-alt", "f2f9");
         registerSymbol("rocket", "f135");
         registerSymbol("satellite-disk", "f7c0");
         registerSymbol("save", "f0c7");
+        registerSymbol("screwdriver-wrench", "f7d9");
         registerSymbol("scroll", "f70e");
         registerSymbol("search", "f002");
+        registerSymbol("server", "f233");
         registerSymbol("sign-in", "f2f6");
         registerSymbol("sign-out", "f2f5");
         registerSymbol("site-map", "f0e8");
         registerSymbol("sort", "f0dc");
+        registerSymbol("square-check", "f14a");
         registerSymbol("step", "f54b");
         registerSymbol("stream", "f550");
         registerSymbol("swap", "f362");
@@ -207,19 +243,22 @@ public class FontAwesomeSymbolManager extends AbstractFontSymbolManager {
         registerSymbol("thumbtack", "f08d");
         registerSymbol("times-circle", "f057");
         registerSymbol("trash", "f2ed");
+        registerSymbol("triangle-exclamation", "f071");
         registerSymbol("underline", "f0cd");
         registerSymbol("undo", "f2ea");
         registerSymbol("unlock", "f09c");
+        registerSymbol("upload", "f093");
         registerSymbol("user", "f007");
         registerSymbol("users", "f0c0");
         registerSymbol("user-check", "f4fc");
         registerSymbol("user-cog", "f4fe");
         registerSymbol("user-edit", "f4ff");
         registerSymbol("user-tag", "f507");
-        registerSymbol("vector-square", "f5cb");
+        registerSymbol("vector-square", "f0ac");
         registerSymbol("window-maximize", "f2d0");
         registerSymbol("window-restore", "f2d2");
         registerSymbol("woman", "f182");
+        registerSymbol("wrench", "f0ad");
     }
 
 }

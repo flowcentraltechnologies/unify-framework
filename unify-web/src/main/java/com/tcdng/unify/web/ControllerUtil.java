@@ -38,16 +38,4 @@ public interface ControllerUtil extends UnifyComponent {
      */
     PlainControllerInfo getPlainControllerInfo(String controllerName) throws UnifyException;
 
-    /**
-     * Returns a remote call controller information.
-     * 
-     * @param controllerName
-     *            the controller name
-     * @return the remote call controller information
-     * @throws UnifyException
-     *             if bean with name does not exist. If controller with name is not
-     *             a page-controller. if an error occurs
-     */
-    RemoteCallControllerInfo getRemoteCallControllerInfo(String controllerName) throws UnifyException;
-
 }

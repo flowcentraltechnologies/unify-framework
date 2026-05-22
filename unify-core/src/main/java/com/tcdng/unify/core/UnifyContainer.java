@@ -36,12 +36,14 @@ import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
 import java.util.TimeZone;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.tcdng.unify.common.annotation.AnnotationConstants;
 import com.tcdng.unify.common.constants.UnifyStaticSettings;
+import com.tcdng.unify.common.data.UnifyContainerProperty;
+import com.tcdng.unify.convert.constants.ConverterTypeConstants;
+import com.tcdng.unify.convert.converters.ConverterFormatter;
 import com.tcdng.unify.core.annotation.Broadcast;
 import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.annotation.Configurable;
@@ -56,6 +58,8 @@ import com.tcdng.unify.core.business.BusinessService;
 import com.tcdng.unify.core.business.internal.ProxyBusinessServiceGenerator;
 import com.tcdng.unify.core.data.FactoryMap;
 import com.tcdng.unify.core.data.LocaleFactoryMaps;
+import com.tcdng.unify.core.file.TemporaryFileManager;
+import com.tcdng.unify.core.format.DateFormatter;
 import com.tcdng.unify.core.format.DateTimeFormatter;
 import com.tcdng.unify.core.logging.AbstractLog4jLogger;
 import com.tcdng.unify.core.logging.DummyEventLogger;
@@ -73,10 +77,12 @@ import com.tcdng.unify.core.upl.UplCompiler;
 import com.tcdng.unify.core.upl.UplComponent;
 import com.tcdng.unify.core.upl.UplElementAttributes;
 import com.tcdng.unify.core.util.DataUtils;
+import com.tcdng.unify.core.util.FileUtils;
 import com.tcdng.unify.core.util.GetterSetterInfo;
 import com.tcdng.unify.core.util.IOUtils;
 import com.tcdng.unify.core.util.ImageUtils;
 import com.tcdng.unify.core.util.NameUtils;
+import com.tcdng.unify.core.util.RandomUtils;
 import com.tcdng.unify.core.util.ReflectUtils;
 import com.tcdng.unify.core.util.StringUtils;
 import com.tcdng.unify.core.util.ThreadUtils;
@@ -178,7 +184,7 @@ public class UnifyContainer {
 	private boolean interfacesOpen;
 
 	public UnifyContainer() {
-		this.accessKey = UUID.randomUUID().toString();
+		this.accessKey = RandomUtils.generateUUID();
 
 		this.internalUnifyComponentInfos = new ConcurrentHashMap<String, InternalUnifyComponentInfo>();
 		this.periodicTaskMonitorList = new ArrayList<TaskMonitor>();
@@ -247,7 +253,7 @@ public class UnifyContainer {
 		staticSettings = ucc.getStaticSettings();
 		nodeId = ucc.getNodeId();
 		preferredPort = ucc.getPreferredPort();
-		runtimeId = UUID.randomUUID().toString();
+		runtimeId = RandomUtils.generateUUID();
 
 		if (nodeId == null) {
 			throw new UnifyException(UnifyCoreErrorConstants.CONTAINER_NODEID_REQUIRED);
@@ -270,9 +276,14 @@ public class UnifyContainer {
 			restrictedJARMode = Boolean.valueOf(
 					String.valueOf(unifySettings.get(UnifyCorePropertyConstants.APPLICATION_RETRICTED_JAR_MODE)));
 		}
-		
+
 		if (restrictedJARMode) {
 			IOUtils.enterRestrictedJARMode();
+		}
+
+		if (Boolean.valueOf(
+				String.valueOf(unifySettings.get(UnifyCorePropertyConstants.APPLICATION_IGNORE_SSL_HOSTNAMES)))) {
+			IOUtils.ignoreSSLHostNames();
 		}
 		
 		// Banner
@@ -525,8 +536,13 @@ public class UnifyContainer {
 
 			// Initialize utilities
 			ImageUtils.scanForPlugins();
-			DataUtils.registerDefaultFormatters((DateTimeFormatter) getUplComponent(getApplicationLocale(),
+			DataUtils.registerDefaultFormatter(ConverterTypeConstants.DATE, (DateFormatter) getUplComponent(getApplicationLocale(),
+					"!fixeddatetimeformat pattern:$s{yyyy-MM-dd}", false));
+			DataUtils.registerDefaultFormatter(ConverterTypeConstants.DATETIME, (DateTimeFormatter) getUplComponent(getApplicationLocale(),
 					"!fixeddatetimeformat pattern:$s{yyyy-MM-dd HH:mm:ss.SSS}", false));
+			DataUtils.registerDefaultFormatter(ConverterTypeConstants.DECIMAL, (ConverterFormatter<?>) getUplComponent(getApplicationLocale(),
+					"!amountformat", false));
+			FileUtils.init(getComponent(TemporaryFileManager.class));
 
 			// Run application startup service
 			toConsole("Initializing application boot service...");
@@ -550,7 +566,6 @@ public class UnifyContainer {
 			Random random = new Random();
 			TaskManager taskManager = (TaskManager) getComponent(ApplicationComponents.APPLICATION_TASKMANAGER);
 			for (Map.Entry<String, Map<String, PeriodicInfo>> componentEntry : componentPeriodMethodMap.entrySet()) {
-				logInfo("Intializing component [{0}] with periodic methods...", componentEntry.getKey());
 				getComponent(componentEntry.getKey());
 				for (Map.Entry<String, PeriodicInfo> periodicEntry : componentEntry.getValue().entrySet()) {
 					PeriodicInfo pin = periodicEntry.getValue();
@@ -698,7 +713,7 @@ public class UnifyContainer {
 		try {
 			containerCommandQueue.offer(new ContainerCommand(command, params));
 		} catch (ClassCastException e) {
-			throw new UnifyOperationException(e, "Unify Container");
+			throw new UnifyOperationException(e);
 		}
 	}
 
@@ -892,6 +907,10 @@ public class UnifyContainer {
 		return unifySettings.get(name);
 	}
 
+	public <T> T getSetting(Class<T> dataType, String name) throws UnifyException {
+		return DataUtils.convert(dataType, unifySettings.get(name));
+	}
+
 	public String getWorkingPath() {
 		return unifyContainerEnvironment.getWorkingPath();
 	}
@@ -1027,8 +1046,7 @@ public class UnifyContainer {
 	 * @throws UnifyException If component an error occurs.
 	 */
 	public boolean isComponent(Class<? extends UnifyComponent> componentType) throws UnifyException {
-		List<UnifyComponentConfig> configs = getComponentConfigs(componentType);
-		return !configs.isEmpty();
+		return !getComponentConfigs(componentType).isEmpty();
 	}
 
 	/**
@@ -1368,14 +1386,25 @@ public class UnifyContainer {
 
 	@SuppressWarnings("unchecked")
 	private void initializeContainerMessages() throws UnifyException {
+		final Map<String, Object> _unifySettings = new HashMap<String, Object>(unifySettings);
 		List<String> messageBaseList = new ArrayList<String>();
 		for (UnifyStaticSettings unifyStaticSettings : staticSettings) {
 			String messageBase = unifyStaticSettings.getMessageBase();
-			if (StringUtils.isNotBlank(messageBase)) {
+			if (StringUtils.isNotBlank(messageBase) && !messageBaseList.contains(messageBase)) {
 				messageBaseList.add(messageBase);
+			}
+
+			for (UnifyContainerProperty property : unifyStaticSettings.getContainerProperties()) {
+				if (_unifySettings.containsKey(property.getProperty()) && !property.isImportant()) {
+					continue;
+				}
+
+				_unifySettings.put(property.getProperty(),
+						property.getValueList().size() == 1 ? property.getValueList().get(0) : property.getValueList());
 			}
 		}
 
+		unifySettings = Collections.unmodifiableMap(_unifySettings);
 		List<String> cfgMessageBaseList = DataUtils.convert(ArrayList.class, String.class,
 				unifySettings.get(UnifyCorePropertyConstants.APPLICATION_MESSAGES_BASE));
 		if (cfgMessageBaseList != null) {
@@ -1862,6 +1891,7 @@ public class UnifyContainer {
 			return field;
 		}
 
+		@SuppressWarnings("deprecation")
 		public boolean isFieldAccessible() {
 			return field.isAccessible();
 		}

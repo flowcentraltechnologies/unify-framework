@@ -16,6 +16,8 @@
 package com.tcdng.unify.core.database.sql;
 
 import java.sql.Connection;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -154,6 +156,20 @@ public interface SqlDataSource extends DataSource, NameSqlDataSourceSchema {
      */
     SqlDataSourceDialect getDialect() throws UnifyException;
 
+    /**
+     * Gets current timestamp from this datasource.
+     * @return the timestamp
+     * @throws UnifyException if an error occurs
+     */
+    Date getNow() throws UnifyException;
+
+    /**
+     * Gets current timestamp from this datasource.
+     * @return the timestamp
+     * @throws UnifyException if an error occurs
+     */
+    Timestamp getNowAsTimestamp() throws UnifyException;
+    
     /**
      * Returns an SQL connection object from data source.
      * 

@@ -1,5 +1,5 @@
 // UPL template for assignment panel
-// Copyright 2018-2022 The Code Department.
+// Copyright 2018-2025 The Code Department.
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 
@@ -21,6 +21,7 @@
 !ui-panel:assignmentBoxPanel components:$c{assignmentBox}
 !ui-assignmentbox:assignmentBox binding:$g{assignListAttribute}
     filterCaption1:$f{filterCaption1} filterCaption2:$f{filterCaption2} assignCaption:$f{assignCaption} unassignCaption:$f{unassignCaption}
+    search1:$f{search1} search2:$f{search2}
     filterList1:$f{filterList1} filterList2:$f{filterList2} assignList:$g{assignList} unassignList:$g{unassignList}
 
 // Action panel

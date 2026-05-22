@@ -15,9 +15,13 @@
  */
 package com.tcdng.unify.core.data;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
+import com.tcdng.unify.convert.util.ConverterUtils;
 import com.tcdng.unify.core.UnifyException;
+import com.tcdng.unify.core.constant.DataType;
 import com.tcdng.unify.core.format.Formatter;
 
 /**
@@ -28,39 +32,59 @@ import com.tcdng.unify.core.format.Formatter;
  */
 public class MapValueStore extends AbstractSingleObjectValueStore<Map<String, Object>> {
 
-    public MapValueStore(Map<String, Object> map) {
-        this(map, null, -1);
-    }
+	private final Map<String, DataType> dataTypes;
+
+	public MapValueStore(Map<String, Object> map) {
+		this(map, null, -1);
+	}
+
+	public MapValueStore(Map<String, DataType> dataTypes, Map<String, Object> map) {
+		this(dataTypes, map, null, -1);
+	}
 
 	@Override
 	public final boolean isMap() {
 		return true;
 	}
 
-    public MapValueStore(Map<String, Object> map, String dataMarker, int dataIndex) {
-        super(map, dataMarker, dataIndex);
-    }
+	public MapValueStore(Map<String, Object> map, String dataMarker, int dataIndex) {
+		this(null, map, dataMarker, dataIndex);
+	}
 
-    @Override
-    public boolean isGettable(String name) throws UnifyException {
-        return isTempValue(name) || (storage != null && storage.containsKey(name));
-    }
+	public MapValueStore(Map<String, DataType> dataTypes, Map<String, Object> map, String dataMarker, int dataIndex) {
+		super(map, dataMarker, dataIndex);
+		this.dataTypes = Collections
+				.unmodifiableMap(dataTypes == null ? Collections.emptyMap() : new HashMap<String, DataType>(dataTypes));
+	}
 
-    @Override
-    public boolean isSettable(String name) throws UnifyException {
-        return storage != null && storage.containsKey(name);
-    }
+	@Override
+	public boolean isGettable(String name) throws UnifyException {
+		return isTempValue(name) || (storage != null && storage.containsKey(name));
+	}
 
-    @Override
-    protected Object doRetrieve(String property) throws UnifyException {
-    	Object val = getTempValue(property);
-        return val == null ? storage.get(property) : val;
-    }
+	@Override
+	public boolean isSettable(String name) throws UnifyException {
+		return storage != null && storage.containsKey(name);
+	}
 
-    @Override
-    protected void doStore(String property, Object value, Formatter<?> formatter) throws UnifyException {
-    	if (isSettable(property)) {
-    		storage.put(property, value);
-    	}
-    }
+	@Override
+	protected final Object doRetrieve(String property) throws UnifyException {
+		Object val = getTempValue(property);
+		return val == null ? storage.get(property) : val;
+	}
+
+	@Override
+	protected final void doStore(String property, Object value, Formatter<?> formatter) throws UnifyException {
+		if (isSettable(property)) {
+			DataType dataType = dataTypes.get(property);
+			if (dataType != null) {
+				try {
+					value = ConverterUtils.convert(dataType.javaClass(), value);
+				} catch (Exception e) {
+				}
+			}
+
+			storage.put(property, value);
+		}
+	}
 }

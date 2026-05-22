@@ -20,9 +20,8 @@ import java.io.StringWriter;
 
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Configurable;
+import com.tcdng.unify.core.constant.MimeType;
 import com.tcdng.unify.core.stream.XmlObjectStreamer;
-import com.tcdng.unify.web.constant.RequestParameterConstants;
-import com.tcdng.unify.web.remotecall.RemoteCallFormat;
 
 /**
  * Abstract plain XML controller.
@@ -37,19 +36,11 @@ public abstract class AbstractPlainXmlController extends AbstractPlainController
 
 	@Override
 	public void doProcess(ClientRequest request, ClientResponse response) throws UnifyException {
-		response.setContentType(RemoteCallFormat.XML.mimeType().template());
+		response.setContentType(MimeType.APPLICATION_XML.template());
 		String xmlResponse = null;
 		try {
 			final String actionName = request.getRequestPathParts().getControllerPathParts().getActionName();
 			logDebug("Processing plain XML request with action [{0}]...", actionName);
-
-			RemoteCallFormat remoteCallFormat = (RemoteCallFormat) request.getParameters()
-					.getParam(RequestParameterConstants.REMOTE_CALL_FORMAT);
-			if (!RemoteCallFormat.XML.equals(remoteCallFormat)) {
-				throw new UnifyException(UnifyWebErrorConstants.CONTROLLER_MESSAGE_FORMAT_NOT_MATCH_EXPECTED,
-						remoteCallFormat, RemoteCallFormat.XML, getName());
-			}
-
 			xmlResponse = doExecute(actionName, request.getText());
 		} catch (Exception e) {
 			xmlResponse = "<serverError>" + e.getMessage() + "</serverError>";

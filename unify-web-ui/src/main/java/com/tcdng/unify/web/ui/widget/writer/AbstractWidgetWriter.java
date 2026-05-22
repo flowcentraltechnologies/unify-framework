@@ -32,6 +32,7 @@ import com.tcdng.unify.web.ui.widget.EventHandler;
 import com.tcdng.unify.web.ui.widget.PageManager;
 import com.tcdng.unify.web.ui.widget.ResponseWriter;
 import com.tcdng.unify.web.ui.widget.Widget;
+import com.tcdng.unify.web.ui.widget.data.Hint;
 
 /**
  * Abstract base class for widget writers.
@@ -46,9 +47,7 @@ public abstract class AbstractWidgetWriter extends AbstractDhtmlWriter implement
 
     @Override
     public void writeStructureAndContent(ResponseWriter writer, Widget widget) throws UnifyException {
-        widget.updateInternalState();
-        doWriteStructureContentContainer(writer, widget);
-        widget.addPageAliases();
+        doWriteStructureContentWithUpdate(writer, widget);
     }
 
     @Override
@@ -56,9 +55,7 @@ public abstract class AbstractWidgetWriter extends AbstractDhtmlWriter implement
         String origId = widget.getId();
         try {
             widget.setId(id);
-            widget.updateInternalState();
-            doWriteStructureContentContainer(writer, widget);
-            widget.addPageAliases();
+            doWriteStructureContentWithUpdate(writer, widget);
         } finally {
             widget.setId(origId);
         }
@@ -72,13 +69,13 @@ public abstract class AbstractWidgetWriter extends AbstractDhtmlWriter implement
 
     @Override
     public final void writeBehavior(ResponseWriter writer, Widget widget) throws UnifyException {
-     	doWriteBehavior(writer, widget, widget.getEventHandlers());
+    	doWriteWriteBehaviorWithUpdate(writer, widget, widget.getEventHandlers());
     }
 
     @Override
 	public final void writeBehavior(ResponseWriter writer, Widget widget, EventHandler[] eventHandlers)
 			throws UnifyException {
-        doWriteBehavior(writer, widget, eventHandlers);
+    	doWriteWriteBehaviorWithUpdate(writer, widget, eventHandlers);
 	}
 
 	@Override
@@ -92,7 +89,7 @@ public abstract class AbstractWidgetWriter extends AbstractDhtmlWriter implement
         String origId = widget.getId();
         try {
             widget.setId(id);
-        	doWriteBehavior(writer, widget, widget.getEventHandlers());
+            doWriteWriteBehaviorWithUpdate(writer, widget, widget.getEventHandlers());
         } finally {
             widget.setId(origId);
         }
@@ -105,6 +102,72 @@ public abstract class AbstractWidgetWriter extends AbstractDhtmlWriter implement
 
     protected abstract void doWriteStructureAndContent(ResponseWriter writer, Widget widget) throws UnifyException;
 
+	protected void writeFontIcon(ResponseWriter writer, String symbol) throws UnifyException {
+		writer.write("<span class=\"g_fsm\">");
+		writer.write(resolveSymbolHtmlHexCode(symbol));
+		writer.write("</span>");
+	}
+
+	protected void writeFontIcon(ResponseWriter writer, String additionStyleClass, String symbol)
+			throws UnifyException {
+		writeFontIcon(writer, null, additionStyleClass, symbol, null);
+	}
+
+	protected void writeFontIcon(ResponseWriter writer, String id, String additionStyleClass, String symbol)
+			throws UnifyException {
+		writeFontIcon(writer, id, additionStyleClass, symbol, null);
+	}
+
+	protected void writeFontIcon(ResponseWriter writer, String id, String additionStyleClass, String symbol, String hint)
+			throws UnifyException {
+		writer.write("<span");
+		if (!StringUtils.isBlank(id)) {
+			writer.write(" id=\"").write(id).write("\"");
+		}
+		
+		if (!StringUtils.isBlank(hint)) {
+			writer.write(" title=\"").write(resolveSessionMessage(hint)).write("\"");
+		}
+
+		writer.write(" class=\"");
+		if (!StringUtils.isBlank(additionStyleClass)) {
+			writer.write(additionStyleClass);
+			writer.write(" ");
+		}
+
+		writer.write("g_fsm\">");
+		writer.write(resolveSymbolHtmlHexCode(symbol));
+		writer.write("</span>");
+	}
+
+	protected void writeFontIcon(ResponseWriter writer, Hint.MODE mode)
+			throws UnifyException {
+		writeFontIcon(writer, mode, null, null);
+	}
+
+	protected void writeFontIcon(ResponseWriter writer, Hint.MODE mode, String additionStyleClass)
+			throws UnifyException {
+		writeFontIcon(writer, mode, null, additionStyleClass);
+	}
+	
+	protected void writeFontIcon(ResponseWriter writer, Hint.MODE mode, String id, String additionStyleClass)
+			throws UnifyException {
+		writer.write("<span style=\"color:").write(mode.dark()).write(";\"");
+		if (!StringUtils.isBlank(id)) {
+			writer.write(" id=\"").write(id).write("\"");
+		}
+
+		writer.write(" class=\"");
+		if (!StringUtils.isBlank(additionStyleClass)) {
+			writer.write(additionStyleClass);
+			writer.write(" ");
+		}
+
+		writer.write("g_fsm\">");
+		writer.write(resolveSymbolHtmlHexCode(mode.icon()));
+		writer.write("</span>");
+	}
+    
     protected final boolean isWithFontSymbolManager() {
         return fontSymbolManager != null;
     }
@@ -190,7 +253,7 @@ public abstract class AbstractWidgetWriter extends AbstractDhtmlWriter implement
 
 	protected String getContextURL(String path, String... pathElement) throws UnifyException {
 		RequestContext requestContext = getRequestContext();
-		return WebUtils.getContextURL(requestContext, getRequestContextUtil().isRemoteViewer(), path, pathElement);
+		return WebUtils.getContextURL(requestContext, false, path, pathElement);
 	}
 
     protected String getUserColorStyleClass(String classBase) throws UnifyException {
@@ -208,7 +271,8 @@ public abstract class AbstractWidgetWriter extends AbstractDhtmlWriter implement
         return classBase;
     }
 
-	private void doWriteStructureContentContainer(ResponseWriter writer, Widget widget) throws UnifyException {
+	private void doWriteStructureContentWithUpdate(ResponseWriter writer, Widget widget) throws UnifyException {
+        widget.updateInternalState();
 		if (widget.isRefreshesContainer()) {
 			writer.write("<div class=\"ui-wcont\" id=\"wcont_").write(widget.getId()).write("\">");
 		}
@@ -218,6 +282,15 @@ public abstract class AbstractWidgetWriter extends AbstractDhtmlWriter implement
 		if (widget.isRefreshesContainer()) {
 			writer.write("</div>");
 		}
+		
+        widget.addPageAliases();
+	}
+
+	private void doWriteWriteBehaviorWithUpdate(ResponseWriter writer, Widget widget, EventHandler[] eventHandlers)
+			throws UnifyException {
+		widget.updateInternalState();
+		doWriteBehavior(writer, widget, eventHandlers);
+//        widget.addPageAliases();
 	}
 
 }

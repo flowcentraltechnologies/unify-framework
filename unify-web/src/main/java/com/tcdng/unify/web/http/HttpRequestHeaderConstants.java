@@ -38,4 +38,8 @@ public interface HttpRequestHeaderConstants {
 	String WL_PROXY_CLIENT_IP = "WL-Proxy-Client-IP";
 	
 	String X_FORWARDED_FOR = "X-FORWARDED-FOR";
+	
+	String X_UNIFY_PID= "X-Unify-Pid";
+	
+	String X_UNIFY_UPLOAD= "X-Unify-Upload";
 }

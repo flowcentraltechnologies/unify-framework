@@ -19,6 +19,7 @@ import com.tcdng.unify.core.UnifyComponent;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.constant.FileAttachmentType;
 import com.tcdng.unify.core.data.FileAttachmentInfo;
+import com.tcdng.unify.core.data.UploadedFile;
 
 /**
  * File upload view handler.
@@ -40,13 +41,13 @@ public interface FileUploadViewHandler extends UnifyComponent {
      * @param filename
      *                   the file name
      * @param attachment
-     *                   the file data
+     *                   the file
      * @return the original upload ID if update otherwise new ID on create
      * @throws UnifyException
      *                        if an error occurs
      */
-    Object save(Object id, String category, FileAttachmentType type, String filename, byte[] attachment)
-            throws UnifyException;
+	Object save(Object id, String category, FileAttachmentType type, String filename, UploadedFile attachment)
+			throws UnifyException;
 
     /**
      * Peeks attachment information without loading data.

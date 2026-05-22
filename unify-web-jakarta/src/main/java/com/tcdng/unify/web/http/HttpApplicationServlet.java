@@ -35,10 +35,10 @@ import jakarta.servlet.http.HttpServletResponse;
  * @author The Code Department
  * @since 4.1
  */
-@MultipartConfig( //2MB, 10MB, 50MB
-		fileSizeThreshold = 1024 * 1024 * 2,
-		maxFileSize = 1024 * 1024 * 10,
-		maxRequestSize = 1024 * 1024 * 50)
+@MultipartConfig( //1MB, 100MB, 100MB
+		fileSizeThreshold = 1024 * 1024 * 1,
+		maxFileSize = 1024 * 1024 * 100,
+		maxRequestSize = 1024 * 1024 * 100)
 public class HttpApplicationServlet extends HttpServlet {
 
     /** The serial version ID */

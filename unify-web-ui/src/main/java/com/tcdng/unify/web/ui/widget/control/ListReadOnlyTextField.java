@@ -16,10 +16,13 @@
 
 package com.tcdng.unify.web.ui.widget.control;
 
+import com.tcdng.unify.common.data.Listable;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.annotation.UplAttribute;
 import com.tcdng.unify.core.annotation.UplAttributes;
+import com.tcdng.unify.core.constant.LocaleType;
+import com.tcdng.unify.core.util.StringUtils;
 import com.tcdng.unify.web.constant.ExtensionType;
 
 /**
@@ -33,7 +36,21 @@ import com.tcdng.unify.web.constant.ExtensionType;
         @UplAttribute(name = "list", type = String.class, mandatory = true)})
 public class ListReadOnlyTextField extends TextField {
 
-    public String getList() throws UnifyException {
+    @Override
+	public String getFacadeStringValue() throws UnifyException {
+        String list = getList();
+        String itemKey = getStringValue();
+        if (!StringUtils.isBlank(itemKey)) {
+            Listable listable = getListItemByKey(LocaleType.SESSION, list, itemKey);
+            if (listable != null) {
+                return listable.getListDescription();
+            }
+        }
+        
+        return null;
+	}
+
+	public String getList() throws UnifyException {
         return getUplAttribute(String.class, "list");
     }
     

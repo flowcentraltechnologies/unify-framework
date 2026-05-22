@@ -95,13 +95,15 @@ public class PlainHtmlWriter extends AbstractPageWriter {
 			writer.write(plainHtml.getBodyContent());
 		}
 
-		writer.write("</body></html>");
+		writer.write("</body>");
 
 		if (!StringUtils.isBlank(plainHtml.getScripts())) {
 			writer.write("<script>");
 			writer.write(plainHtml.getScripts());
 			writer.write("</script>");
 		}
+
+		writer.write("</html>");
 	}
 
 	@Override

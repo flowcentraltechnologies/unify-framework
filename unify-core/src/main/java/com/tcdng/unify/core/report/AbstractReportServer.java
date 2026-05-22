@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +27,7 @@ import java.util.Map;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 
+import com.openhtmltopdf.extend.FSSupplier;
 import com.openhtmltopdf.pdfboxout.PdfBoxRenderer;
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 import com.tcdng.unify.core.AbstractUnifyComponent;
@@ -127,10 +129,24 @@ public abstract class AbstractReportServer extends AbstractUnifyComponent
 				doc = new PDDocument();
 				List<ReportHtml> embeddedHtmls = report.getEmbeddedHtmls();
 				logDebug("Multi-document HTML count is [{0}]...", embeddedHtmls != null ? embeddedHtmls.size() : 0);
+		        FSSupplier<InputStream> fontSupplier = new FSSupplier<InputStream>() {
+		            @Override
+		            public InputStream supply() {
+		                try {
+							return IOUtils.openClassLoaderResourceInputStream("fonts/DejaVuSans.ttf");
+						} catch (UnifyException e) {
+							logDebug(e);
+						}
+		                
+		                return null;
+		            }
+		        };
+		        
 				if (!DataUtils.isBlank(embeddedHtmls)) {
 					for (ReportHtml html : embeddedHtmls) {
 						PdfRendererBuilder builder = new PdfRendererBuilder();
 						builder.withHtmlContent(html.getHtml(), html.getResourceBaseUri());
+						builder.useFont(fontSupplier, "DejaVu Sans");
 						builder.usePDDocument(doc);
 						builder.useFastMode();
 						PdfBoxRenderer renderer = builder.buildPdfRenderer();
@@ -140,7 +156,7 @@ public abstract class AbstractReportServer extends AbstractUnifyComponent
 				}
 
 				doc.save(outputStream);
-			} catch (IOException e) {
+			} catch (Exception e) {
 				throwOperationErrorException(e);
 			} finally {
 				if (doc != null) {

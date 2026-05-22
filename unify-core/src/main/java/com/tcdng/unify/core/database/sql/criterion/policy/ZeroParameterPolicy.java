@@ -20,6 +20,7 @@ import java.util.List;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.criterion.Restriction;
 import com.tcdng.unify.core.criterion.ZeroParamRestriction;
+import com.tcdng.unify.core.database.NativeTranslator;
 import com.tcdng.unify.core.database.sql.AbstractSqlCriteriaPolicy;
 import com.tcdng.unify.core.database.sql.SqlDataSourceDialectPolicies;
 import com.tcdng.unify.core.database.sql.SqlEntityInfo;
@@ -34,37 +35,37 @@ import com.tcdng.unify.core.database.sql.SqlParameter;
  */
 public class ZeroParameterPolicy extends AbstractSqlCriteriaPolicy {
 
-    public ZeroParameterPolicy(String opSql, SqlDataSourceDialectPolicies rootPolicies) {
-        super(opSql, rootPolicies);
-    }
+	public ZeroParameterPolicy(String opSql, SqlDataSourceDialectPolicies rootPolicies) {
+		super(opSql, rootPolicies);
+	}
 
-    @Override
-    public void translate(StringBuilder sql, SqlEntityInfo sqlEntityInfo, Restriction restriction)
-            throws UnifyException {
-        ZeroParamRestriction nvc = (ZeroParamRestriction) restriction;
-        String columnName = nvc.getFieldName();
-        if (sqlEntityInfo != null) {
-            columnName = sqlEntityInfo.getListFieldInfo(nvc.getFieldName()).getPreferredColumnName();
-        }
-        translate(sql, sqlEntityInfo.getTableAlias(), columnName, null, null);
-    }
+	@Override
+	public void translate(NativeTranslator translator, StringBuilder sql, SqlEntityInfo sqlEntityInfo,
+			Restriction restriction) throws UnifyException {
+		ZeroParamRestriction nvc = (ZeroParamRestriction) restriction;
+		String columnName = nvc.getFieldName();
+		if (sqlEntityInfo != null) {
+			columnName = sqlEntityInfo.getListFieldInfo(nvc.getFieldName()).getPreferredColumnName();
+		}
+		translate(translator, sql, sqlEntityInfo.getTableAlias(), columnName, null, null);
+	}
 
-    @Override
-    public void generatePreparedStatementCriteria(StringBuilder sql, List<SqlParameter> parameterInfoList,
-            SqlEntityInfo sqlEntityInfo, Restriction restriction) throws UnifyException {
-        ZeroParamRestriction nvc = (ZeroParamRestriction) restriction;
-        SqlFieldInfo sqlFieldInfo = sqlEntityInfo.getListFieldInfo(nvc.getFieldName());
-        sql.append("(");
-        sql.append(sqlFieldInfo.getPreferredColumnName()).append(opSql);
-        sql.append(")");
-    }
+	@Override
+	public void generatePreparedStatementCriteria(StringBuilder sql, List<SqlParameter> parameterInfoList,
+			SqlEntityInfo sqlEntityInfo, Restriction restriction) throws UnifyException {
+		ZeroParamRestriction nvc = (ZeroParamRestriction) restriction;
+		SqlFieldInfo sqlFieldInfo = sqlEntityInfo.getListFieldInfo(nvc.getFieldName());
+		sql.append("(");
+		sql.append(sqlFieldInfo.getPreferredColumnName()).append(opSql);
+		sql.append(")");
+	}
 
-    @Override
-    protected void doTranslate(StringBuilder sql, String tableName, String columnName, Object param1, Object param2)
-            throws UnifyException {
-        sql.append("(");
-        sql.append(tableName).append('.').append(columnName).append(opSql);
-        sql.append(")");
-    }
+	@Override
+	protected void doTranslate(NativeTranslator translator, StringBuilder sql, String tableName, String columnName,
+			Object param1, Object param2) throws UnifyException {
+		sql.append("(");
+		sql.append(tableName).append('.').append(columnName).append(opSql);
+		sql.append(")");
+	}
 
 }

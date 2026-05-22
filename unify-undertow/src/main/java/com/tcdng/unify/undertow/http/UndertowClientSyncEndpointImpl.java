@@ -15,8 +15,6 @@
  */
 package com.tcdng.unify.undertow.http;
 
-import java.util.UUID;
-
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
@@ -38,12 +36,6 @@ import com.tcdng.unify.web.constant.ClientSyncNameConstants;
  */
 @ServerEndpoint(ClientSyncNameConstants.SYNC_CONTEXT)
 public class UndertowClientSyncEndpointImpl extends AbstractClientSyncEndpoint {
-
-	private final String sessionId;
-	
-	public UndertowClientSyncEndpointImpl() {
-		this.sessionId = UUID.randomUUID().toString();
-	}
 	
 	@OnOpen
 	public void onOpen(Session session) {

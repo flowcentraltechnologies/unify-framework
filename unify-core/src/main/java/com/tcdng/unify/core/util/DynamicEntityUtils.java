@@ -71,10 +71,10 @@ public final class DynamicEntityUtils {
 			return DynamicEntityUtils.generateTableEntityJavaClassSource(dynamicEntityInfo);
 		case VIEW:
 		case INFO_ONLY:
-			throw new UnifyOperationException(DynamicEntityUtils.class,
+			throw new UnifyOperationException(
 					"View or information-only entity type is unsupported for class source generation.");
 		default:
-			throw new UnifyOperationException(DynamicEntityUtils.class,
+			throw new UnifyOperationException(
 					"Entity type not specified for class source generation.");
 		}
 	}

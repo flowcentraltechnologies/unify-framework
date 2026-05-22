@@ -16,18 +16,23 @@
 package com.tcdng.unify.web.ui.widget.writer.container;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
+import com.tcdng.unify.core.UnifyCorePropertyConstants;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.annotation.Configurable;
 import com.tcdng.unify.core.annotation.Writes;
 import com.tcdng.unify.core.constant.MimeType;
 import com.tcdng.unify.core.data.WebStringWriter;
+import com.tcdng.unify.core.util.RandomUtils;
 import com.tcdng.unify.core.util.StringUtils;
 import com.tcdng.unify.web.ControllerPathParts;
+import com.tcdng.unify.web.UnifyWebRequestAttributeConstants;
 import com.tcdng.unify.web.constant.ClientSyncNameConstants;
 import com.tcdng.unify.web.ui.PagePathInfoRepository;
+import com.tcdng.unify.web.ui.util.WriterUtils;
 import com.tcdng.unify.web.ui.widget.Document;
 import com.tcdng.unify.web.ui.widget.DocumentLayout;
 import com.tcdng.unify.web.ui.widget.EventHandler;
@@ -57,8 +62,6 @@ public class DocumentWriter extends AbstractPageWriter {
 	@Override
 	protected void doWriteStructureAndContent(ResponseWriter writer, Widget widget) throws UnifyException {
 		BasicDocument document = (BasicDocument) widget;
-		document.setClientId(getPageManager().getCurrentRequestClientId());
-		
 		writer.write("<!DOCTYPE html>");
 		writer.write("<html ");
 		writeTagAttributes(writer, document);
@@ -94,22 +97,29 @@ public class DocumentWriter extends AbstractPageWriter {
 		writeEmbeddedStyle(writer, document);
 
 		// Write style sheet links
-		writeStyleSheet(writer, "$t{css/unify-web.css}");
+		WriterUtils.writeStyleSheet(writer, "$t{css/unify-web.css}");
 		Set<String> excludeStyleSheet = new HashSet<String>(document.getExcludeStyleSheet());
 
 		String[] styleSheets = document.getStyleSheet();
 		if (styleSheets != null) {
 			for (String styleSheet : styleSheets) {
 				if (!excludeStyleSheet.contains(styleSheet)) {
-					writeStyleSheet(writer, styleSheet);
+					WriterUtils.writeStyleSheet(writer, styleSheet);
 					excludeStyleSheet.add(styleSheet); // Avoid duplication
 				}
 			}
 		}
 
+		final String res = document.getResourcePrefix();
 		for (String styleSheet : getPageManager().getDocumentStyleSheets()) {
+			final Optional<String> optional = getResourcePrefix(styleSheet);
+			if (optional.isPresent() && !optional.get().equals(res)) {
+				continue;
+			}
+
+			styleSheet = stripResourcePrefix(styleSheet);
 			if (!excludeStyleSheet.contains(styleSheet)) {
-				writeStyleSheet(writer, styleSheet);
+				WriterUtils.writeStyleSheet(writer, styleSheet);
 				excludeStyleSheet.add(styleSheet); // Avoid duplication
 			}
 		}
@@ -117,30 +127,37 @@ public class DocumentWriter extends AbstractPageWriter {
 		writeResourcesStyleSheet(writer);
 
 		// Write javascript sources
-		writeJavascript(writer, "web/js/unify-web.js");
+		final String nonce = getRequestContextUtil().getNonce();
+		WriterUtils.writeJavascript(writer, "web/js/unify-web.js", nonce);
 		Set<String> excludeScripts = new HashSet<String>(document.getExcludeScript());
 
 		String[] scripts = document.getScript();
 		if (scripts != null) {
 			for (String script : scripts) {
 				if (!excludeScripts.contains(script)) {
-					writeJavascript(writer, script);
+					WriterUtils.writeJavascript(writer, script, nonce);
 					excludeScripts.add(script); // Avoid duplication
 				}
 			}
 		}
 
 		for (String script : getPageManager().getDocumentsScripts()) {
+			final Optional<String> optional = getResourcePrefix(script);
+			if (optional.isPresent() && !optional.get().equals(res)) {
+				continue;
+			}
+
+			script = stripResourcePrefix(script);
 			if (!excludeScripts.contains(script)) {
-				writeJavascript(writer, script);
+				WriterUtils.writeJavascript(writer, script, nonce);
 				excludeScripts.add(script); // Avoid duplication
 			}
 		}
 
-		for (String tagLine: getPageManager().getDocumentTagLines()) {
+		for (String tagLine : getPageManager().getDocumentTagLines()) {
 			writer.write(tagLine);
 		}
-		
+
 		writeResourcesScript(writer);
 
 		writer.write("</head>");
@@ -173,9 +190,9 @@ public class DocumentWriter extends AbstractPageWriter {
 
 		writer.write("</div>");
 
-		//Latency base
+		// Latency base
 		writeLatencySection(writer, document);
-		
+
 		// Write document structure an content
 		DocumentLayout documentLayout = document.getUplAttribute(DocumentLayout.class, "layout");
 		writer.writeStructureAndContent(documentLayout, document);
@@ -198,18 +215,23 @@ public class DocumentWriter extends AbstractPageWriter {
 	protected void doWriteBehavior(ResponseWriter writer, Widget widget, EventHandler[] handlers)
 			throws UnifyException {
 		BasicDocument document = (BasicDocument) widget;
+		final String nonce = getRequestContextUtil().getNonce();
 		writer.write("<script");
-		writeNonce(writer);
+		WriterUtils.writeNonce(writer, nonce);
 		writer.write(">");
 		// Set document properties
 		ControllerPathParts controllerPathParts = pathInfoRepository.getControllerPathParts(document);
-		writer.write("ux.setupDocument(\"").write(document.getClientId()).write("\", \"")
-				.write(controllerPathParts.getControllerPathId()).write("\", \"").write(document.getPopupBaseId())
-				.write("\", \"").write(document.getPopupWinId()).write("\", \"").write(document.getPopupSysId())
-				.write("\", \"").write(document.getLatencyPanelId()).write("\", \"").write(getSessionContext().getId())
-				.write("\");");
+		if (StringUtils.isBlank(getRequestClientPageId())) {
+			setRequestClientPageId(RandomUtils.generateRandomAlphanumeric(UnifyWebRequestAttributeConstants.PID_SIZE));
+		}
 
-		if (document.isPushUpdate()) {
+		writer.write("ux.setupDocument(\"").write(controllerPathParts.getControllerPathId()).write("\", \"")
+				.write(document.getPopupBaseId()).write("\", \"").write(document.getPopupWinId()).write("\", \"")
+				.write(document.getPopupSysId()).write("\", \"").write(document.getLatencyPanelId()).write("\", \"")
+				.write(getSessionContext().getId()).write("\",\"").write(getRequestClientPageId()).write("\");");
+
+		if (document.isPushUpdate()
+				&& getContainerSetting(boolean.class, UnifyCorePropertyConstants.APPLICATION_BROADCAST_ENTITY_CHANGE)) {
 			final String wsContextPath = getSessionContext().getContextPath() + ClientSyncNameConstants.SYNC_CONTEXT;
 			writer.write("ux.wsPushUpdate(\"").write(wsContextPath).write("\");");
 		}
@@ -228,8 +250,10 @@ public class DocumentWriter extends AbstractPageWriter {
 		writeBehaviour(writer, document.getContentPanel());
 		writeBehaviour(writer, document.getFooterPanel());
 		WebStringWriter scriptLsw = writer.discardSecondary();
-		writer.write("var behaviorPrm = ").write(scriptLsw).write(";");
-		writer.write("ux.perform(behaviorPrm);");
+		if (!scriptLsw.isEmpty()) {
+			writer.write("var behaviorPrm = ").write(scriptLsw).write(";");
+			writer.write("ux.perform(behaviorPrm);");
+		}
 
 		// Write page aliases
 		writer.write("var aliasPrms = {");
@@ -259,6 +283,7 @@ public class DocumentWriter extends AbstractPageWriter {
 					.write("\"});");
 			getRequestContextUtil().clearFocusOnWidget();
 		}
+
 		writer.write("</script>");
 	}
 
@@ -267,6 +292,24 @@ public class DocumentWriter extends AbstractPageWriter {
 
 	}
 
+	private Optional<String> getResourcePrefix(String resource) {
+		final int index = resource.indexOf("::");
+		if (index > 0) {
+			return Optional.of(resource.substring(0, index));
+		}
+		
+		return Optional.empty();
+	}
+
+	private String stripResourcePrefix(String resource) {
+		final int index = resource.indexOf("::");
+		if (index > 0) {
+			return resource.substring(index + 2);
+		}
+		
+		return resource;
+	}
+	
 	private void writeEmbeddedStyle(ResponseWriter writer, BasicDocument document) throws UnifyException {
 		writer.write("<style>");
 		// Write custom check box images
@@ -279,24 +322,35 @@ public class DocumentWriter extends AbstractPageWriter {
 		if (isWithFontSymbolManager()) {
 			StringBuilder fsb = new StringBuilder();
 			int i = 0;
-			fsb.append(".g_fsm {font-family: ").append(document.getFontFamily());
+			boolean appendSym = false;
+			fsb.append(".g_fsm {font-family: ");
 			for (String fontResource : getFontResources()) {
 				writeFont(writer, "FontSymbolMngr" + i, fontResource);
-				fsb.append(", 'FontSymbolMngr").append(i).append('\'');
+				if (appendSym) {
+					fsb.append(',');
+				} else {
+					appendSym = true;
+				}
+				fsb.append("'FontSymbolMngr").append(i).append('\'');
 				i++;
 			}
-			
-			fsb.append(";}");
+
+			if (appendSym) {
+				fsb.append(',');
+			}
+
+			fsb.append(document.getFontFamily());
+			fsb.append(";padding:0px !important;}");
 			writer.write(fsb);
 		}
-		
+
 		// Additional
 		Set<String> excludeFonts = new HashSet<String>();
 		String[] fonts = document.getFont();
 		if (fonts != null) {
 			for (String font : fonts) {
 				if (!excludeFonts.contains(font)) {
-					final String[] parts =  font.split(":", 5);
+					final String[] parts = font.split(":", 5);
 					writeFont(writer, parts[0], parts[1], parts[2], parts[3], parts[4]);
 					excludeFonts.add(font); // Avoid duplication
 				}
@@ -305,12 +359,12 @@ public class DocumentWriter extends AbstractPageWriter {
 
 		for (String font : getPageManager().getDocumentFonts()) {
 			if (!excludeFonts.contains(font)) {
-				final String[] parts =  font.split(":", 5);
+				final String[] parts = font.split(":", 5);
 				writeFont(writer, parts[0], parts[1], parts[2], parts[3], parts[4]);
 				excludeFonts.add(font); // Avoid duplication
 			}
 		}
-		
+
 		writer.write("</style>");
 	}
 
@@ -323,16 +377,16 @@ public class DocumentWriter extends AbstractPageWriter {
 
 	private void writeFont(ResponseWriter writer, String family, String fontResource) throws UnifyException {
 		writer.write("@font-face {font-family: '").write(family).write("'; src: url(");
-		writer.writeContextResourceURL("/resource/file", MimeType.APPLICATION_OCTETSTREAM.template(), fontResource);
-		writer.write(");} ");
+		writer.writeContextResourceURL("/resource/file", MimeType.FONT_WOFF.template(), fontResource);
+		writer.write(")  format(\"woff\");} ");
 	}
 
 	private void writeFont(ResponseWriter writer, String family, String weight, String stretch, String style,
 			String fontResource) throws UnifyException {
 		writer.write("@font-face {font-family: '").write(family).write("'; font-weight:").write(weight)
 				.write("; font-stretch:").write(stretch).write("; font-style:").write(style).write("; src: url(");
-		writer.writeContextResourceURL("/resource/file", MimeType.APPLICATION_OCTETSTREAM.template(), fontResource);
-		writer.write(");} ");
+		writer.writeContextResourceURL("/resource/file", MimeType.FONT_WOFF.template(), fontResource);
+		writer.write(") format(\"woff\");} ");
 	}
 
 	private void writeResourcesStyleSheet(ResponseWriter writer) throws UnifyException {
@@ -352,28 +406,6 @@ public class DocumentWriter extends AbstractPageWriter {
 				writer.write(scriptLink);
 				writer.write("\"></script>");
 			}
-		}
-	}
-
-	private void writeStyleSheet(ResponseWriter writer, String styleSheet) throws UnifyException {
-		writer.write("<link href=\"");
-		writer.writeContextResourceURL("/resource/file", MimeType.TEXT_CSS.template(), styleSheet);
-		writer.write("\" rel=\"stylesheet\" type=\"text/css\" media=\"screen\">");
-	}
-
-	private void writeJavascript(ResponseWriter writer, String script) throws UnifyException {
-		writer.write("<script src=\"");
-		writer.writeContextResourceURL("/resource/file", MimeType.TEXT_JAVASCRIPT.template(), script);
-		writer.write("\"");
-		writeNonce(writer);
-		writer.write("></script>");
-	}
-
-	private void writeNonce(ResponseWriter writer) throws UnifyException {
-		if (getRequestContextUtil().isWithNonce()) {
-			writer.write(" nonce=\"");
-			writer.write(getRequestContextUtil().getNonce());
-			writer.write("\"");
 		}
 	}
 

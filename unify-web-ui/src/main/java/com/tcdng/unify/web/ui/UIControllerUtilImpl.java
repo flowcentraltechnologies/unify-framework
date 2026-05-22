@@ -182,7 +182,7 @@ public class UIControllerUtilImpl extends AbstractUnifyComponent implements UICo
     }
 
     @Override 
-    public String executePageController(String fullActionPath) throws UnifyException {
+    public Page executePageController(String fullActionPath) throws UnifyException {
         final Page currentPage = pageRequestContextUtil.getRequestPage();
         final ControllerPathParts currentPathParts = pageRequestContextUtil.getRequestPathParts();
         try {
@@ -192,7 +192,9 @@ public class UIControllerUtilImpl extends AbstractUnifyComponent implements UICo
             PageController<?> targetPageController = (PageController<?>) controllerFinder
                     .findController(targetPathParts);
             loadRequestPage(targetPathParts);
-            return targetPageController.executePageCall(targetPathParts.getActionName());
+            final Page newPage = pageRequestContextUtil.getRequestPage();
+            targetPageController.executePageCall(targetPathParts.getActionName());
+            return newPage;
         } finally {
         	pageRequestContextUtil.setRequestPathParts(currentPathParts); // Restore original path parts
             pageRequestContextUtil.setRequestPage(currentPage); // Restore original page
@@ -277,9 +279,6 @@ public class UIControllerUtilImpl extends AbstractUnifyComponent implements UICo
         defaultResultMap.put(ResultMappingConstants.CLOSE_WINDOW,
                 new Result(new PageControllerResponse[] {
                         (PageControllerResponse) getUplComponent(defaultLocale, "!closewindowresponse", false)}));
-
-        defaultResultMap.put(ResultMappingConstants.REMOTE_VIEW, new Result(new PageControllerResponse[] {
-                (PageControllerResponse) getUplComponent(defaultLocale, "!docviewresponse", false) }));
 
         defaultResultMap.put(ResultMappingConstants.POST_RESPONSE,
                 new Result(new PageControllerResponse[] {
@@ -442,16 +441,28 @@ public class UIControllerUtilImpl extends AbstractUnifyComponent implements UICo
 
 					List<PageControllerResponse> responses = new ArrayList<PageControllerResponse>();
 					Locale locale = Locale.getDefault();
+					boolean hint = false;
+					boolean menu = false;
 					for (String descriptor : descriptors) {
-						if (!"!hintuserresponse".equals(descriptor) && !"!refreshmenuresponse".equals(descriptor)) {
+						final boolean _hint = "!hintuserresponse".equals(descriptor);
+						final boolean _menu = "!refreshmenuresponse".equals(descriptor);
+						if (!_hint && !_menu) {
 							responses.add((PageControllerResponse) getUplComponent(locale, descriptor, false));
 						}
+						
+						hint |= _hint;
+						menu |= _menu;
 					}
 
 					if (ra.type().isApplicationJson()) {
 						// Add implicit JSON responses
-						responses.add(hintUserResponse);
-						responses.add(refreshMenuResponse);
+						if (hint) {
+							responses.add(hintUserResponse);
+						}
+						
+						if (menu) {
+							responses.add(refreshMenuResponse);
+						}
 					}
 
 					// Set result object

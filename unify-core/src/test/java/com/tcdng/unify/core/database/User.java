@@ -19,6 +19,7 @@ import java.util.Date;
 
 import com.tcdng.unify.common.annotation.Table;
 import com.tcdng.unify.core.annotation.Column;
+import com.tcdng.unify.core.security.SecurityComponents;
 
 /**
  * Test user entity.
@@ -32,7 +33,7 @@ public class User extends AbstractTestVersionedTableEntity {
     @Column
     private String name;
 
-    @Column(length = 128, transformer = "oneway-stringcryptograph")
+    @Column(length = 128, transformer = SecurityComponents.ONEWAY_STRING_CRYPTOGRAPH)
     private String password;
 
     @Column

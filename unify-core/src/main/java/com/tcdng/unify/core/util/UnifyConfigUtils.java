@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.UUID;
 
 import com.tcdng.unify.common.annotation.AutoDetect;
 import com.tcdng.unify.common.constants.UnifyStaticSettings;
@@ -253,8 +252,7 @@ public final class UnifyConfigUtils {
 			UnifyConfig unifyConfig = XmlConfigUtils.readXmlConfig(UnifyConfig.class, xmlConfigObject);
 			if (unifyConfig != null) {
 				uccb.deploymentVersion(unifyConfig.getVersion());
-//                uccb.nodeId(unifyConfig.getNodeId());
-				uccb.nodeId(UUID.randomUUID().toString());
+				uccb.nodeId(RandomUtils.generateUUID());
 				uccb.productionMode(unifyConfig.isProduction());
 				uccb.clusterMode(unifyConfig.isCluster());
 
@@ -283,7 +281,12 @@ public final class UnifyConfigUtils {
 				for (String property : propertyNames) {
 					String val = UnifyConfigUtils.replacePlaceHolderValues(appProperties.getProperty(property),
 							workingFolder);
-					uccb.setProperty(property, val);
+					if (val != null && val.indexOf(',') >= 0) {
+						List<String> valItems = DataUtils.convert(List.class, String.class, val);
+						uccb.setProperty(property, valItems);
+					} else { 
+						uccb.setProperty(property, val);
+					}
 				}
 
 				ComponentsConfig componentsConfig = unifyConfig.getComponentsConfig();

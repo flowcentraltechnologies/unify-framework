@@ -36,7 +36,6 @@ public class FirePreConfirmResponse extends AbstractJsonPageControllerResponse {
 
     @Override
     protected void doGenerate(ResponseWriter writer, Page page) throws UnifyException {
-        logDebug("Preparing fire pre-confirm response: path ID = [{0}]", page.getPathId());
-        writer.write(",\"fire\":true");
+         writer.write(",\"fire\":true");
     }
 }

@@ -83,7 +83,7 @@ public abstract class AbstractPanel extends AbstractContainer implements Panel {
 	public void addPageAliases() throws UnifyException {
 		for (String longName : getLayoutWidgetLongNames()) {
 			Widget widget = getWidgetByLongName(longName);
-			if (widget.isVisible() || widget.isHidden()) {
+			if (widget != null && (widget.isVisible() || widget.isHidden())) {
 				getRequestContextUtil().addPageAlias(getId(), widget.getId());
 				if (widget.isPanel()) {
 					((Panel) widget).addPageAliases();
@@ -340,6 +340,10 @@ public abstract class AbstractPanel extends AbstractContainer implements Panel {
 		setSessionAttribute(UnifyWebSessionAttributeConstants.MESSAGEBOX,
 				new MessageBox(messageIcon, messageMode, captions, message, fullActionPath));
 		setCommandResultMapping("showapplicationmessage");
+	}
+
+	protected void commandShowPopupByShortName(String panelShortName) throws UnifyException {
+        commandShowPopup(getWidgetByShortName(panelShortName).getLongName());
 	}
 
 	protected MessageResult getMessageResult() throws UnifyException {

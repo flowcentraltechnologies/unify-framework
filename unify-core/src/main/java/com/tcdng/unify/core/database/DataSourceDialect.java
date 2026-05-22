@@ -77,6 +77,13 @@ public interface DataSourceDialect extends UnifyComponent {
      */
     void setAllObjectsInLowerCase(boolean objectsInLowerCase) throws UnifyException;
 
+	/**
+	 * Sets alternative native translator
+	 * 
+	 * @param nativeTranslator the translator component
+	 */
+	void setNativeTranslator(NativeTranslator nativeTranslator);
+    
     /**
      * Translates specified restriction to data source dialect.
      * 

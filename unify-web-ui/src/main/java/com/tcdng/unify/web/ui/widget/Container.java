@@ -60,6 +60,14 @@ public interface Container extends DataTransferWidget, WidgetContainer {
      */
     Set<String> getWidgetLongNames() throws UnifyException;
 
+	/**
+	 * Gets this container's repeat widget.
+	 * 
+	 * @return the repeat widget
+	 * @throws UnifyException if an error occurs
+	 */
+	Widget getRepeatWidget() throws UnifyException;
+    
     /**
      * Gets widget by long name.
      * 
@@ -69,7 +77,7 @@ public interface Container extends DataTransferWidget, WidgetContainer {
      * @exception UnifyException
      *                if component with long name is unknown
      */
-    Widget getWidgetByLongName(String longName) throws UnifyException;
+	Widget getWidgetByLongName(String longName) throws UnifyException;
 
     /**
      * Returns true if widget with supplied long name exists in this container.
@@ -206,7 +214,7 @@ public interface Container extends DataTransferWidget, WidgetContainer {
      * @throws UnifyException
      *             if an error occurs
      */
-    List<ValueStore> getRepeatValueStores() throws UnifyException;
+    ValueStore getRepeatValueStores() throws UnifyException;
 
     /**
      * Returns container layout

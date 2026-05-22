@@ -68,10 +68,11 @@ public class ConverterTest extends AbstractUnifyComponentTest {
         assertEquals(BigDecimal.valueOf(11002.254), converter.convert("11,002.254", defaultDecimalFormatter));
     }
 
-    @Test(expected = Exception.class)
+    @Test
     public void testBigDecimalConverterWithInvalidParameters() throws Exception {
         Converter<BigDecimal> converter = new BigDecimalConverter();
-        converter.convert("11,002.254", null); // Expects a formatter
+        BigDecimal val = converter.convert("11,002.254", null);
+        assertEquals(BigDecimal.valueOf(11002.254), val);
     }
 
     @Test
@@ -241,8 +242,8 @@ public class ConverterTest extends AbstractUnifyComponentTest {
         Converter<Character> converter = new CharacterConverter();
         assertNull(converter.convert(null, null));
         assertNull(converter.convert(new Date(), null));
-        assertEquals(new Character('M'), converter.convert('M', null));
-        assertEquals(new Character('H'), converter.convert("Hello", null));
+        assertEquals(Character.valueOf('M'), converter.convert('M', null));
+        assertEquals(Character.valueOf('H'), converter.convert("Hello", null));
         assertEquals(Character.valueOf((char) 10), converter.convert(Integer.valueOf(10), null));
     }
 
@@ -301,6 +302,13 @@ public class ConverterTest extends AbstractUnifyComponentTest {
         target = converter.convert(":5", null);
         assertNotNull(target);
         assertEquals("", target.getTarget());
+        assertNull(target.getBinding());
+        assertEquals(5, target.getValueIndex());
+        assertEquals(-1, target.getTabIndex());
+        
+        target = converter.convert("5", null);
+        assertNotNull(target);
+        assertEquals("5", target.getTarget());
         assertNull(target.getBinding());
         assertEquals(5, target.getValueIndex());
         assertEquals(-1, target.getTabIndex());

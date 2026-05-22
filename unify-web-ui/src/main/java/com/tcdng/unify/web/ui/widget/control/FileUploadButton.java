@@ -21,6 +21,7 @@ import com.tcdng.unify.core.annotation.UplAttribute;
 import com.tcdng.unify.core.annotation.UplAttributes;
 import com.tcdng.unify.core.constant.FileAttachmentType;
 import com.tcdng.unify.core.data.UploadedFile;
+import com.tcdng.unify.core.util.DataUtils;
 import com.tcdng.unify.web.ui.DataTransferBlock;
 import com.tcdng.unify.web.ui.widget.AbstractAutoRefreshMultiControl;
 import com.tcdng.unify.web.ui.widget.Control;
@@ -55,14 +56,17 @@ public class FileUploadButton extends AbstractAutoRefreshMultiControl implements
 		if (uploadedFile != null && uploadedFile.length > 0) {
 			if (uploadHandler != null) {
 				UploadedFile _uploadedFile = uploadedFile[0];
-				uploadHandler.saveUpload(targetIndex, getType(), _uploadedFile.getFilename(), _uploadedFile.getData());
+				uploadHandler.saveUpload(targetIndex, getType(), _uploadedFile.getFilename(), _uploadedFile);
 			} else {
 				setValue(uploadedFile[0]);
 			}
 		}
 
-		uploadedFile = null;		
-		commandRefreshPanels(getUplAttribute(String[].class, "refresh"));
+		uploadedFile = null;
+		String[] panels = getUplAttribute(String[].class, "refresh");
+		if (!DataUtils.isBlank(panels)) {
+			commandRefreshPanels(panels);
+		}
 	}
 
 	@Override

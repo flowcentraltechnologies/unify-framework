@@ -58,7 +58,25 @@ public interface Controller extends UnifyComponent {
     boolean isSecured();
     
     /**
-     * Returns true if controller requires a referre.
+     * Returns true if controller requires a referrer.
      */
     boolean isRefererRequired();
+    
+    /**
+     * Returns true if controller is a page controller
+     */
+    boolean isPageController();
+    
+    /**
+     * Returns true if controller supports multiple pages per session.
+     */
+    boolean isMultiplePagesPerSession();
+    
+	/**
+	 * Returns true if this controller determines menu
+	 * 
+	 * @throws UnifyException if an error occurs
+	 */
+	boolean isDeterminesMenu() throws UnifyException;
+
 }

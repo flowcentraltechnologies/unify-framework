@@ -17,6 +17,8 @@ package com.tcdng.unify.convert.converters;
 
 import java.math.BigDecimal;
 
+import com.tcdng.unify.convert.util.ConverterUtils;
+
 /**
  * A value to big decimal converter.
  * 
@@ -34,6 +36,10 @@ public class BigDecimalConverter extends AbstractConverter<BigDecimal> {
         if (value instanceof String) {
             String string = ((String) value).trim();
             if (!string.isEmpty()) {
+                if (formatter == null) {
+                    formatter = ConverterUtils.getDefaultDecimalFormatter();
+                }
+
                 if (formatter == null) {
                     return new BigDecimal(string);
                 }

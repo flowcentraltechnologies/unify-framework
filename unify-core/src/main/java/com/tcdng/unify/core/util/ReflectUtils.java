@@ -45,6 +45,7 @@ import com.tcdng.unify.core.constant.DataType;
 import com.tcdng.unify.core.constant.DynamicEntityFieldType;
 import com.tcdng.unify.core.data.FactoryMap;
 import com.tcdng.unify.core.data.JsonFieldComposition;
+import com.tcdng.unify.core.data.ValueStore;
 import com.tcdng.unify.core.data.WrappedData;
 
 /**
@@ -412,6 +413,10 @@ public final class ReflectUtils {
 	 */
 	public static Object getBeanProperty(Object bean, String propertyName) throws UnifyException {
 		try {
+			if (bean instanceof ValueStore) {
+				return ((ValueStore) bean).retrieve(propertyName);
+			}
+			
 			return caseSensitiveGetterSetterMap.get(bean.getClass()).get(propertyName).getGetter().invoke(bean);
 		} catch (UnifyException e) {
 			throw e;
@@ -519,6 +524,11 @@ public final class ReflectUtils {
 	 */
 	public static void setBeanProperty(Object bean, String propertyName, Object value) throws UnifyException {
 		try {
+			if (bean instanceof ValueStore) {
+				((ValueStore) bean).store(propertyName, value);
+				return;
+			}
+			
 			GetterSetterInfo setterInfo = ReflectUtils.getSetterInfo(bean.getClass(), propertyName);
 			setterInfo.getSetter().invoke(bean, value);
 		} catch (UnifyException e) {
@@ -1270,7 +1280,7 @@ public final class ReflectUtils {
 
 			return Class.forName(className);
 		} catch (Exception e) {
-			throw new UnifyOperationException(e, ReflectUtils.class);
+			throw new UnifyOperationException(e);
 		}
 	}
 
@@ -1399,7 +1409,7 @@ public final class ReflectUtils {
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new UnifyOperationException(e, ReflectUtils.class);
+			throw new UnifyOperationException(e);
 		}
 	}
 
@@ -1417,7 +1427,7 @@ public final class ReflectUtils {
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new UnifyOperationException(e, ReflectUtils.class);
+			throw new UnifyOperationException(e);
 		}
 	}
 

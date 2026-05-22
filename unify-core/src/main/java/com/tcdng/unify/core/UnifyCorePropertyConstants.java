@@ -37,6 +37,8 @@ public interface UnifyCorePropertyConstants {
 
     String APPLICATION_BOOT = "application.boot";
 
+    String APPLICATION_BROADCAST_ENTITY_CHANGE= "application.broadcast.entity.change";
+
     String APPLICATION_INTERFACES = "application.interfaces";
 
     String APPLICATION_PROPERTIES= "application.properties";
@@ -90,4 +92,6 @@ public interface UnifyCorePropertyConstants {
     String APPLICATION_MAX_TASKRUNNER_THREADS = "application.max.taskrunner.threads";
 
     String APPLICATION_RETRICTED_JAR_MODE= "application.restricted.jar.mode";
+
+    String APPLICATION_IGNORE_SSL_HOSTNAMES= "application.ignore.ssl.hostnames";
 }

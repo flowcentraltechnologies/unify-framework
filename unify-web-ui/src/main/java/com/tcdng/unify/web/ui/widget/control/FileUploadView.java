@@ -78,12 +78,11 @@ public class FileUploadView extends AbstractAutoRefreshMultiControl {
 			UploadedFile uploadedFile = ((UploadedFile[]) value)[0];
 			if (handler == null) {
 				setFilename(uploadedFile.getFilename());
-				setValue(uploadedFile.getData());
+				setValue(uploadedFile);
 			} else {
 				String category = getUplAttribute(String.class, "category");
 				FileAttachmentType type = getUplAttribute(FileAttachmentType.class, "type");
-				Object uploadId = handler.save(getUploadId(), category, type, uploadedFile.getFilename(),
-						uploadedFile.getData());
+				Object uploadId = handler.save(getUploadId(), category, type, uploadedFile.getFilename(), uploadedFile);
 				setUploadId(uploadId);
 			}
 		}
@@ -92,7 +91,7 @@ public class FileUploadView extends AbstractAutoRefreshMultiControl {
 	@Action
 	public void view() throws UnifyException {
 		if (handler == null) {
-			byte[] data = getValue(byte[].class);
+			UploadedFile data = getValue(UploadedFile.class);
 			if (data != null) {
 				final FileAttachmentType type = getType();
 				FileAttachmentInfo fileAttachmentInfo = new FileAttachmentInfo(type);
@@ -134,6 +133,12 @@ public class FileUploadView extends AbstractAutoRefreshMultiControl {
 				setUploadId(null);
 			}
 		}
+	}
+
+	@Override
+	public boolean isBehaviorAlways() throws UnifyException {
+		// TODO Auto-generated method stub
+		return super.isBehaviorAlways();
 	}
 
 	@Override
@@ -181,7 +186,7 @@ public class FileUploadView extends AbstractAutoRefreshMultiControl {
 		attachCtrl = (Control) addInternalChildWidget(
 				"!ui-button styleClass:$e{fabutton} caption:$m{button.attach} hint:$m{button.attach} debounce:false");
 		viewCtrl = (Control) addInternalChildWidget(
-				"!ui-button styleClass:$e{fabutton} caption:$m{button.view} hint:$m{button.view} debounce:false");
+				"!ui-button styleClass:$e{fabutton} caption:$m{button.view} hint:$m{button.view} ignoreParentState:true debounce:false");
 		removeCtrl = (Control) addInternalChildWidget(
 				"!ui-button styleClass:$e{fabutton-alert} caption:$m{button.remove} hint:$m{button.remove} debounce:false");
 		String _handler = getUplAttribute(String.class, "handler");

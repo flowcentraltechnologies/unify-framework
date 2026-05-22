@@ -42,9 +42,13 @@ public class ControllerPathParts {
 
 	private String operation;
 
+	private String requestTarget;
+
 	private Long resourceId;
 
 	private boolean sessionless;
+
+	private boolean multiplePagesPerSession;
 
 	public ControllerPathParts(DocPathParts docPathParts, String controllerPath, String controllerPathId,
 			String controllerName, List<String> pathVariables, String actionName, String operation, Long resourceId,
@@ -104,6 +108,14 @@ public class ControllerPathParts {
 		return sessionless;
 	}
 
+	public boolean isMultiplePagesPerSession() {
+		return multiplePagesPerSession;
+	}
+
+	public void setMultiplePagesPerSession(boolean multiplePagesPerSession) {
+		this.multiplePagesPerSession = multiplePagesPerSession;
+	}
+
 	public boolean isVariablePath() {
 		return !DataUtils.isBlank(pathVariables);
 	}
@@ -118,6 +130,16 @@ public class ControllerPathParts {
 
 	public boolean isComponent(String componentLongName) {
 		return componentLongName != null && componentLongName.startsWith(controllerName);
+	}
+
+	public String getRequestTarget() {
+		return requestTarget;
+	}
+
+	public void setRequestTarget(String requestTarget) {
+		if (this.requestTarget == null) {
+			this.requestTarget = requestTarget;
+		}
 	}
 
 }

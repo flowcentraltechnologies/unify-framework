@@ -70,23 +70,27 @@ public abstract class AbstractLog4jLogger extends AbstractUnifyComponent impleme
 
 	@Override
 	public void log(LoggingLevel loggingLevel, String message, Exception exception) throws UnifyException {
-		switch (loggingLevel) {
-		case DEBUG:
-			logger.debug(message, exception);
-			break;
-		case ERROR:
-			logger.error(message, exception);
-			break;
-		case SEVERE:
-			logger.fatal(message, exception);
-			break;
-		case WARN:
-			logger.warn(message, exception);
-			break;
-		case INFO:
-		default:
-			logger.info(message, exception);
-			break;
+		if (exception == null) {
+			log(loggingLevel, message);
+		} else {
+			switch (loggingLevel) {
+			case DEBUG:
+				logger.debug(message, exception);
+				break;
+			case ERROR:
+				logger.error(message, exception);
+				break;
+			case SEVERE:
+				logger.fatal(message, exception);
+				break;
+			case WARN:
+				logger.warn(message, exception);
+				break;
+			case INFO:
+			default:
+				logger.info(message, exception);
+				break;
+			}
 		}
 	}
 
@@ -128,7 +132,7 @@ public abstract class AbstractLog4jLogger extends AbstractUnifyComponent impleme
 						String loggingPattern = Unify.getSetting(String.class,
 								UnifyCorePropertyConstants.APPLICATION_LOGGER_PATTERN_SETTING);
 						if (loggingPattern == null) {
-							loggingPattern = "%d{ISO8601} %-5p -- [%-36.36c{1}] : %m%n";
+							loggingPattern = "%d{ISO8601} %-5p -- [%-36.-36c{1}] : %m%n";
 						}
 
 						boolean logToConsole = Unify.getSetting(boolean.class,

@@ -21,6 +21,7 @@ import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.criterion.CompoundRestriction;
 import com.tcdng.unify.core.criterion.Restriction;
 import com.tcdng.unify.core.database.NativeQuery;
+import com.tcdng.unify.core.database.NativeTranslator;
 import com.tcdng.unify.core.database.sql.AbstractSqlCriteriaPolicy;
 import com.tcdng.unify.core.database.sql.SqlCriteriaPolicy;
 import com.tcdng.unify.core.database.sql.SqlDataSourceDialectPolicies;
@@ -36,105 +37,107 @@ import com.tcdng.unify.core.database.sql.SqlTableNativeAliasGenerator;
  */
 public abstract class CompoundPolicy extends AbstractSqlCriteriaPolicy {
 
-    public CompoundPolicy(String opSql, SqlDataSourceDialectPolicies rootPolicies) {
-        super(opSql, rootPolicies);
-    }
+	public CompoundPolicy(String opSql, SqlDataSourceDialectPolicies rootPolicies) {
+		super(opSql, rootPolicies);
+	}
 
-    @Override
-    public void translate(StringBuilder sql, SqlEntityInfo sqlEntityInfo, Restriction restriction)
-            throws UnifyException {
-        CompoundRestriction cc = (CompoundRestriction) restriction;
-        List<Restriction> restrictionList = cc.getRestrictionList();
-        if (restrictionList != null && !restrictionList.isEmpty()) {
-            int size = restrictionList.size();
-            boolean useBrackets = size > 1;
-            if (useBrackets) {
-                sql.append("(");
-            }
+	@Override
+	public void translate(NativeTranslator translator, StringBuilder sql, SqlEntityInfo sqlEntityInfo,
+			Restriction restriction) throws UnifyException {
+		CompoundRestriction cc = (CompoundRestriction) restriction;
+		List<Restriction> restrictionList = cc.getRestrictionList();
+		if (restrictionList != null && !restrictionList.isEmpty()) {
+			int size = restrictionList.size();
+			boolean useBrackets = size > 1;
+			if (useBrackets) {
+				sql.append("(");
+			}
 
-            int i = 0;
-            Restriction subRestriction = restrictionList.get(i++);
-            SqlCriteriaPolicy sqlCriteriaPolicy = getOperatorPolicy(subRestriction);
-            sqlCriteriaPolicy.translate(sql, sqlEntityInfo, subRestriction);
-            while (i < size) {
-                sql.append(opSql);
-                subRestriction = restrictionList.get(i++);
-                sqlCriteriaPolicy = getOperatorPolicy(subRestriction);
-                sqlCriteriaPolicy.translate(sql, sqlEntityInfo, subRestriction);
-            }
+			int i = 0;
+			Restriction subRestriction = restrictionList.get(i++);
+			SqlCriteriaPolicy sqlCriteriaPolicy = getOperatorPolicy(subRestriction);
+			sqlCriteriaPolicy.translate(translator, sql, sqlEntityInfo, subRestriction);
+			while (i < size) {
+				sql.append(opSql);
+				subRestriction = restrictionList.get(i++);
+				sqlCriteriaPolicy = getOperatorPolicy(subRestriction);
+				sqlCriteriaPolicy.translate(translator, sql, sqlEntityInfo, subRestriction);
+			}
 
-            if (useBrackets) {
-                sql.append(")");
-            }
-        }
-    }
+			if (useBrackets) {
+				sql.append(")");
+			}
+		}
+	}
 
-    @Override
-    public void generatePreparedStatementCriteria(StringBuilder sql, List<SqlParameter> parameterInfoList,
-            SqlEntityInfo sqlEntityInfo, Restriction restriction) throws UnifyException {
-        CompoundRestriction cc = (CompoundRestriction) restriction;
-        List<Restriction> restrictionList = cc.getRestrictionList();
-        if (restrictionList != null && !restrictionList.isEmpty()) {
-            int size = restrictionList.size();
-            boolean useBrackets = size > 1;
-            if (useBrackets) {
-                sql.append("(");
-            }
+	@Override
+	public void generatePreparedStatementCriteria(StringBuilder sql, List<SqlParameter> parameterInfoList,
+			SqlEntityInfo sqlEntityInfo, Restriction restriction) throws UnifyException {
+		CompoundRestriction cc = (CompoundRestriction) restriction;
+		List<Restriction> restrictionList = cc.getRestrictionList();
+		if (restrictionList != null && !restrictionList.isEmpty()) {
+			int size = restrictionList.size();
+			boolean useBrackets = size > 1;
+			if (useBrackets) {
+				sql.append("(");
+			}
 
-            int i = 0;
-            Restriction subRestriction = restrictionList.get(i++);
-            SqlCriteriaPolicy sqlCriteriaPolicy = getOperatorPolicy(subRestriction);
-            sqlCriteriaPolicy.generatePreparedStatementCriteria(sql, parameterInfoList, sqlEntityInfo, subRestriction);
-            while (i < size) {
-                sql.append(opSql);
-                subRestriction = restrictionList.get(i++);
-                sqlCriteriaPolicy = getOperatorPolicy(subRestriction);
-                sqlCriteriaPolicy.generatePreparedStatementCriteria(sql, parameterInfoList, sqlEntityInfo,
-                        subRestriction);
-            }
+			int i = 0;
+			Restriction subRestriction = restrictionList.get(i++);
+			SqlCriteriaPolicy sqlCriteriaPolicy = getOperatorPolicy(subRestriction);
+			sqlCriteriaPolicy.generatePreparedStatementCriteria(sql, parameterInfoList, sqlEntityInfo, subRestriction);
+			while (i < size) {
+				sql.append(opSql);
+				subRestriction = restrictionList.get(i++);
+				sqlCriteriaPolicy = getOperatorPolicy(subRestriction);
+				sqlCriteriaPolicy.generatePreparedStatementCriteria(sql, parameterInfoList, sqlEntityInfo,
+						subRestriction);
+			}
 
-            if (useBrackets) {
-                sql.append(")");
-            }
-        }
-    }
+			if (useBrackets) {
+				sql.append(")");
+			}
+		}
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    protected void doTranslate(StringBuilder sql, String tableName, String columnName, Object param1, Object param2)
-            throws UnifyException {
-        SqlTableNativeAliasGenerator aliasGenerator = (SqlTableNativeAliasGenerator) param1;
-        List<NativeQuery.Filter> subFilterList = (List<NativeQuery.Filter>) param2;
-        if (subFilterList != null && !subFilterList.isEmpty()) {
-            int size = subFilterList.size();
-            boolean useBrackets = size > 1;
-            if (useBrackets) {
-                sql.append("(");
-            }
+	@SuppressWarnings("unchecked")
+	@Override
+	protected void doTranslate(NativeTranslator translator, StringBuilder sql, String tableName, String columnName,
+			Object param1, Object param2) throws UnifyException {
+		SqlTableNativeAliasGenerator aliasGenerator = (SqlTableNativeAliasGenerator) param1;
+		List<NativeQuery.Filter> subFilterList = (List<NativeQuery.Filter>) param2;
+		if (subFilterList != null && !subFilterList.isEmpty()) {
+			int size = subFilterList.size();
+			boolean useBrackets = size > 1;
+			if (useBrackets) {
+				sql.append("(");
+			}
 
-            int i = 0;
-            NativeQuery.Filter subFilter = subFilterList.get(i++);
-            translate(sql, aliasGenerator, subFilter);
-            while (i < size) {
-                sql.append(opSql);
-                subFilter = subFilterList.get(i++);
-                translate(sql, aliasGenerator, subFilter);
-            }
+			int i = 0;
+			NativeQuery.Filter subFilter = subFilterList.get(i++);
+			translate(translator, sql, aliasGenerator, subFilter);
+			while (i < size) {
+				sql.append(opSql);
+				subFilter = subFilterList.get(i++);
+				translate(translator, sql, aliasGenerator, subFilter);
+			}
 
-            if (useBrackets) {
-                sql.append(")");
-            }
-        }
-    }
+			if (useBrackets) {
+				sql.append(")");
+			}
+		}
+	}
 
-    private void translate(StringBuilder sql, SqlTableNativeAliasGenerator aliasGenerator, NativeQuery.Filter filter)
-            throws UnifyException {
-        if (filter.isCompound()) {
-            getOperatorPolicy(filter.getOp()).translate(sql, null, null, aliasGenerator, filter.getSubFilterList());
-        } else {
-            getOperatorPolicy(filter.getOp()).translate(sql, aliasGenerator.getTableNativeAlias(filter.getTableName()),
-                    filter.getColumnName(), filter.getParam1(), filter.getParam2());
-        }
-    }
+	private void translate(NativeTranslator translator, StringBuilder sql, SqlTableNativeAliasGenerator aliasGenerator,
+			NativeQuery.Filter filter) throws UnifyException {
+		if (filter.isCompound()) {
+			getOperatorPolicy(filter.getOp()).translate(translator, sql, null, null, aliasGenerator,
+					filter.getSubFilterList());
+		} else {
+			getOperatorPolicy(filter.getOp()).translate(translator, sql,
+					aliasGenerator.getTableNativeAlias(filter.getTableName()), filter.getColumnName(),
+					filter.getParam1(), filter.getParam2());
+		}
+	}
 
 }

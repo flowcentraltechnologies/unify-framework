@@ -38,7 +38,6 @@ public class CommandPostResponse extends AbstractJsonPageControllerResponse {
 
     @Override
     protected void doGenerate(ResponseWriter writer, Page page) throws UnifyException {
-        logDebug("Preparing command post response: path ID = [{0}]", page.getPathId());
         TargetPath targetPath = getRequestContextUtil().getCommandResponsePath();
         if(targetPath != null) {
             if (StringUtils.isNotBlank(targetPath.getPath())) {

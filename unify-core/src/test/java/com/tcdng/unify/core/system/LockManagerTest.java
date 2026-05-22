@@ -73,7 +73,7 @@ public class LockManagerTest extends AbstractUnifyComponentTest {
 
 		lockManager.releaseLock("computeSalaryLock");
 		lockInfo = lockManager.getLockInfo("computeSalaryLock");
-		assertNull(lockInfo);
+		assertNull(lockInfo); 
 	}
 
 	@Test(timeout = 5000)

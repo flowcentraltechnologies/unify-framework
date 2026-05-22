@@ -25,6 +25,14 @@ public interface UnifyWebPropertyConstants {
 
     String APPLICATION_HOME = "application.web.home";
 
+    String APPLICATION_401 = "application.web.401";
+
+    String APPLICATION_404 = "application.web.404";
+
+    String APPLICATION_500 = "application.web.500";
+
+    String APPLICATION_503 = "application.web.503";
+
     String APPLICATION_COMMON_UTILITIES = "application.web.common";
 
     String APPLICATION_THEME = "application.web.theme";
@@ -41,15 +49,14 @@ public interface UnifyWebPropertyConstants {
 
     String APPLICATION_WEB_CSP_NONCE = "application.web.csp.nonce";
 
+    String APPLICATION_WEB_NO_CACHING = "application.web.nocaching";
+
     String APPLICATION_WEB_HIDE_ERRORTRACE = "application.web.hideerrortrace";
 
     String APPLICATION_WEB_FRIENDLY_REDIRECT = "application.web.friendlyredirect";
 
-    String APPLICATION_REMOTE_VIEWING_ENABLED = "application.web.remote.viewing";
-
-    String APPLICATION_REMOTE_VIEWERS = "application.web.remote.viewers";
-
-    String APPLICATION_REMOTE_VIEWERS_STRICT = "application.web.remote.viewers.strict";
-
     String APPLICATION_TENANT_PATH_ENABLED = "application.web.tenantpath.enabled";
+
+    String APPLICATION_WEB_BROWSER_LOCALE = "application.web.browser.locale";
+
 }

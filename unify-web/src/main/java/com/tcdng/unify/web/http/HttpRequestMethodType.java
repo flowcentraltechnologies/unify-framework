@@ -42,4 +42,36 @@ public enum HttpRequestMethodType {
     public ClientRequestType clientRequestType() {
         return clientRequestType;
     }
+
+	public boolean isGet() {
+		return clientRequestType.isGet();
+	}
+
+	public boolean isHead() {
+		return clientRequestType.isHead();
+	}
+
+	public boolean isPost() {
+		return clientRequestType.isPost();
+	}
+
+	public boolean isPut() {
+		return clientRequestType.isPut();
+	}
+
+	public boolean isPatch() {
+		return clientRequestType.isPatch();
+	}
+
+	public boolean isDelete() {
+		return clientRequestType.isDelete();
+	}
+
+	public boolean isOptions() {
+		return clientRequestType.isOptions();
+	}
+
+	public boolean isTrace() {
+		return clientRequestType.isTrace();
+	}
 }

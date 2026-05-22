@@ -59,6 +59,10 @@ public class JsonObjectComposition {
 		this.formatContext = new FormatContext();
 		this.name = name;
 		this.fields = fields;
+		this.map = new HashMap<String, JsonFieldComposition>();
+		for (JsonFieldComposition comp: fields) {
+			this.map.put(comp.getName(), comp);
+		}
 	}
 
 	public FormatContext getFormatContext() {

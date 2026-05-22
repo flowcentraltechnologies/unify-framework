@@ -39,8 +39,6 @@ public class SwitchPanelResponse extends RefreshPanelResponse {
     @Override
     protected void doGenerate(ResponseWriter writer, Page page) throws UnifyException {
         String[] panels = getPanels();
-        logDebug("Preparing switch panel response: path ID = [{0}], panelCount = [{1}]", page.getPathId(),
-                panels.length);
         for (int i = 0; i < panels.length; i++) {
             SwitchPanel switchPanel = (SwitchPanel) page.getPanelByShortName(panels[i]);
             switchPanel.switchContent(targets[i]);

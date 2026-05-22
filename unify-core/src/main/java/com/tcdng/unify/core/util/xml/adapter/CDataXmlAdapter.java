@@ -44,7 +44,7 @@ public class CDataXmlAdapter {
 		@Override
 		public void serialize(String value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
 			if (value != null) {
-				gen.writeString(CDATA_START + value + CDATA_END);
+				gen.writeRawValue(CDATA_START + value + CDATA_END);
 				return;
 			}
 

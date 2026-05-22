@@ -28,10 +28,12 @@ import com.tcdng.unify.core.criterion.AbstractDoubleParamRestriction;
 import com.tcdng.unify.core.criterion.AbstractMultipleParamRestriction;
 import com.tcdng.unify.core.criterion.AbstractSimpleRestriction;
 import com.tcdng.unify.core.criterion.AbstractSingleParamRestriction;
+import com.tcdng.unify.core.criterion.And;
 import com.tcdng.unify.core.criterion.CompoundRestriction;
 import com.tcdng.unify.core.criterion.DoubleParamRestriction;
 import com.tcdng.unify.core.criterion.FilterConditionType;
 import com.tcdng.unify.core.criterion.MultipleParamRestriction;
+import com.tcdng.unify.core.criterion.Or;
 import com.tcdng.unify.core.criterion.Restriction;
 import com.tcdng.unify.core.criterion.SimpleRestriction;
 import com.tcdng.unify.core.criterion.SingleParamRestriction;
@@ -49,6 +51,30 @@ public final class CriteriaUtils {
 
     }
 
+    public static Restriction and(Restriction r1, Restriction r2) {
+    	if (r1 != null) {
+    		if (r2 != null) {
+    			return new And().add(r1).add(r2);
+    		}
+    		
+    		return r1;
+    	}
+    	
+    	return r2;
+    }
+
+    public static Restriction or(Restriction r1, Restriction r2) {
+    	if (r1 != null) {
+    		if (r2 != null) {
+    			return new Or().add(r1).add(r2);
+    		}
+    		
+    		return r1;
+    	}
+    	
+    	return r2;
+    }
+    
     public static CompoundRestriction unmodifiableRestriction(CompoundRestriction compoundRestriction) {
         return new UnCompoundRestriction((AbstractCompoundRestriction) compoundRestriction);
     }

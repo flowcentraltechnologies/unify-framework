@@ -17,7 +17,6 @@ package com.tcdng.unify.core.application;
 
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import com.tcdng.unify.core.ApplicationComponents;
 import com.tcdng.unify.core.UnifyCorePropertyConstants;
@@ -35,6 +34,7 @@ import com.tcdng.unify.core.database.DataSourceManagerContext;
 import com.tcdng.unify.core.database.DataSourceManagerOptions;
 import com.tcdng.unify.core.database.sql.SqlDataSource;
 import com.tcdng.unify.core.util.DataUtils;
+import com.tcdng.unify.core.util.RandomUtils;
 import com.tcdng.unify.core.util.VersionUtils;
 
 /**
@@ -86,7 +86,7 @@ public abstract class AbstractBootService<T extends FeatureDefinition> extends A
 
 				deploymentFeature = getFeature("deploymentVersion", "0.0");
 				auxiliaryFeature = getFeature("auxiliaryVersion", "0.0");
-				getFeature("deploymentID", UUID.randomUUID().toString());
+				getFeature("deploymentID", RandomUtils.generateUUID());
 				getFeature("deploymentInitDate", String.valueOf(new Date().getTime()));
 				isDataSourcesManaged = true;
 			}
@@ -181,11 +181,12 @@ public abstract class AbstractBootService<T extends FeatureDefinition> extends A
 						auxVersionToDeploy, lastAuxiliaryVersion);
 			}
 
+			InstallationContext ictx = new InstallationContext();
 			BootInstallationInfo<T> bootInstallationInfo = prepareBootInstallation();
 			if (bootInstallationInfo.isInstallers() && bootInstallationInfo.isFeatures()) {
 				for (String installerName : bootInstallationInfo.getFeatureInstallerNames()) {
 					FeatureInstaller<T> installer = (FeatureInstaller<T>) getComponent(installerName);
-					installer.installFeatures(bootInstallationInfo.getFeatures());
+					installer.installFeatures(ictx, bootInstallationInfo.getFeatures());
 				}
 			}
 

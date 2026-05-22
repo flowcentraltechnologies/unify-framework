@@ -33,7 +33,7 @@ import com.tcdng.unify.core.UnifyException;
 public abstract class Context {
 
     private Map<String, Attribute> attributes;
-
+    
     public Context() {
         attributes = new HashMap<String, Attribute>();
     }
@@ -49,7 +49,7 @@ public abstract class Context {
     public void setAttribute(String name, Object value) {
         attributes.put(name, new Attribute(value, false));
     }
-
+    
     public void setStickyAttribute(String name, Object value) {
         attributes.put(name, new Attribute(value, true));
     }

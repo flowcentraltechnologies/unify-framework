@@ -36,7 +36,7 @@ public @interface Callable {
 
     /**
      * The application data source that procedure belongs to. Defaults to
-     * {@link ApplicationComponents#APPLICATION_DATASOURCE}
+     * {@link SecurityComponents#APPLICATION_DATASOURCE}
      */
     String datasource() default ApplicationComponents.APPLICATION_DATASOURCE;
 

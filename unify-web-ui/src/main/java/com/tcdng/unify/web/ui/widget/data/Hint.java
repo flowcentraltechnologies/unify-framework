@@ -23,17 +23,60 @@ package com.tcdng.unify.web.ui.widget.data;
  */
 public class Hint {
 
-    public enum MODE {
-        INFO, WARNING, ERROR
-    }
+	public enum MODE {
+		INFO("bell", "#1E3A8A", "#909DC6", "#E1ECFA"),
+		PASS("circle-check", "#6C9E4B", "#A6C415", "#EFF5E7"),
+		WARNING("triangle-exclamation", "#B5A200", "#DACB68", "#FFFDD0"),
+		ERROR("exclamation-circle", "#B22222", "#DA8282", "#FDE2E2");
+
+		private final String icon;
+
+		private final String dark;
+
+		private final String normal;
+
+		private final String light;
+
+		private MODE(String icon, String dark, String normal, String light) {
+			this.icon = icon;
+			this.dark = dark;
+			this.normal = normal;
+			this.light = light;
+		}
+
+		public String icon() {
+			return icon;
+		}
+
+		public String dark() {
+			return dark;
+		}
+
+		public String normal() {
+			return normal;
+		}
+
+		public String light() {
+			return light;
+		}
+	}
 
     private MODE mode;
 
     private String message;
 
+    private boolean sticky;
+    
     public Hint(MODE mode, String message) {
         this.mode = mode;
         this.message = message;
+        this.sticky = false;
+    }
+
+    public Hint(MODE mode, String message, boolean sticky) {
+        this.mode = mode;
+        this.message = message;
+        this.sticky = sticky;
     }
 
     public MODE getMode() {
@@ -47,4 +90,8 @@ public class Hint {
     public String key() {
         return mode + message;
     }
+
+	public boolean isSticky() {
+		return sticky;
+	}
 }

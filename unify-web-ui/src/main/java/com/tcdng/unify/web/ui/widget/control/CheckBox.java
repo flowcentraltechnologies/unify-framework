@@ -28,7 +28,8 @@ import com.tcdng.unify.web.ui.widget.AbstractControl;
  * @since 4.1
  */
 @Component("ui-checkbox")
-@UplAttributes({ @UplAttribute(name = "layoutColorMode", type = boolean.class, defaultVal = "true"),
+@UplAttributes({
+		@UplAttribute(name = "layoutColorMode", type = boolean.class, defaultVal = "true"),
         @UplAttribute(name = "layoutCaption", type = boolean.class, defaultVal = "false") })
 public class CheckBox extends AbstractControl {
 
@@ -38,7 +39,7 @@ public class CheckBox extends AbstractControl {
     }
 
     @Override
-	public boolean isSupportStretch() {
+	public boolean isSupportStretch() throws UnifyException {
 		return false;
 	}
 

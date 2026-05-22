@@ -43,13 +43,12 @@ public class LoadContentResponse extends AbstractJsonPageControllerResponse {
 
 	@Override
 	protected void doGenerate(ResponseWriter writer, Page page) throws UnifyException {
-		logDebug("Preparing load content response: path ID = [{0}]", page.getPathId());
 		ContentPanel contentPanel = getRequestContextUtil().getRequestDocument().getContentPanel();
 		appendRefreshPageJSON(writer, contentPanel, page);
 		writer.write(",");
 		appendRefreshAttributesJson(writer, true);
 		appendRegisteredDebounceWidgets(writer, true);
-		final String reloadURL = WebUtils.getContextURL(getRequestContext(), getRequestContextUtil().isRemoteViewer(),
+		final String reloadURL = WebUtils.getContextURL(getRequestContext(), false,
 				pathInfoRepository.getPagePathInfo(page).getReloadPagePath());
 		writer.write(",\"reloadURL\":").writeJsonQuote(reloadURL);
 		writer.write(",\"scrollToTop\":").write(scrollToTop());

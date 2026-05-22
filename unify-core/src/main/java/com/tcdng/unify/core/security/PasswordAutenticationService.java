@@ -15,8 +15,6 @@
  */
 package com.tcdng.unify.core.security;
 
-import java.util.List;
-
 import com.tcdng.unify.core.UnifyComponent;
 import com.tcdng.unify.core.UnifyException;
 
@@ -41,11 +39,11 @@ public interface PasswordAutenticationService extends UnifyComponent {
 	boolean authenticate(String userName, String userEmail, String password) throws UnifyException;
 
 	/**
-	 * Gets the list of user roles
+	 * Gets the user profile
 	 * 
 	 * @param userName the user name the user name to authenticate
-	 * @return the list of roles
+	 * @return the user profile
 	 * @throws UnifyException if an error occurs
 	 */
-	List<String> getRoles(String userName) throws UnifyException;
+	UserProfile getUserProfile(String userName) throws UnifyException;
 }

@@ -45,7 +45,6 @@ import com.tcdng.unify.core.util.IOUtils;
 import com.tcdng.unify.core.util.StringUtils;
 import com.tcdng.unify.web.ControllerPathParts;
 import com.tcdng.unify.web.UnifyWebPropertyConstants;
-import com.tcdng.unify.web.constant.RequestParameterConstants;
 import com.tcdng.unify.web.ui.UnifyWebUIErrorConstants;
 import com.tcdng.unify.web.ui.WebUIApplicationComponents;
 import com.tcdng.unify.web.ui.widget.panel.StandalonePanel;
@@ -61,8 +60,6 @@ import com.tcdng.unify.web.util.WebPathUtils;
 public class PageManagerImpl extends AbstractUnifyComponent implements PageManager {
 
 	private static final String PAGENAME_PREFIX = "p";
-
-	private static final String REMOTE_WEBVIEWER_PAGENAME_PREFIX = "rp";
 
 	@Configurable
 	private UplCompiler uplCompiler;
@@ -92,7 +89,7 @@ public class PageManagerImpl extends AbstractUnifyComponent implements PageManag
 	private List<String> documentTagLines;
 
 	private String pageNamePrefix;
-
+	
 	public PageManagerImpl() {
 		this.expandedReferences = new HashMap<String, List<String>>();
 		this.valueReferences = new HashMap<String, List<String>>();
@@ -286,13 +283,14 @@ public class PageManagerImpl extends AbstractUnifyComponent implements PageManag
 
 	@Override
 	public String getCurrentRequestClientId() throws UnifyException {
-		return getRequestAttribute(String.class, RequestParameterConstants.CLIENT_ID);
+		return getRequestClientPageId();
 	}
 
 	@Override
 	public String getCurrentRequestPageId(ControllerPathParts controllerPathParts) throws UnifyException {
-		final String clientId = getRequestAttribute(String.class, RequestParameterConstants.CLIENT_ID);
-		return WebPathUtils.getPageId(controllerPathParts.getControllerPathId(), clientId);
+		return controllerPathParts.isMultiplePagesPerSession()
+				? WebPathUtils.getPageId(controllerPathParts.getControllerPathId(), getRequestClientPageId())
+				: controllerPathParts.getControllerPathId();
 	}
 
 	@Override
@@ -482,10 +480,6 @@ public class PageManagerImpl extends AbstractUnifyComponent implements PageManag
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void onInitialize() throws UnifyException {
-		if (getContainerSetting(boolean.class, UnifyWebPropertyConstants.APPLICATION_REMOTE_VIEWING_ENABLED, false)) {
-			pageNamePrefix = REMOTE_WEBVIEWER_PAGENAME_PREFIX;
-		}
-
 		List<String> styleSheets = DataUtils.convert(ArrayList.class, String.class,
 				getContainerSetting(Object.class, UnifyWebPropertyConstants.APPLICATION_DOCUMENT_STYLESHEET));
 		if (styleSheets != null) {
@@ -508,12 +502,12 @@ public class PageManagerImpl extends AbstractUnifyComponent implements PageManag
 		if (fonts != null) {
 			documentFonts = Collections.unmodifiableList(fonts);
 		}
-		
+
 		List<String> tags = DataUtils.convert(ArrayList.class, String.class,
 				getContainerSetting(Object.class, UnifyWebPropertyConstants.APPLICATION_DOCUMENT_TAG));
 		if (!DataUtils.isBlank(tags)) {
 			documentTagLines = new ArrayList<String>();
-			for (String tag: tags) {
+			for (String tag : tags) {
 				List<String> tagLines = IOUtils.readFileResourceLines(tag, getWorkingPath());
 				documentTagLines.addAll(tagLines);
 			}

@@ -24,6 +24,7 @@ import com.tcdng.unify.core.UnifyComponent;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.constant.TopicEventType;
 import com.tcdng.unify.web.ClientRequest;
+import com.tcdng.unify.web.ClientResponse;
 import com.tcdng.unify.web.ControllerPathParts;
 import com.tcdng.unify.web.TargetPath;
 import com.tcdng.unify.web.data.TopicEvent;
@@ -42,7 +43,7 @@ import com.tcdng.unify.web.ui.widget.data.ValidationInfo;
  * @since 4.1
  */
 public interface PageRequestContextUtil extends UnifyComponent {
-
+	
     /**
      * Extracts request parameters for current request context
      * 
@@ -87,6 +88,33 @@ public interface PageRequestContextUtil extends UnifyComponent {
      */
     Page getContentPage() throws UnifyException;
 
+	/**
+	 * Gets a request attribute.
+	 * 
+	 * @param dataType the data type to convert to
+	 * @param name     the attribute name
+	 * @return the attribute value
+	 * @throws UnifyException if an error occurs
+	 */
+	<T> T getRequestAttribute(Class<T> dataType, String name) throws UnifyException;
+    
+	/**
+	 * Sets request attribute.
+	 * 
+	 * @param name  the attribute name
+	 * @param value the value to set
+	 * @throws UnifyException if an error occurs
+	 */
+	void setRequestAttribute(String name, Object value) throws UnifyException;
+	
+	/**
+	 * Sets request client page ID
+	 * 
+	 * @param pid the page ID
+	 * @throws UnifyException if an error occurs
+	 */
+	void setRequestClientPageId(String pid) throws UnifyException;
+	
     /**
      * Sets current request context's popup long name.
      * 
@@ -286,14 +314,6 @@ public interface PageRequestContextUtil extends UnifyComponent {
     String getRequestConfirmParam() throws UnifyException;
 
     /**
-     * Returns the request context remote viewer.
-     * 
-     * @throws UnifyException
-     *             if an error occurs
-     */
-    String getRemoteViewer() throws UnifyException;
-
-    /**
      * Gets the request nonce.
      * 
      * @return the nonce
@@ -309,14 +329,6 @@ public interface PageRequestContextUtil extends UnifyComponent {
      *                        if an error occurs
      */
     boolean isWithNonce() throws UnifyException;
-    
-    /**
-     * Returns true if request is from a remote viewer.
-     * 
-     * @throws UnifyException
-     *             if an error occurs
-     */
-    boolean isRemoteViewer() throws UnifyException;
 
     /**
      * Sets the request path parts information for current request context.
@@ -336,6 +348,20 @@ public interface PageRequestContextUtil extends UnifyComponent {
      */
     ControllerPathParts getRequestPathParts() throws UnifyException;
 
+	/**
+	 * Returns true if with request part parts otherwise false.
+	 * 
+	 * @throws UnifyException if an error occurs
+	 */
+	boolean isWithRequestPathParts() throws UnifyException;
+
+	/**
+	 * Returns true if with request targets otherwise false.
+	 * 
+	 * @throws UnifyException if an error occurs
+	 */
+	boolean isWithRequestTarget() throws UnifyException;
+    
     /**
      * Sets the response path parts information for current request context.
      * 
@@ -475,6 +501,16 @@ public interface PageRequestContextUtil extends UnifyComponent {
     void setPanelSwitchStateFlag(Panel panel) throws UnifyException;
 
     /**
+     * Set ignore panel switched.
+     * 
+     * @param ignorePanelSwitched
+     *            ignore panel switched
+     * @throws UnifyException
+     *             if an error occusr
+     */
+    void setIgnorePanelSwitched(boolean ignorePanelSwitched) throws UnifyException;
+
+    /**
      * Returns true is panel has been switch in current request context.
      * 
      * @param panel
@@ -563,7 +599,7 @@ public interface PageRequestContextUtil extends UnifyComponent {
     void clearOnSaveContentWidgets() throws UnifyException;
 
     /**
-     * Adds a user hint message to current request in {@link Hint.MODE#INFO} mode
+     * Adds a user hint message to current request in {@link Hint.MODE#PASS} mode
      * using supplied message key and optional parameters.
      * 
      * @param message
@@ -591,12 +627,48 @@ public interface PageRequestContextUtil extends UnifyComponent {
     void hintUser(Hint.MODE mode, String message, Object... params) throws UnifyException;
 
     /**
+     * Adds a user hint message to current request in {@link Hint.MODE#PASS} mode
+     * using supplied message key and optional parameters.
+     * 
+     * @param message
+     *            the message to hint user
+     * @param params
+     *            the message parameters
+     * @throws UnifyException
+     *             if an error occurs
+     */
+    void hintUserSticky(String message, Object... params) throws UnifyException;
+
+    /**
+     * Adds a user hint message to current request using supplied hint mode, message
+     * key and optional parameters.
+     * 
+     * @param mode
+     *            the hint mode
+     * @param message
+     *            the message to hint user
+     * @param params
+     *            the message parameters
+     * @throws UnifyException
+     *             if an error occurs
+     */
+    void hintUserSticky(Hint.MODE mode, String message, Object... params) throws UnifyException;
+
+    /**
      * Returns all user hints associated with current request.
      * 
      * @throws UnifyException
      *             if an error occurs
      */
     Hints getUserHints() throws UnifyException;
+
+    /**
+     * Removes all user hints associated with current request.
+     * 
+     * @throws UnifyException
+     *             if an error occurs
+     */
+    Hints removeUserHints() throws UnifyException;
     
     /**
      * Clears all hint user in current request.
@@ -857,4 +929,36 @@ public interface PageRequestContextUtil extends UnifyComponent {
 	 * @throws UnifyException if an error occurs
 	 */
 	boolean isLowLatencyRequest() throws UnifyException;
+	
+	/**
+	 * Sets request client request.
+	 * 
+	 * @param request the request object
+	 * @throws UnifyException if an error occurs
+	 */
+	void setClientRequest(ClientRequest request) throws UnifyException;
+	
+	/**
+	 * Gets request client request.
+	 * 
+	 * @return the client request
+	 * @throws UnifyException if an error occurs
+	 */
+	ClientRequest getClientRequest() throws UnifyException;
+	
+	/**
+	 * Sets request client response.
+	 * 
+	 * @param response the response object
+	 * @throws UnifyException if an error occurs
+	 */
+	void setClientResponse(ClientResponse response) throws UnifyException;
+	
+	/**
+	 * Gets request client response.
+	 * 
+	 * @return the client response
+	 * @throws UnifyException if an error occurs
+	 */
+	ClientResponse getClientResponse() throws UnifyException;
 }

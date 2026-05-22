@@ -199,6 +199,11 @@ public abstract class AbstractSingleObjectValueStore<T> extends AbstractValueSto
     }
 
     @Override
+	public boolean isChanged(Object valObject) throws UnifyException {
+		return storage != valObject;
+	}
+
+    @Override
     public Object getValueObject() {
         return storage;
     }
@@ -218,7 +223,7 @@ public abstract class AbstractSingleObjectValueStore<T> extends AbstractValueSto
 		return type.cast(storage);
 	}
 
-	@Override
+    @Override
     protected void doSetDataIndex(int dataIndex) {
         this.dataIndex = dataIndex;
     }

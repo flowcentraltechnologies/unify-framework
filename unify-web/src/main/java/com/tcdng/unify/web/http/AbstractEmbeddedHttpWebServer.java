@@ -18,13 +18,15 @@ package com.tcdng.unify.web.http;
 
 import com.tcdng.unify.core.ApplicationComponents;
 import com.tcdng.unify.core.RequestContextManager;
+import com.tcdng.unify.core.UnifyCoreApplicationAttributeConstants;
+import com.tcdng.unify.core.UnifyCoreConstants;
 import com.tcdng.unify.core.UnifyCorePropertyConstants;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Configurable;
 import com.tcdng.unify.core.system.UserSessionManager;
-import com.tcdng.unify.core.util.StringUtils;
 import com.tcdng.unify.web.UnifyWebPropertyConstants;
 import com.tcdng.unify.web.WebApplicationComponents;
+import com.tcdng.unify.web.util.CookieUtils;
 
 /**
  * Abstract base class for embedded HTTP web servers.
@@ -34,6 +36,9 @@ import com.tcdng.unify.web.WebApplicationComponents;
  */
 public abstract class AbstractEmbeddedHttpWebServer extends AbstractHttpWebInterface implements EmbeddedHttpWebServer {
 
+	@Configurable
+	private LongUserSessionManager longUserSessionManager;
+	
     @Configurable("8080")
     private int httpPort;
 
@@ -58,13 +63,13 @@ public abstract class AbstractEmbeddedHttpWebServer extends AbstractHttpWebInter
 	@Configurable("data/tmp")
 	private String multipartLocation;
 
-	@Configurable("67108864") /* 64MB */
+	@Configurable("104857600") /* 100MB */
 	private long multipartMaxFileSize;
 
-	@Configurable("67108864") /* 64MB */
+	@Configurable("104857600") /* 100MB */
 	private long multipartMaxRequestSize;
 
-	@Configurable("4096")
+	@Configurable("1048576") /* 1MB */
 	private int multipartFileSizeThreshold;
 
     @Override
@@ -88,10 +93,12 @@ public abstract class AbstractEmbeddedHttpWebServer extends AbstractHttpWebInter
 
 	protected String generateSessionCookieName() throws UnifyException {
 		final int port = isHttpsOnly() ? getHttpsPort() : getHttpPort();
-		final String infix = StringUtils
-				.flatten(getContainerSetting(String.class, UnifyCorePropertyConstants.APPLICATION_CODE, "unify"))
-				.replaceAll("[^a-zA-Z0-9_]", "");
-		return ("JS_" + infix + "_" + port).toUpperCase();
+		final String infix = getContainerSetting(String.class, UnifyCorePropertyConstants.APPLICATION_CODE, "unify");
+		final String sessionCookieName = CookieUtils.getSessionCookieName(infix, port);
+		final String longSessionCookieName = CookieUtils.getLongSessionCookieName(infix, port);
+		setApplicationAttribute(UnifyCoreApplicationAttributeConstants.SESSION_COOKIE_NAME, sessionCookieName);
+		setApplicationAttribute(UnifyCoreApplicationAttributeConstants.LONG_SESSION_COOKIE_NAME, longSessionCookieName);
+		return sessionCookieName;
 	}
 	
 	protected int getHttpsPort() {
@@ -129,4 +136,11 @@ public abstract class AbstractEmbeddedHttpWebServer extends AbstractHttpWebInter
 	protected int getMultipartFileSizeThreshold() {
 		return multipartFileSizeThreshold;
 	}
+	
+	protected int getSessionSeconds() throws UnifyException {
+		return longUserSessionManager != null ? longUserSessionManager.getDefaultLongSessionSeconds()
+				: (getContainerSetting(int.class, UnifyCorePropertyConstants.APPLICATION_SESSION_TIMEOUT,
+						UnifyCoreConstants.DEFAULT_APPLICATION_SESSION_TIMEOUT_SECONDS));
+	}
+ 
 }

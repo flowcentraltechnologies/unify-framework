@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import com.tcdng.unify.common.annotation.ColumnType;
@@ -61,6 +62,7 @@ import com.tcdng.unify.core.data.FactoryMap;
 import com.tcdng.unify.core.database.CallableProc;
 import com.tcdng.unify.core.database.NativeParam;
 import com.tcdng.unify.core.database.NativeQuery;
+import com.tcdng.unify.core.database.NativeTranslator;
 import com.tcdng.unify.core.database.NativeUpdate;
 import com.tcdng.unify.core.database.Query;
 import com.tcdng.unify.core.database.sql.criterion.policy.AmongstPolicy;
@@ -138,6 +140,8 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 	@Configurable("64")
 	private int maxStatementInfo;
 
+	private NativeTranslator translator;
+	
 	private final Set<String> reservedWords;
 
 	private SqlCacheFactory sqlCacheFactory;
@@ -213,6 +217,24 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 	public boolean matchColumnDefault(String nativeVal, String defaultVal) throws UnifyException {
 		return DataUtils.equals(nativeVal, defaultVal)
 				|| (defaultVal == null && "NULL".equalsIgnoreCase(String.valueOf(nativeVal)));
+	}
+
+	@Override
+	public Optional<String> generateFieldTypeSql(SqlFieldTypeInfo info) throws UnifyException {
+		if (info != null && info.getColumnType() != null) {
+			StringBuilder sb = new StringBuilder();
+			SqlDataTypePolicy sqlDataTypePolicy = getSqlTypePolicy(info.getColumnType(), info.getLength());
+			sqlDataTypePolicy.appendTypeSql(sb, info.getLength(), info.getPrecision(), info.getScale());
+			if (info.isPrimaryKey() || !info.isNullable()) {
+				sb.append(" NOT NULL");
+			} else {
+				sb.append(" NULL");
+			}
+
+			return Optional.ofNullable(sb.toString());
+		}
+
+		return Optional.empty();
 	}
 
 	@Override
@@ -524,6 +546,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 		} else {
 			sb.append(' ');
 		}
+
 		sb.append("DROP ").append(sqlFieldSchemaInfo.getPreferredColumnName());
 		return sb.toString();
 	}
@@ -1410,7 +1433,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 		if (query.isRootFilter()) {
 			sql.append(" WHERE ");
 			NativeQuery.Filter rootFilter = query.getRootFilter();
-			getSqlDataSourceDialectPolicies().getSqlCriteriaPolicy(rootFilter.getOp()).translate(sql, null, null,
+			getSqlDataSourceDialectPolicies().getSqlCriteriaPolicy(rootFilter.getOp()).translate(translator, sql, null, null,
 					aliasGenerator, rootFilter.getSubFilterList());
 		}
 
@@ -1497,8 +1520,18 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 	}
 
 	@Override
+	public void setNativeTranslator(NativeTranslator nativeTranslator) {
+		this.translator = nativeTranslator;
+	}
+
+	@Override
 	public final String translateNativeSqlParam(Object param) throws UnifyException {
-		return getSqlDataSourceDialectPolicies().translateToNativeSqlParam(param);
+		String translation = null;
+		if (param != null && translator != null) {
+			translation = translator.translateToNativeSqlParam(param);
+		}
+
+		return translation != null ? translation : getSqlDataSourceDialectPolicies().translateToNativeSqlParam(param);
 	}
 
 	@Override
@@ -1547,7 +1580,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 	}
 
 	@Override
-	public final boolean isAllObjectsInLowerCase() {
+	public boolean isAllObjectsInLowerCase() {
 		return allObjectsInLowerCase;
 	}
 
@@ -1938,7 +1971,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 			}
 		}
 	}
-
+	
 	protected final void appendColumnAndTypeSql(StringBuilder sb, SqlFieldSchemaInfo sqlFieldSchemaInfo,
 			SqlColumnAlterInfo sqlColumnAlterInfo) throws UnifyException {
 		SqlDataTypePolicy sqlDataTypePolicy = getSqlTypePolicy(sqlFieldSchemaInfo.getColumnType(),
@@ -2498,7 +2531,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 				}
 
 				getSqlDataSourceDialectPolicies().getSqlCriteriaPolicy(sqlViewRestrictionInfo.getRestrictionType())
-						.translate(sb, sqlViewRestrictionInfo.getTableAlias(), sqlViewRestrictionInfo.getColumnName(),
+						.translate(translator, sb, sqlViewRestrictionInfo.getTableAlias(), sqlViewRestrictionInfo.getColumnName(),
 								sqlViewRestrictionInfo.getParam1(), sqlViewRestrictionInfo.getParam2());
 			}
 		}
@@ -2594,7 +2627,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 	private void translateCriteria(StringBuilder sql, SqlEntityInfo sqlEntityInfo, Restriction restriction)
 			throws UnifyException {
 		getSqlDataSourceDialectPolicies().getSqlCriteriaPolicy(restriction.getConditionType().restrictionType())
-				.translate(sql, sqlEntityInfo, restriction);
+				.translate(translator,  sql, sqlEntityInfo, restriction);
 	}
 
 	private void appendCreateViewSQLElements(SqlEntitySchemaInfo sqlEntitySchemaInfo, SqlFieldSchemaInfo sqlFieldInfo,

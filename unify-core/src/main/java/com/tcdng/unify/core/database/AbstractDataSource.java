@@ -35,6 +35,9 @@ public abstract class AbstractDataSource extends AbstractUnifyComponent implemen
 	@Configurable
 	private DataSourceDialect dialect;
 
+    @Configurable
+    private String translator;
+
 	@Configurable("false")
 	private boolean allObjectsInLowercase;
 
@@ -52,6 +55,8 @@ public abstract class AbstractDataSource extends AbstractUnifyComponent implemen
 
 	@Configurable
 	private List<String> entityList;
+	
+	private NativeTranslator nativeTranslator;
 	
 	public final void setDialect(DataSourceDialect dialect) throws UnifyException {
 		this.dialect = dialect;
@@ -79,6 +84,10 @@ public abstract class AbstractDataSource extends AbstractUnifyComponent implemen
 
 	@Override
 	public DataSourceDialect getDialect() throws UnifyException {
+		if (nativeTranslator != null) {
+			dialect.setNativeTranslator(nativeTranslator);
+		}
+		
 		return dialect;
 	}
 
@@ -93,6 +102,10 @@ public abstract class AbstractDataSource extends AbstractUnifyComponent implemen
 			dialect.setDataSourceName(getEntityMatchingName());
 			dialect.setAllObjectsInLowerCase(allObjectsInLowercase);
 			dialect.setSupportUnifyViews(supportUnifyViews);
+		}
+		
+		if (!StringUtils.isBlank(translator)) {
+			nativeTranslator = getComponent(NativeTranslator.class, translator);
 		}
 	}
 

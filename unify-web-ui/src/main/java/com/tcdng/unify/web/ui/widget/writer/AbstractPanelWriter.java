@@ -56,6 +56,7 @@ public abstract class AbstractPanelWriter extends AbstractContainerWriter implem
 		writer.setDataIndex(_valueStore != null ? _valueStore.getDataIndex() : -1);
 		try {
 			super.doWriteBehavior(writer, widget, handlers);
+
 			if (panel.isAllowRefresh()) {
 				int refreshEvery = panel.getRefreshEvery();
 				if (refreshEvery > 0) {
@@ -109,7 +110,7 @@ public abstract class AbstractPanelWriter extends AbstractContainerWriter implem
 
 		boolean isLegend = StringUtils.isNotBlank(legend);
 		if (isLegend) {
-			writer.write("<fieldset><legend>");
+			writer.write("<fieldset class=\"exset\"><legend class=\"exleg\">");
 			writeAttributeWithEscape(writer, panel, "legend");
 			writer.write("</legend>");
 		}

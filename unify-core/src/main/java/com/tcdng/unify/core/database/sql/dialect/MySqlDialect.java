@@ -80,6 +80,11 @@ public class MySqlDialect extends AbstractSqlDataSourceDialect {
 	}
 
 	@Override
+	public String getCurrentTimestampSQL() {
+		return "SELECT CURRENT_TIMESTAMP";
+	}
+
+	@Override
 	public String generateTestSql() throws UnifyException {
 		return "SELECT 1";
 	}
@@ -344,6 +349,11 @@ public class MySqlDialect extends AbstractSqlDataSourceDialect {
 		appendTypeSql(sb, sqlColumnInfo);
 		sb.append(" NULL");
 		return sb.toString();
+	}
+
+	@Override
+	public final boolean isAllObjectsInLowerCase() {
+		return true;
 	}
 
 	@Override

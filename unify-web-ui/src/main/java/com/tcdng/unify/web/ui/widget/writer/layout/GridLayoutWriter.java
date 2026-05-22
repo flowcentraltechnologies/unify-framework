@@ -35,81 +35,97 @@ import com.tcdng.unify.web.ui.widget.layout.GridLayout;
 @Component("gridlayout-writer")
 public class GridLayoutWriter extends AbstractTabularLayoutWriter {
 
-    @Override
-    protected void writeTableContent(ResponseWriter writer, TabularLayout layout, Container container)
-            throws UnifyException {
-        GridLayout gridLayout = (GridLayout) layout;
-        int columnIndex = 0;
-        int rowIndex = 0;
-        int columns = gridLayout.getUplAttribute(int.class, "columns");
-        if (columns <= 0) {
-            columns = 1;
-        }
+	@Override
+	protected void writeTableContent(ResponseWriter writer, TabularLayout layout, Container container)
+			throws UnifyException {
+		GridLayout gridLayout = (GridLayout) layout;
+		int columnIndex = 0;
+		int rowIndex = 0;
+		int columns = gridLayout.getUplAttribute(int.class, "columns");
+		if (columns <= 0) {
+			columns = 1;
+		}
 
-        boolean isAlternate = container.isAlternate();
-        for (String longName : container.getLayoutWidgetLongNames()) {
-            Widget widget = container.getWidgetByLongName(longName);
-            widget.setAlternateMode(isAlternate);
-            if (widget.isVisible()) {
-                if (columnIndex == 0) {
-                    writer.write("<div class=\"lrow\">");
-                }
-                appendCellContent(writer, gridLayout, widget, rowIndex, columnIndex);
-                if (++columnIndex == columns) {
-                    writer.write("</div>");
-                    rowIndex++;
-                    columnIndex = 0;
-                }
-            } else if (widget.isHidden()) {
-                writer.writeStructureAndContent(widget);
-            }
-        }
+		boolean isAlternate = container.isAlternate();
+		for (String longName : container.getLayoutWidgetLongNames()) {
+			Widget widget = container.getWidgetByLongName(longName);
+			widget.setAlternateMode(isAlternate);
+			if (widget.isVisible()) {
+				if (columnIndex == 0) {
+					writer.write("<div class=\"lrow\">");
+				}
+				appendCellContent(writer, gridLayout, widget, rowIndex, columnIndex);
+				if (++columnIndex == columns) {
+					writer.write("</div>");
+					rowIndex++;
+					columnIndex = 0;
+				}
+			} else if (widget.isHidden()) {
+				writer.writeStructureAndContent(widget);
+			}
+		}
 
-        if (columnIndex > 0) {
-            while (columnIndex++ < columns) {
-                writer.write("<div class=\"lcellm\">&nbsp;</div>");
-            }
-            writer.write("</div>");
-        }
-    }
+		if (columnIndex > 0) {
+			while (columnIndex++ < columns) {
+				writer.write("<div class=\"lcellm\">&nbsp;</div>");
+			}
+			writer.write("</div>");
+		}
+	}
 
-    @Override
-    protected void writeRepeatTableContent(ResponseWriter writer, TabularLayout layout, Container container)
-            throws UnifyException {
-        GridLayout gridLayout = (GridLayout) layout;
-        int columnIndex = 0;
-        int rowIndex = 0;
-        int columns = gridLayout.getColumns();
-        if (columns <= 0) {
-            columns = 1;
-        }
+	@Override
+	protected void writeRepeatTableContent(ResponseWriter writer, TabularLayout layout, Container container)
+			throws UnifyException {
+		GridLayout gridLayout = (GridLayout) layout;
+		int columnIndex = 0;
+		int rowIndex = 0;
+		int columns = gridLayout.getColumns();
+		if (columns <= 0) {
+			columns = 1;
+		}
 
-        Widget widget = container.getWidgetByLongName(container.getLayoutWidgetLongNames().get(0));
-        boolean isAlternate = container.isAlternate();
-        for (ValueStore valueStore : container.getRepeatValueStores()) {
-            widget.setValueStore(valueStore);
-            widget.setAlternateMode(isAlternate);
-            if (widget.isVisible()) {
-                if (columnIndex == 0) {
-                    writer.write("<div class=\"lrow\">");
-                }
-                appendCellContent(writer, gridLayout, widget, rowIndex, columnIndex);
-                if (++columnIndex == columns) {
-                    writer.write("</div>");
-                    rowIndex++;
-                    columnIndex = 0;
-                }
-            } else if (widget.isHidden()) {
-                writer.writeStructureAndContent(widget);
-            }
-        }
+		final Widget widget = container.getRepeatWidget();
+		boolean disabled = widget.isDisabled();
+		try {
+			boolean isAlternate = container.isAlternate();
+			for (ValueStore valueStore : container.getRepeatValueStores()) {
+				widget.setValueStore(valueStore);
+				widget.setAlternateMode(isAlternate);
+				if (widget.isVisible()) {
+					if (columnIndex == 0) {
+						writer.write("<div class=\"lrow\">");
+					}
 
-        if (columnIndex > 0) {
-            while (columnIndex++ < columns) {
-                writer.write("<div class=\"lcellm\">&nbsp;</div>");
-            }
-            writer.write("</div>");
-        }
-    }
+					appendCellContent(writer, gridLayout, widget, rowIndex, columnIndex);
+
+					if (valueStore.isGettable("layoutNewLine") && valueStore.retrieve(boolean.class, "layoutNewLine")) {
+						while (++columnIndex < columns) {
+							writer.write("<div class=\"lcellm\">&nbsp;</div>");
+						}
+					} else {
+						++columnIndex;
+					}
+
+					if (columnIndex == columns) {
+						writer.write("</div>");
+						rowIndex++;
+						columnIndex = 0;
+					}
+				} else if (widget.isHidden()) {
+					writer.writeStructureAndContent(widget);
+				}
+			}
+
+			if (columnIndex > 0) {
+				while (columnIndex++ < columns) {
+					writer.write("<div class=\"lcellm\">&nbsp;</div>");
+				}
+
+				writer.write("</div>");
+			}
+		} finally {
+			widget.setDisabled(disabled);
+		}
+	}
 
 }

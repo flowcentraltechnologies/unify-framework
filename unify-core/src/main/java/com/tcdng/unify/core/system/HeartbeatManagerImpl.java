@@ -17,7 +17,6 @@ package com.tcdng.unify.core.system;
 
 import java.util.Date;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.tcdng.unify.common.database.Entity;
@@ -26,6 +25,7 @@ import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.annotation.Periodic;
 import com.tcdng.unify.core.annotation.PeriodicType;
+import com.tcdng.unify.core.annotation.Transactional;
 import com.tcdng.unify.core.business.AbstractBusinessService;
 import com.tcdng.unify.core.business.AbstractQueuedExec;
 import com.tcdng.unify.core.business.QueuedExec;
@@ -34,6 +34,7 @@ import com.tcdng.unify.core.criterion.Update;
 import com.tcdng.unify.core.database.Query;
 import com.tcdng.unify.core.task.TaskMonitor;
 import com.tcdng.unify.core.util.CalendarUtils;
+import com.tcdng.unify.core.util.RandomUtils;
 
 /**
  * Heartbeat manager implementation.
@@ -41,10 +42,13 @@ import com.tcdng.unify.core.util.CalendarUtils;
  * @author The Code Department
  * @since 4.1
  */
+@Transactional
 @Component(ApplicationComponents.APPLICATION_HEARTBEATMANAGER)
 public class HeartbeatManagerImpl extends AbstractBusinessService implements HeartbeatManager {
 
 	private static final int MAX_HEARTBEAT_THREADS = 32;
+
+    private static final String HEARTBEAT_PERFORM= "app::perormheartbeat";
 
 	private final Map<String, HeartbeatConfig> configs;
 
@@ -71,7 +75,7 @@ public class HeartbeatManagerImpl extends AbstractBusinessService implements Hea
 	@Override
 	public String startHeartbeat(Query<? extends Entity> query, String expiryFieldName, long lifeExtensionInMinutes)
 			throws UnifyException {
-		final String id = UUID.randomUUID().toString();
+		final String id = RandomUtils.generateUUID();
 		final long _lifeExtensionInMinutes = lifeExtensionInMinutes <= 0 ? 1 : lifeExtensionInMinutes;
 		HeartbeatConfig heartbeatConfig = new HeartbeatConfig(id, query.copy(), expiryFieldName,
 				_lifeExtensionInMinutes);
@@ -87,15 +91,21 @@ public class HeartbeatManagerImpl extends AbstractBusinessService implements Hea
 
 	@Periodic(PeriodicType.SLOWEST)
 	public void sustainHeartbeats(TaskMonitor taskMonitor) throws UnifyException {
-		for (HeartbeatConfig heartbeatConfig : configs.values()) {
-			if (!heartbeatConfig.isProcessing()) {
-				heartbeatConfig.setProcessing(true);
-				queuedExec.execute(heartbeatConfig);
+		if (tryGrabLock(HEARTBEAT_PERFORM)) {
+			try {
+				for (HeartbeatConfig heartbeatConfig : configs.values()) {
+					if (!heartbeatConfig.isProcessing()) {
+						heartbeatConfig.setProcessing(true);
+						queuedExec.execute(heartbeatConfig);
+					}
+				}
+			} finally {
+				releaseLock(HEARTBEAT_PERFORM);
 			}
 		}
 	}
 
-	private void performHeartbeat(HeartbeatConfig heartbeatConfig) throws UnifyException {
+	public void performHeartbeat(HeartbeatConfig heartbeatConfig) throws UnifyException {
 		final Date newExpiryDate = CalendarUtils.getDateWithFrequencyOffset(getNow(), FrequencyUnit.MINUTE,
 				heartbeatConfig.getLifeExtensionInMinutes());
 		if (db().updateAll(heartbeatConfig.getQuery(),

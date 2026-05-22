@@ -24,15 +24,33 @@ package com.tcdng.unify.core.util;
 public class PostResp<T> {
 
 	private T result;
-	
+
 	private String error;
-	
+
+	private String reqJson;
+
+	private String respJson;
+
 	private int status;
 
-	public PostResp(T result, String error, int status) {
+	private long execMilliSec;
+
+	public PostResp(T result, String error, String reqJson, String respJson, int status, long execMilliSec) {
 		this.result = result;
 		this.error = error;
+		this.reqJson = reqJson;
+		this.respJson = respJson;
 		this.status = status;
+		this.execMilliSec = execMilliSec;
+	}
+
+	public PostResp(T result, PostResp<?> origPostResp) {
+		this.result = result;
+		this.error = origPostResp.error;
+		this.reqJson = origPostResp.reqJson;
+		this.respJson = origPostResp.respJson;
+		this.status = origPostResp.status;
+		this.execMilliSec = origPostResp.execMilliSec;
 	}
 
 	public T getResult() {
@@ -43,14 +61,26 @@ public class PostResp<T> {
 		return error;
 	}
 
+	public String getReqJson() {
+		return reqJson;
+	}
+
+	public String getRespJson() {
+		return respJson;
+	}
+
 	public int getStatus() {
 		return status;
 	}
-	
+
+	public long getExecMilliSec() {
+		return execMilliSec;
+	}
+
 	public boolean isSuccess() {
 		return status >= 200 && status < 300;
 	}
-	
+
 	public boolean isError() {
 		return !isSuccess();
 	}

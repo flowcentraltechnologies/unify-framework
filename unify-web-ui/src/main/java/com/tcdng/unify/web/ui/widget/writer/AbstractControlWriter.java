@@ -16,6 +16,7 @@
 package com.tcdng.unify.web.ui.widget.writer;
 
 import com.tcdng.unify.core.UnifyException;
+import com.tcdng.unify.web.ui.PageRequestContextUtil;
 import com.tcdng.unify.web.ui.widget.Control;
 import com.tcdng.unify.web.ui.widget.EventHandler;
 import com.tcdng.unify.web.ui.widget.PushType;
@@ -33,17 +34,18 @@ public abstract class AbstractControlWriter extends AbstractWidgetWriter impleme
     @Override
     protected void doWriteBehavior(ResponseWriter writer, Widget widget, EventHandler[] handlers) throws UnifyException {
         super.doWriteBehavior(writer, widget, handlers);
-        Control control = (Control) widget;
+        final Control control = (Control) widget;
+        final PageRequestContextUtil prcu = getRequestContextUtil();
         if (control.isFocus()) {
             if (widget.isUseFacade()) {
-                getRequestContextUtil().setFocusOnWidgetId(control.getFacadeId());
+            	prcu.setFocusOnWidgetId(control.getFacadeId());
             } else {
-                getRequestContextUtil().setFocusOnWidgetId(control.getId());
+            	prcu.setFocusOnWidgetId(control.getId());
             }
         }
 
         if (widget.isNoPush()) {
-            getRequestContextUtil().addNoPushWidgetId(control.getId());
+        	prcu.addNoPushWidgetId(control.getId());
         }
     }
 
@@ -86,14 +88,31 @@ public abstract class AbstractControlWriter extends AbstractWidgetWriter impleme
         writer.write("</button>");
     }
 
+    protected void writeLink(ResponseWriter writer, String id, String styleClass, String style, String caption)
+            throws UnifyException {
+        writer.write("<a");
+        writeTagId(writer, id);
+        if (styleClass != null) {
+            writeTagStyleClass(writer, styleClass);
+        }
+
+        if (style != null) {
+            writeTagStyle(writer, style);
+        }
+
+        writer.write(">");
+        writer.writeWithHtmlEscape(caption);
+        writer.write("</a>");
+    }
+
 	protected void writeSymbolButton(ResponseWriter writer, String id, String styleClass, String symbol, String hint)
 			throws UnifyException {
 		writer.write("<button type=\"button\"");
 		writeTagId(writer, id);
-		writeTagStyleClass(writer, styleClass != null ? styleClass + " g_fsm" : "g_fsm");
+		writeTagStyleClass(writer, styleClass != null ? styleClass : "");
 		writeTagTitle(writer, hint);
 		writer.write(">");
-		writer.write(resolveSymbolHtmlHexCode(symbol));
+		writeFontIcon(writer, symbol);
 		writer.write("</button>");
 	}
 

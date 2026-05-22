@@ -27,13 +27,14 @@ import com.tcdng.unify.core.annotation.UplAttributes;
  * @since 4.1
  */
 @Component("ui-symbolselect")
-	@UplAttributes({ @UplAttribute(name = "htmlEscape", type = boolean.class, defaultVal = "false"),
-	@UplAttribute(name = "list", type = String.class, defaultVal = "buttonsymbollist") })
+	@UplAttributes({
+		@UplAttribute(name = "htmlEscape", type = boolean.class, defaultVal = "false"),
+	    @UplAttribute(name = "valueOnFacade", type = boolean.class, defaultVal = "true"),
+		@UplAttribute(name = "list", type = String.class, defaultVal = "buttonsymbollist") })
 public class SymbolSelect extends SingleSelect {
 
 	public String getExtStyleClass() throws UnifyException {
-		return isHtmlEscape() ? getUplAttribute(String.class, "extStyleClass")
-				: getUplAttribute(String.class, "extStyleClass") + " g_fsm";
+		return getUplAttribute(String.class, "extStyleClass");
 	}
 
 }

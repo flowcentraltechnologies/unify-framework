@@ -40,6 +40,10 @@ public class Hints {
         add(new Hint(mode, message));
     }
     
+    public void add(MODE mode, String message, boolean sticky) {
+        add(new Hint(mode, message, sticky));
+    }
+    
     public void add(Hint hint) {
         String key = hint.key();
         if (!hints.containsKey(key)) {

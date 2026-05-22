@@ -44,7 +44,6 @@ import com.tcdng.unify.core.util.QueryUtils;
 import com.tcdng.unify.core.util.StringUtils;
 import com.tcdng.unify.core.util.json.JsonUtils;
 import com.tcdng.unify.core.util.json.JsonWriter;
-import com.tcdng.unify.web.constant.RequestParameterConstants;
 import com.tcdng.unify.web.ui.PageRequestContextUtil;
 import com.tcdng.unify.web.ui.UnifyWebUIErrorConstants;
 import com.tcdng.unify.web.ui.WebUIApplicationComponents;
@@ -99,6 +98,10 @@ public class ResponseWriterImpl extends AbstractUnifyComponent implements Respon
 
 	private boolean plainResourceMode;
 
+	private boolean autoStretch;
+
+	private boolean directFuncCall;
+
 	public ResponseWriterImpl() {
 		this.history = new Stack<HistoryEntry>();
 		this.dataIndex = -1;
@@ -118,6 +121,30 @@ public class ResponseWriterImpl extends AbstractUnifyComponent implements Respon
 	@Override
 	public void clearPlainResourceMode() {
 		this.plainResourceMode = false;
+	}
+
+	@Override
+	public boolean setDirectFuncCall(boolean directFuncCall) throws UnifyException {
+		final boolean current = this.directFuncCall;
+		this.directFuncCall = directFuncCall;
+		return current;
+	}
+
+	@Override
+	public boolean isDirectFuncCall() throws UnifyException {
+		return directFuncCall;
+	}
+
+	@Override
+	public boolean isAutoStretch() {
+		return autoStretch;
+	}
+
+	@Override
+	public boolean setAutoStretch(boolean autoStretch) {
+		final boolean current = this.autoStretch;
+		this.autoStretch = autoStretch;
+		return current;
 	}
 
 	@Override
@@ -409,14 +436,8 @@ public class ResponseWriterImpl extends AbstractUnifyComponent implements Respon
 	public ResponseWriter writeJsonPathVariable(String name, String path) throws UnifyException {
 		useSecondary(128);
 		writeContextURL(path);
-		PageManager pageManager = getPageManager();
-		if (pageManager.getCurrentRequestClientId() != null) {
-			buf.append(path.indexOf('?') >= 0 ? '&' : '?').append(RequestParameterConstants.CLIENT_ID).append("=")
-					.append(UrlUtils.encodeURLParameter(pageManager.getCurrentRequestClientId()));
-		}
 
 		WebStringWriter pathLsw = discardSecondary();
-
 		buf.append("\"").append(name).append("\":");
 		buf.appendJsonQuoted(pathLsw);
 		return this;
@@ -496,10 +517,6 @@ public class ResponseWriterImpl extends AbstractUnifyComponent implements Respon
 	@Override
 	public ResponseWriter writeContextURL(String path, String... pathElement) throws UnifyException {
 		RequestContext requestContext = getRequestContext();
-		if (pageRequestContextUtil.isRemoteViewer()) {
-			buf.append(getSessionContext().getUriBase());
-		}
-
 		buf.append(requestContext.getContextPath());
 		if (requestContext.isWithTenantPath()) {
 			buf.append(requestContext.getTenantPath());
@@ -515,10 +532,6 @@ public class ResponseWriterImpl extends AbstractUnifyComponent implements Respon
 	@Override
 	public ResponseWriter writeContextURL(StringBuilder sb, String path, String... pathElement) throws UnifyException {
 		RequestContext requestContext = getRequestContext();
-		if (pageRequestContextUtil.isRemoteViewer()) {
-			sb.append(getSessionContext().getUriBase());
-		}
-
 		sb.append(requestContext.getContextPath());
 		if (requestContext.isWithTenantPath()) {
 			sb.append(requestContext.getTenantPath());
@@ -567,12 +580,6 @@ public class ResponseWriterImpl extends AbstractUnifyComponent implements Respon
 					.append(clearOnRead);
 		}
 
-		if (pageRequestContextUtil.isRemoteViewer()) {
-			buf.append('&').append(RequestParameterConstants.REMOTE_VIEWER).append("=")
-					.append(pageRequestContextUtil.getRemoteViewer());
-			buf.append('&').append(RequestParameterConstants.REMOTE_SESSION_ID).append("=")
-					.append(getRequestContext().getAttribute(RequestParameterConstants.REMOTE_SESSION_ID));
-		}
 		return this;
 	}
 
@@ -631,16 +638,21 @@ public class ResponseWriterImpl extends AbstractUnifyComponent implements Respon
 			}
 		}
 
-		if (functionAppendSym) {
-			buf.append(',');
+		if (directFuncCall) {
+			buf.append(functionName).append("({");
 		} else {
-			buf.append('[');
-			functionAppendSym = true;
-			bracketOpen = true;
+			if (functionAppendSym) {
+				buf.append(',');
+			} else {
+				buf.append('[');
+				functionAppendSym = true;
+				bracketOpen = true;
+			}
+
+			String alias = WriterUtils.getActionJSAlias(functionName);
+			buf.append("{\"fn\":\"").append(alias).append("\",\"prm\":{");
 		}
 
-		String alias = WriterUtils.getActionJSAlias(functionName);
-		buf.append("{\"fn\":\"").append(alias).append("\",\"prm\":{");
 		openFunction = true;
 		paramAppendSym = false;
 		return this;
@@ -656,7 +668,12 @@ public class ResponseWriterImpl extends AbstractUnifyComponent implements Respon
 			}
 		}
 
-		buf.append("}}");
+		if (directFuncCall) {
+			buf.append("});");
+		} else {
+			buf.append("}}");
+		}
+
 		openFunction = false;
 		return this;
 	}
@@ -933,6 +950,7 @@ public class ResponseWriterImpl extends AbstractUnifyComponent implements Respon
 		if (buf == null || !buf.isEmpty() || !history.isEmpty()) {
 			buf = new WebStringWriter(initialBufferCapacity);
 			history.clear();
+			directFuncCall = false;
 			openFunction = false;
 			functionAppendSym = false;
 			bracketOpen = false;

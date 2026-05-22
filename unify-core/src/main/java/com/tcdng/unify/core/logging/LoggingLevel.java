@@ -22,5 +22,9 @@ package com.tcdng.unify.core.logging;
  * @since 4.1
  */
 public enum LoggingLevel {
-    DEBUG, INFO, WARN, ERROR, SEVERE
+    DEBUG, INFO, WARN, ERROR, SEVERE;
+	
+	public boolean isLogStackTrace() {
+		return ERROR.equals(this) || SEVERE.equals(this);
+	}
 }

@@ -40,15 +40,15 @@ public class SqlCriteriaPolicyTranslationTest extends AbstractUnifyComponentTest
         SqlDataSourceDialect dialect = (SqlDataSourceDialect) getComponent(SqlDialectNameConstants.HSQLDB);
         SqlCriteriaPolicy policy = dialect.getSqlCriteriaPolicy(RestrictionType.EQUALS);
         StringBuilder sb = new StringBuilder();
-        policy.translate(sb, "BOOK", "TITLE", "C++ for Engineers", null);
+        policy.translate(null, sb, "BOOK", "TITLE", "C++ for Engineers", null);
         assertEquals("BOOK.TITLE = 'C++ for Engineers'", sb.toString());
 
         sb = new StringBuilder();
-        policy.translate(sb, "BOOK", "PRICE", 23.45, null);
+        policy.translate(null, sb, "BOOK", "PRICE", 23.45, null);
         assertEquals("BOOK.PRICE = 23.45", sb.toString());
 
         sb = new StringBuilder();
-        policy.translate(sb, "BOOK", "AUTHOR_GENDER", Gender.FEMALE, null);
+        policy.translate(null, sb, "BOOK", "AUTHOR_GENDER", Gender.FEMALE, null);
         assertEquals("BOOK.AUTHOR_GENDER = 'F'", sb.toString());
     }
 
@@ -57,7 +57,7 @@ public class SqlCriteriaPolicyTranslationTest extends AbstractUnifyComponentTest
         SqlDataSourceDialect dialect = (SqlDataSourceDialect) getComponent(SqlDialectNameConstants.HSQLDB);
         SqlCriteriaPolicy policy = dialect.getSqlCriteriaPolicy(RestrictionType.LIKE);
         StringBuilder sb = new StringBuilder();
-        policy.translate(sb, "BOOK", "TITLE", "C++ for Engineers", null);
+        policy.translate(null, sb, "BOOK", "TITLE", "C++ for Engineers", null);
         assertEquals("BOOK.TITLE LIKE '%C++ for Engineers%'", sb.toString());
     }
 
@@ -66,7 +66,7 @@ public class SqlCriteriaPolicyTranslationTest extends AbstractUnifyComponentTest
         SqlDataSourceDialect dialect = (SqlDataSourceDialect) getComponent(SqlDialectNameConstants.HSQLDB);
         SqlCriteriaPolicy policy = dialect.getSqlCriteriaPolicy(RestrictionType.ILIKE);
         StringBuilder sb = new StringBuilder();
-        policy.translate(sb, "BOOK", "TITLE", "C++ for Engineers", null);
+        policy.translate(null, sb, "BOOK", "TITLE", "C++ for Engineers", null);
         assertEquals("LOWER(BOOK.TITLE) LIKE '%c++ for engineers%'", sb.toString());
     }
 

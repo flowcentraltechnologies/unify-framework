@@ -103,7 +103,7 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	public final boolean isInitialized() {
 		return unifyComponentContext != null;
 	}
-
+	
 	/**
 	 * Gets the component context.
 	 *
@@ -113,6 +113,15 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	@Override
 	public UnifyComponentContext getUnifyComponentContext() throws UnifyException {
 		return unifyComponentContext;
+	}
+
+	/**
+	 * Current thread sleep in milliseconds.
+	 * 
+	 * @param milliSeconds the time in milliseconds
+	 */
+	protected void sleep(long milliSeconds) {
+		ThreadUtils.sleep(milliSeconds);
 	}
 
 	/**
@@ -461,6 +470,17 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	 */
 	protected boolean isComponent(String name) throws UnifyException {
 		return unifyComponentContext.isComponent(name);
+	}
+
+	/**
+	 * Checks if component with name is defined in container.
+	 * 
+	 * @param componentType the component type
+	 * @return a true value if component type exists otherwise false
+	 * @throws UnifyException If component an error occurs.
+	 */
+	public boolean isComponent(Class<? extends UnifyComponent> componentType) throws UnifyException {
+		return unifyComponentContext.isComponent(componentType);
 	}
 
 	/**
@@ -1106,6 +1126,16 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	}
 
 	/**
+	 * Gets current session user login ID.
+	 * 
+	 * @return the current session user login ID
+	 * @throws UnifyException if an error occurs
+	 */
+	protected String getUserLoginId() throws UnifyException {
+		return unifyComponentContext.getSessionContext().getUserLoginId();
+	}
+
+	/**
 	 * Sets the user token tenant ID for current session.
 	 * 
 	 * @param tenantId the tenant ID
@@ -1115,6 +1145,36 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 		unifyComponentContext.getSessionContext().setUserTokenTenantId(tenantId);
 	}
 
+	/**
+	 * Sets request page ID (pid)
+	 * 
+	 * @param pid the page ID
+	 * @throws UnifyException if an error occurs
+	 */
+	protected void setRequestClientPageId(String pid) throws UnifyException {
+		unifyComponentContext.getRequestContext().setPid(pid);
+	}
+	
+	/**
+	 * Gets request page ID (pid)
+	 * 
+	 * @return the page ID
+	 * @throws UnifyException if an error occurs
+	 */
+	protected String getRequestClientPageId() throws UnifyException {
+		return unifyComponentContext.getRequestContext().getPid();
+	}
+	
+	/**
+	 * Gets client request target
+	 * 
+	 * @return the request target
+	 * @throws UnifyException if an error occurs
+	 */
+	protected String getClientRequestTarget() throws UnifyException {
+		return unifyComponentContext.getRequestContext().getRequestTarget();
+	}
+	
 	/**
 	 * Sets an attribute in current request.
 	 * 
@@ -1180,7 +1240,7 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	 * @param params      message parameters
 	 */
 	protected void logDebug(TaskMonitor taskMonitor, String message, Object... params) {
-		log(taskMonitor, LoggingLevel.DEBUG, message, params);
+		log(taskMonitor, LoggingLevel.DEBUG, null, message, params);
 	}
 
 	/**
@@ -1191,7 +1251,7 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	 * @param params      message parameters
 	 */
 	protected void logInfo(TaskMonitor taskMonitor, String message, Object... params) {
-		log(taskMonitor, LoggingLevel.INFO, message, params);
+		log(taskMonitor, LoggingLevel.INFO, null, message, params);
 	}
 
 	/**
@@ -1202,7 +1262,7 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	 * @param params      message parameters
 	 */
 	protected void logWarn(TaskMonitor taskMonitor, String message, Object... params) {
-		log(taskMonitor, LoggingLevel.WARN, message, params);
+		log(taskMonitor, LoggingLevel.WARN, null, message, params);
 	}
 
 	/**
@@ -1213,7 +1273,7 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	 * @param params      message parameters
 	 */
 	protected void logError(TaskMonitor taskMonitor, String message, Object... params) {
-		log(taskMonitor, LoggingLevel.ERROR, message, params);
+		log(taskMonitor, LoggingLevel.ERROR, null, message, params);
 	}
 
 	/**
@@ -1233,7 +1293,28 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	 * @param params  message parameters
 	 */
 	protected void logDebug(String message, Object... params) {
-		log(null, LoggingLevel.DEBUG, message, params);
+		log(null, LoggingLevel.DEBUG, null, message, params);
+	}
+
+	/**
+	 * Logs a exception at DEBUG level.
+	 * 
+	 * @param exception the exception to log
+	 */
+	protected void logDebug(Exception exception) {
+		log(null, LoggingLevel.DEBUG, exception);
+	}
+
+	/**
+	 * Logs a exception and message at DEBUG level.
+	 * 
+	 * @param exception the exception to log
+	 * @param message the message to log
+	 * @param params  message parameters
+	 */
+	protected void logDebug(Exception exception, String message, Object... params) {
+		log(null, LoggingLevel.DEBUG, null, message, params);
+		log(null, LoggingLevel.DEBUG, exception);
 	}
 
 	/**
@@ -1243,7 +1324,7 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	 * @param params  message parameters
 	 */
 	protected void logInfo(String message, Object... params) {
-		log(null, LoggingLevel.INFO, message, params);
+		log(null, LoggingLevel.INFO, null, message, params);
 	}
 
 	/**
@@ -1253,7 +1334,7 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	 * @param params  message parameters
 	 */
 	protected void logWarn(String message, Object... params) {
-		log(null, LoggingLevel.WARN, message, params);
+		log(null, LoggingLevel.WARN, null, message, params);
 	}
 
 	/**
@@ -1263,7 +1344,7 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	 * @param params  message parameters
 	 */
 	protected void logError(String message, Object... params) {
-		log(null, LoggingLevel.ERROR, message, params);
+		log(null, LoggingLevel.ERROR, null, message, params);
 	}
 
 	/**
@@ -1287,11 +1368,22 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	/**
 	 * Logs a message at SEVERE level.
 	 * 
+	 * @param exception the exception to log
+	 * @param message the message to log
+	 * @param params  message parameters
+	 */
+	protected void logSevere(Exception exception, String message, Object... params) {
+		log(null, LoggingLevel.SEVERE, exception, message, params);
+	}
+
+	/**
+	 * Logs a message at SEVERE level.
+	 * 
 	 * @param message the message to log
 	 * @param params  message parameters
 	 */
 	protected void logSevere(String message, Object... params) {
-		log(null, LoggingLevel.SEVERE, message, params);
+		log(null, LoggingLevel.SEVERE, null, message, params);
 	}
 
 	/**
@@ -1537,9 +1629,13 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	 */
 	protected String resolveMessage(Locale locale, String message, Object... params) throws UnifyException {
 		if (message != null) {
-			if (TokenUtils.isMessageToken(message)) {
-				return getUnifyComponentContext().getMessages().getMessage(locale,
-						TokenUtils.extractTokenValue(message), params);
+			int start = TokenUtils.indexOfMessageToken(message);
+			if (start >= 0) {
+				int end = message.indexOf('}', start);
+				if (end > 0) {
+					return message.substring(0, start) + getUnifyComponentContext().getMessages().getMessage(locale,
+							message.substring(start + 3, end), params) + message.substring(end + 1);
+				}
 			}
 
 			if (TokenUtils.isUnifyPropertyToken(message)) {
@@ -1556,6 +1652,7 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 				return MessageFormat.format(message, params);
 			}
 		}
+
 		return message;
 	}
 
@@ -1783,7 +1880,7 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 		if (t instanceof UnifyException) {
 			throw ((UnifyException) t);
 		}
-		throw new UnifyOperationException(e, getName(), e.getMessage());
+		throw new UnifyOperationException(e);
 	}
 
 	/**
@@ -1793,7 +1890,7 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	 */
 	protected void throwUnsupportedOperationException() throws UnifyException {
 		Exception e = new UnsupportedOperationException();
-		throw new UnifyOperationException(e, getName(), e.getMessage());
+		throw new UnifyOperationException(e);
 	}
 
 	protected Long getUserTenantId() throws UnifyException {
@@ -1884,7 +1981,8 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 		return DataUtils.ZEROLEN_STRING_ARRAY;
 	}
 
-	private void log(TaskMonitor taskMonitor, LoggingLevel loggingLevel, String message, Object... params) {
+	private void log(TaskMonitor taskMonitor, LoggingLevel loggingLevel, Exception ex, String message,
+			Object... params) {
 		if (isInitialized()) {
 			try {
 				Logger logger = unifyComponentContext.getLogger();
@@ -1892,7 +1990,7 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 				if (enabled || taskMonitor != null) {
 					String resolvedMsg = resolveApplicationMessage(message, params);
 					if (enabled) {
-						logger.log(loggingLevel, resolvedMsg);
+						logger.log(loggingLevel, resolvedMsg, ex);
 					}
 
 					if (taskMonitor != null) {
@@ -1926,7 +2024,7 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 				if (enabled || taskMonitor != null) {
 					String msg = getExceptionMessage(LocaleType.APPLICATION, exception);
 					if (enabled) {
-						logger.log(loggingLevel, msg, exception);
+						logger.log(loggingLevel, msg, loggingLevel.isLogStackTrace() ? exception : null);
 					}
 
 					if (taskMonitor != null) {

@@ -115,7 +115,7 @@ public class DropdownCheckListWriter extends AbstractPopupTextFieldWriter {
 							writer.write("/>");
 							writer.write("</span>");
 							writer.write("</td><td>");
-							writer.writeWithHtmlEscape(listable.getListDescription());
+							writer.writeWithHtmlEscape(resolveSessionMessage(listable.getListDescription()));
 							writer.write("</td>");
 						} else {
 							writer.write("<td>&nbsp;</td><td>&nbsp;</td>");

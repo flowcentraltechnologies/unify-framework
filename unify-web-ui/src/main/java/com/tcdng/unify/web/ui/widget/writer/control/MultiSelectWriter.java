@@ -56,7 +56,7 @@ public class MultiSelectWriter extends AbstractControlWriter {
 		for (int i = 0; i < length; i++) {
 			writer.write("<a");
 			writeTagId(writer, multiSelect.getNamingIndexedId(i));
-			writer.write("\">");
+			writer.write(">");
 			writer.write("</a>");
 		}
 		writer.write("</div>");

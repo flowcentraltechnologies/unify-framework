@@ -25,8 +25,6 @@ import com.tcdng.unify.common.constants.ApplicationCommonConstants;
  */
 public interface ApplicationComponents {
 
-    String APPLICATION_BYTEARRAYCRYPTOGRAPH = "application-bytearraycryptograph";
-
     String APPLICATION_CLASSUNIQUEIDMANAGER = "application-classuniqueidmanager";
     
     String APPLICATION_CLUSTERSERVICE = "application-clusterservice";
@@ -111,9 +109,13 @@ public interface ApplicationComponents {
 
     String APPLICATION_TASKMANAGER = "application-taskmanager";
 
+    String APPLICATION_TASKTRANSACTIONSERVICE = "application-tasktransactionservice";
+
     String APPLICATION_TASKLAUNCHER = "application-tasklauncher";
 
     String APPLICATION_TYPELISTFACTORY = "application-tasklistfactory";
+
+    String APPLICATION_TEMPORARY_FILE_MANAGER = "application-temporaryfilemanager";
 
     String APPLICATION_TWOFACTORAUTHENTICATIONSERVICE = "application-twofactorauthenticationservice";
 

@@ -41,8 +41,10 @@ public abstract class AbstractAutoRefreshMultiControl extends AbstractMultiContr
 
 	@Action
 	public final void autoRefresh() throws UnifyException {
-		setRequestAttribute(UnifyWebRequestAttributeConstants.AUTO_REFRESH, new AutoRefresh(this));
-		setCommandResultMapping(ResultMappingConstants.AUTO_REFRESH);
+		if (!isWithCommandResultMapping()) {
+			setRequestAttribute(UnifyWebRequestAttributeConstants.AUTO_REFRESH, new AutoRefresh(this));
+			setCommandResultMapping(ResultMappingConstants.AUTO_REFRESH);
+		}
 	}
 
 	public void saveForRefresh(EventHandler[] handlers, String[] refs) throws UnifyException {

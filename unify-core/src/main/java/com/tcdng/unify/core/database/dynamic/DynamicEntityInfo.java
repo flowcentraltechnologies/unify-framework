@@ -169,7 +169,7 @@ public class DynamicEntityInfo {
 	public DynamicFieldInfo getDynamicFieldInfo(String fieldName) throws UnifyException {
 		DynamicFieldInfo dynamicFieldInfo = fieldInfos.get(fieldName);
 		if (dynamicFieldInfo == null) {
-			throw new UnifyOperationException(getClass(),
+			throw new UnifyOperationException(
 					"Class [" + className + "] field with name [" + fieldName + "] is unknown.");
 		}
 
@@ -368,7 +368,7 @@ public class DynamicEntityInfo {
 				int precision, int scale) throws UnifyException {
 			checkFieldNameExist(fieldName);
 			if (withTenantIdField) {
-				throw new UnifyOperationException(getClass(), "Tenant ID field already exists");
+				throw new UnifyOperationException("Tenant ID field already exists");
 			}
 
 			withTenantIdField = true;
@@ -407,13 +407,13 @@ public class DynamicEntityInfo {
 			checkFieldNameExist(fieldName);
 			DynamicForeignKeyFieldInfo fkFieldInfo = fkFields.get(key);
 			if (fkFieldInfo == null) {
-				throw new UnifyOperationException(getClass(), "Class [" + className + "] unknown foreign key [" + key
+				throw new UnifyOperationException("Class [" + className + "] unknown foreign key [" + key
 						+ "] referenced by [" + fieldName + "].");
 			}
 
 			if (fkFieldInfo.isEnum()) {
 				if (!"name".equals(property) && !"description".equals(property)) {
-					throw new UnifyOperationException(getClass(), "Class [" + className + "] enumeration property ["
+					throw new UnifyOperationException("Class [" + className + "] enumeration property ["
 							+ property + "] referenced by [" + fieldName + "] is not supported.");
 				}
 
@@ -461,7 +461,7 @@ public class DynamicEntityInfo {
 		private void checkFieldNameExist(String fieldName) throws UnifyException {
 			if (fkFields.containsKey(fieldName) || columnFields.containsKey(fieldName)
 					|| listOnlyFields.containsKey(fieldName) || childFieldInfos.containsKey(fieldName)) {
-				throw new UnifyOperationException(getClass(), "Field with name [" + fieldName + "] already exists.");
+				throw new UnifyOperationException("Field with name [" + fieldName + "] already exists.");
 			}
 		}
 

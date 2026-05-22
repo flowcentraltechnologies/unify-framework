@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -469,6 +470,79 @@ public class DataUtilsTest extends AbstractUnifyComponentTest {
 	}
 
 	@Test
+	public void testFromJsonObjectString() throws Exception {
+		final Map<String, Object> map = DataUtils
+				.fromJsonObjectString("{\"name\":\"john\",\"age\":36,\"salary\":38500.25}");
+		assertNotNull(map);
+		assertTrue(map.containsKey("name"));
+		assertTrue(map.containsKey("age"));
+		assertTrue(map.containsKey("salary"));
+		assertEquals("john", map.get("name"));
+		assertEquals(Long.valueOf(36L), map.get("age"));
+		assertEquals(BigDecimal.valueOf(38500.25), map.get("salary"));
+
+		final Map<String, Object> _map = DataUtils.fromJsonObjectString(
+				"{\"evalMode\":null,\"update\":null,\"query\":\"AND]0]\\r\\nOR]1]\\r\\nEQ]2]wfItemVersionType]ORN]\\r\\nNL]2]wfItemVersionType]\\r\\n\",\"params\":[],\"operation\":\"FIND_ALL\",\"versionNo\":null,\"offset\":0,\"fieldName\":null,\"order\":\"\",\"limit\":0,\"ignoreEmptyCriteria\":true,\"entity\":\"setup.productSetup\",\"id\":null,\"payload\":null}");
+		assertTrue(_map.containsKey("evalMode"));
+		assertTrue(_map.containsKey("update"));
+		assertTrue(_map.containsKey("query"));
+	}
+	
+	@Test
+	public void testReadDynamicJsonObject() throws Exception {
+		String json1 = "{}";
+		Account account = DataUtils.fromJsonString(Account.class, json1);
+		assertNotNull(account);
+		assertNull(account.getAccountNo());
+		assertNull(account.getEntries());
+
+		String json2 = "{\"accountNo\":\"1234567890\"}";
+		account = DataUtils.fromJsonString(Account.class, json2);
+		assertNotNull(account);
+		assertEquals("1234567890", account.getAccountNo());
+		assertNull(account.getEntries());
+
+		String json3 = "{\"accountNo\":\"1234567890\", \"entries\":[]}";
+		account = DataUtils.fromJsonString(Account.class, json3);
+		assertNotNull(account);
+		assertEquals("1234567890", account.getAccountNo());
+		assertNotNull(account.getEntries());
+		assertTrue(account.getEntries().isEmpty());
+
+		String json4 = "{\"accountNo\":\"1234567890\", \"entries\":[1, 2]}";
+		account = DataUtils.fromJsonString(Account.class, json4);
+		assertNotNull(account);
+		assertEquals("1234567890", account.getAccountNo());
+		assertNotNull(account.getEntries());
+		assertEquals(2, account.getEntries().size());
+		assertEquals("1", account.getEntries().get(0));
+		assertEquals("2", account.getEntries().get(1));
+
+		String json5 = "{\"accountNo\":\"1234567890\", \"entries\":[{\"name\":\"mary\",\"age\":32}, {\"name\":\"john\",\"age\":36}]}";
+		account = DataUtils.fromJsonString(Account.class, json5);
+		assertNotNull(account);
+		assertEquals("1234567890", account.getAccountNo());
+		assertNotNull(account.getEntries());
+		assertEquals(2, account.getEntries().size());
+		assertEquals("{\"name\":\"mary\",\"age\":32}", account.getEntries().get(0));
+		assertEquals("{\"name\":\"john\",\"age\":36}", account.getEntries().get(1));
+
+		String json6 = "{\"accountNo\":\"1234567890\", \"trace\": {}}";
+		account = DataUtils.fromJsonString(Account.class, json6);
+		assertNotNull(account);
+		assertEquals("1234567890", account.getAccountNo());
+		assertEquals("{}", account.getTrace());
+		assertNull(account.getEntries());
+
+		String json7 = "{\"accountNo\":\"1234567890\", \"trace\": {\"age\":24}}";
+		account = DataUtils.fromJsonString(Account.class, json7);
+		assertNotNull(account);
+		assertEquals("1234567890", account.getAccountNo());
+		assertEquals("{\"age\":24}", account.getTrace());
+		assertNull(account.getEntries());
+	}
+	
+	@Test
 	public void testReadEmptyJsonObjectAlias() throws Exception {
 		String json = "{}";
 		Template template = DataUtils.fromJsonString(Template.class, json);
@@ -618,6 +692,26 @@ public class DataUtilsTest extends AbstractUnifyComponentTest {
 		assertNotNull(json);
 	}
 
+	@Test
+	public void testConstantFieldJsonObject() throws Exception {
+		PingReq req = new PingReq();
+		String json = DataUtils.asJsonString(req, PrintFormat.NONE);
+		PingReq rev = DataUtils.fromJsonString(PingReq.class, json);
+		assertNotNull(json);
+		assertNotNull(rev);
+		assertEquals("ping-processor", rev.getProcessor());
+		assertNull(rev.getType());
+		assertNull(rev.getLog());
+		
+		req.setLog(false);
+		req.setType("monitoring");
+		json = DataUtils.asJsonString(req, PrintFormat.NONE);
+		rev = DataUtils.fromJsonString(PingReq.class, json);
+		assertEquals("ping-processor", rev.getProcessor());
+		assertEquals("monitoring", rev.getType());
+		assertEquals(Boolean.FALSE, rev.getLog());
+	}
+	
 	@Test
 	public void testToJsonObjectString() throws Exception {
 		Book book = new Book("Saladin", BigDecimal.valueOf(10.0), 20, false);
@@ -796,6 +890,29 @@ public class DataUtilsTest extends AbstractUnifyComponentTest {
 	}
 
 	@Test
+	public void testMapToJsonString() throws Exception {
+		Map<String, Object> map = new HashMap<String, Object>();
+		String json1 = DataUtils.asJsonString(map, PrintFormat.NONE);
+		assertNotNull(json1);
+		assertEquals("{}", json1);
+
+		map.put("name", "Edward Banfa");
+		String json2 = DataUtils.asJsonString(map, PrintFormat.NONE);
+		assertNotNull(json2);
+		assertEquals("{\"name\":\"Edward Banfa\"}", json2);
+
+		map.put("age", 25);
+		String json3 = DataUtils.asJsonString(map, PrintFormat.NONE);
+		assertNotNull(json3);
+		assertEquals("{\"name\":\"Edward Banfa\",\"age\":25}", json3);
+
+		map.put("employed", true);
+		String json4 = DataUtils.asJsonString(map, PrintFormat.NONE);
+		assertNotNull(json4);
+		assertEquals("{\"name\":\"Edward Banfa\",\"age\":25,\"employed\":true}", json4);
+	}
+
+	@Test
 	public void testToJsonArrayString() throws Exception {
 		String json1 = DataUtils.asJsonArrayString(new String[] { "10", "20", "30" });
 		assertNotNull(json1);
@@ -961,6 +1078,82 @@ public class DataUtilsTest extends AbstractUnifyComponentTest {
 	@Override
 	protected void onTearDown() throws Exception {
 
+	}
+
+	public static class Account {
+
+		private String accountNo;
+		
+		private Object trace;
+		
+		private List<?> entries;
+
+		public String getAccountNo() {
+			return accountNo;
+		}
+
+		public void setAccountNo(String accountNo) {
+			this.accountNo = accountNo;
+		}
+
+		public Object getTrace() {
+			return trace;
+		}
+
+		public void setTrace(Object trace) {
+			this.trace = trace;
+		}
+
+		public List<?> getEntries() {
+			return entries;
+		}
+
+		public void setEntries(List<?> entries) {
+			this.entries = entries;
+		}
+	}
+	
+
+	public static abstract class BaseReq {
+		
+		private String processor;
+
+		public BaseReq(String processor) {
+			this.processor = processor;
+		}
+
+		public String getProcessor() {
+			return processor;
+		}
+		
+	}
+
+	public static class PingReq extends BaseReq {
+		
+		private String type;
+		
+		private Boolean log;
+
+		public PingReq() {
+			super("ping-processor");
+		}
+
+		public String getType() {
+			return type;
+		}
+
+		public void setType(String type) {
+			this.type = type;
+		}
+
+		public Boolean getLog() {
+			return log;
+		}
+
+		public void setLog(Boolean log) {
+			this.log = log;
+		}
+		
 	}
 
 	public static abstract class Asset {

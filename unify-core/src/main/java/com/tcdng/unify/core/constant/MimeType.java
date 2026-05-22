@@ -35,6 +35,8 @@ public enum MimeType {
     APPLICATION_DOCX("application/vnd.openxmlformats-officedocument.wordprocessingml.document", false),
     APPLICATION_JSON("application/json", true),
     APPLICATION_XML("application/xml", true),
+    FONT_WOFF("font/woff", false),
+    FONT_WOFF2("font/woff2", false),
     TEXT_HTML("text/html", true),
     TEXT_CSV("text/csv", true),
     TEXT_CSS("text/css", true),

@@ -55,23 +55,23 @@ public final class ImageUtils {
 	public static ImageType detectImageType(byte[] image) {
 		if (image != null) {
 			// JPEG
-			if ((image.length > 2) && (image[0] == (byte) 0xFF) && (image[1] == (byte) 0xD8)) {
+			if ((image.length >= 2) && (image[0] == (byte) 0xFF) && (image[1] == (byte) 0xD8)) {
 				return ImageType.JPEG;
 			}
 
 			// PNG
-			if ((image.length > 4) && (image[0] == (byte) 0x89) && (image[1] == (byte) 0x50) && (image[2] == (byte) 0x4E)
+			if ((image.length >= 4) && (image[0] == (byte) 0x89) && (image[1] == (byte) 0x50) && (image[2] == (byte) 0x4E)
 					&& (image[3] == (byte) 0x47)) {
 				return ImageType.PNG;
 			}
 
 			// BMP
-			if ((image.length > 2) && (image[0] == (byte) 0x42) && (image[1] == (byte) 0x4D)) {
+			if ((image.length >= 2) && (image[0] == (byte) 0x42) && (image[1] == (byte) 0x4D)) {
 				return ImageType.JPEG;
 			}
 
 			// GIF
-			if ((image.length > 3) && (image[0] == (byte) 0x47) && (image[1] == (byte) 0x49)
+			if ((image.length >= 3) && (image[0] == (byte) 0x47) && (image[1] == (byte) 0x49)
 					&& (image[2] == (byte) 0x46)) {
 				return ImageType.GIF;
 			}

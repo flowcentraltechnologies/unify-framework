@@ -61,9 +61,10 @@ public abstract class AbstractValueStore implements ValueStore {
     }
 
     @Override
-    public final void setDataIndex(int dataIndex) {
+    public final ValueStore setDataIndex(int dataIndex) {
         savedValues = null;
         doSetDataIndex(dataIndex);
+        return this;
     }
 
     @Override
@@ -104,6 +105,19 @@ public abstract class AbstractValueStore implements ValueStore {
 	@Override
 	public boolean isPackableDoc() {
 		return false;
+	}
+
+    @Override
+	public Map<String, Object> getValues() throws UnifyException {
+		Map<String, Object> values = new HashMap<String, Object>();
+		for (GetterSetterInfo getterSetterInfo : ReflectUtils.getGetterSetterList(getDataClass())) {
+			if (getterSetterInfo.isGetter()) {
+				String fieldName = getterSetterInfo.getName();
+				values.put(fieldName, retrieve(fieldName));
+			}
+		}
+
+		return values;
 	}
 
 	@Override

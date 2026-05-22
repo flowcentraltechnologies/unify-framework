@@ -31,6 +31,7 @@ import com.tcdng.unify.web.constant.ExtensionType;
 @Component("ui-select")
 @UplAttributes({ 
     @UplAttribute(name = "blankOption", type = String.class),
+    @UplAttribute(name = "valueOnFacade", type = boolean.class),
     @UplAttribute(name = "colors", type = boolean.class) })
 public class SingleSelect extends AbstractListPopupTextField {
 
@@ -61,6 +62,10 @@ public class SingleSelect extends AbstractListPopupTextField {
 
     public String getBlankOption() throws UnifyException {
         return getUplAttribute(String.class, "blankOption");
+    }
+
+    public boolean isValueOnFacade() throws UnifyException {
+        return getUplAttribute(boolean.class, "valueOnFacade");
     }
 
     public boolean isColors() throws UnifyException {

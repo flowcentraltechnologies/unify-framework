@@ -121,7 +121,7 @@ public abstract class FactoryMap<T, U> {
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new UnifyOperationException(e, getClass().getSimpleName());
+			throw new UnifyOperationException(e);
 		}
 	}
 
@@ -148,7 +148,7 @@ public abstract class FactoryMap<T, U> {
 		try {
 			onRemove(val);
 		} catch (Exception e) {
-			throw new UnifyOperationException(e, getClass().getSimpleName());
+			throw new UnifyOperationException(e);
 		}
 		return val;
 	}

@@ -15,6 +15,8 @@
  */
 package com.tcdng.unify.web.http;
 
+import java.util.Enumeration;
+
 /**
  * HTTP request headers.
  * 
@@ -25,4 +27,5 @@ public interface HttpRequestHeaders {
 
 	String getHeader(String name);
 
+	Enumeration<String> getNames();
 }

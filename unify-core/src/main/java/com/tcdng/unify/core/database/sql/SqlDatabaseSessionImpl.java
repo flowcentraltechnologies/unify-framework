@@ -29,7 +29,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.Stack;
 
-import com.tcdng.unify.common.annotation.ColumnType;
 import com.tcdng.unify.common.database.Entity;
 import com.tcdng.unify.core.UnifyCoreErrorConstants;
 import com.tcdng.unify.core.UnifyException;
@@ -684,12 +683,18 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		ensureWritable();
 		SqlEntityInfo sqlEntityInfo = resolveSqlEntityInfo(clazz);
 		EntityPolicy entityPolicy = sqlEntityInfo.getEntityPolicy();
+		Date now = getNow();
 		if (entityPolicy != null) {
-			entityPolicy.preUpdate(update, getNow());
+			entityPolicy.preUpdate(update, now);
 		}
 		
-		return getSqlStatementExecutor().executeUpdate(connection,
+		final int result = getSqlStatementExecutor().executeUpdate(connection,
 				sqlDataSourceDialect.prepareUpdateStatement(clazz, id, update));
+		if (entityPolicy != null) {
+			entityPolicy.postUpdate(update, now);
+		}
+		
+		return result;
 	}
 
 	@Override
@@ -698,9 +703,10 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		try {
 			SqlEntityInfo sqlEntityInfo = resolveSqlEntityInfo(query);
 			EntityPolicy entityPolicy = sqlEntityInfo.getEntityPolicy();
+			Date now = getNow();
 			if (entityPolicy != null) {
 				entityPolicy.preQuery(query);
-				entityPolicy.preUpdate(update, getNow());
+				entityPolicy.preUpdate(update, now);
 			}
 
 			if (sqlEntityInfo.isViewOnly()) {
@@ -727,10 +733,14 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 				return getSqlStatementExecutor().executeUpdate(connection,
 						sqlDataSourceDialect.prepareUpdateStatement(updateQuery, update));
 			}
+			
+			if (entityPolicy != null) {
+				entityPolicy.postUpdate(update, now);
+			}
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new UnifyOperationException(e, getClass().getSimpleName());
+			throw new UnifyOperationException(e);
 		}
 		return 0;
 	}
@@ -748,12 +758,13 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		EntityPolicy entityPolicy = sqlEntityInfo.getEntityPolicy();
 		int result;
 		try {
+			Date now = null;
 			if (entityPolicy != null) {
 				if (entityPolicy.isSetNow()) {
-					entityPolicy.preDelete(record, getNow());
-				} else {
-					entityPolicy.preDelete(record, null);
+					now = getNow();
 				}
+				
+				entityPolicy.preDelete(record, now);
 			}
 
 			if (sqlEntityInfo.isOnDeleteCascadeList()) {
@@ -764,6 +775,10 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 			if (result == 0) {
 				throw new UnifyException(UnifyCoreErrorConstants.RECORD_WITH_PK_NOT_FOUND, record.getClass(),
 						record.getId());
+			}
+			
+			if (entityPolicy != null) {
+				entityPolicy.postDelete(record, now);
 			}
 		} catch (Exception e) {
 			if (entityPolicy != null) {
@@ -795,15 +810,16 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		SqlStatement sqlStatement = null;
 		int result;
 		try {
+			Date now = null;
 			Object oldVersionNo = null;
 			if (sqlEntityInfo.isVersioned()) {
 				oldVersionNo = sqlEntityInfo.getVersionFieldInfo().getGetter().invoke(record);
 				if (entityPolicy != null) {
 					if (entityPolicy.isSetNow()) {
-						entityPolicy.preDelete(record, getNow());
-					} else {
-						entityPolicy.preDelete(record, null);
+						now = getNow();
 					}
+					
+					entityPolicy.preDelete(record, now);
 				}
 
 				sqlStatement = sqlDataSourceDialect.prepareDeleteByPkVersionStatement(record.getClass(), record.getId(),
@@ -811,10 +827,10 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 			} else {
 				if (entityPolicy != null) {
 					if (entityPolicy.isSetNow()) {
-						entityPolicy.preDelete(record, getNow());
-					} else {
-						entityPolicy.preDelete(record, null);
+						now = getNow();
 					}
+					
+					entityPolicy.preDelete(record, now);
 				}
 
 				sqlStatement = sqlDataSourceDialect.prepareDeleteByPkStatement(record.getClass(), record.getId());
@@ -828,6 +844,10 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 			if (result == 0) {
 				throw new UnifyException(UnifyCoreErrorConstants.RECORD_WITH_PK_VERSION_NOT_FOUND, record.getClass(),
 						record.getId(), oldVersionNo);
+			}
+			
+			if (entityPolicy != null) {
+				entityPolicy.postDelete(record, now);
 			}
 		} catch (Exception e) {
 			if (entityPolicy != null) {
@@ -926,7 +946,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new UnifyOperationException(e, getClass().getSimpleName());
+			throw new UnifyOperationException(e);
 		}
 
 		return 0;
@@ -966,9 +986,10 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 
 	@Override
 	public Date getNow() throws UnifyException {
-		return getSqlStatementExecutor().executeSingleObjectResultQuery(connection, Date.class,
-				sqlDataSourceDialect.getSqlTypePolicy(ColumnType.TIMESTAMP_UTC, 0),
-				sqlDataSourceDialect.generateUTCTimestampSql(), MustMatch.TRUE);
+		return sqlDataSource.getNow();
+//		return getSqlStatementExecutor().executeSingleObjectResultQuery(connection, Date.class,
+//				sqlDataSourceDialect.getSqlTypePolicy(ColumnType.TIMESTAMP_UTC, 0),
+//				sqlDataSourceDialect.generateUTCTimestampSql(), MustMatch.TRUE);
 	}
 
 	@Override
@@ -987,7 +1008,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new UnifyOperationException(e, getClass().getSimpleName());
+			throw new UnifyOperationException(e);
 		}
 	}
 
@@ -1007,7 +1028,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new UnifyOperationException(e, getClass().getSimpleName());
+			throw new UnifyOperationException(e);
 		}
 	}
 
@@ -1029,7 +1050,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new UnifyOperationException(e, getClass().getSimpleName());
+			throw new UnifyOperationException(e);
 		}
 	}
 
@@ -1051,7 +1072,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new UnifyOperationException(e, getClass().getSimpleName());
+			throw new UnifyOperationException(e);
 		}
 	}
 
@@ -1072,7 +1093,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new UnifyOperationException(e, getClass().getSimpleName());
+			throw new UnifyOperationException(e);
 		}
 	}
 
@@ -1093,7 +1114,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new UnifyOperationException(e, getClass().getSimpleName());
+			throw new UnifyOperationException(e);
 		}
 	}
 
@@ -1280,7 +1301,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new UnifyOperationException(e, getClass().getSimpleName());
+			throw new UnifyOperationException(e);
 		}
 		return record;
 	}
@@ -1451,7 +1472,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 			} catch (UnifyException e) {
 				throw e;
 			} catch (Exception e) {
-				throw new UnifyOperationException(e, getClass().getSimpleName());
+				throw new UnifyOperationException(e);
 			}
 		}
 	}
@@ -1467,12 +1488,13 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 
 		EntityPolicy entityPolicy = sqlEntityInfo.getEntityPolicy();
 		try {
+			Date now = null;
 			if (entityPolicy != null) {
 				if (entityPolicy.isSetNow()) {
-					entityPolicy.preUpdate(record, getNow());
-				} else {
-					entityPolicy.preUpdate(record, null);
+					now = getNow();
 				}
+				
+				entityPolicy.preUpdate(record, now);
 			}
 
 			ensureRecordTenantId(sqlEntityInfo, record);
@@ -1485,6 +1507,10 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 
 			if (updateChild.isTrue() && sqlEntityInfo.isChildList()) {
 				updateChildRecords(sqlEntityInfo, record, fetch, false);
+			}
+
+			if (entityPolicy != null) {
+				entityPolicy.postUpdate(record, now);
 			}
 		} catch (UnifyException e) {
 			if (entityPolicy != null) {
@@ -1511,15 +1537,16 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 
 		EntityPolicy entityPolicy = sqlEntityInfo.getEntityPolicy();
 		try {
+			Date now = null;
 			Object oldVersionNo = null;
 			if (sqlEntityInfo.isVersioned()) {
 				oldVersionNo = sqlEntityInfo.getVersionFieldInfo().getGetter().invoke(record);
 				if (entityPolicy != null) {
 					if (entityPolicy.isSetNow()) {
-						entityPolicy.preUpdate(record, getNow());
-					} else {
-						entityPolicy.preUpdate(record, null);
+						now = getNow();
 					}
+					
+					entityPolicy.preUpdate(record, now);					
 				}
 
 				ensureRecordTenantId(sqlEntityInfo, record);
@@ -1527,10 +1554,10 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 			} else {
 				if (entityPolicy != null) {
 					if (entityPolicy.isSetNow()) {
-						entityPolicy.preUpdate(record, getNow());
-					} else {
-						entityPolicy.preUpdate(record, null);
+						now = getNow();
 					}
+					
+					entityPolicy.preUpdate(record, now);					
 				}
 
 				ensureRecordTenantId(sqlEntityInfo, record);
@@ -1546,6 +1573,10 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 			if (updateChild.isTrue() && sqlEntityInfo.isChildList()) {
 				updateChildRecords(sqlEntityInfo, record, fetch, false);
 			}
+
+			if (entityPolicy != null) {
+				entityPolicy.postUpdate(record, now);
+			}
 		} catch (Exception e) {
 			if (entityPolicy != null) {
 				entityPolicy.onUpdateError(record);
@@ -1554,7 +1585,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 			if (e instanceof UnifyException) {
 				throw ((UnifyException) e);
 			}
-			throw new UnifyOperationException(e, getClass().getSimpleName());
+			throw new UnifyOperationException(e);
 		} finally {
 			if (sqlStatement != null) {
 				sqlDataSourceDialect.restoreStatement(sqlStatement);
@@ -1567,12 +1598,13 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 	private Object create(SqlEntityInfo sqlEntityInfo, Entity record) throws UnifyException {
 		EntityPolicy entityPolicy = sqlEntityInfo.getEntityPolicy();
 		Object id = null;
+		Date now = null;
 		if (entityPolicy != null) {
 			if (entityPolicy.isSetNow()) {
-				id = entityPolicy.preCreate(record, getNow());
-			} else {
-				id = entityPolicy.preCreate(record, null);
+				now = getNow();
 			}
+
+			id = entityPolicy.preCreate(record, now);
 		}
 
 		ensureRecordTenantId(sqlEntityInfo, record);
@@ -1593,6 +1625,10 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 			throw e;
 		} finally {
 			sqlDataSourceDialect.restoreStatement(sqlStatement);
+		}
+
+		if (entityPolicy != null) {
+			entityPolicy.postCreate(record, now);
 		}
 
 		return id;
@@ -1653,7 +1689,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new UnifyOperationException(e, getClass().getSimpleName());
+			throw new UnifyOperationException(e);
 		}
 	}
 
@@ -1760,7 +1796,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new UnifyOperationException(e, getClass().getSimpleName());
+			throw new UnifyOperationException(e);
 		}
 	}
 

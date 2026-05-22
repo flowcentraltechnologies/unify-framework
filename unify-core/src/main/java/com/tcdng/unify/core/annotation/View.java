@@ -38,7 +38,7 @@ public @interface View {
 
     /**
      * The application data source that view belongs to. Defaults to
-     * {@link ApplicationComponents#APPLICATION_DATASOURCE}
+     * {@link SecurityComponents#APPLICATION_DATASOURCE}
      */
     String datasource() default ApplicationComponents.APPLICATION_DATASOURCE;
 

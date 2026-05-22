@@ -37,6 +37,7 @@ import com.tcdng.unify.web.ui.widget.AbstractFormattedControl;
 		@UplAttribute(name = "minLen", type = int.class),
         @UplAttribute(name = "maxLen", type = int.class),
         @UplAttribute(name = "case", type = TextCase.class),
+        @UplAttribute(name = "options", type = String.class),
         @UplAttribute(name = "placeholder", type = String.class),
         @UplAttribute(name = "placeholderBinding", type = String.class),
         @UplAttribute(name = "trim", type = boolean.class, defaultVal = "false"),
@@ -55,6 +56,10 @@ public class TextField extends AbstractFormattedControl {
 		
 		super.populate(transferBlock);
 	}
+
+	public String getOptions() throws UnifyException {
+        return getUplAttribute(String.class, "options");
+    }
 
 	public TextCase getCase() throws UnifyException {
         return getUplAttribute(TextCase.class, "case");
@@ -84,6 +89,14 @@ public class TextField extends AbstractFormattedControl {
     	
         return getUplAttribute(String.class, "placeholder");
     }
+
+	public String getFacadeStringValue() throws UnifyException {
+		return getStringValue();
+	}
+
+	public String getFacadeHiddenStringValue() throws UnifyException {
+		return getStringValue();
+	}
 
     public boolean getExtReadOnly() throws UnifyException {
         return getUplAttribute(boolean.class, "extReadOnly");

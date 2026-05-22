@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.TimeZone;
 
 import com.tcdng.unify.core.SessionAttributeProvider;
@@ -39,6 +40,10 @@ public interface HttpRequest extends HttpRequestHeaders, HttpRequestParameters {
 
 	String getPathInfo();
 
+	String getRequestURI();
+
+	String getRequestTarget();
+
 	String getCharacterEncoding();
 
 	String getRemoteAddr();
@@ -53,6 +58,10 @@ public interface HttpRequest extends HttpRequestHeaders, HttpRequestParameters {
 
 	String getServerName();
 
+	String getQueryString();
+
+	Locale getPreferredLocale();
+	
 	int getServerPort();
 
 	HttpUserSession createHttpUserSession(SessionAttributeProvider attributeProvider, Locale locale, TimeZone timeZone,
@@ -65,7 +74,11 @@ public interface HttpRequest extends HttpRequestHeaders, HttpRequestParameters {
 	Collection<HttpPart> getParts() throws Exception;
 
 	List<ClientCookie> getCookies();
-
+ 
+	Optional<ClientCookie> getCookie(String name);
+	 
+	boolean isWithCookie(String name);
+	
 	void invalidateSession();
 
 	void setSessionAttribute(String name, Object val);

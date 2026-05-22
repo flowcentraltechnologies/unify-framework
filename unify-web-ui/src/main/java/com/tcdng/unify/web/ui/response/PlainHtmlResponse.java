@@ -45,7 +45,6 @@ public class PlainHtmlResponse extends AbstractPageControllerResponse {
 			html = (String) ReflectUtils.getNestedBeanProperty(page.getPageBean(), htmlBinding);
 		}
 
-		logDebug("Plain HTML response...");
 		PlainHtml plainHtml = (PlainHtml) page;
 		plainHtml.setBodyContent(html);
 		writer.writeStructureAndContent(plainHtml);

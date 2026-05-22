@@ -47,7 +47,7 @@ public class Button extends AbstractTargetControl {
     }
 
     @Override
-	public boolean isSupportStretch() {
+	public boolean isSupportStretch() throws UnifyException {
 		return false;
 	}
 

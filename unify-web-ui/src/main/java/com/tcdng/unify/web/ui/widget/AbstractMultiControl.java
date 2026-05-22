@@ -16,7 +16,7 @@
 package com.tcdng.unify.web.ui.widget;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +46,8 @@ public abstract class AbstractMultiControl extends AbstractControl implements Mu
 
     private Map<String, ChildWidgetInfo> widgetInfoMap;
 
+    private List<ChildWidgetInfo> widgetInfoList;
+    
     private ValueStore thisValueStore;
 
     private List<String> standalonePanelNames;
@@ -122,10 +124,19 @@ public abstract class AbstractMultiControl extends AbstractControl implements Mu
         return widgetInfoMap.get(childId);
     }
 
-    @Override
-    public Collection<ChildWidgetInfo> getChildWidgetInfos() {
-        return widgetInfoMap.values();
-    }
+	@Override
+	public List<ChildWidgetInfo> getChildWidgetInfos() {
+		if (widgetInfoList == null) {
+			synchronized (this) {
+				if (widgetInfoList == null) {
+					widgetInfoList = Collections
+							.unmodifiableList(new ArrayList<ChildWidgetInfo>(widgetInfoMap.values()));
+				}
+			}
+		}
+
+		return widgetInfoList;
+	}
 
     @Override
     public int getChildWidgetCount() {
@@ -146,6 +157,7 @@ public abstract class AbstractMultiControl extends AbstractControl implements Mu
             }
 
             widgetInfoMap = map;
+            widgetInfoList = null;
         }
     }
 
@@ -287,6 +299,7 @@ public abstract class AbstractMultiControl extends AbstractControl implements Mu
             }
         }
         widgetInfoMap =  map;
+        widgetInfoList = null;
         
         if (standalonePanelNames != null) {
             Page page = resolveRequestPage();
@@ -388,6 +401,7 @@ public abstract class AbstractMultiControl extends AbstractControl implements Mu
 
         widget.setConforming(conforming);
         widgetInfoMap.put(childId, new ChildWidgetInfo(widget, ignoreParentState, external));
+        widgetInfoList = null;
     }
 
     private ValueStore getThisValueStore() throws UnifyException {

@@ -19,12 +19,14 @@ import java.util.List;
 
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
+import com.tcdng.unify.core.annotation.Configurable;
 import com.tcdng.unify.core.annotation.Writes;
 import com.tcdng.unify.core.util.StringUtils;
 import com.tcdng.unify.core.util.json.JsonWriter;
 import com.tcdng.unify.web.ControllerPathParts;
 import com.tcdng.unify.web.ui.PageAttributeConstants;
 import com.tcdng.unify.web.ui.PageRequestContextUtil;
+import com.tcdng.unify.web.ui.UIControllerUtil;
 import com.tcdng.unify.web.ui.widget.Container;
 import com.tcdng.unify.web.ui.widget.EventHandler;
 import com.tcdng.unify.web.ui.widget.Page;
@@ -46,12 +48,16 @@ public class ContentPanelWriter extends AbstractPanelWriter {
 
 	private static final String CPREMOTE_CATEGORYBASE = "cpcat";
 
+	@Configurable
+	private UIControllerUtil util;
+
 	@Override
 	protected void doWriteBehavior(ResponseWriter writer, Widget widget, EventHandler[] handlers)
 			throws UnifyException {
 		ContentPanelImpl contentPanel = (ContentPanelImpl) widget;
 
 		// Write content variables
+		final List<String> paths = contentPanel.getPaths();
 		writer.beginFunction("ux.rigContentPanel");
 		writer.writeParam("pId", contentPanel.getId());
 		writer.writeParam("pHintPanelId", contentPanel.getHintPanelId());
@@ -62,7 +68,7 @@ public class ContentPanelWriter extends AbstractPanelWriter {
 			writer.writeParam("pCloseImgId", closeImgId);
 		}
 
-		PageRequestContextUtil rcUtil = getRequestContextUtil();
+		final PageRequestContextUtil rcUtil = getRequestContextUtil();
 		final boolean lowLatency = rcUtil.isLowLatencyRequest();
 		if (lowLatency) {
 			writer.writeParam("pLatency", lowLatency);
@@ -72,7 +78,10 @@ public class ContentPanelWriter extends AbstractPanelWriter {
 		}
 
 		if (contentPanel.getPageCount() == 0) {
-			writer.writeParam("pImmURL", getContextURL(contentPanel.getPaths().get(0)));
+			writer.writeParam("pImmURL", getContextURL(paths.get(paths.size() - 1)));
+			for (String path : paths) {
+				contentPanel.addContent(util.executePageController(path));
+			}
 		} else {
 			writer.writeParam("pCurIdx", contentPanel.getPageIndex());
 			ContentInfo currentContentInfo = contentPanel.getCurrentContentInfo();
@@ -168,7 +177,6 @@ public class ContentPanelWriter extends AbstractPanelWriter {
 	}
 
 	private void writeContentPanel(ResponseWriter writer, ContentPanelImpl contentPanel) throws UnifyException {
-		logDebug("Writing structure for content panel [{0}]...", contentPanel.getLongName());
 		PageRequestContextUtil rcUtil = getRequestContextUtil();
 		ContentInfo currentContentInfo = contentPanel.getCurrentContentInfo();
 
@@ -178,8 +186,7 @@ public class ContentPanelWriter extends AbstractPanelWriter {
 			writer.write("<div style=\"display:table-row;width:100%;\">");
 			writer.write("<div style=\"display:table-cell;\">");
 			writer.write("<div id=\"").write(contentPanel.getTabPaneId()).write("\" class=\"cptabbar\">");
-			final List<String> paths = contentPanel.getPaths();
-			logDebug("Writing header tabs for content panel [{0}]...", contentPanel.getLongName());
+			final List<String> stickyPaths = contentPanel.getStickyPaths();
 			writer.write("<ul class=\"cptab\">");
 			for (int i = 0; i < contentPanel.getPageCount(); i++) {
 				ContentInfo contentInfo = contentPanel.getContentInfo(i);
@@ -196,9 +203,10 @@ public class ContentPanelWriter extends AbstractPanelWriter {
 					title = page.getCaption();
 				}
 
+				title = resolveSessionMessage(title);
 				title = contentPanel.isTitleUppercase() && title != null ? title.toUpperCase() : title;
 
-				final String subTitle = page.getSubCaption();
+				final String subTitle = resolveSessionMessage(page.getSubCaption());
 				writer.write("><div><a ");
 				if (page.getUplAttribute(boolean.class, "remote")) {
 					String cpcat = CPREMOTE_CATEGORYBASE;
@@ -225,7 +233,7 @@ public class ContentPanelWriter extends AbstractPanelWriter {
 
 				writer.write("</a>");
 
-				if (!paths.contains(contentInfo.getOpenPath())) {
+				if (!stickyPaths.contains(contentInfo.getOpenPath())){
 					writer.write("<img id=\"").write(contentPanel.getTabItemImgId(i)).write("\" src=\"");
 					writer.writeFileImageContextURL("$t{images/cross_gray.png}");
 					writer.write("\"/>");
