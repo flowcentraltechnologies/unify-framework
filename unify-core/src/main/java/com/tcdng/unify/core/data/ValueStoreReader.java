@@ -71,7 +71,7 @@ public interface ValueStoreReader {
 
 	void setTempValue(String name, Object value) throws UnifyException;
 
-    void setTempValues(Map<String, Object> values) throws UnifyException;
+    void setTempValues(Map<String, ? extends Object> values) throws UnifyException;
 
 	boolean isTempValue(String name);
 }
