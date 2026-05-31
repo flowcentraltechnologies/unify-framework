@@ -15,6 +15,7 @@
  */
 package com.tcdng.unify.core.data;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -151,11 +152,11 @@ public abstract class AbstractArrayValueStore<T> extends AbstractValueStore {
 
     @Override
 	public Map<String, Object> getTempValues() throws UnifyException {
-		return temp;
+		return temp != null ? temp : Collections.emptyMap();
 	}
 
     @Override
-	public void setTempValues(Map<String, Object> values) throws UnifyException {
+	public void setTempValues(Map<String, ? extends Object> values) throws UnifyException {
 		if (values != null) {
 	        if (temp == null) {
 	            temp = new HashMap<String, Object>();

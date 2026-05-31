@@ -303,7 +303,7 @@ public interface ValueStore extends Iterable<ValueStore>{
      * @param values
      *              the value map
      */
-    void setTempValues(Map<String, Object> values) throws UnifyException;
+    void setTempValues(Map<String, ? extends Object> values) throws UnifyException;
 
 	/**
 	 * Removes temporary value from value store.

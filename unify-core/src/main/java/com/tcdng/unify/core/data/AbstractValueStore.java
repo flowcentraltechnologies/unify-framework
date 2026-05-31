@@ -512,7 +512,7 @@ public abstract class AbstractValueStore implements ValueStore {
         }
 
         @Override
-		public void setTempValues(Map<String, Object> values) throws UnifyException {
+		public void setTempValues(Map<String, ? extends Object> values) throws UnifyException {
         	valueStore.setTempValues(values);
 		}
 
