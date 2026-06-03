@@ -231,6 +231,7 @@ public class FontAwesomeSymbolManager extends AbstractFontSymbolManager {
         registerSymbol("sort", "f0dc");
         registerSymbol("square-check", "f14a");
         registerSymbol("step", "f54b");
+        registerSymbol("stop", "f04d");
         registerSymbol("stream", "f550");
         registerSymbol("swap", "f362");
         registerSymbol("sync", "f2f1");
