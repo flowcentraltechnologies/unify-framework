@@ -1235,7 +1235,7 @@ ux.rewireContent = function(evp) {
 		const cbrect = cbody.getBoundingClientRect();
 		const maxh = window.innerHeight - cbrect.top;
 		if (maxh > 0) {
-			cbody.style.overflowY = "scroll"; 
+			cbody.style.overflowY = "auto"; 
 			cbody.style.maxHeight = maxh + "px";
 			cbody.style.height = maxh + "px";
 		} else {
