@@ -74,9 +74,9 @@ public class PostgreSqlDialect extends AbstractSqlDataSourceDialect {
 		tempMap1.put(ColumnType.BOOLEAN, new PostgreSqlBooleanPolicy());
 		tempMap1.put(ColumnType.CHARACTER, new PostgreSqlCharacterPolicy());
 		tempMap1.put(ColumnType.INTEGER, new PostgreSqlIntegerPolicy());
-		tempMap1.put(ColumnType.LONG, new PostgreSqlLongPolicy());		
-		tempMap1.put(ColumnType.SHORT, new PostgreSqlShortPolicy());		
-		tempMap1.put(ColumnType.DECIMAL, new PostgreSqlBigDecimalPolicy());		
+		tempMap1.put(ColumnType.LONG, new PostgreSqlLongPolicy());
+		tempMap1.put(ColumnType.SHORT, new PostgreSqlShortPolicy());
+		tempMap1.put(ColumnType.DECIMAL, new PostgreSqlBigDecimalPolicy());
 		tempMap1.put(ColumnType.DATE, new PostgreSqlDatePolicy());
 		tempMap1.put(ColumnType.TIMESTAMP, new PostgreSqlTimestampPolicy());
 		tempMap1.put(ColumnType.TIMESTAMP_UTC, new PostgreSqlTimestampUTCPolicy());
@@ -138,12 +138,10 @@ public class PostgreSqlDialect extends AbstractSqlDataSourceDialect {
 	public String generateGetCheckConstraintsSql(SqlEntitySchemaInfo sqlEntitySchemaInfo, PrintFormat format)
 			throws UnifyException {
 		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT conname FROM pg_constraint")
-		.append(" JOIN pg_class ON conrelid = pg_class.oid")
-		.append(" JOIN pg_namespace ON pg_class.relnamespace = pg_namespace.oid")
-		.append(" WHERE contype = 'c'")
-		.append(" AND relname = '").append(sqlEntitySchemaInfo.getSchemaTableName()).append("'")
-		.append(" AND nspname = '").append(sqlEntitySchemaInfo.getSchema()).append("'");
+		sb.append("SELECT conname FROM pg_constraint").append(" JOIN pg_class ON conrelid = pg_class.oid")
+				.append(" JOIN pg_namespace ON pg_class.relnamespace = pg_namespace.oid").append(" WHERE contype = 'c'")
+				.append(" AND relname = '").append(sqlEntitySchemaInfo.getSchemaTableName()).append("'")
+				.append(" AND nspname = '").append(sqlEntitySchemaInfo.getSchema()).append("'");
 		return sb.toString();
 	}
 
@@ -202,8 +200,8 @@ public class PostgreSqlDialect extends AbstractSqlDataSourceDialect {
 
 	@Override
 	protected void appendTimestampTruncation(StringBuilder sql, SqlFieldInfo sqlFieldInfo,
-			TimeSeriesType timeSeriesType, boolean merge) throws UnifyException {
-		if (merge) {
+			TimeSeriesType timeSeriesType) throws UnifyException {
+		if (timeSeriesType.numericMerged()) {
 			boolean inc = false;
 			sql.append("LPAD((EXTRACT(");
 			int len = 1;
@@ -212,7 +210,6 @@ public class PostgreSqlDialect extends AbstractSqlDataSourceDialect {
 				sql.append("dow"); // 0- 6
 				inc = true;
 				break;
-			case DAY:
 			case DAY_OF_MONTH:
 				sql.append("day"); // 1 - 31
 				len = 2;
@@ -221,22 +218,27 @@ public class PostgreSqlDialect extends AbstractSqlDataSourceDialect {
 				sql.append("doy"); // 1 - 366
 				len = 3;
 				break;
-			case HOUR:
+			case HOUR_OF_DAY:
 				sql.append("hour"); // 0 - 23
 				len = 2;
 				break;
-			case MONTH:
+			case MONTH_OF_YEAR:
 				sql.append("month"); // 1 - 12
 				len = 2;
 				break;
-			case WEEK:
+			case WEEK_OF_YEAR:
 				sql.append("week"); // 1 - 54
 				len = 2;
 				break;
-			case YEAR:
+			case YEAR_OF_DECA_MILLENIUM:
 				sql.append("year"); // 1 - 9999
 				len = 4;
 				break;
+			case HOUR:
+			case DAY:
+			case WEEK:
+			case MONTH:
+			case YEAR:
 			default:
 				break;
 			}
@@ -244,7 +246,7 @@ public class PostgreSqlDialect extends AbstractSqlDataSourceDialect {
 			if (inc) {
 				sql.append(" + 1");
 			}
-			
+
 			sql.append(")::text,");
 			sql.append(len);
 			sql.append(",'0')");
@@ -252,9 +254,6 @@ public class PostgreSqlDialect extends AbstractSqlDataSourceDialect {
 			sql.append("DATE_TRUNC('");
 			switch (timeSeriesType) {
 			case DAY:
-			case DAY_OF_WEEK:
-			case DAY_OF_MONTH:
-			case DAY_OF_YEAR:
 				sql.append("day");
 				break;
 			case HOUR:
@@ -269,6 +268,13 @@ public class PostgreSqlDialect extends AbstractSqlDataSourceDialect {
 			case YEAR:
 				sql.append("year");
 				break;
+			case DAY_OF_WEEK:
+			case DAY_OF_MONTH:
+			case DAY_OF_YEAR:
+			case HOUR_OF_DAY:
+			case MONTH_OF_YEAR:
+			case WEEK_OF_YEAR:
+			case YEAR_OF_DECA_MILLENIUM:
 			default:
 				break;
 			}
@@ -278,7 +284,7 @@ public class PostgreSqlDialect extends AbstractSqlDataSourceDialect {
 
 	@Override
 	protected void appendTimestampTruncationGroupBy(StringBuilder sql, SqlFieldInfo sqlFieldInfo,
-			TimeSeriesType timeSeriesType, boolean merge) throws UnifyException {
+			TimeSeriesType timeSeriesType) throws UnifyException {
 		sql.append(TRUNC_COLUMN_ALIAS);
 	}
 
@@ -428,7 +434,7 @@ public class PostgreSqlDialect extends AbstractSqlDataSourceDialect {
 
 		@Override
 		protected ColumnType dialectSwapColumnType(ColumnType columnType, int length) {
-			return columnType.isString() && length > 65535 ? ColumnType.CLOB: columnType;
+			return columnType.isString() && length > 65535 ? ColumnType.CLOB : columnType;
 		}
 
 		protected String concat(String... expressions) {

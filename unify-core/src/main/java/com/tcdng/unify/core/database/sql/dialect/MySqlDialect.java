@@ -211,9 +211,9 @@ public class MySqlDialect extends AbstractSqlDataSourceDialect {
 
 	@Override
 	protected void appendTimestampTruncation(StringBuilder sql, SqlFieldInfo sqlFieldInfo,
-			TimeSeriesType timeSeriesType, boolean merge) throws UnifyException {
+			TimeSeriesType timeSeriesType) throws UnifyException {
 		final String columnName = sqlFieldInfo.getPreferredColumnName();
-		if (merge) {
+		if (timeSeriesType.numericMerged()) {
 			boolean inc = false;
 			sql.append("LPAD(");
 			int len = 1;
@@ -221,7 +221,6 @@ public class MySqlDialect extends AbstractSqlDataSourceDialect {
 			case DAY_OF_WEEK:
 				sql.append("DAYOFWEEK("); // 1- 7
 				break;
-			case DAY:
 			case DAY_OF_MONTH:
 				sql.append("DAYOFMONTH("); // 1 - 31
 				len = 2;
@@ -230,23 +229,28 @@ public class MySqlDialect extends AbstractSqlDataSourceDialect {
 				sql.append("DAYOFYEAR("); // 1 - 366
 				len = 3;
 				break;
-			case HOUR:
+			case HOUR_OF_DAY:
 				sql.append("HOUR("); // 0 - 23
 				len = 2;
 				break;
-			case MONTH:
+			case MONTH_OF_YEAR:
 				sql.append("MONTH("); // 1 - 12
 				len = 2;
 				break;
-			case WEEK:
+			case WEEK_OF_YEAR:
 				sql.append("WEEK("); // 0 - 53
 				inc = true;
 				len = 2;
 				break;
-			case YEAR:
+			case YEAR_OF_DECA_MILLENIUM:
 				sql.append("YEAR("); // 1000 - 9999
 				len = 4;
 				break;
+			case HOUR:
+			case DAY:
+			case WEEK:
+			case MONTH:
+			case YEAR:
 			default:
 				break;
 			}
@@ -262,9 +266,6 @@ public class MySqlDialect extends AbstractSqlDataSourceDialect {
 		} else {
 			switch (timeSeriesType) {
 			case DAY:
-			case DAY_OF_WEEK:
-			case DAY_OF_MONTH:
-			case DAY_OF_YEAR:
 				sql.append("CAST(STR_TO_DATE(DATE_FORMAT(").append(columnName)
 						.append(", '%Y-%m-%d'), '%Y-%m-%d') AS DATETIME)");
 				break;
@@ -284,6 +285,13 @@ public class MySqlDialect extends AbstractSqlDataSourceDialect {
 				sql.append("CAST(STR_TO_DATE(DATE_FORMAT(").append(columnName)
 						.append(", '%Y-01-01'), '%Y-%m-%d') AS DATETIME)");
 				break;
+			case DAY_OF_WEEK:
+			case DAY_OF_MONTH:
+			case DAY_OF_YEAR:
+			case HOUR_OF_DAY:
+			case MONTH_OF_YEAR:
+			case WEEK_OF_YEAR:
+			case YEAR_OF_DECA_MILLENIUM:
 			default:
 				break;
 			}
@@ -292,7 +300,7 @@ public class MySqlDialect extends AbstractSqlDataSourceDialect {
 
 	@Override
 	protected void appendTimestampTruncationGroupBy(StringBuilder sql, SqlFieldInfo sqlFieldInfo,
-			TimeSeriesType timeSeriesType, boolean merge) throws UnifyException {
+			TimeSeriesType timeSeriesType) throws UnifyException {
 		sql.append(TRUNC_COLUMN_ALIAS);
 	}
 

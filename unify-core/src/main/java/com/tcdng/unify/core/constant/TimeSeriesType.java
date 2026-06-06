@@ -28,22 +28,26 @@ import com.tcdng.unify.core.util.EnumUtils;
 @StaticList(name = "timeseriestypelist", description="$m{staticlist.timeseriestypelist}")
 public enum TimeSeriesType implements EnumConst {
 
-    HOUR("HR", TimeResolutionType.MINUTE),
-    DAY("DY", TimeResolutionType.HOUR),
-    DAY_OF_WEEK("DW", TimeResolutionType.DAY),
-    DAY_OF_MONTH("DM", TimeResolutionType.DAY),
-    DAY_OF_YEAR("DR", TimeResolutionType.DAY),
-    WEEK("WK", TimeResolutionType.DAY),
-    MONTH("MN", TimeResolutionType.WEEK),
-    YEAR("YR", TimeResolutionType.MONTH);
+    HOUR("HR", false),
+    DAY("DY", false),
+    WEEK("WK", false),
+    MONTH("MN", false),
+    YEAR("YR", false),
+    HOUR_OF_DAY("HD", true),
+    DAY_OF_WEEK("DW", true),
+    DAY_OF_MONTH("DM", true),
+    DAY_OF_YEAR("DR", true),
+    WEEK_OF_YEAR("WR", true),
+    MONTH_OF_YEAR("MR", true),
+    YEAR_OF_DECA_MILLENIUM("YM", true);
 
     private final String code;
 
-    private final TimeResolutionType maxResolution;
+    private final boolean numericMerged;
     
-    private TimeSeriesType(String code, TimeResolutionType maxResolution) {
+    private TimeSeriesType(String code, boolean numericMerged) {
         this.code = code;
-        this.maxResolution = maxResolution;
+        this.numericMerged = numericMerged;
     }
 
     @Override
@@ -56,8 +60,8 @@ public enum TimeSeriesType implements EnumConst {
         return DAY.code;
     }
 
-    public TimeResolutionType maxResolution() {
-        return maxResolution;
+    public boolean numericMerged() {
+        return numericMerged;
     }
 
     public static TimeSeriesType fromCode(String code) {

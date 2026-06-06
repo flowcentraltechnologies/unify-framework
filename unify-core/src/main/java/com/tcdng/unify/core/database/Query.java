@@ -106,8 +106,6 @@ public class Query<T extends Entity> implements Cloneable {
 
     private boolean mustMatch;
 
-    private boolean merge;
-
     private boolean lenient;
 
     private Map<String, String> params;
@@ -603,15 +601,6 @@ public class Query<T extends Entity> implements Cloneable {
         return this;
     }
 
-    public boolean isMerge() {
-		return merge;
-	}
-
-	public Query<T> setMerge(boolean merge) {
-		this.merge = merge;
-        return this;
-	}
-
 	public boolean isLenient() {
 		return lenient;
 	}
@@ -710,7 +699,6 @@ public class Query<T extends Entity> implements Cloneable {
         query.order = order;
         query.offset = offset;
         query.lenient = lenient;
-        query.merge = merge;
         query.limit = limit;
         query.ignoreEmptyCriteria = ignoreEmptyCriteria;
         query.ignoreTenancy = ignoreTenancy;
@@ -727,7 +715,6 @@ public class Query<T extends Entity> implements Cloneable {
         query.order = order;
         query.offset = offset;
         query.lenient = lenient;
-        query.merge = merge;
         query.limit = limit;
         query.ignoreEmptyCriteria = ignoreEmptyCriteria;
         query.mustMatch = mustMatch;
