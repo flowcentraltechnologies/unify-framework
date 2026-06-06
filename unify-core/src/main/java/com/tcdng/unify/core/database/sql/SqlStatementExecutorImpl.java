@@ -624,7 +624,6 @@ public class SqlStatementExecutorImpl extends AbstractUnifyComponent implements 
 					value = DataUtils.convert(sqlResult.getType(), 0);
 				}
 
-				final boolean merge = sqlStatement.isMerge();
 				List<Grouping> groupings = new ArrayList<Grouping>();
 				for (GroupingFunction _groupingFunction : groupingFunction) {
 					if (_groupingFunction.isWithFieldGrouping()) {
@@ -633,7 +632,7 @@ public class SqlStatementExecutorImpl extends AbstractUnifyComponent implements 
 								++resultIndex, timeZoneOffset);
 						groupings.add(new Grouping(String.valueOf(grouping)));
 					} else {
-						if (merge) {
+						if (_groupingFunction.isTimeSeriesNumericMerged()) {
 							Object grouping = mergeSqlDataTypePolicy.executeGetResult(rs, sqlResult.getType(),
 									++resultIndex, timeZoneOffset);
 							groupings.add(new Grouping(String.valueOf(grouping)));
@@ -660,6 +659,7 @@ public class SqlStatementExecutorImpl extends AbstractUnifyComponent implements 
 			SqlUtils.close(rs);
 			SqlUtils.close(pStmt);
 		}
+		
 		return null;
 	}
 
@@ -697,7 +697,6 @@ public class SqlStatementExecutorImpl extends AbstractUnifyComponent implements 
 							.add(new Aggregation(aggregateFunction.getType(), aggregateFunction.getFieldName(), value));
 				}
 
-				final boolean merge = sqlStatement.isMerge();
 				List<Grouping> groupings = new ArrayList<Grouping>();
 				for (GroupingFunction _groupingFunction : groupingFunction) {
 					if (_groupingFunction.isWithFieldGrouping()) {
@@ -706,7 +705,7 @@ public class SqlStatementExecutorImpl extends AbstractUnifyComponent implements 
 								++resultIndex, timeZoneOffset);
 						groupings.add(new Grouping(String.valueOf(grouping)));
 					} else {
-						if (merge) {
+						if (_groupingFunction.isTimeSeriesNumericMerged()) {
 							Object grouping = mergeSqlDataTypePolicy.executeGetResult(rs, sqlResult.getType(),
 									++resultIndex, timeZoneOffset);
 							groupings.add(new Grouping(String.valueOf(grouping)));

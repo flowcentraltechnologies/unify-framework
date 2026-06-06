@@ -63,4 +63,8 @@ public class GroupingFunction {
 	public boolean isWithDateFieldGrouping() {
 		return dateSeriesType != null;
 	}
+	
+	public boolean isTimeSeriesNumericMerged() {
+		return dateSeriesType != null && dateSeriesType.numericMerged();
+	}
 }
