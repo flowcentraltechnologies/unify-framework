@@ -16,6 +16,8 @@
 
 package com.tcdng.unify.core.criterion;
 
+import com.tcdng.unify.core.util.StringUtils;
+
 /**
  * An aggregate function.
  * 
@@ -24,21 +26,36 @@ package com.tcdng.unify.core.criterion;
  */
 public class AggregateFunction {
 
-    private AggregateType type;
-    
-    private String fieldName;
+	private AggregateType type;
 
-    public AggregateFunction(AggregateType type, String fieldName) {
-        this.type = type;
-        this.fieldName = fieldName;
-    }
+	private String fieldName;
 
-    public AggregateType getType() {
-        return type;
-    }
+	private String fieldLabel;
+
+	public AggregateFunction(AggregateType type, String fieldName, String fieldLabel) {
+		this.type = type;
+		this.fieldName = fieldName;
+		this.fieldLabel = fieldLabel;
+	}
+
+	public AggregateFunction(AggregateType type, String fieldName) {
+		this.type = type;
+		this.fieldName = fieldName;
+	}
+
+	public AggregateType getType() {
+		return type;
+	}
 
 	public String getFieldName() {
 		return fieldName;
 	}
-    
+
+	public String getFieldLabel() {
+		return fieldLabel;
+	}
+
+	public boolean isWithFieldLabel() {
+		return !StringUtils.isBlank(fieldLabel);
+	}
 }

@@ -29,7 +29,19 @@ public class GroupingFunction {
 
 	private String fieldName;
 
+	private String fieldLabel;
+
 	private TimeSeriesType dateSeriesType;
+
+	public GroupingFunction(String fieldName, String fieldLabel, TimeSeriesType dateSeriesType) {
+		if (StringUtils.isBlank(fieldName) || StringUtils.isBlank(fieldLabel)|| dateSeriesType == null) {
+			throw new IllegalArgumentException("Supplied arguments are null or blank.");
+		}
+
+		this.fieldName = fieldName;
+		this.fieldLabel = fieldLabel;
+		this.dateSeriesType = dateSeriesType;
+	}
 
 	public GroupingFunction(String fieldName, TimeSeriesType dateSeriesType) {
 		if (StringUtils.isBlank(fieldName) || dateSeriesType == null) {
@@ -38,6 +50,15 @@ public class GroupingFunction {
 
 		this.fieldName = fieldName;
 		this.dateSeriesType = dateSeriesType;
+	}
+
+	public GroupingFunction(String fieldName, String fieldLabel) {
+		if (StringUtils.isBlank(fieldName) || StringUtils.isBlank(fieldLabel)) {
+			throw new IllegalArgumentException("Supplied argument is null or blank.");
+		}
+
+		this.fieldName = fieldName;
+		this.fieldLabel = fieldLabel;
 	}
 
 	public GroupingFunction(String fieldName) {
@@ -50,6 +71,10 @@ public class GroupingFunction {
 
 	public String getFieldName() {
 		return fieldName;
+	}
+
+	public String getFieldLabel() {
+		return fieldLabel;
 	}
 
 	public TimeSeriesType getDateSeriesType() {
@@ -66,5 +91,9 @@ public class GroupingFunction {
 	
 	public boolean isTimeSeriesNumericMerged() {
 		return dateSeriesType != null && dateSeriesType.numericMerged();
+	}
+	
+	public boolean isWithFieldLabel() {
+		return !StringUtils.isBlank(fieldLabel);
 	}
 }

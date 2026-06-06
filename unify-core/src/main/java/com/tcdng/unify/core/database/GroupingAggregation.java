@@ -62,36 +62,6 @@ public class GroupingAggregation {
 
 	public boolean isDateGrouping(int index) {
 		return groupings.get(index).isDate();
-	}
-
-	public static class Grouping {
-
-		private Object grouping;
-
-		public Grouping(String grouping) {
-			this.grouping = grouping;
-		}
-
-		public Grouping(Date grouping) {
-			this.grouping = grouping;
-		}
-
-		public String getAsString() {
-			return String.valueOf(grouping);
-		}
-
-		public Date getAsDate() {
-			return (Date) grouping;
-		}
-
-		public boolean isString() {
-			return grouping == null || String.class.equals(grouping.getClass());
-		}
-
-		public boolean isDate() {
-			return grouping != null && Date.class.equals(grouping.getClass());
-		}
-
 	};
 
 }
