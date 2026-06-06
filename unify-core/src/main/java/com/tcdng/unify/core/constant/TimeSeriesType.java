@@ -28,11 +28,13 @@ import com.tcdng.unify.core.util.EnumUtils;
 @StaticList(name = "timeseriestypelist", description="$m{staticlist.timeseriestypelist}")
 public enum TimeSeriesType implements EnumConst {
 
+    MINUTE("MI", false),
     HOUR("HR", false),
     DAY("DY", false),
     WEEK("WK", false),
     MONTH("MN", false),
     YEAR("YR", false),
+    MINUTE_OF_HOUR("MH", true),
     HOUR_OF_DAY("HD", true),
     DAY_OF_WEEK("DW", true),
     DAY_OF_MONTH("DM", true),

@@ -150,6 +150,10 @@ public class MsSqlDialect extends AbstractSqlDataSourceDialect {
 				sql.append("hour"); // 0 - 23
 				fmt = "'00'";
 				break;
+	        case MINUTE_OF_HOUR:
+	            sql.append("minute"); // 0 - 59
+	            fmt = "'00'";
+	            break;
 			case MONTH_OF_YEAR:
 				sql.append("month"); // 1 - 12
 				fmt = "'00'";
@@ -162,6 +166,7 @@ public class MsSqlDialect extends AbstractSqlDataSourceDialect {
 				sql.append("year"); // 1 - 9999
 				fmt = "'0000'";
 				break;
+			case MINUTE:
 			case HOUR:
 			case DAY:
 			case WEEK:
@@ -176,6 +181,9 @@ public class MsSqlDialect extends AbstractSqlDataSourceDialect {
 		} else {
 			sql.append("DATEPART(");
 			switch (timeSeriesType) {
+	        case MINUTE:
+	            sql.append("minute");
+	            break;
 			case DAY:
 				sql.append("day");
 				break;
@@ -194,6 +202,7 @@ public class MsSqlDialect extends AbstractSqlDataSourceDialect {
 			case DAY_OF_WEEK:
 			case DAY_OF_MONTH:
 			case DAY_OF_YEAR:
+	        case MINUTE_OF_HOUR:
 			case HOUR_OF_DAY:
 			case MONTH_OF_YEAR:
 			case WEEK_OF_YEAR:

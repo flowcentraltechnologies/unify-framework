@@ -308,6 +308,9 @@ public class OracleDialect extends AbstractSqlDataSourceDialect {
 			case HOUR_OF_DAY:
 				sql.append("HH24"); // 0 - 23
 				break;
+	        case MINUTE_OF_HOUR:
+	            sql.append("MI"); // 0 - 59
+	            break;
 			case MONTH_OF_YEAR:
 				sql.append("MM"); // 01 - 12
 				break;
@@ -317,6 +320,7 @@ public class OracleDialect extends AbstractSqlDataSourceDialect {
 			case YEAR_OF_DECA_MILLENIUM:
 				sql.append("YYYY"); // 1 - 9999
 				break;
+			case MINUTE:
 			case HOUR:
 			case DAY:
 			case WEEK:
@@ -329,6 +333,9 @@ public class OracleDialect extends AbstractSqlDataSourceDialect {
 		} else {
 			sql.append("TRUNC(").append(sqlFieldInfo.getPreferredColumnName()).append(", '");
 			switch (timeSeriesType) {
+	        case MINUTE:
+	            sql.append("MI");
+	            break;
 			case DAY:
 				sql.append("DD");
 				break;
@@ -347,6 +354,7 @@ public class OracleDialect extends AbstractSqlDataSourceDialect {
 			case DAY_OF_WEEK:
 			case DAY_OF_MONTH:
 			case DAY_OF_YEAR:
+			case MINUTE_OF_HOUR:
 			case HOUR_OF_DAY:
 			case MONTH_OF_YEAR:
 			case WEEK_OF_YEAR:

@@ -222,6 +222,10 @@ public class PostgreSqlDialect extends AbstractSqlDataSourceDialect {
 				sql.append("hour"); // 0 - 23
 				len = 2;
 				break;
+	        case MINUTE_OF_HOUR:
+	            sql.append("minute"); // 0 - 59
+	            len = 2;
+	            break;
 			case MONTH_OF_YEAR:
 				sql.append("month"); // 1 - 12
 				len = 2;
@@ -235,6 +239,7 @@ public class PostgreSqlDialect extends AbstractSqlDataSourceDialect {
 				len = 4;
 				break;
 			case HOUR:
+			case MINUTE:
 			case DAY:
 			case WEEK:
 			case MONTH:
@@ -253,6 +258,9 @@ public class PostgreSqlDialect extends AbstractSqlDataSourceDialect {
 		} else {
 			sql.append("DATE_TRUNC('");
 			switch (timeSeriesType) {
+	        case MINUTE:
+	            sql.append("minute");
+	            break;
 			case DAY:
 				sql.append("day");
 				break;
@@ -271,6 +279,7 @@ public class PostgreSqlDialect extends AbstractSqlDataSourceDialect {
 			case DAY_OF_WEEK:
 			case DAY_OF_MONTH:
 			case DAY_OF_YEAR:
+			case MINUTE_OF_HOUR:
 			case HOUR_OF_DAY:
 			case MONTH_OF_YEAR:
 			case WEEK_OF_YEAR:

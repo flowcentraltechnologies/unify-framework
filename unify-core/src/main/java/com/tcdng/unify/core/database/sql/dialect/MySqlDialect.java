@@ -233,6 +233,10 @@ public class MySqlDialect extends AbstractSqlDataSourceDialect {
 				sql.append("HOUR("); // 0 - 23
 				len = 2;
 				break;
+	        case MINUTE_OF_HOUR:
+	            sql.append("MINUTE("); // 0 - 59
+	            len = 2;
+	            break;
 			case MONTH_OF_YEAR:
 				sql.append("MONTH("); // 1 - 12
 				len = 2;
@@ -246,6 +250,7 @@ public class MySqlDialect extends AbstractSqlDataSourceDialect {
 				sql.append("YEAR("); // 1000 - 9999
 				len = 4;
 				break;
+			case MINUTE:
 			case HOUR:
 			case DAY:
 			case WEEK:
@@ -265,6 +270,10 @@ public class MySqlDialect extends AbstractSqlDataSourceDialect {
 			sql.append(",'0')");
 		} else {
 			switch (timeSeriesType) {
+	        case MINUTE:
+	            sql.append("CAST(STR_TO_DATE(DATE_FORMAT(").append(columnName)
+	                    .append(", '%Y-%m-%d %H:%i'), '%Y-%m-%d %H:%i') AS DATETIME)");
+	            break;
 			case DAY:
 				sql.append("CAST(STR_TO_DATE(DATE_FORMAT(").append(columnName)
 						.append(", '%Y-%m-%d'), '%Y-%m-%d') AS DATETIME)");
@@ -288,6 +297,7 @@ public class MySqlDialect extends AbstractSqlDataSourceDialect {
 			case DAY_OF_WEEK:
 			case DAY_OF_MONTH:
 			case DAY_OF_YEAR:
+			case MINUTE_OF_HOUR:
 			case HOUR_OF_DAY:
 			case MONTH_OF_YEAR:
 			case WEEK_OF_YEAR:

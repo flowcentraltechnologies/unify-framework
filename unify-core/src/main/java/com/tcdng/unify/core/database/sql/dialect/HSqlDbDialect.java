@@ -186,6 +186,10 @@ public class HSqlDbDialect extends AbstractSqlDataSourceDialect {
 				sql.append("HOUR("); // 0 - 23
 				len = 2;
 				break;
+	        case MINUTE_OF_HOUR:
+	            sql.append("MINUTE("); // 0 - 59
+	            len = 2;
+	            break;
 			case MONTH_OF_YEAR:
 				sql.append("MONTH("); // 1 - 12
 				len = 2;
@@ -199,6 +203,7 @@ public class HSqlDbDialect extends AbstractSqlDataSourceDialect {
 				len = 4;
 				break;
 			case HOUR:
+			case MINUTE:
 			case DAY:
 			case WEEK:
 			case MONTH:
@@ -213,6 +218,9 @@ public class HSqlDbDialect extends AbstractSqlDataSourceDialect {
 		} else {
 			sql.append("TRUNC(").append(sqlFieldInfo.getPreferredColumnName()).append(", '");
 			switch (timeSeriesType) {
+	        case MINUTE:
+	            sql.append("MI");
+	            break;
 			case DAY:
 				sql.append("DD");
 				break;
@@ -232,6 +240,7 @@ public class HSqlDbDialect extends AbstractSqlDataSourceDialect {
 			case DAY_OF_MONTH:
 			case DAY_OF_YEAR:
 			case HOUR_OF_DAY:
+			case MINUTE_OF_HOUR:
 			case MONTH_OF_YEAR:
 			case WEEK_OF_YEAR:
 			case YEAR_OF_DECA_MILLENIUM:
