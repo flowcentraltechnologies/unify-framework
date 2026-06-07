@@ -19,7 +19,6 @@ import java.util.Date;
 
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonValue;
-import com.tcdng.unify.convert.util.ConverterUtils;
 
 /**
  * JSON date array value converter.
@@ -34,12 +33,12 @@ public class JsonDateArrayConverter extends AbstractJsonArrayConverter<Date> {
         if (jsonValue.isNull()) {
             return null;
         }
-        
-        return ConverterUtils.convert(Date.class, jsonValue.asString());
+
+		return new Date(jsonValue.asLong());
     }
 
     @Override
     protected JsonValue setValue(Date value) throws Exception {
-        return Json.value(ConverterUtils.convert(String.class, value));
+		return value != null ? Json.value(((Date) value).getTime()) : Json.NULL;
     }
 }

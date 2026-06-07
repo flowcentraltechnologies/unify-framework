@@ -19,7 +19,6 @@ import java.util.Date;
 
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonValue;
-import com.tcdng.unify.convert.util.ConverterUtils;
 
 /**
  * JSON date value converter.
@@ -29,17 +28,17 @@ import com.tcdng.unify.convert.util.ConverterUtils;
  */
 public class JsonDateConverter implements JsonValueConverter<Date> {
 
-    @Override
-    public Date read(Class<Date> clazz, JsonValue jsonValue) throws Exception {
-        if (jsonValue.isNull()) {
-            return null;
-        }
-        
-        return ConverterUtils.convert(Date.class, jsonValue.asString());
-    }
+	@Override
+	public Date read(Class<Date> clazz, JsonValue jsonValue) throws Exception {
+		if (jsonValue.isNull()) {
+			return null;
+		}
 
-    @Override
-    public JsonValue write(Object value) throws Exception {
-        return Json.value(ConverterUtils.convert(String.class, (Date) value));
-    }
+		return new Date(jsonValue.asLong());
+	}
+
+	@Override
+	public JsonValue write(Object value) throws Exception {
+		return value != null ? Json.value(((Date) value).getTime()) : Json.NULL;
+	}
 }
