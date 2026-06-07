@@ -29,8 +29,8 @@ import com.tcdng.unify.core.util.DataUtils;
  */
 public class Aggregation {
 
-	private AggregateFunction func; 
-	
+	private AggregateFunction func;
+
 	private Object value;
 
 	public Aggregation(AggregateFunction func, Object value) {
@@ -60,5 +60,9 @@ public class Aggregation {
 
 	public <T> T getValue(Class<T> targetClazz) throws UnifyException {
 		return DataUtils.convert(targetClazz, value);
+	}
+
+	public boolean isWithValue() {
+		return value != null;
 	}
 }

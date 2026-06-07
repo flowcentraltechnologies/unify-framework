@@ -61,6 +61,10 @@ public class Grouping {
 		return (Date) grouping;
 	}
 
+	public boolean isWithGrouping() {
+		return grouping != null;
+	}
+
 	public boolean isString() {
 		return grouping == null || String.class.equals(grouping.getClass());
 	}
