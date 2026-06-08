@@ -41,6 +41,10 @@ public class Grouping {
 		this.grouping = grouping;
 	}
 
+	public String getName() {
+		return func.getName();
+	}
+
 	public String getFieldName() {
 		return func.getFieldName();
 	}

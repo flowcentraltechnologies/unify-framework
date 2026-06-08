@@ -36,12 +36,12 @@ public enum AggregateType {
         this.supports = supports;
     }
 
-    public AggregateFunction function(String fieldName, String fieldLabel) {
-    	return new AggregateFunction(this, fieldName, fieldLabel);
+    public AggregateFunction function(String name, String fieldName, String fieldLabel) {
+    	return new AggregateFunction(this, name, fieldName, fieldLabel);
     }
 
-    public AggregateFunction function(String fieldName) {
-    	return new AggregateFunction(this, fieldName);
+    public AggregateFunction function(String name, String fieldName) {
+    	return new AggregateFunction(this, name, fieldName);
     }
     
     public boolean supports(Class<?> clazz) {

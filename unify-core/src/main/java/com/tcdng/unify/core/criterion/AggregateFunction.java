@@ -28,23 +28,31 @@ public class AggregateFunction {
 
 	private AggregateType type;
 
+	private String name;
+
 	private String fieldName;
 
 	private String fieldLabel;
 
-	public AggregateFunction(AggregateType type, String fieldName, String fieldLabel) {
+	public AggregateFunction(AggregateType type, String name, String fieldName, String fieldLabel) {
 		this.type = type;
+		this.name = name;
 		this.fieldName = fieldName;
 		this.fieldLabel = fieldLabel;
 	}
 
-	public AggregateFunction(AggregateType type, String fieldName) {
+	public AggregateFunction(AggregateType type, String name, String fieldName) {
 		this.type = type;
+		this.name = name;
 		this.fieldName = fieldName;
 	}
 
 	public AggregateType getType() {
 		return type;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	public String getFieldName() {

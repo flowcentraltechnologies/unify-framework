@@ -42,6 +42,10 @@ public class Aggregation {
 		return func.getType();
 	}
 
+	public String getName() {
+		return func.getName();
+	}
+
 	public String getFieldName() {
 		return func.getFieldName();
 	}
