@@ -50,23 +50,29 @@ public final class EnumUtils {
 
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T extends EnumConst> T fromCode(Class<T> clazz, String code) {
-        try {
-            return (T) enumConstMap.get(clazz).getByCode(code);
-        } catch (Exception e) {
-        }
-        return null;
-    }
+	@SuppressWarnings("unchecked")
+	public static <T extends EnumConst> T fromCode(Class<T> clazz, String code) {
+		if (code != null) {
+			try {
+				return (T) enumConstMap.get(clazz).getByCode(code);
+			} catch (Exception e) {
+			}
+		}
 
-    @SuppressWarnings("unchecked")
-    public static <T extends EnumConst> T fromName(Class<T> clazz, String name) {
-        try {
-            return (T) enumConstMap.get(clazz).getByName(name);
-        } catch (Exception e) {
-        }
-        return null;
-    }
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T extends EnumConst> T fromName(Class<T> clazz, String name) {
+		if (name != null) {
+			try {
+				return (T) enumConstMap.get(clazz).getByName(name);
+			} catch (Exception e) {
+			}
+		}
+
+		return null;
+	}
 
     @SuppressWarnings("unchecked")
     public static <T extends EnumConst> T getDefault(Class<T> clazz) {
