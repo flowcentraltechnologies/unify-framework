@@ -28,28 +28,28 @@ import com.tcdng.unify.core.util.EnumUtils;
 @StaticList(name = "timeseriestypelist", description="$m{staticlist.timeseriestypelist}")
 public enum TimeSeriesType implements EnumConst {
 
-    MINUTE("MI", false),
-    HOUR("HR", false),
-    DAY("DY", false),
-    WEEK("WK", false),
-    MONTH("MN", false),
-    YEAR("YR", false),
-    MINUTE_OF_HOUR("MH", true),
-    HOUR_OF_DAY("HD", true),
-    DAY_OF_WEEK("DW", true),
-    DAY_OF_MONTH("DM", true),
-    DAY_OF_YEAR("DR", true),
-    WEEK_OF_YEAR("WR", true),
-    MONTH_OF_YEAR("MR", true),
-    YEAR_OF_DECA_MILLENIUM("YM", true);
+    MINUTE("MI", 0),
+    HOUR("HR", 0),
+    DAY("DY", 0),
+    WEEK("WK", 0),
+    MONTH("MN", 0),
+    YEAR("YR", 0),
+    MINUTE_OF_HOUR("MH", 60),
+    HOUR_OF_DAY("HD", 24),
+    DAY_OF_WEEK("DW", 7),
+    DAY_OF_MONTH("DM", 28),
+    DAY_OF_YEAR("DR", 365),
+    WEEK_OF_YEAR("WR", 52),
+    MONTH_OF_YEAR("MR", 12),
+    YEAR_OF_DECA_MILLENIUM("YM", -1);
 
     private final String code;
 
-    private final boolean numericMerged;
+    private final int fillLength;
     
-    private TimeSeriesType(String code, boolean numericMerged) {
+    private TimeSeriesType(String code, int fillLength) {
         this.code = code;
-        this.numericMerged = numericMerged;
+        this.fillLength = fillLength;
     }
 
     @Override
@@ -63,7 +63,15 @@ public enum TimeSeriesType implements EnumConst {
     }
 
     public boolean numericMerged() {
-        return numericMerged;
+        return fillLength != 0;
+    }
+
+    public boolean fill() {
+        return fillLength > 0;
+    }
+
+    public int fillLength() {
+        return fillLength;
     }
 
     public static TimeSeriesType fromCode(String code) {
