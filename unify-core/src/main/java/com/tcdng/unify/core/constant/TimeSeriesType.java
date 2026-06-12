@@ -37,8 +37,8 @@ public enum TimeSeriesType implements EnumConst {
     MINUTE_OF_HOUR("MH", 60),
     HOUR_OF_DAY("HD", 24),
     DAY_OF_WEEK("DW", 7),
-    DAY_OF_MONTH("DM", 28),
-    DAY_OF_YEAR("DR", 365),
+    DAY_OF_MONTH("DM", 31),
+    DAY_OF_YEAR("DR", 366),
     WEEK_OF_YEAR("WR", 52),
     MONTH_OF_YEAR("MR", 12),
     YEAR_OF_DECA_MILLENIUM("YM", -1);
@@ -60,6 +60,10 @@ public enum TimeSeriesType implements EnumConst {
     @Override
     public String defaultCode() {
         return DAY.code;
+    }
+
+    public boolean zeroBased() {
+        return MINUTE_OF_HOUR.equals(this) || HOUR_OF_DAY.equals(this);
     }
 
     public boolean numericMerged() {
