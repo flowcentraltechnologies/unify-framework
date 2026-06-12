@@ -15,6 +15,9 @@
  */
 package com.tcdng.unify.core.constant;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.tcdng.unify.common.annotation.StaticList;
 import com.tcdng.unify.common.constants.EnumConst;
 import com.tcdng.unify.core.util.EnumUtils;
@@ -27,7 +30,7 @@ import com.tcdng.unify.core.util.EnumUtils;
  */
 @StaticList(name = "timeseriestypelist", description="$m{staticlist.timeseriestypelist}")
 public enum TimeSeriesType implements EnumConst {
-
+	
     MINUTE("MI", 0),
     HOUR("HR", 0),
     DAY("DY", 0),
@@ -42,6 +45,9 @@ public enum TimeSeriesType implements EnumConst {
     WEEK_OF_YEAR("WR", 52),
     MONTH_OF_YEAR("MR", 12),
     YEAR_OF_DECA_MILLENIUM("YM", -1);
+
+	public static final List<TimeSeriesType> FILL_TIMESERIES = Arrays.asList(MINUTE_OF_HOUR, HOUR_OF_DAY, DAY_OF_WEEK,
+			DAY_OF_MONTH, DAY_OF_YEAR, WEEK_OF_YEAR, MONTH_OF_YEAR);
 
     private final String code;
 
