@@ -32,23 +32,31 @@ import com.tcdng.unify.web.ui.widget.ResponseWriter;
  * @since 4.1
  */
 @Component("openwindowresponse")
-@UplAttributes({ @UplAttribute(name = "path", type = String.class),
-        @UplAttribute(name = "pathBinding", type = String.class) })
+@UplAttributes({
+	@UplAttribute(name = "path", type = String.class),
+	@UplAttribute(name = "pathBinding", type = String.class),
+	@UplAttribute(name = "tab", type = String.class) })
 public class OpenWindowResponse extends AbstractJsonPageControllerResponse {
 
-    public OpenWindowResponse() {
-        super("openWindowHdl", false);
-    }
+	public OpenWindowResponse() {
+		super("openWindowHdl", false);
+	}
 
-    @Override
-    public void doGenerate(ResponseWriter writer, Page page) throws UnifyException {
-        String path = getUplAttribute(String.class, "path");
-        if (StringUtils.isBlank(path)) {
-            String pathBinding = getUplAttribute(String.class, "pathBinding");
-            path = (String) ReflectUtils.getNestedBeanProperty(page.getPageBean(), pathBinding);
-        }
+	@Override
+	public void doGenerate(ResponseWriter writer, Page page) throws UnifyException {
+		String path = getUplAttribute(String.class, "path");
+		if (StringUtils.isBlank(path)) {
+			String pathBinding = getUplAttribute(String.class, "pathBinding");
+			path = (String) ReflectUtils.getNestedBeanProperty(page.getPageBean(), pathBinding);
+		}
 
-        writer.write(",");
-        writer.writeJsonPathVariable("openWindow", path);
-    }
+		writer.write(",");
+		writer.writeJsonPathVariable("openWindow", path);
+
+		final String tab = getUplAttribute(String.class, "tab");
+		if (!StringUtils.isBlank(tab)) {
+			writer.write(",\"tab\":true");
+			writer.write(",\"tabName\":\"").write(tab).write("\"");
+		}
+	}
 }
