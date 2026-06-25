@@ -15,6 +15,8 @@
  */
 package com.tcdng.unify.core.business;
 
+import java.util.concurrent.TimeoutException;
+
 /**
  * Queued execution.
  * 
@@ -32,6 +34,10 @@ public interface QueuedExec<T> {
 
 	/**
 	 * Waits until all execution is completed.
+	 * 
+	 * @param timeoutMilliSec timeout in milliseconds
+     * @throws TimeoutException
+     *             if an error occurs
 	 */
-	void waitTillCompleted();
+	void waitTillCompleted(long timeoutMilliSec) throws TimeoutException;
 }

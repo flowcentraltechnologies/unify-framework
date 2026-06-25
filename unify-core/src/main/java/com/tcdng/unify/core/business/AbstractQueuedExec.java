@@ -18,6 +18,7 @@ package com.tcdng.unify.core.business;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeoutException;
 
 import com.tcdng.unify.core.util.ThreadUtils;
 
@@ -41,9 +42,14 @@ public abstract class AbstractQueuedExec<T> implements QueuedExec<T> {
 	}
 
 	@Override
-	public final void waitTillCompleted() {
+	public final void waitTillCompleted(long timeoutMilliSec) throws TimeoutException {
 		ThreadPoolExecutor tpe = (ThreadPoolExecutor) executor;
+	    long deadline = System.currentTimeMillis() + timeoutMilliSec;
 		while (tpe.getTaskCount() != tpe.getCompletedTaskCount()) {
+	        if (System.currentTimeMillis() > deadline) {
+	            throw new TimeoutException("Tasks did not complete in time");
+	        }
+	        
 			ThreadUtils.sleep(100L);
 		}
 	}
