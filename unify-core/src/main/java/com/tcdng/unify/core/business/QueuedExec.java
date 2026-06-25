@@ -29,5 +29,9 @@ public interface QueuedExec<T> {
 	 * @param parameter the parameter to use
 	 */
 	void execute(T parameter);
-	
+
+	/**
+	 * Waits until all execution is completed.
+	 */
+	void waitTillCompleted();
 }
