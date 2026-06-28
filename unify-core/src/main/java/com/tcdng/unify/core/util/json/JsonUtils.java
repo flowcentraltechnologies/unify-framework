@@ -15,6 +15,8 @@
  */
 package com.tcdng.unify.core.util.json;
 
+import java.util.Date;
+
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.data.LargeStringWriter;
 
@@ -37,6 +39,18 @@ public final class JsonUtils {
 	}
 
 	public static String getWriteField(String fieldName, String[] val) {
+		StringBuilder sb = new StringBuilder();
+		JsonUtils.writeField(sb, fieldName, val);
+		return sb.toString();
+	}
+
+	public static String getWriteField(String fieldName, Date val) {
+		StringBuilder sb = new StringBuilder();
+		JsonUtils.writeField(sb, fieldName, val);
+		return sb.toString();
+	}
+
+	public static String getWriteField(String fieldName, Date[] val) {
 		StringBuilder sb = new StringBuilder();
 		JsonUtils.writeField(sb, fieldName, val);
 		return sb.toString();
@@ -166,6 +180,16 @@ public final class JsonUtils {
 	}
 
 	public static void writeField(StringBuilder sb, String fieldName, Number val) {
+		JsonUtils.writeFieldPrefix(sb, fieldName);
+		JsonUtils.write(sb, val);
+	}
+
+	public static void writeField(StringBuilder sb, String fieldName, Date[] val) {
+		JsonUtils.writeFieldPrefix(sb, fieldName);
+		JsonUtils.write(sb, val);
+	}
+
+	public static void writeField(StringBuilder sb, String fieldName, Date val) {
 		JsonUtils.writeFieldPrefix(sb, fieldName);
 		JsonUtils.write(sb, val);
 	}
@@ -427,6 +451,37 @@ public final class JsonUtils {
 	public static void write(StringBuilder sb, Number val) {
 		if (val != null) {
 			sb.append(val);
+		} else {
+			sb.append("null");
+		}
+	}
+
+	public static void write(StringBuilder sb, Date[] val) {
+		if (val != null) {
+			sb.append('[');
+			boolean appendSym = false;
+			for (Date _val : val) {
+				if (appendSym) {
+					sb.append(',');
+				} else {
+					appendSym = true;
+				}
+
+				if (_val != null) {
+					sb.append(_val.getTime());
+				} else {
+					sb.append("null");
+				}
+			}
+			sb.append(']');
+		} else {
+			sb.append("null");
+		}
+	}
+
+	public static void write(StringBuilder sb, Date val) {
+		if (val != null) {
+			sb.append(val.getTime());
 		} else {
 			sb.append("null");
 		}

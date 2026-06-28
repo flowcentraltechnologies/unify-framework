@@ -17,6 +17,7 @@
 package com.tcdng.unify.core.database;
 
 import com.tcdng.unify.core.UnifyException;
+import com.tcdng.unify.core.criterion.AggregateFunction;
 import com.tcdng.unify.core.criterion.AggregateType;
 import com.tcdng.unify.core.util.DataUtils;
 
@@ -28,24 +29,33 @@ import com.tcdng.unify.core.util.DataUtils;
  */
 public class Aggregation {
 
-	private AggregateType type; 
-	
-	private String fieldName;
+	private AggregateFunction func;
 
 	private Object value;
 
-	public Aggregation(AggregateType type, String fieldName, Object value) {
-		this.type = type;
-		this.fieldName = fieldName;
+	public Aggregation(AggregateFunction func, Object value) {
+		this.func = func;
 		this.value = value;
 	}
 
 	public AggregateType getType() {
-		return type;
+		return func.getType();
+	}
+
+	public String getName() {
+		return func.getName();
 	}
 
 	public String getFieldName() {
-		return fieldName;
+		return func.getFieldName();
+	}
+
+	public String getFieldLabel() {
+		return func.getFieldLabel();
+	}
+
+	public boolean isWithFieldLabel() {
+		return func.isWithFieldLabel();
 	}
 
 	public Object getValue() {
@@ -54,5 +64,9 @@ public class Aggregation {
 
 	public <T> T getValue(Class<T> targetClazz) throws UnifyException {
 		return DataUtils.convert(targetClazz, value);
+	}
+
+	public boolean isWithValue() {
+		return value != null;
 	}
 }

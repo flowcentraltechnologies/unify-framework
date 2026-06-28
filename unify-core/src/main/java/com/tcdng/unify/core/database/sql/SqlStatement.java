@@ -36,8 +36,6 @@ public class SqlStatement {
 
 	private List<SqlResult> resultInfoList;
 
-	private boolean merge;
-
 	private boolean lenient;
 
 	public SqlStatement(SqlEntityInfo sqlEntityInfo, SqlStatementType type, String sql) {
@@ -96,14 +94,6 @@ public class SqlStatement {
 
 	public boolean isWithSqlEntityInfo() {
 		return sqlEntityInfo != null;
-	}
-
-	public boolean isMerge() {
-		return merge;
-	}
-
-	public void setMerge(boolean merge) {
-		this.merge = merge;
 	}
 
     public boolean isLenient() {

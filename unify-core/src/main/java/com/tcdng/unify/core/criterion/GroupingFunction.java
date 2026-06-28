@@ -27,29 +27,65 @@ import com.tcdng.unify.core.util.StringUtils;
  */
 public class GroupingFunction {
 
+	private String name;
+
 	private String fieldName;
+
+	private String fieldLabel;
 
 	private TimeSeriesType dateSeriesType;
 
-	public GroupingFunction(String fieldName, TimeSeriesType dateSeriesType) {
-		if (StringUtils.isBlank(fieldName) || dateSeriesType == null) {
+	public GroupingFunction(String name, String fieldName, String fieldLabel, TimeSeriesType dateSeriesType) {
+		if (StringUtils.isBlank(name) || StringUtils.isBlank(fieldName) || StringUtils.isBlank(fieldLabel)
+				|| dateSeriesType == null) {
 			throw new IllegalArgumentException("Supplied arguments are null or blank.");
 		}
 
+		this.name = name;
+		this.fieldName = fieldName;
+		this.fieldLabel = fieldLabel;
+		this.dateSeriesType = dateSeriesType;
+	}
+
+	public GroupingFunction(String name, String fieldName, TimeSeriesType dateSeriesType) {
+		if (StringUtils.isBlank(name) || StringUtils.isBlank(fieldName) || dateSeriesType == null) {
+			throw new IllegalArgumentException("Supplied arguments are null or blank.");
+		}
+
+		this.name = name;
 		this.fieldName = fieldName;
 		this.dateSeriesType = dateSeriesType;
 	}
 
-	public GroupingFunction(String fieldName) {
-		if (StringUtils.isBlank(fieldName)) {
+	public GroupingFunction(String name, String fieldName, String fieldLabel) {
+		if (StringUtils.isBlank(name) || StringUtils.isBlank(fieldName) || StringUtils.isBlank(fieldLabel)) {
 			throw new IllegalArgumentException("Supplied argument is null or blank.");
 		}
 
+		this.name = name;
 		this.fieldName = fieldName;
+		this.fieldLabel = fieldLabel;
+	}
+
+	public GroupingFunction(String name, String fieldName) {
+		if (StringUtils.isBlank(name) || StringUtils.isBlank(fieldName)) {
+			throw new IllegalArgumentException("Supplied argument is null or blank.");
+		}
+
+		this.name = name;
+		this.fieldName = fieldName;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	public String getFieldName() {
 		return fieldName;
+	}
+
+	public String getFieldLabel() {
+		return fieldLabel;
 	}
 
 	public TimeSeriesType getDateSeriesType() {
@@ -62,5 +98,13 @@ public class GroupingFunction {
 
 	public boolean isWithDateFieldGrouping() {
 		return dateSeriesType != null;
+	}
+
+	public boolean isTimeSeriesNumericMerged() {
+		return dateSeriesType != null && dateSeriesType.numericMerged();
+	}
+
+	public boolean isWithFieldLabel() {
+		return !StringUtils.isBlank(fieldLabel);
 	}
 }

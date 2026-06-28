@@ -45,8 +45,8 @@ import com.tcdng.unify.core.criterion.AggregateType;
 import com.tcdng.unify.core.criterion.GroupingFunction;
 import com.tcdng.unify.core.database.Aggregation;
 import com.tcdng.unify.core.database.CallableProc;
+import com.tcdng.unify.core.database.Grouping;
 import com.tcdng.unify.core.database.GroupingAggregation;
-import com.tcdng.unify.core.database.GroupingAggregation.Grouping;
 import com.tcdng.unify.core.database.StaticReference;
 import com.tcdng.unify.core.transform.Transformer;
 import com.tcdng.unify.core.util.DataUtils;
@@ -536,7 +536,7 @@ public class SqlStatementExecutorImpl extends AbstractUnifyComponent implements 
 					throw new UnifyException(UnifyCoreErrorConstants.RECORD_MULTIPLE_RESULT_FOUND);
 				}
 
-				return new Aggregation(aggregateFunction.getType(), aggregateFunction.getFieldName(), value);
+				return new Aggregation(aggregateFunction, value);
 			}
 		} catch (UnifyException e) {
 			throw e;
@@ -578,7 +578,7 @@ public class SqlStatementExecutorImpl extends AbstractUnifyComponent implements 
 					}
 
 					resultList
-							.add(new Aggregation(aggregateFunction.getType(), aggregateFunction.getFieldName(), value));
+							.add(new Aggregation(aggregateFunction, value));
 				}
 
 				if (rs.next()) {
@@ -624,30 +624,29 @@ public class SqlStatementExecutorImpl extends AbstractUnifyComponent implements 
 					value = DataUtils.convert(sqlResult.getType(), 0);
 				}
 
-				final boolean merge = sqlStatement.isMerge();
 				List<Grouping> groupings = new ArrayList<Grouping>();
 				for (GroupingFunction _groupingFunction : groupingFunction) {
 					if (_groupingFunction.isWithFieldGrouping()) {
 						sqlResult = sqlResultList.get(resultIndex);
 						Object grouping = sqlResult.getSqlDataTypePolicy().executeGetResult(rs, sqlResult.getType(),
 								++resultIndex, timeZoneOffset);
-						groupings.add(new Grouping(String.valueOf(grouping)));
+						groupings.add(new Grouping(_groupingFunction, String.valueOf(grouping)));
 					} else {
-						if (merge) {
+						if (_groupingFunction.isTimeSeriesNumericMerged()) {
 							Object grouping = mergeSqlDataTypePolicy.executeGetResult(rs, sqlResult.getType(),
 									++resultIndex, timeZoneOffset);
-							groupings.add(new Grouping(String.valueOf(grouping)));
+							groupings.add(new Grouping(_groupingFunction, String.valueOf(grouping)));
 						} else {
 							sqlResult = sqlResultList.get(resultIndex);
 							Date groupingDate = (Date) sqlResult.getSqlDataTypePolicy().executeGetResult(rs, Date.class,
 									++resultIndex, timeZoneOffset);
-							groupings.add(new Grouping(groupingDate));
+							groupings.add(new Grouping(_groupingFunction, groupingDate));
 						}
 					}
 				}
 
 				resultList.add(new GroupingAggregation(groupings, Arrays.asList(
-						new Aggregation(aggregateFunction.getType(), aggregateFunction.getFieldName(), value))));
+						new Aggregation(aggregateFunction, value))));
 			}
 
 			return resultList;
@@ -660,6 +659,7 @@ public class SqlStatementExecutorImpl extends AbstractUnifyComponent implements 
 			SqlUtils.close(rs);
 			SqlUtils.close(pStmt);
 		}
+		
 		return null;
 	}
 
@@ -694,27 +694,26 @@ public class SqlStatementExecutorImpl extends AbstractUnifyComponent implements 
 					}
 
 					aggregation
-							.add(new Aggregation(aggregateFunction.getType(), aggregateFunction.getFieldName(), value));
+							.add(new Aggregation(aggregateFunction, value));
 				}
 
-				final boolean merge = sqlStatement.isMerge();
 				List<Grouping> groupings = new ArrayList<Grouping>();
 				for (GroupingFunction _groupingFunction : groupingFunction) {
 					if (_groupingFunction.isWithFieldGrouping()) {
 						sqlResult = sqlResultList.get(resultIndex);
 						Object grouping = sqlResult.getSqlDataTypePolicy().executeGetResult(rs, sqlResult.getType(),
 								++resultIndex, timeZoneOffset);
-						groupings.add(new Grouping(String.valueOf(grouping)));
+						groupings.add(new Grouping(_groupingFunction, String.valueOf(grouping)));
 					} else {
-						if (merge) {
+						if (_groupingFunction.isTimeSeriesNumericMerged()) {
 							Object grouping = mergeSqlDataTypePolicy.executeGetResult(rs, sqlResult.getType(),
 									++resultIndex, timeZoneOffset);
-							groupings.add(new Grouping(String.valueOf(grouping)));
+							groupings.add(new Grouping(_groupingFunction, String.valueOf(grouping)));
 						} else {
 							sqlResult = sqlResultList.get(resultIndex);
 							Date groupingDate = (Date) sqlResult.getSqlDataTypePolicy().executeGetResult(rs, Date.class,
 									++resultIndex, timeZoneOffset);
-							groupings.add(new Grouping(groupingDate));
+							groupings.add(new Grouping(_groupingFunction, groupingDate));
 						}
 					}
 				}

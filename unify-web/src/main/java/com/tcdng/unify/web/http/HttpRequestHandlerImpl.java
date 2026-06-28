@@ -24,9 +24,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import com.tcdng.unify.core.AbstractUnifyComponent;
 import com.tcdng.unify.core.SessionAttributeProvider;
@@ -97,11 +99,14 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 
 	private FactoryMap<String, RequestPathParts> requestPathParts;
 
+	private Set<String> restrictedPaths;
+	
 	private boolean isTenantPathEnabled;
 
 	private boolean isNoCachingEnabled;
 
 	public HttpRequestHandlerImpl() {
+		this.restrictedPaths = Collections.emptySet();
 		this.requestPathParts = new FactoryMap<String, RequestPathParts>() {
 
 			@Override
@@ -215,6 +220,10 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 
 			Controller controller = null;
 			try {
+				if (restrictedPaths.contains(requestPathParts.getControllerName())) {
+					throwOperationErrorException(new IllegalArgumentException("Attempt to access restricted page"));
+				}
+				
 				controller = controllerFinder.findController(requestPathParts.getControllerPathParts());
 				if (controller.isRefererRequired()
 						&& StringUtils.isBlank(httpRequest.getHeader(HttpRequestHeaderConstants.REFERER))) {
@@ -365,12 +374,16 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 		return userSession;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void onInitialize() throws UnifyException {
 		isTenantPathEnabled = getContainerSetting(boolean.class,
 				UnifyWebPropertyConstants.APPLICATION_TENANT_PATH_ENABLED, false);
 		isNoCachingEnabled = getContainerSetting(boolean.class, UnifyWebPropertyConstants.APPLICATION_WEB_NO_CACHING,
 				false);
+		List<String> paths = DataUtils.convert(ArrayList.class, String.class,
+				getContainerSetting(Object.class, UnifyWebPropertyConstants.APPLICATION_RESTRTICTED_PATHS));
+		restrictedPaths = paths != null ? new HashSet<String>(paths) : Collections.emptySet();
 	}
 
 	@Override

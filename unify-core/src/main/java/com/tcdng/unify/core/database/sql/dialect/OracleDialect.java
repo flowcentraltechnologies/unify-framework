@@ -292,32 +292,40 @@ public class OracleDialect extends AbstractSqlDataSourceDialect {
 
 	@Override
 	protected void appendTimestampTruncation(StringBuilder sql, SqlFieldInfo sqlFieldInfo,
-			TimeSeriesType timeSeriesType, boolean merge) throws UnifyException {
-		if (merge) {
+			TimeSeriesType timeSeriesType) throws UnifyException {
+		if (timeSeriesType.numericMerged()) {
 			sql.append("TO_CHAR(").append(sqlFieldInfo.getPreferredColumnName()).append(", '");
 			switch (timeSeriesType) {
 			case DAY_OF_WEEK:
 				sql.append("D"); // 1- 7
 				break;
-			case DAY:
 			case DAY_OF_MONTH:
 				sql.append("DD"); // 1 - 31
 				break;
 			case DAY_OF_YEAR:
 				sql.append("DDD"); // 1 - 366
 				break;
-			case HOUR:
+			case HOUR_OF_DAY:
 				sql.append("HH24"); // 0 - 23
 				break;
-			case MONTH:
+	        case MINUTE_OF_HOUR:
+	            sql.append("MI"); // 0 - 59
+	            break;
+			case MONTH_OF_YEAR:
 				sql.append("MM"); // 01 - 12
 				break;
-			case WEEK:
+			case WEEK_OF_YEAR:
 				sql.append("WW"); // 1 - 53
 				break;
-			case YEAR:
+			case YEAR_OF_DECA_MILLENIUM:
 				sql.append("YYYY"); // 1 - 9999
 				break;
+			case MINUTE:
+			case HOUR:
+			case DAY:
+			case WEEK:
+			case MONTH:
+			case YEAR:
 			default:
 				break;
 			}
@@ -325,10 +333,10 @@ public class OracleDialect extends AbstractSqlDataSourceDialect {
 		} else {
 			sql.append("TRUNC(").append(sqlFieldInfo.getPreferredColumnName()).append(", '");
 			switch (timeSeriesType) {
+	        case MINUTE:
+	            sql.append("MI");
+	            break;
 			case DAY:
-			case DAY_OF_WEEK:
-			case DAY_OF_MONTH:
-			case DAY_OF_YEAR:
 				sql.append("DD");
 				break;
 			case HOUR:
@@ -343,6 +351,14 @@ public class OracleDialect extends AbstractSqlDataSourceDialect {
 			case YEAR:
 				sql.append("YY");
 				break;
+			case DAY_OF_WEEK:
+			case DAY_OF_MONTH:
+			case DAY_OF_YEAR:
+			case MINUTE_OF_HOUR:
+			case HOUR_OF_DAY:
+			case MONTH_OF_YEAR:
+			case WEEK_OF_YEAR:
+			case YEAR_OF_DECA_MILLENIUM:
 			default:
 				break;
 			}
@@ -352,8 +368,8 @@ public class OracleDialect extends AbstractSqlDataSourceDialect {
 
 	@Override
 	protected void appendTimestampTruncationGroupBy(StringBuilder sql, SqlFieldInfo sqlFieldInfo,
-			TimeSeriesType timeSeriesType, boolean merge) throws UnifyException {
-		appendTimestampTruncation(sql, sqlFieldInfo, timeSeriesType, merge);
+			TimeSeriesType timeSeriesType) throws UnifyException {
+		appendTimestampTruncation(sql, sqlFieldInfo, timeSeriesType);
 	}
 
 	@Override

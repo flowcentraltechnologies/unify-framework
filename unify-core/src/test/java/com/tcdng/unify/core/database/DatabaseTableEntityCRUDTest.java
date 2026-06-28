@@ -71,27 +71,27 @@ public class DatabaseTableEntityCRUDTest extends AbstractUnifyComponentTest {
 			db.create(new Fruit("banana", "yellow", 45.00));
 			db.create(new Fruit("orange", "orange", 15.00));
 
-			Aggregation aggregate = db.aggregate(new AggregateFunction(AggregateType.SUM, "price"),
+			Aggregation aggregate = db.aggregate(new AggregateFunction(AggregateType.SUM, "p1", "price"),
 					new FruitQuery().ignoreEmptyCriteria(true));
 			assertNotNull(aggregate);
 			assertEquals(140.00, aggregate.getValue());
 
-			aggregate = db.aggregate(new AggregateFunction(AggregateType.AVERAGE, "price"),
+			aggregate = db.aggregate(new AggregateFunction(AggregateType.AVERAGE, "p2", "price"),
 					new FruitQuery().addLike("name", "apple"));
 			assertNotNull(aggregate);
 			assertEquals(40.00, aggregate.getValue());
 
-			aggregate = db.aggregate(new AggregateFunction(AggregateType.MAXIMUM, "price"),
+			aggregate = db.aggregate(new AggregateFunction(AggregateType.MAXIMUM, "p3", "price"),
 					new FruitQuery().ignoreEmptyCriteria(true));
 			assertNotNull(aggregate);
 			assertEquals(60.00, aggregate.getValue());
 
-			aggregate = db.aggregate(new AggregateFunction(AggregateType.MINIMUM, "price"),
+			aggregate = db.aggregate(new AggregateFunction(AggregateType.MINIMUM, "p4", "price"),
 					new FruitQuery().addLike("name", "apple"));
 			assertNotNull(aggregate);
 			assertEquals(20.00, aggregate.getValue());
 
-			aggregate = db.aggregate(new AggregateFunction(AggregateType.COUNT, "price"),
+			aggregate = db.aggregate(new AggregateFunction(AggregateType.COUNT, "p5", "price"),
 					new FruitQuery().addGreaterThanEqual("price", 20.00));
 			assertNotNull(aggregate);
 			assertEquals(3, aggregate.getValue());
@@ -112,27 +112,27 @@ public class DatabaseTableEntityCRUDTest extends AbstractUnifyComponentTest {
 			db.create(new Fruit("banana", "yellow", 45.00));
 			db.create(new Fruit("orange", "orange", 15.00));
 
-			Aggregation aggregate = db.aggregate(new AggregateFunction(AggregateType.SUM, "price"),
+			Aggregation aggregate = db.aggregate(new AggregateFunction(AggregateType.SUM, "p1", "price"),
 					new FruitQuery().ignoreEmptyCriteria(true));
 			assertNotNull(aggregate);
 			assertEquals(140.00, aggregate.getValue());
 
-			aggregate = db.aggregate(new AggregateFunction(AggregateType.AVERAGE, "price"),
+			aggregate = db.aggregate(new AggregateFunction(AggregateType.AVERAGE, "p2", "price"),
 					new FruitQuery().addILike("name", "apple"));
 			assertNotNull(aggregate);
 			assertEquals(40.00, aggregate.getValue());
 
-			aggregate = db.aggregate(new AggregateFunction(AggregateType.MAXIMUM, "price"),
+			aggregate = db.aggregate(new AggregateFunction(AggregateType.MAXIMUM, "p3", "price"),
 					new FruitQuery().ignoreEmptyCriteria(true));
 			assertNotNull(aggregate);
 			assertEquals(60.00, aggregate.getValue());
 
-			aggregate = db.aggregate(new AggregateFunction(AggregateType.MINIMUM, "price"),
+			aggregate = db.aggregate(new AggregateFunction(AggregateType.MINIMUM, "p4", "price"),
 					new FruitQuery().addILike("name", "apple"));
 			assertNotNull(aggregate);
 			assertEquals(20.00, aggregate.getValue());
 
-			aggregate = db.aggregate(new AggregateFunction(AggregateType.COUNT, "price"),
+			aggregate = db.aggregate(new AggregateFunction(AggregateType.COUNT, "p5", "price"),
 					new FruitQuery().addGreaterThanEqual("price", 20.00));
 			assertNotNull(aggregate);
 			assertEquals(3, aggregate.getValue());
@@ -169,7 +169,7 @@ public class DatabaseTableEntityCRUDTest extends AbstractUnifyComponentTest {
 			Long warehouseOfficeId = (Long) db.create(warehouseOffice);
 			db.create(new Author("Susan Bramer", 45, Gender.FEMALE, BooleanType.TRUE, warehouseOfficeId));
 
-			Aggregation aggregate = db.aggregate(new AggregateFunction(AggregateType.SUM, "age"),
+			Aggregation aggregate = db.aggregate(new AggregateFunction(AggregateType.SUM, "p1", "age"),
 					new AuthorQuery().addEquals("officeTelephone", "+2348888888"));
 			assertNotNull(aggregate);
 			assertEquals(Integer.valueOf(125), aggregate.getValue());
@@ -189,7 +189,7 @@ public class DatabaseTableEntityCRUDTest extends AbstractUnifyComponentTest {
 
 			// Sum
 			List<Aggregation> list = db.aggregate(
-					Arrays.asList(AggregateType.SUM.function("price"), AggregateType.SUM.function("quantity")),
+					Arrays.asList(AggregateType.SUM.function("p1", "price"), AggregateType.SUM.function("p2", "quantity")),
 					new FruitQuery().ignoreEmptyCriteria(true));
 			assertNotNull(list);
 			assertEquals(2, list.size());
@@ -206,7 +206,7 @@ public class DatabaseTableEntityCRUDTest extends AbstractUnifyComponentTest {
 
 			// Combine Average and sum
 			list = db.aggregate(
-					Arrays.asList(AggregateType.AVERAGE.function("quantity"), AggregateType.SUM.function("price")),
+					Arrays.asList(AggregateType.AVERAGE.function("p1", "quantity"), AggregateType.SUM.function("p2", "price")),
 					new FruitQuery().addLike("name", "apple").addSelect("quantity", "price"));
 			assertNotNull(list);
 			assertEquals(2, list.size());
@@ -238,14 +238,14 @@ public class DatabaseTableEntityCRUDTest extends AbstractUnifyComponentTest {
 			db.create(new Fruit("orange", "orange", 15.00, 11));
 
 			// Count
-			Aggregation countAggregate = db.aggregate(new AggregateFunction(AggregateType.COUNT, "color"),
+			Aggregation countAggregate = db.aggregate(new AggregateFunction(AggregateType.COUNT, "p1", "color"),
 					new FruitQuery().addLessThanEqual("price", 45.00));
 			assertNotNull(countAggregate);
 			assertEquals("color", countAggregate.getFieldName());
 			assertEquals(4, countAggregate.getValue());
 
 			// Count with distinct
-			countAggregate = db.aggregate(new AggregateFunction(AggregateType.COUNT, "color"),
+			countAggregate = db.aggregate(new AggregateFunction(AggregateType.COUNT, "p2", "color"),
 					new FruitQuery().addSelect("color").addLessThanEqual("price", 45.00).setDistinct(true));
 			assertNotNull(countAggregate);
 			assertEquals("color", countAggregate.getFieldName());
@@ -271,8 +271,8 @@ public class DatabaseTableEntityCRUDTest extends AbstractUnifyComponentTest {
 
 			// Count
 			List<GroupingAggregation> quantityAggregate = db.aggregate(
-					new AggregateFunction(AggregateType.SUM, "quantity"), new FruitQuery().ignoreEmptyCriteria(true),
-					new GroupingFunction("color"));
+					new AggregateFunction(AggregateType.SUM, "p1", "quantity"), new FruitQuery().ignoreEmptyCriteria(true),
+					new GroupingFunction("g1", "color"));
 			assertNotNull(quantityAggregate);
 			assertEquals(4, quantityAggregate.size());
 
@@ -359,8 +359,8 @@ public class DatabaseTableEntityCRUDTest extends AbstractUnifyComponentTest {
 
 			// Count
 			List<GroupingAggregation> quantityAggregate = db.aggregate(
-					new AggregateFunction(AggregateType.SUM, "quantity"), new FruitQuery().ignoreEmptyCriteria(true),
-					Arrays.asList(new GroupingFunction("name"), new GroupingFunction("color")));
+					new AggregateFunction(AggregateType.SUM,"p1",  "quantity"), new FruitQuery().ignoreEmptyCriteria(true),
+					Arrays.asList(new GroupingFunction("g1", "name"), new GroupingFunction("g2", "color")));
 			assertNotNull(quantityAggregate);
 			assertEquals(5, quantityAggregate.size());
 
@@ -473,10 +473,10 @@ public class DatabaseTableEntityCRUDTest extends AbstractUnifyComponentTest {
 
 			// Count
 			List<GroupingAggregation> quantityAggregate = db.aggregate(
-					Arrays.asList(new AggregateFunction(AggregateType.SUM, "quantity"),
-							new AggregateFunction(AggregateType.SUM, "price"),
-							new AggregateFunction(AggregateType.AVERAGE, "price")),
-					new FruitQuery().ignoreEmptyCriteria(true), new GroupingFunction("color"));
+					Arrays.asList(new AggregateFunction(AggregateType.SUM, "p1", "quantity"),
+							new AggregateFunction(AggregateType.SUM, "p2", "price"),
+							new AggregateFunction(AggregateType.AVERAGE, "p3", "price")),
+					new FruitQuery().ignoreEmptyCriteria(true), new GroupingFunction("g1", "color"));
 			assertNotNull(quantityAggregate);
 			assertEquals(4, quantityAggregate.size());
 

@@ -130,15 +130,14 @@ public class MsSqlDialect extends AbstractSqlDataSourceDialect {
 
 	@Override
 	protected void appendTimestampTruncation(StringBuilder sql, SqlFieldInfo sqlFieldInfo,
-			TimeSeriesType timeSeriesType, boolean merge) throws UnifyException {
-		if (merge) {
+			TimeSeriesType timeSeriesType) throws UnifyException {
+		if (timeSeriesType.numericMerged()) {
 			sql.append("FORMAT(DATEPART(");
 			String fmt = "'0'";
 			switch (timeSeriesType) {
 			case DAY_OF_WEEK:
 				sql.append("weekday"); // 1- 7
 				break;
-			case DAY:
 			case DAY_OF_MONTH:
 				sql.append("day"); // 1 - 31
 				fmt = "'00'";
@@ -147,22 +146,32 @@ public class MsSqlDialect extends AbstractSqlDataSourceDialect {
 				sql.append("dayofyear"); // 1 - 366
 				fmt = "'000'";
 				break;
-			case HOUR:
+			case HOUR_OF_DAY:
 				sql.append("hour"); // 0 - 23
 				fmt = "'00'";
 				break;
-			case MONTH:
+	        case MINUTE_OF_HOUR:
+	            sql.append("minute"); // 0 - 59
+	            fmt = "'00'";
+	            break;
+			case MONTH_OF_YEAR:
 				sql.append("month"); // 1 - 12
 				fmt = "'00'";
 				break;
-			case WEEK:
+			case WEEK_OF_YEAR:
 				sql.append("week"); // 1 - 54
 				fmt = "'00'";
 				break;
-			case YEAR:
+			case YEAR_OF_DECA_MILLENIUM:
 				sql.append("year"); // 1 - 9999
 				fmt = "'0000'";
 				break;
+			case MINUTE:
+			case HOUR:
+			case DAY:
+			case WEEK:
+			case MONTH:
+			case YEAR:
 			default:
 				break;
 			}
@@ -172,10 +181,10 @@ public class MsSqlDialect extends AbstractSqlDataSourceDialect {
 		} else {
 			sql.append("DATEPART(");
 			switch (timeSeriesType) {
+	        case MINUTE:
+	            sql.append("minute");
+	            break;
 			case DAY:
-			case DAY_OF_WEEK:
-			case DAY_OF_MONTH:
-			case DAY_OF_YEAR:
 				sql.append("day");
 				break;
 			case HOUR:
@@ -190,6 +199,14 @@ public class MsSqlDialect extends AbstractSqlDataSourceDialect {
 			case YEAR:
 				sql.append("year");
 				break;
+			case DAY_OF_WEEK:
+			case DAY_OF_MONTH:
+			case DAY_OF_YEAR:
+	        case MINUTE_OF_HOUR:
+			case HOUR_OF_DAY:
+			case MONTH_OF_YEAR:
+			case WEEK_OF_YEAR:
+			case YEAR_OF_DECA_MILLENIUM:
 			default:
 				break;
 			}
@@ -199,7 +216,7 @@ public class MsSqlDialect extends AbstractSqlDataSourceDialect {
 
 	@Override
 	protected void appendTimestampTruncationGroupBy(StringBuilder sql, SqlFieldInfo sqlFieldInfo,
-			TimeSeriesType timeSeriesType, boolean merge) throws UnifyException {
+			TimeSeriesType timeSeriesType) throws UnifyException {
 		sql.append(TRUNC_COLUMN_ALIAS);
 	}
 

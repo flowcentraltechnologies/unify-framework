@@ -17,6 +17,10 @@ package com.tcdng.unify.core.business;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeoutException;
+
+import com.tcdng.unify.core.util.ThreadUtils;
 
 /**
  * Convenient base class for queued execution.
@@ -27,18 +31,31 @@ import java.util.concurrent.Executors;
 public abstract class AbstractQueuedExec<T> implements QueuedExec<T> {
 
 	private final ExecutorService executor;
-	
+
 	public AbstractQueuedExec(int maxProcessingThreads) {
 		this.executor = Executors.newFixedThreadPool(maxProcessingThreads);
 	}
-	
+
 	@Override
 	public final void execute(T param) {
 		executor.execute(new ExecThread(param));
 	}
-	
+
+	@Override
+	public final void waitTillCompleted(long timeoutMilliSec) throws TimeoutException {
+		ThreadPoolExecutor tpe = (ThreadPoolExecutor) executor;
+	    long deadline = System.currentTimeMillis() + timeoutMilliSec;
+		while (tpe.getTaskCount() != tpe.getCompletedTaskCount()) {
+	        if (System.currentTimeMillis() > deadline) {
+	            throw new TimeoutException("Tasks did not complete in time");
+	        }
+	        
+			ThreadUtils.sleep(100L);
+		}
+	}
+
 	protected abstract void doExecute(T param);
-	
+
 	private class ExecThread implements Runnable {
 
 		private final T param;
@@ -52,5 +69,5 @@ public abstract class AbstractQueuedExec<T> implements QueuedExec<T> {
 			doExecute(param);
 		}
 	}
-	
+
 }

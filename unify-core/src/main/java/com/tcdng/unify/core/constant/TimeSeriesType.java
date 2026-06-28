@@ -15,6 +15,9 @@
  */
 package com.tcdng.unify.core.constant;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.tcdng.unify.common.annotation.StaticList;
 import com.tcdng.unify.common.constants.EnumConst;
 import com.tcdng.unify.core.util.EnumUtils;
@@ -27,23 +30,32 @@ import com.tcdng.unify.core.util.EnumUtils;
  */
 @StaticList(name = "timeseriestypelist", description="$m{staticlist.timeseriestypelist}")
 public enum TimeSeriesType implements EnumConst {
+	
+    MINUTE("MI", 0),
+    HOUR("HR", 0),
+    DAY("DY", 0),
+    WEEK("WK", 0),
+    MONTH("MN", 0),
+    YEAR("YR", 0),
+    MINUTE_OF_HOUR("MH", 60),
+    HOUR_OF_DAY("HD", 24),
+    DAY_OF_WEEK("DW", 7),
+    DAY_OF_MONTH("DM", 31),
+    DAY_OF_YEAR("DR", 366),
+    WEEK_OF_YEAR("WR", 52),
+    MONTH_OF_YEAR("MR", 12),
+    YEAR_OF_DECA_MILLENIUM("YM", -1);
 
-    HOUR("HR", TimeResolutionType.MINUTE),
-    DAY("DY", TimeResolutionType.HOUR),
-    DAY_OF_WEEK("DW", TimeResolutionType.DAY),
-    DAY_OF_MONTH("DM", TimeResolutionType.DAY),
-    DAY_OF_YEAR("DR", TimeResolutionType.DAY),
-    WEEK("WK", TimeResolutionType.DAY),
-    MONTH("MN", TimeResolutionType.WEEK),
-    YEAR("YR", TimeResolutionType.MONTH);
+	public static final List<TimeSeriesType> FILL_TIMESERIES = Arrays.asList(MINUTE_OF_HOUR, HOUR_OF_DAY, DAY_OF_WEEK,
+			DAY_OF_MONTH, DAY_OF_YEAR, WEEK_OF_YEAR, MONTH_OF_YEAR);
 
     private final String code;
 
-    private final TimeResolutionType maxResolution;
+    private final int fillLength;
     
-    private TimeSeriesType(String code, TimeResolutionType maxResolution) {
+    private TimeSeriesType(String code, int fillLength) {
         this.code = code;
-        this.maxResolution = maxResolution;
+        this.fillLength = fillLength;
     }
 
     @Override
@@ -56,8 +68,20 @@ public enum TimeSeriesType implements EnumConst {
         return DAY.code;
     }
 
-    public TimeResolutionType maxResolution() {
-        return maxResolution;
+    public boolean zeroBased() {
+        return MINUTE_OF_HOUR.equals(this) || HOUR_OF_DAY.equals(this);
+    }
+
+    public boolean numericMerged() {
+        return fillLength != 0;
+    }
+
+    public boolean fill() {
+        return fillLength > 0;
+    }
+
+    public int fillLength() {
+        return fillLength;
     }
 
     public static TimeSeriesType fromCode(String code) {

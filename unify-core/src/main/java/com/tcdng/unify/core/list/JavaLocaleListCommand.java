@@ -34,20 +34,24 @@ import com.tcdng.unify.core.util.DataUtils;
 @Component("javalocalelist")
 public class JavaLocaleListCommand extends AbstractZeroParamsListCommand {
 
-    private List<Listable> javaLocaleList;
+	private List<Listable> javaLocaleList;
 
-    @Override
-    public List<? extends Listable> execute(Locale locale, ZeroParams params) throws UnifyException {
-        if (javaLocaleList == null) {
-            javaLocaleList = new ArrayList<Listable>();
+	@Override
+	public List<? extends Listable> execute(Locale locale, ZeroParams params) throws UnifyException {
+		if (javaLocaleList == null) {
+			synchronized (this) {
+				if (javaLocaleList == null) {
+					javaLocaleList = new ArrayList<Listable>();
 
-            for (Locale availLocale : Locale.getAvailableLocales()) {
-                javaLocaleList.add(new ListData(availLocale.toLanguageTag(), availLocale.getDisplayName(locale)));
-            }
-            
-            DataUtils.sortAscending(javaLocaleList, ListData.class, "listDescription");
-        }
+					for (Locale availLocale : Locale.getAvailableLocales()) {
+						javaLocaleList
+								.add(new ListData(availLocale.toLanguageTag(), availLocale.getDisplayName(locale)));
+					}
 
-        return javaLocaleList;
-    }
+					DataUtils.sortAscending(javaLocaleList, ListData.class, "listDescription");
+				}
+			}
+		}
+		return javaLocaleList;
+	}
 }

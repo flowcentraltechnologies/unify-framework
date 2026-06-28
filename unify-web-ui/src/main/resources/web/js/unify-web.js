@@ -568,13 +568,16 @@ ux.perform = function(funcs) {
 	if (funcs) {
 		for (var i = 0; i < funcs.length; i++) {
 			var _func = funcs[i];
-			try {
-				ux.getfn(_func.fn)(_func.prm);
-			} catch(e) {
-				console.log("_func = " + JSON.stringify(_func));
-				throw e;
-			}
+			ux._perform(_func.fn, _func.prm);
 		}
+	}
+}
+
+ux._perform = function(fid, prm) {
+	try {
+		ux.getfn(fid)(prm);
+	} catch(e) {
+		console.log("_func = " + JSON.stringify(_func));
 	}
 }
 
@@ -1232,7 +1235,7 @@ ux.rewireContent = function(evp) {
 		const cbrect = cbody.getBoundingClientRect();
 		const maxh = window.innerHeight - cbrect.top;
 		if (maxh > 0) {
-			cbody.style.overflowY = "scroll"; 
+			cbody.style.overflowY = "auto"; 
 			cbody.style.maxHeight = maxh + "px";
 			cbody.style.height = maxh + "px";
 		} else {
@@ -6032,7 +6035,7 @@ ux.documentKeydownHdl = function(uEv) {
 	if (evp) {
 		if (_id(evp.uId)) { // Containing panel must be visible for shortcut
 			uEv.evp = evp;
-			ux.getfn(evp.uFunc)(uEv);
+			ux._perform(evp.uFunc, uEv);
 			uEv.uStop();
 		}
 	}
@@ -6438,7 +6441,7 @@ ux.doOpenPopup = function(openPrm) {
 
 		ux.openPrm = openPrm;
 		if (openPrm.showHdl) {
-			ux.getfn(openPrm.showHdl)(openPrm.showParam);
+			ux._perform(openPrm.showHdl, openPrm.showParam);
 		}
 	}
 }
@@ -6478,7 +6481,7 @@ ux.hidePopup = function(uEv) {
 		ux.popCurr.style.visibility = 'hidden';
 		ux.popCurr = null;
 		if (openPrm && openPrm.hideHdl) {
-			ux.getfn(openPrm.hideHdl)(openPrm.hideParam);
+			ux._perform(openPrm.hideHdl, openPrm.hideParam);
 		}
 	}
 	

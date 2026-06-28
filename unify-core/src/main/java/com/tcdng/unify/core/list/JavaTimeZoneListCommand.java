@@ -39,26 +39,30 @@ public class JavaTimeZoneListCommand extends AbstractZeroParamsListCommand {
     private List<Listable> javaTimeZoneList;
 
     @Override
-    public List<? extends Listable> execute(Locale locale, ZeroParams params) throws UnifyException {
-        if (javaTimeZoneList == null) {
-            javaTimeZoneList = new ArrayList<Listable>();
+	public List<? extends Listable> execute(Locale locale, ZeroParams params) throws UnifyException {
+		if (javaTimeZoneList == null) {
+			synchronized (this) {
+				if (javaTimeZoneList == null) {
+					javaTimeZoneList = new ArrayList<Listable>();
 
-            String[] availableZoneIds = TimeZone.getAvailableIDs();
+					String[] availableZoneIds = TimeZone.getAvailableIDs();
 
-            for (String zoneId : availableZoneIds) {
-                if (zoneId.indexOf('/') > 0) {
-                    if (!zoneId.startsWith("Etc") && !zoneId.startsWith("SystemV")) {
-                        String utc = getUTCOffset(TimeZone.getTimeZone(zoneId).getRawOffset());
-                        javaTimeZoneList.add(new ListData(zoneId, String.format("%s %s", zoneId, utc)));
-                    }
-                }
-            }
+					for (String zoneId : availableZoneIds) {
+						if (zoneId.indexOf('/') > 0) {
+							if (!zoneId.startsWith("Etc") && !zoneId.startsWith("SystemV")) {
+								String utc = getUTCOffset(TimeZone.getTimeZone(zoneId).getRawOffset());
+								javaTimeZoneList.add(new ListData(zoneId, String.format("%s %s", zoneId, utc)));
+							}
+						}
+					}
 
-            DataUtils.sortAscending(javaTimeZoneList, ListData.class, "listDescription");
-        }
+					DataUtils.sortAscending(javaTimeZoneList, ListData.class, "listDescription");
+				}
+			}
+		}
 
-        return javaTimeZoneList;
-    }
+		return javaTimeZoneList;
+	}
 
     private String getUTCOffset(int rawOffset) {
         if (rawOffset != 0) {
