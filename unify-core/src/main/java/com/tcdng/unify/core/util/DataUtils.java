@@ -1088,8 +1088,8 @@ public final class DataUtils {
 
 				return list;
 			} else {
-			return Arrays.asList(DataUtils.getObjectFromJsonValue(comp, clazz, null, jsonValue));
-		}
+				return Arrays.asList(DataUtils.getObjectFromJsonValue(comp, clazz, null, jsonValue));
+			}
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
