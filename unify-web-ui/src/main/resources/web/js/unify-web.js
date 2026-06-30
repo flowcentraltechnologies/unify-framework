@@ -3091,6 +3091,24 @@ ux.rtoSelect = function(uEv) {
 	ux.hidePopup(null);
 }
 
+/** Text Upload */
+ux.rigTextUpload = function(rgp) {
+	if (rgp.pEditable) {
+		const fileElem = _id(rgp.pFilId);
+		const evp = ux.newEvPrm(rgp);
+		evp.uCmd = rgp.pId + "->autoRefresh";
+		ux.addHdl(fileElem, "change", ux.post, evp);
+		ux.addHdl(_id(rgp.pUplId), "click", function(uEv) {
+			fileElem.click();
+		}, {});
+		
+		const clearElem = _id(rgp.pClrId);
+		const evp1 = ux.newEvPrm(rgp);
+		evp1.uCmd = rgp.pId + "->clear";
+		ux.addHdl(clearElem, "click", ux.post, evp1);	
+	}
+}
+
 /** Rich Text Editor */
 ux.rigRichTextEditor = function(rgp) {
 	const eid = rgp.pEdtId;
@@ -5993,6 +6011,7 @@ ux.init = function() {
 	ux.setfn(ux.rigAssignBoxSec, "ux47");  
 	ux.setfn(ux.rigIndentedSelect, "ux48");  
 	ux.setfn(ux.rigTextOptions, "ux49");  
+	ux.setfn(ux.rigTextUpload, "ux4a");  
 }
 
 ux.setfn = function(fn, id) {

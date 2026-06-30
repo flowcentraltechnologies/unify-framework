@@ -26,6 +26,7 @@ select:not([multiple]){height:28px; padding-left: 4px; border: 1px solid #C8C8C8
 
 /**Reserved globals*/
 .ui-wcont {display:inline-block;}
+.ui-wscont {display:block;}
 
 .ui-user-hint {width: 300px; margin-left: auto; margin-right: auto; color: black; font-weight: bold; font-size: 8pt; text-align: center;
 z-index:400;}
@@ -1012,6 +1013,12 @@ overflow-x:hidden;overflow-y:scroll;border-top: solid 1px #A0A0A0;border-left: s
 /** Text Toggle Button (Mini) */
 .ui-minitogglebutton {padding: 0px 10px; height:18px; font-size:7pt; border: 1px solid #C8C8C8; cursor: pointer;}
 .ui-minitogglebutton:hover {background-color: #D0D0D0;}
+
+/** Text Upload */
+.ui-textupload {width:100%;}
+.ui-textupload .tuarea {width:100%;resize: none; word-wrap:break-word; border: 1px solid #C8C8C8;box-sizing: border-box;}
+.ui-textupload .tubutton {margin:4px;}
+.ui-textupload .tubutton-alert {margin:4px;}
 
 /** Time Field */
 .ui-time {width: 160px;}

@@ -136,6 +136,7 @@ public final class WriterUtils {
         jsAliasMap.put("ux.rigAssignBoxSec", "ux47");  
         jsAliasMap.put("ux.rigIndentedSelect", "ux48");  
         jsAliasMap.put("ux.rigTextOptions", "ux49");  
+        jsAliasMap.put("ux.rigTextUpload", "ux4a");  
         
         eventToJSMap = new HashMap<String, String>();
         eventToJSMap.put("onblur", "blur");

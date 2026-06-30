@@ -272,9 +272,13 @@ public abstract class AbstractWidgetWriter extends AbstractDhtmlWriter implement
     }
 
 	private void doWriteStructureContentWithUpdate(ResponseWriter writer, Widget widget) throws UnifyException {
-        widget.updateInternalState();
+		widget.updateInternalState();
 		if (widget.isRefreshesContainer()) {
-			writer.write("<div class=\"ui-wcont\" id=\"wcont_").write(widget.getId()).write("\">");
+			if (widget.isSupportStretch()) {
+				writer.write("<div class=\"ui-wcont\" id=\"wcont_").write(widget.getId()).write("\">");
+			} else {
+				writer.write("<div class=\"ui-wscont\" id=\"wcont_").write(widget.getId()).write("\">");
+			}
 		}
 
 		doWriteStructureAndContent(writer, widget);
@@ -282,8 +286,8 @@ public abstract class AbstractWidgetWriter extends AbstractDhtmlWriter implement
 		if (widget.isRefreshesContainer()) {
 			writer.write("</div>");
 		}
-		
-        widget.addPageAliases();
+
+		widget.addPageAliases();
 	}
 
 	private void doWriteWriteBehaviorWithUpdate(ResponseWriter writer, Widget widget, EventHandler[] eventHandlers)
