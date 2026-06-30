@@ -982,6 +982,29 @@ public final class DataUtils {
 	}
 
 	/**
+	 * Reads a JSON object list.
+	 * 
+	 * @param clazz bean type
+	 * @param json  the JSON string
+	 * @throws UnifyException if an error occurs
+	 */
+	public static <T> List<T> listFromJsonString(Class<T> clazz, String json) throws UnifyException {
+		return DataUtils.listFromJsonString(null, clazz, json);
+	}
+
+	/**
+	 * Reads a JSON object list.
+	 * 
+	 * @param clazz bean type
+	 * @param json  the JSON string
+	 * @throws UnifyException if an error occurs
+	 */
+	public static <T> List<T> listFromJsonString(JsonObjectComposition comp, Class<T> clazz, String json)
+			throws UnifyException {
+		return json != null ? DataUtils.listFromJsonReader(comp, clazz, new StringReader(json)) : null;
+	}
+
+	/**
 	 * Reads a JSON object. Has no support for collections.
 	 * 
 	 * @param clazz bean type
@@ -1031,6 +1054,48 @@ public final class DataUtils {
 		}
 
 		return DataUtils.fromJsonReader(comp, clazz, new BufferedReader(new InputStreamReader(inputStream, charset)));
+	}
+
+	/**
+	 * Reads a JSON object as list.
+	 * 
+	 * @param clazz  bean type
+	 * @param reader the JSON reader
+	 * @throws UnifyException if an error occurs
+	 */
+	public static <T> List<T> listFromJsonReader(Class<T> clazz, Reader reader) throws UnifyException {
+		return DataUtils.listFromJsonReader(null, clazz, reader);
+	}
+
+	/**
+	 * Reads a JSON object as list
+	 * 
+	 * @param clazz  bean type
+	 * @param reader the JSON reader
+	 * @throws UnifyException if an error occurs
+	 */
+	public static <T> List<T> listFromJsonReader(JsonObjectComposition comp, Class<T> clazz, Reader reader)
+			throws UnifyException {
+		try {
+			JsonValue jsonValue = Json.parse(reader);
+			if (jsonValue.isArray()) {
+				List<T> list = new ArrayList<T>();
+				JsonArray jsonArray = jsonValue.asArray();
+				final int len = jsonArray.size();
+				for (int i = 0; i < len; i++) {
+					list.add(DataUtils.getObjectFromJsonValue(comp, clazz, null, jsonArray.get(i)));
+				}
+
+				return list;
+			} else {
+			return Arrays.asList(DataUtils.getObjectFromJsonValue(comp, clazz, null, jsonValue));
+		}
+		} catch (UnifyException e) {
+			throw e;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new UnifyException(UnifyCoreErrorConstants.DATAUTIL_ERROR, e);
+		}
 	}
 
 	/**
