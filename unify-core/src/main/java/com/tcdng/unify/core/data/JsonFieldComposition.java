@@ -18,6 +18,7 @@ package com.tcdng.unify.core.data;
 import com.tcdng.unify.common.constants.StandardFormatType;
 import com.tcdng.unify.core.constant.DataType;
 import com.tcdng.unify.core.constant.DynamicEntityFieldType;
+import com.tcdng.unify.core.util.StringUtils;
 
 /**
  * JSON field composition.
@@ -111,5 +112,9 @@ public class JsonFieldComposition {
 
 	public JsonObjectComposition getObjectComposition() {
 		return objectComposition;
+	}
+
+	public String toString() {
+		return StringUtils.toXmlString(this);
 	}
 }
