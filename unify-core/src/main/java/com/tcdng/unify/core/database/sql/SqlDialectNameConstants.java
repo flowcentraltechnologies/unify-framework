@@ -33,6 +33,8 @@ public interface SqlDialectNameConstants {
 
     String MYSQL = "mysql-dialect";
 
+    String MARIADB = "mariadb-dialect";
+
     String ORACLE = "oracle-dialect";
 
     String ORACLE_12C = "oracle12c-dialect";
