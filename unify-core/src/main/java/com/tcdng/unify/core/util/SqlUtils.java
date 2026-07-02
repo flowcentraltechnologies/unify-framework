@@ -150,20 +150,20 @@ public final class SqlUtils {
 						new JDBCConnectionComponentDef(Type.DRIVER, "com.microsoft.sqlserver.jdbc.SQLServerDriver"),
 						new JDBCConnectionComponentDef(Type.HOST, "localhost"),
 						new JDBCConnectionComponentDef(Type.PORT, "1433"),
-						new JDBCConnectionComponentDef(Type.DATABASE),
+						new JDBCConnectionComponentDef(Type.DATABASE, "master"),
 						new JDBCConnectionComponentDef(Type.SERVICE),
 						new JDBCConnectionComponentDef(Type.SCHEMA, "dbo"),
 						new JDBCConnectionComponentDef(Type.USERNAME),
 						new JDBCConnectionComponentDef(Type.PASSWORD))));
 		map.put(SqlDialectNameConstants.MYSQL,
-				new JDBCConnectionDef("jdbc:mysql://{HOST}:{PORT}/{DATABASE}?useSSL=false&serverTimezone=UTC",
+				new JDBCConnectionDef("jdbc:mysql://{HOST}:{PORT}/{DATABASE}?useSSL=false",
 				Arrays.asList(
 						new JDBCConnectionComponentDef(Type.DRIVER, "com.mysql.cj.jdbc.Driver"),
 						new JDBCConnectionComponentDef(Type.HOST, "localhost"),
 						new JDBCConnectionComponentDef(Type.PORT, "3306"),
 						new JDBCConnectionComponentDef(Type.DATABASE),
 						new JDBCConnectionComponentDef(Type.SCHEMA, "{DATABASE}"),
-						new JDBCConnectionComponentDef(Type.USERNAME),
+						new JDBCConnectionComponentDef(Type.USERNAME, "root"),
 						new JDBCConnectionComponentDef(Type.PASSWORD))));
 		map.put(SqlDialectNameConstants.MARIADB,
 				new JDBCConnectionDef("jdbcmariadb://{HOST}:{PORT}/{DATABASE}?useSSL=false",
@@ -173,7 +173,7 @@ public final class SqlUtils {
 						new JDBCConnectionComponentDef(Type.PORT, "3306"),
 						new JDBCConnectionComponentDef(Type.DATABASE),
 						new JDBCConnectionComponentDef(Type.SCHEMA, "{DATABASE}"),
-						new JDBCConnectionComponentDef(Type.USERNAME),
+						new JDBCConnectionComponentDef(Type.USERNAME, "root"),
 						new JDBCConnectionComponentDef(Type.PASSWORD))));
 		map.put(SqlDialectNameConstants.ORACLE,
 				new JDBCConnectionDef("jdbc:oracle:thin:@//{HOST}:{PORT}/{SERVICE}",
@@ -181,7 +181,8 @@ public final class SqlUtils {
 						new JDBCConnectionComponentDef(Type.DRIVER, "oracle.jdbc.OracleDriver"),
 						new JDBCConnectionComponentDef(Type.HOST, "localhost"),
 						new JDBCConnectionComponentDef(Type.PORT, "1521"),
-						new JDBCConnectionComponentDef(Type.SERVICE),
+						new JDBCConnectionComponentDef(Type.SERVICE, "ORCL"),
+						new JDBCConnectionComponentDef(Type.DATABASE, "{SERVICE}"),
 						new JDBCConnectionComponentDef(Type.SCHEMA, "{USERNAME}"),
 						new JDBCConnectionComponentDef(Type.USERNAME),
 						new JDBCConnectionComponentDef(Type.PASSWORD))));
@@ -191,9 +192,9 @@ public final class SqlUtils {
 						new JDBCConnectionComponentDef(Type.DRIVER, "org.postgresql.Driver"),
 						new JDBCConnectionComponentDef(Type.HOST, "localhost"),
 						new JDBCConnectionComponentDef(Type.PORT, "5432"),
-						new JDBCConnectionComponentDef(Type.DATABASE),
+						new JDBCConnectionComponentDef(Type.DATABASE, "postgres"),
 						new JDBCConnectionComponentDef(Type.SCHEMA, "public"),
-						new JDBCConnectionComponentDef(Type.USERNAME),
+						new JDBCConnectionComponentDef(Type.USERNAME, "postgres"),
 						new JDBCConnectionComponentDef(Type.PASSWORD))));
 		
 		
