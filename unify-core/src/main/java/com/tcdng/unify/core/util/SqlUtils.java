@@ -31,9 +31,13 @@ import java.util.Map;
 
 import com.tcdng.unify.common.annotation.ColumnType;
 import com.tcdng.unify.common.database.Entity;
+import com.tcdng.unify.core.database.JDBCConnectionComponentDef;
+import com.tcdng.unify.core.database.JDBCConnectionComponentDef.Type;
+import com.tcdng.unify.core.database.JDBCConnectionDef;
 import com.tcdng.unify.core.database.Query;
 import com.tcdng.unify.core.database.StaticReference;
 import com.tcdng.unify.core.database.StaticReferenceQuery;
+import com.tcdng.unify.core.database.sql.SqlDialectNameConstants;
 import com.tcdng.unify.core.database.sql.SqlFieldDimensions;
 
 /**
@@ -90,6 +94,8 @@ public final class SqlUtils {
 	private static final int MAX_CONSTRAINT_FIELDS = 3;
 	private static final int MAX_CONSTRAINT_FIELD_PADDING_LEN = 4;
 
+	private static final Map<String, JDBCConnectionDef> connectionDefs;
+	
 	static {
 		versionNoTypes = new ArrayList<Class<? extends Number>>();
 		versionNoTypes.add(Long.class);
@@ -122,10 +128,88 @@ public final class SqlUtils {
 		sqlToJavaTypeMap.put(Types.BINARY, java.util.Date.class);
 		sqlToJavaTypeMap.put(Types.TINYINT, Integer.class);
 		sqlToJavaTypeMap.put(Types.VARCHAR, String.class);
+		
+		Map<String, JDBCConnectionDef> map = new HashMap<String, JDBCConnectionDef>();
+		map.put(SqlDialectNameConstants.HSQLDB,
+				new JDBCConnectionDef("jdbc:hsqldb:hsql://{HOST}:{PORT}/{DATABASE}",
+				Arrays.asList(
+						new JDBCConnectionComponentDef(Type.DRIVER, "org.hsqldb.jdbcDriver"),
+						new JDBCConnectionComponentDef(Type.HOST, "localhost"),
+						new JDBCConnectionComponentDef(Type.PORT, "9001"),
+						new JDBCConnectionComponentDef(Type.DATABASE),
+						new JDBCConnectionComponentDef(Type.SCHEMA, "PUBLIC"),
+						new JDBCConnectionComponentDef(Type.USERNAME, "SA"),
+						new JDBCConnectionComponentDef(Type.PASSWORD, ""))));
+		map.put(SqlDialectNameConstants.MSSQL,
+				new JDBCConnectionDef("jdbc:sqlserver://{HOST}\\{SERVICE}:{PORT};databaseName={DATABASE};integratedSecurity=false",
+				Arrays.asList(
+						new JDBCConnectionComponentDef(Type.DRIVER, "com.microsoft.sqlserver.jdbc.SQLServerDriver"),
+						new JDBCConnectionComponentDef(Type.HOST, "localhost"),
+						new JDBCConnectionComponentDef(Type.PORT, "1433"),
+						new JDBCConnectionComponentDef(Type.DATABASE),
+						new JDBCConnectionComponentDef(Type.SERVICE),
+						new JDBCConnectionComponentDef(Type.SCHEMA, "dbo"),
+						new JDBCConnectionComponentDef(Type.USERNAME),
+						new JDBCConnectionComponentDef(Type.PASSWORD))));
+		map.put(SqlDialectNameConstants.MYSQL,
+				new JDBCConnectionDef("jdbc:mysql://{HOST}:{PORT}/{DATABASE}?useSSL=false&serverTimezone=UTC",
+				Arrays.asList(
+						new JDBCConnectionComponentDef(Type.DRIVER, "com.mysql.cj.jdbc.Driver"),
+						new JDBCConnectionComponentDef(Type.HOST, "localhost"),
+						new JDBCConnectionComponentDef(Type.PORT, "3306"),
+						new JDBCConnectionComponentDef(Type.DATABASE),
+						new JDBCConnectionComponentDef(Type.SCHEMA, "{DATABASE}"),
+						new JDBCConnectionComponentDef(Type.USERNAME),
+						new JDBCConnectionComponentDef(Type.PASSWORD))));
+		map.put(SqlDialectNameConstants.MARIADB,
+				new JDBCConnectionDef("jdbcmariadb://{HOST}:{PORT}/{DATABASE}?useSSL=false",
+				Arrays.asList(
+						new JDBCConnectionComponentDef(Type.DRIVER, "org.mariadb.jdbc.Driver"),
+						new JDBCConnectionComponentDef(Type.HOST, "localhost"),
+						new JDBCConnectionComponentDef(Type.PORT, "3306"),
+						new JDBCConnectionComponentDef(Type.DATABASE),
+						new JDBCConnectionComponentDef(Type.SCHEMA, "{DATABASE}"),
+						new JDBCConnectionComponentDef(Type.USERNAME),
+						new JDBCConnectionComponentDef(Type.PASSWORD))));
+		map.put(SqlDialectNameConstants.ORACLE,
+				new JDBCConnectionDef("jdbc:oracle:thin:@//{HOST}:{PORT}/{SERVICE}",
+				Arrays.asList(
+						new JDBCConnectionComponentDef(Type.DRIVER, "oracle.jdbc.OracleDriver"),
+						new JDBCConnectionComponentDef(Type.HOST, "localhost"),
+						new JDBCConnectionComponentDef(Type.PORT, "1521"),
+						new JDBCConnectionComponentDef(Type.SERVICE),
+						new JDBCConnectionComponentDef(Type.SCHEMA, "{USERNAME}"),
+						new JDBCConnectionComponentDef(Type.USERNAME),
+						new JDBCConnectionComponentDef(Type.PASSWORD))));
+		map.put(SqlDialectNameConstants.POSTGRESQL,
+				new JDBCConnectionDef("jdbc:postgresql://{HOST}:{PORT}/{DATABASE}",
+				Arrays.asList(
+						new JDBCConnectionComponentDef(Type.DRIVER, "org.postgresql.Driver"),
+						new JDBCConnectionComponentDef(Type.HOST, "localhost"),
+						new JDBCConnectionComponentDef(Type.PORT, "5432"),
+						new JDBCConnectionComponentDef(Type.DATABASE),
+						new JDBCConnectionComponentDef(Type.SCHEMA, "public"),
+						new JDBCConnectionComponentDef(Type.USERNAME),
+						new JDBCConnectionComponentDef(Type.PASSWORD))));
+		
+		
+		map.put(SqlDialectNameConstants.MSSQL_2012,map.get(SqlDialectNameConstants.MSSQL));
+		map.put(SqlDialectNameConstants.ORACLE_12C,map.get(SqlDialectNameConstants.ORACLE));
+		connectionDefs = Collections.unmodifiableMap(map);
 	};
 
 	private SqlUtils() {
 
+	}
+
+	/**
+	 * Gets JDBC connection definition.
+	 * 
+	 * @param dialect the dialect
+	 * @return the connection definition
+	 */
+	public static JDBCConnectionDef getConnectionDef(String dialect)  {
+		return connectionDefs.get(dialect);
 	}
 
 	public static boolean isSupportedSqlType(int sqlType) {

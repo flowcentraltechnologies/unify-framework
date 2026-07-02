@@ -25,8 +25,6 @@ public interface SqlDialectNameConstants {
 
     String HSQLDB = "hsqldb-dialect";
 
-    String JAVADB = "javadb-dialect";
-
     String MSSQL = "mssql-dialect";
 
     String MSSQL_2012 = "mssql2012-dialect";
