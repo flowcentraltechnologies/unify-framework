@@ -30,7 +30,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.tcdng.unify.common.annotation.ColumnType;
+import com.tcdng.unify.common.data.Listable;
 import com.tcdng.unify.common.database.Entity;
+import com.tcdng.unify.core.data.ListData;
 import com.tcdng.unify.core.database.JDBCConnectionComponentDef;
 import com.tcdng.unify.core.database.JDBCConnectionComponentDef.Type;
 import com.tcdng.unify.core.database.JDBCConnectionDef;
@@ -95,6 +97,8 @@ public final class SqlUtils {
 	private static final int MAX_CONSTRAINT_FIELD_PADDING_LEN = 4;
 
 	private static final Map<String, JDBCConnectionDef> connectionDefs;
+	
+	private static final List<? extends Listable> sqlDialects;
 	
 	static {
 		versionNoTypes = new ArrayList<Class<? extends Number>>();
@@ -196,6 +200,16 @@ public final class SqlUtils {
 		map.put(SqlDialectNameConstants.MSSQL_2012,map.get(SqlDialectNameConstants.MSSQL));
 		map.put(SqlDialectNameConstants.ORACLE_12C,map.get(SqlDialectNameConstants.ORACLE));
 		connectionDefs = Collections.unmodifiableMap(map);
+		
+		
+		List<ListData> dialects = new ArrayList<ListData>();
+		dialects.add(new ListData(SqlDialectNameConstants.HSQLDB, "HyperSQL"));
+		dialects.add(new ListData(SqlDialectNameConstants.POSTGRESQL, "PostgreSQL"));
+		dialects.add(new ListData(SqlDialectNameConstants.MYSQL, "MySQL"));
+		dialects.add(new ListData(SqlDialectNameConstants.MARIADB, "MariaDB"));
+		dialects.add(new ListData(SqlDialectNameConstants.ORACLE_12C, "Oracle"));
+		dialects.add(new ListData(SqlDialectNameConstants.MSSQL_2012, "Microsoft SQL Server"));
+		sqlDialects = Collections.unmodifiableList(dialects);
 	};
 
 	private SqlUtils() {
@@ -212,6 +226,10 @@ public final class SqlUtils {
 		return connectionDefs.get(dialect);
 	}
 
+	public static List<? extends Listable> getSQLDialects() {
+		return sqlDialects;
+	}
+	
 	public static boolean isSupportedSqlType(int sqlType) {
 		return sqlToJavaTypeMap.containsKey(sqlType);
 	}
