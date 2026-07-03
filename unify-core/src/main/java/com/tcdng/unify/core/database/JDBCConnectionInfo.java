@@ -1,0 +1,86 @@
+/*
+ * Copyright (c) 2018-2026 The Code Department.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+package com.tcdng.unify.core.database;
+
+/**
+ * JDBC connection information.
+ * 
+ * @author The Code Department
+ * @since 4.1
+ */
+public class JDBCConnectionInfo {
+
+	private String dialect;
+
+	private String host;
+
+	private String port;
+
+	private String database;
+
+	private String service;
+
+	private String schema;
+
+	private String userName;
+
+	private String password;
+
+	public JDBCConnectionInfo(String dialect, String host, String port, String database, String service, String schema,
+			String userName, String password) {
+		this.dialect = dialect;
+		this.host = host;
+		this.port = port;
+		this.database = database;
+		this.service = service;
+		this.schema = schema;
+		this.userName = userName;
+		this.password = password;
+	}
+
+	public String getDialect() {
+		return dialect;
+	}
+
+	public String getHost() {
+		return host;
+	}
+
+	public String getPort() {
+		return port;
+	}
+
+	public String getDatabase() {
+		return database;
+	}
+
+	public String getService() {
+		return service;
+	}
+
+	public String getSchema() {
+		return schema;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+}

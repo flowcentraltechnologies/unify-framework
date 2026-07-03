@@ -27,15 +27,22 @@ public class JDBCConnectionDef {
 	
 	private String template;
 	
+	private String testQuery;
+	
 	private List<JDBCConnectionComponentDef> components;
 
-	public JDBCConnectionDef(String template, List<JDBCConnectionComponentDef> components) {
+	public JDBCConnectionDef(String template, String testQuery, List<JDBCConnectionComponentDef> components) {
 		this.template = template;
+		this.testQuery = testQuery;
 		this.components = components;
 	}
 
 	public String getTemplate() {
 		return template;
+	}
+
+	public String getTestQuery() {
+		return testQuery;
 	}
 
 	public List<JDBCConnectionComponentDef> getComponents() {

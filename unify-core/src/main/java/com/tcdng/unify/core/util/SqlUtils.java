@@ -17,6 +17,7 @@ package com.tcdng.unify.core.util;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,6 +29,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.tcdng.unify.common.annotation.ColumnType;
 import com.tcdng.unify.common.data.Listable;
@@ -36,6 +38,7 @@ import com.tcdng.unify.core.data.ListData;
 import com.tcdng.unify.core.database.JDBCConnectionComponentDef;
 import com.tcdng.unify.core.database.JDBCConnectionComponentDef.Type;
 import com.tcdng.unify.core.database.JDBCConnectionDef;
+import com.tcdng.unify.core.database.JDBCConnectionInfo;
 import com.tcdng.unify.core.database.Query;
 import com.tcdng.unify.core.database.StaticReference;
 import com.tcdng.unify.core.database.StaticReferenceQuery;
@@ -135,7 +138,7 @@ public final class SqlUtils {
 		
 		Map<String, JDBCConnectionDef> map = new HashMap<String, JDBCConnectionDef>();
 		map.put(SqlDialectNameConstants.HSQLDB,
-				new JDBCConnectionDef("jdbc:hsqldb:hsql://{HOST}:{PORT}/{DATABASE}",
+				new JDBCConnectionDef("jdbc:hsqldb:hsql://{HOST}:{PORT}/{DATABASE}", "VALUES 1",
 				Arrays.asList(
 						new JDBCConnectionComponentDef(Type.DRIVER, "org.hsqldb.jdbcDriver"),
 						new JDBCConnectionComponentDef(Type.HOST, "localhost"),
@@ -145,7 +148,7 @@ public final class SqlUtils {
 						new JDBCConnectionComponentDef(Type.USERNAME, "SA"),
 						new JDBCConnectionComponentDef(Type.PASSWORD, ""))));
 		map.put(SqlDialectNameConstants.MSSQL,
-				new JDBCConnectionDef("jdbc:sqlserver://{HOST}\\{SERVICE}:{PORT};databaseName={DATABASE};integratedSecurity=false",
+				new JDBCConnectionDef("jdbc:sqlserver://{HOST}\\{SERVICE}:{PORT};databaseName={DATABASE};integratedSecurity=false", "SELECT 1",
 				Arrays.asList(
 						new JDBCConnectionComponentDef(Type.DRIVER, "com.microsoft.sqlserver.jdbc.SQLServerDriver"),
 						new JDBCConnectionComponentDef(Type.HOST, "localhost"),
@@ -156,7 +159,7 @@ public final class SqlUtils {
 						new JDBCConnectionComponentDef(Type.USERNAME),
 						new JDBCConnectionComponentDef(Type.PASSWORD))));
 		map.put(SqlDialectNameConstants.MYSQL,
-				new JDBCConnectionDef("jdbc:mysql://{HOST}:{PORT}/{DATABASE}?useSSL=false",
+				new JDBCConnectionDef("jdbc:mysql://{HOST}:{PORT}/{DATABASE}?useSSL=false", "SELECT 1",
 				Arrays.asList(
 						new JDBCConnectionComponentDef(Type.DRIVER, "com.mysql.cj.jdbc.Driver"),
 						new JDBCConnectionComponentDef(Type.HOST, "localhost"),
@@ -166,7 +169,7 @@ public final class SqlUtils {
 						new JDBCConnectionComponentDef(Type.USERNAME, "root"),
 						new JDBCConnectionComponentDef(Type.PASSWORD))));
 		map.put(SqlDialectNameConstants.MARIADB,
-				new JDBCConnectionDef("jdbcmariadb://{HOST}:{PORT}/{DATABASE}?useSSL=false",
+				new JDBCConnectionDef("jdbcmariadb://{HOST}:{PORT}/{DATABASE}?useSSL=false", "SELECT 1",
 				Arrays.asList(
 						new JDBCConnectionComponentDef(Type.DRIVER, "org.mariadb.jdbc.Driver"),
 						new JDBCConnectionComponentDef(Type.HOST, "localhost"),
@@ -176,7 +179,7 @@ public final class SqlUtils {
 						new JDBCConnectionComponentDef(Type.USERNAME, "root"),
 						new JDBCConnectionComponentDef(Type.PASSWORD))));
 		map.put(SqlDialectNameConstants.ORACLE,
-				new JDBCConnectionDef("jdbc:oracle:thin:@//{HOST}:{PORT}/{SERVICE}",
+				new JDBCConnectionDef("jdbc:oracle:thin:@//{HOST}:{PORT}/{SERVICE}", "SELECT 1 FROM DUAL",
 				Arrays.asList(
 						new JDBCConnectionComponentDef(Type.DRIVER, "oracle.jdbc.OracleDriver"),
 						new JDBCConnectionComponentDef(Type.HOST, "localhost"),
@@ -187,7 +190,7 @@ public final class SqlUtils {
 						new JDBCConnectionComponentDef(Type.USERNAME),
 						new JDBCConnectionComponentDef(Type.PASSWORD))));
 		map.put(SqlDialectNameConstants.POSTGRESQL,
-				new JDBCConnectionDef("jdbc:postgresql://{HOST}:{PORT}/{DATABASE}",
+				new JDBCConnectionDef("jdbc:postgresql://{HOST}:{PORT}/{DATABASE}", "SELECT 1",
 				Arrays.asList(
 						new JDBCConnectionComponentDef(Type.DRIVER, "org.postgresql.Driver"),
 						new JDBCConnectionComponentDef(Type.HOST, "localhost"),
@@ -217,6 +220,69 @@ public final class SqlUtils {
 
 	}
 
+	/**
+	 * Tests JDBC connection information.
+	 * 
+	 * @param jdbcConnectionInfo the connection info
+	 * @return Optional error
+	 */
+	public static Optional<String> testJDBCConnection(JDBCConnectionInfo jdbcConnectionInfo) {
+		String errorMsg = null;
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		try {
+			JDBCConnectionDef jdbcConnectionDef = getConnectionDef(jdbcConnectionInfo.getDialect());
+			final String jdbcUrl = SqlUtils.getJDBCConnectionString(jdbcConnectionInfo);
+			if (!StringUtils.isBlank(jdbcConnectionInfo.getUserName())) {
+				conn = DriverManager.getConnection(jdbcUrl, jdbcConnectionInfo.getUserName(),
+						jdbcConnectionInfo.getPassword());
+			} else {
+				conn = DriverManager.getConnection(jdbcUrl);
+			}
+
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(jdbcConnectionDef.getTestQuery());
+			if (!rs.next()) {
+				errorMsg = "No rows returned.";
+			}
+		} catch (Exception e) {
+			errorMsg = e.getMessage();
+		} finally {
+			SqlUtils.close(rs);
+			SqlUtils.close(stmt);
+			SqlUtils.close(conn);
+		}
+
+		return Optional.ofNullable(errorMsg);
+	}
+
+	/**
+	 * Gets the JDBC connection String
+	 * 
+	 * @param jdbcConnectionInfo the connection information
+	 * @return the connection string
+	 */
+	public static String getJDBCConnectionString(JDBCConnectionInfo jdbcConnectionInfo) {
+		JDBCConnectionDef jdbcConnectionDef = getConnectionDef(jdbcConnectionInfo.getDialect());
+		Map<String, String> values = new HashMap<String, String>();
+		values.put(Type.HOST.code(), jdbcConnectionInfo.getHost());
+		values.put(Type.PORT.code(), jdbcConnectionInfo.getPort());
+		values.put(Type.DATABASE.code(), jdbcConnectionInfo.getDatabase());
+		values.put(Type.SERVICE.code(), jdbcConnectionInfo.getService());
+		values.put(Type.SCHEMA.code(), jdbcConnectionInfo.getSchema());
+		values.put(Type.USERNAME.code(), jdbcConnectionInfo.getUserName());
+
+		for (String placeholder : values.keySet()) {
+			String val = values.get(placeholder);
+			if (val != null && values.containsKey(val)) {
+				values.put(placeholder, values.get(val));
+			}
+		}
+
+		return StringUtils.replacePlaceholders(jdbcConnectionDef.getTemplate(), values);
+	}
+	
 	/**
 	 * Gets JDBC connection definition.
 	 * 
