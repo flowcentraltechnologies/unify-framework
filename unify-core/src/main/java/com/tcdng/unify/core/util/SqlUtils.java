@@ -262,6 +262,38 @@ public final class SqlUtils {
 	}
 
 	/**
+	 * Gets a JDBC connection information object.
+	 * 
+	 * @param dialect  the dialect
+	 * @param host     the host
+	 * @param port     the port
+	 * @param database the database
+	 * @param service  the service
+	 * @param schema   the schema
+	 * @param userName the user name
+	 * @param password the password
+	 * @return an information object
+	 */
+	public static JDBCConnectionInfo getJDBCConnectionInfo(String dialect, String host, String port, String database,
+			String service, String schema, String userName, String password) {
+		Map<String, String> values = new HashMap<String, String>();
+		values.put(Type.DATABASE.code(), database);
+		values.put(Type.SERVICE.code(), service);
+		values.put(Type.SCHEMA.code(), schema);
+		values.put(Type.USERNAME.code(), userName);
+
+		for (String placeholder : values.keySet()) {
+			String val = values.get(placeholder);
+			if (val != null && values.containsKey(val)) {
+				values.put(placeholder, values.get(val));
+			}
+		}
+
+		return new JDBCConnectionInfo(dialect, host, port, values.get(Type.DATABASE.code()),
+				values.get(Type.SERVICE.code()), values.get(Type.SCHEMA.code()), userName, password);
+	}
+	
+	/**
 	 * Gets the JDBC connection String
 	 * 
 	 * @param jdbcConnectionInfo the connection information
@@ -276,14 +308,6 @@ public final class SqlUtils {
 		values.put(Type.SERVICE.code(), jdbcConnectionInfo.getService());
 		values.put(Type.SCHEMA.code(), jdbcConnectionInfo.getSchema());
 		values.put(Type.USERNAME.code(), jdbcConnectionInfo.getUserName());
-
-		for (String placeholder : values.keySet()) {
-			String val = values.get(placeholder);
-			if (val != null && values.containsKey(val)) {
-				values.put(placeholder, values.get(val));
-			}
-		}
-
 		return StringUtils.replacePlaceholders(jdbcConnectionDef.getTemplate(), values);
 	}
 	

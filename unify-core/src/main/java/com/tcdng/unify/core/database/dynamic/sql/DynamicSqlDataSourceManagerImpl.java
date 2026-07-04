@@ -79,12 +79,9 @@ public class DynamicSqlDataSourceManagerImpl extends AbstractSqlDataSourceManage
 	@Override
 	public synchronized boolean reconfigure(DynamicSqlDataSourceConfig dynamicSqlDataSourceConfig)
 			throws UnifyException {
-		if (dynamicSqlDataSourceMap.remove(dynamicSqlDataSourceConfig.getName()) != null) {
-			createAndInitDynamicSqlDataSource(dynamicSqlDataSourceConfig);
-			return true;
-		}
-
-		return false;
+		boolean result = dynamicSqlDataSourceMap.remove(dynamicSqlDataSourceConfig.getName()) != null;
+		createAndInitDynamicSqlDataSource(dynamicSqlDataSourceConfig);
+		return result;
 	}
 
 	@Override
@@ -145,7 +142,7 @@ public class DynamicSqlDataSourceManagerImpl extends AbstractSqlDataSourceManage
 			return dynamicSqlDataSourceMap.get(dataSourceConfigName).getVersionNo() < versionNo;
 		}
 
-		return false;
+		return true;
 	}
 
 	@Override
