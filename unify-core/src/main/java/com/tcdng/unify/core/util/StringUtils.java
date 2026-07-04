@@ -829,7 +829,11 @@ public final class StringUtils {
 	public static String replacePlaceholders(String template, Map<String, String> values) {
 		if (!StringUtils.isBlank(template)) {
 			for (Map.Entry<String, String> entry : values.entrySet()) {
-				template = template.replace(entry.getKey(), entry.getValue());
+				if (entry.getValue() != null) {
+					template = template.replace(entry.getKey(), entry.getValue());
+				} else {
+					template = template.replace(entry.getKey(), "");
+				}
 			}
 		}
 

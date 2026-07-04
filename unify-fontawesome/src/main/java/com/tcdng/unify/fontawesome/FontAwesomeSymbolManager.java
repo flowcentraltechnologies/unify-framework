@@ -133,6 +133,7 @@ public class FontAwesomeSymbolManager extends AbstractFontSymbolManager {
         registerSymbol("diff", "f53e");
         registerSymbol("directions", "f5eb");
         registerSymbol("door-open", "f52b");
+        registerSymbol("double-check", "f560");
         registerSymbol("download", "f019");
         registerSymbol("edit", "f044");
         registerSymbol("ellipsis-horizontal", "f141");
