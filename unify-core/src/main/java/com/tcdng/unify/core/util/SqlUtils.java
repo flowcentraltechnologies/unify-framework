@@ -144,6 +144,7 @@ public final class SqlUtils {
 						new JDBCConnectionComponentDef(Type.HOST, "localhost"),
 						new JDBCConnectionComponentDef(Type.PORT, "9001"),
 						new JDBCConnectionComponentDef(Type.DATABASE),
+						new JDBCConnectionComponentDef(Type.SERVICE),
 						new JDBCConnectionComponentDef(Type.SCHEMA, "PUBLIC"),
 						new JDBCConnectionComponentDef(Type.USERNAME, "SA"),
 						new JDBCConnectionComponentDef(Type.PASSWORD, ""))));
@@ -165,6 +166,7 @@ public final class SqlUtils {
 						new JDBCConnectionComponentDef(Type.HOST, "localhost"),
 						new JDBCConnectionComponentDef(Type.PORT, "3306"),
 						new JDBCConnectionComponentDef(Type.DATABASE),
+						new JDBCConnectionComponentDef(Type.SERVICE),
 						new JDBCConnectionComponentDef(Type.SCHEMA, "{DATABASE}"),
 						new JDBCConnectionComponentDef(Type.USERNAME, "root"),
 						new JDBCConnectionComponentDef(Type.PASSWORD))));
@@ -175,6 +177,7 @@ public final class SqlUtils {
 						new JDBCConnectionComponentDef(Type.HOST, "localhost"),
 						new JDBCConnectionComponentDef(Type.PORT, "3306"),
 						new JDBCConnectionComponentDef(Type.DATABASE),
+						new JDBCConnectionComponentDef(Type.SERVICE),
 						new JDBCConnectionComponentDef(Type.SCHEMA, "{DATABASE}"),
 						new JDBCConnectionComponentDef(Type.USERNAME, "root"),
 						new JDBCConnectionComponentDef(Type.PASSWORD))));
@@ -195,6 +198,7 @@ public final class SqlUtils {
 						new JDBCConnectionComponentDef(Type.DRIVER, "org.postgresql.Driver"),
 						new JDBCConnectionComponentDef(Type.HOST, "localhost"),
 						new JDBCConnectionComponentDef(Type.PORT, "5432"),
+						new JDBCConnectionComponentDef(Type.SERVICE),
 						new JDBCConnectionComponentDef(Type.DATABASE, "postgres"),
 						new JDBCConnectionComponentDef(Type.SCHEMA, "public"),
 						new JDBCConnectionComponentDef(Type.USERNAME, "postgres"),
