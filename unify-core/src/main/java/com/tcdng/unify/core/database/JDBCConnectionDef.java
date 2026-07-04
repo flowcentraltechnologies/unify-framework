@@ -15,7 +15,9 @@
  */
 package com.tcdng.unify.core.database;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * JDBC connection component definition.
@@ -24,17 +26,28 @@ import java.util.List;
  * @since 4.1
  */
 public class JDBCConnectionDef {
-	
+
 	private String template;
-	
+
 	private String testQuery;
-	
+
+	private Map<JDBCConnectionComponentDef.Type, JDBCConnectionComponentDef> componentsMap;
+
 	private List<JDBCConnectionComponentDef> components;
 
 	public JDBCConnectionDef(String template, String testQuery, List<JDBCConnectionComponentDef> components) {
 		this.template = template;
 		this.testQuery = testQuery;
 		this.components = components;
+
+		this.componentsMap = new HashMap<JDBCConnectionComponentDef.Type, JDBCConnectionComponentDef>();
+		for (JDBCConnectionComponentDef jdbcConnectionComponentDef : components) {
+			this.componentsMap.put(jdbcConnectionComponentDef.getType(), jdbcConnectionComponentDef);
+		}
+	}
+
+	public JDBCConnectionComponentDef getJDBCConnectionComponentDef(JDBCConnectionComponentDef.Type type) {
+		return componentsMap.get(type);
 	}
 
 	public String getTemplate() {
