@@ -233,7 +233,7 @@ public class DynamicSqlDatabaseStaticEntityTest extends AbstractUnifyComponentTe
         DynamicSqlDataSourceManager dynamicSqlDataSourceManager = (DynamicSqlDataSourceManager) getComponent(
                 ApplicationComponents.APPLICATION_DYNAMICSQLDATASOURCEMANAGER);
         DynamicSqlDataSourceConfig config = new DynamicSqlDataSourceConfig("inventory", TEST_CONFIG, "hsqldb-dialect",
-                "org.hsqldb.jdbcDriver", "jdbc:hsqldb:mem:dyntest", null, null, null, 2, true);
+                "org.hsqldb.jdbcDriver", "jdbc:hsqldb:mem:dyntest", null, null, null, 2, true, 0L);
         config.setManageSchema(true);
         dynamicSqlDataSourceManager.configure(config);
         Connection connection = dynamicSqlDataSourceManager.getConnection(TEST_CONFIG);

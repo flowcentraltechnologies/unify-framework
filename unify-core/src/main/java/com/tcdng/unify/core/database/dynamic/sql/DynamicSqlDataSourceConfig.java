@@ -44,16 +44,18 @@ public class DynamicSqlDataSourceConfig {
     private boolean shutdownOnTerminate;
 
     private boolean manageSchema;
-    
+
+    private long versionNo;
+   
     public DynamicSqlDataSourceConfig(String name, String dialect, String driver, String connectionUrl, String dbSchema,
-            String dbUsername, String dbPassword, int maxConnection, boolean shutdownOnTerminate) {
+            String dbUsername, String dbPassword, int maxConnection, boolean shutdownOnTerminate, long versionNo) {
         this(null, name, dialect, driver, connectionUrl, dbSchema, dbUsername, dbPassword, maxConnection,
-                shutdownOnTerminate);
+                shutdownOnTerminate, versionNo);
     }
 
     public DynamicSqlDataSourceConfig(String preferredName, String name, String dialect, String driver,
             String connectionUrl, String dbSchema, String dbUsername, String dbPassword, int maxConnection,
-            boolean shutdownOnTerminate) {
+            boolean shutdownOnTerminate, long versionNo) {
         this.preferredName = preferredName;
         this.name = name;
         this.dialect = dialect;
@@ -64,6 +66,7 @@ public class DynamicSqlDataSourceConfig {
         this.dbPassword = dbPassword;
         this.maxConnection = maxConnection;
         this.shutdownOnTerminate = shutdownOnTerminate;
+        this.versionNo = versionNo;
     }
 
     public String getPreferredName() {
@@ -113,4 +116,8 @@ public class DynamicSqlDataSourceConfig {
     public void setManageSchema(boolean manageSchema) {
         this.manageSchema = manageSchema;
     }
+
+	public long getVersionNo() {
+		return versionNo;
+	}
 }

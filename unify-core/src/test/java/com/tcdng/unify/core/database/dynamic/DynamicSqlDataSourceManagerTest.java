@@ -124,7 +124,7 @@ public class DynamicSqlDataSourceManagerTest extends AbstractUnifyComponentTest 
 
     private DynamicSqlDataSourceConfig getConfig() {
         return new DynamicSqlDataSourceConfig(TEST_CONFIG, "hsqldb-dialect", "org.hsqldb.jdbcDriver",
-                "jdbc:hsqldb:mem:dyntest", null, null, null, 2, true);
+                "jdbc:hsqldb:mem:dyntest", null, null, null, 2, true, 0L);
     }
 
 }

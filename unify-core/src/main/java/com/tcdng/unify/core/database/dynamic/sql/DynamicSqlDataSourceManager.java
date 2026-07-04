@@ -65,6 +65,15 @@ public interface DynamicSqlDataSourceManager extends SqlDataSourceManager {
      */
     boolean isConfigured(String dataSourceConfigName) throws UnifyException;
 
+	/**
+	 * Returns true if data source is stale.
+	 * 
+	 * @param dataSourceConfigName the data source configuration name
+	 * @param versionNo            the version number
+	 * @throws UnifyException if an error occurs
+	 */
+	boolean isStale(String dataSourceConfigName, long versionNo) throws UnifyException;
+
     /**
      * Returns the number of data sources currently being managed.
      * 

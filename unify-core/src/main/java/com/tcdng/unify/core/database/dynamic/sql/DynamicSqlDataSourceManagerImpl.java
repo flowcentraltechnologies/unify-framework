@@ -49,167 +49,198 @@ import com.tcdng.unify.core.util.StringUtils;
  */
 @Component(ApplicationComponents.APPLICATION_DYNAMICSQLDATASOURCEMANAGER)
 public class DynamicSqlDataSourceManagerImpl extends AbstractSqlDataSourceManager
-        implements DynamicSqlDataSourceManager {
+		implements DynamicSqlDataSourceManager {
 
 	@Configurable(ApplicationComponents.APPLICATION_DATASOURCE_ENTITYLIST_PROVIDER)
 	private DataSourceEntityListProvider entityListProvider;
 
-	private FactoryMap<String, DynamicSqlDataSource> dynamicSqlDataSourceMap;
+	private FactoryMap<String, DataSourceEntry> dynamicSqlDataSourceMap;
 
-    public DynamicSqlDataSourceManagerImpl() {
-        dynamicSqlDataSourceMap = new FactoryMap<String, DynamicSqlDataSource>() {
-            @Override
-            protected DynamicSqlDataSource create(String key, Object... params) throws Exception {
-                return getNewDynamicSqlDataSource((DynamicSqlDataSourceConfig) params[0]);
-            }
-        };
-    }
+	public DynamicSqlDataSourceManagerImpl() {
+		dynamicSqlDataSourceMap = new FactoryMap<String, DataSourceEntry>() {
+			@Override
+			protected DataSourceEntry create(String key, Object... params) throws Exception {
+				final DynamicSqlDataSourceConfig config = (DynamicSqlDataSourceConfig) params[0];
+				return new DataSourceEntry(getNewDynamicSqlDataSource(config), config.getVersionNo());
+			}
+		};
+	}
 
-    @Override
-    public synchronized void configure(DynamicSqlDataSourceConfig dynamicSqlDataSourceConfig) throws UnifyException {
-        if (dynamicSqlDataSourceMap.isKey(dynamicSqlDataSourceConfig.getName())) {
-            throw new UnifyException(UnifyCoreErrorConstants.DYNAMIC_DATASOURCE_ALREADY_CONFIGURED,
-                    dynamicSqlDataSourceConfig.getName());
-        }
+	@Override
+	public synchronized void configure(DynamicSqlDataSourceConfig dynamicSqlDataSourceConfig) throws UnifyException {
+		if (dynamicSqlDataSourceMap.isKey(dynamicSqlDataSourceConfig.getName())) {
+			throw new UnifyException(UnifyCoreErrorConstants.DYNAMIC_DATASOURCE_ALREADY_CONFIGURED,
+					dynamicSqlDataSourceConfig.getName());
+		}
 
-        createAndInitDynamicSqlDataSource(dynamicSqlDataSourceConfig);
-    }
+		createAndInitDynamicSqlDataSource(dynamicSqlDataSourceConfig);
+	}
 
-    @Override
-    public synchronized boolean reconfigure(DynamicSqlDataSourceConfig dynamicSqlDataSourceConfig)
-            throws UnifyException {
-        if (dynamicSqlDataSourceMap.remove(dynamicSqlDataSourceConfig.getName()) != null) {
-            createAndInitDynamicSqlDataSource(dynamicSqlDataSourceConfig);
-            return true;
-        }
+	@Override
+	public synchronized boolean reconfigure(DynamicSqlDataSourceConfig dynamicSqlDataSourceConfig)
+			throws UnifyException {
+		if (dynamicSqlDataSourceMap.remove(dynamicSqlDataSourceConfig.getName()) != null) {
+			createAndInitDynamicSqlDataSource(dynamicSqlDataSourceConfig);
+			return true;
+		}
 
-        return false;
-    }
+		return false;
+	}
 
-    @Override
-    public boolean testConfiguration(DynamicSqlDataSourceConfig dynamicSqlDataSourceConfig) throws UnifyException {
-        DynamicSqlDataSource dynamicSqlDataSource = getNewDynamicSqlDataSource(dynamicSqlDataSourceConfig);
-        try {
-            return dynamicSqlDataSource.testConnection();
-        } finally {
-            dynamicSqlDataSource.terminate();
-        }
-    }
+	@Override
+	public boolean testConfiguration(DynamicSqlDataSourceConfig dynamicSqlDataSourceConfig) throws UnifyException {
+		DynamicSqlDataSource dynamicSqlDataSource = getNewDynamicSqlDataSource(dynamicSqlDataSourceConfig);
+		try {
+			return dynamicSqlDataSource.testConnection();
+		} finally {
+			dynamicSqlDataSource.terminate();
+		}
+	}
 
-    @Override
-    public int testNativeQuery(DynamicSqlDataSourceConfig dynamicSqlDataSourceConfig, NativeQuery query)
-            throws UnifyException {
-        DynamicSqlDataSource dynamicSqlDataSource = getNewDynamicSqlDataSource(dynamicSqlDataSourceConfig);
-        try {
-            return dynamicSqlDataSource.testNativeQuery(query);
-        } finally {
-            dynamicSqlDataSource.terminate();
-        }
-    }
+	@Override
+	public int testNativeQuery(DynamicSqlDataSourceConfig dynamicSqlDataSourceConfig, NativeQuery query)
+			throws UnifyException {
+		DynamicSqlDataSource dynamicSqlDataSource = getNewDynamicSqlDataSource(dynamicSqlDataSourceConfig);
+		try {
+			return dynamicSqlDataSource.testNativeQuery(query);
+		} finally {
+			dynamicSqlDataSource.terminate();
+		}
+	}
 
-    @Override
-    public int testNativeQuery(DynamicSqlDataSourceConfig dynamicSqlDataSourceConfig, String nativeSql)
-            throws UnifyException {
-        DynamicSqlDataSource dynamicSqlDataSource = getNewDynamicSqlDataSource(dynamicSqlDataSourceConfig);
-        try {
-            return dynamicSqlDataSource.testNativeQuery(nativeSql);
-        } finally {
-            dynamicSqlDataSource.terminate();
-        }
-    }
+	@Override
+	public int testNativeQuery(DynamicSqlDataSourceConfig dynamicSqlDataSourceConfig, String nativeSql)
+			throws UnifyException {
+		DynamicSqlDataSource dynamicSqlDataSource = getNewDynamicSqlDataSource(dynamicSqlDataSourceConfig);
+		try {
+			return dynamicSqlDataSource.testNativeQuery(nativeSql);
+		} finally {
+			dynamicSqlDataSource.terminate();
+		}
+	}
 
-    @Override
-    public int testNativeUpdate(DynamicSqlDataSourceConfig dynamicSqlDataSourceConfig, String updateSql)
-            throws UnifyException {
-        DynamicSqlDataSource dynamicSqlDataSource = getNewDynamicSqlDataSource(dynamicSqlDataSourceConfig);
-        try {
-            return dynamicSqlDataSource.testNativeUpdate(updateSql);
-        } finally {
-            dynamicSqlDataSource.terminate();
-        }
-    }
+	@Override
+	public int testNativeUpdate(DynamicSqlDataSourceConfig dynamicSqlDataSourceConfig, String updateSql)
+			throws UnifyException {
+		DynamicSqlDataSource dynamicSqlDataSource = getNewDynamicSqlDataSource(dynamicSqlDataSourceConfig);
+		try {
+			return dynamicSqlDataSource.testNativeUpdate(updateSql);
+		} finally {
+			dynamicSqlDataSource.terminate();
+		}
+	}
 
-    @Override
-    public boolean isConfigured(String dataSourceConfigName) throws UnifyException {
-        if (dynamicSqlDataSourceMap.isKey(dataSourceConfigName)) {
-            return dynamicSqlDataSourceMap.get(dataSourceConfigName).isConfigured();
-        }
-        return false;
-    }
+	@Override
+	public boolean isConfigured(String dataSourceConfigName) throws UnifyException {
+		if (dynamicSqlDataSourceMap.isKey(dataSourceConfigName)) {
+			return dynamicSqlDataSourceMap.get(dataSourceConfigName).getDynamicSqlDataSource().isConfigured();
+		}
 
-    @Override
-    public int getDataSourceCount() throws UnifyException {
-        return dynamicSqlDataSourceMap.size();
-    }
+		return false;
+	}
 
-    @Override
-    public List<String> getSchemas(String dataSourceConfigName) throws UnifyException {
-        return getDynamicSqlDataSource(dataSourceConfigName).getSchemaList();
-    }
+	@Override
+	public boolean isStale(String dataSourceConfigName, long versionNo) throws UnifyException {
+		if (dynamicSqlDataSourceMap.isKey(dataSourceConfigName)) {
+			return dynamicSqlDataSourceMap.get(dataSourceConfigName).getVersionNo() < versionNo;
+		}
 
-    @Override
-    public List<SqlTableInfo> getTables(String dataSourceConfigName, String schemaName, SqlTableType sqlTableType)
-            throws UnifyException {
-        return getDynamicSqlDataSource(dataSourceConfigName).getTableList(schemaName, sqlTableType);
-    }
+		return false;
+	}
 
-    @Override
-    public List<SqlColumnInfo> getColumns(String dataSourceConfigName, String schemaName, String tableName)
-            throws UnifyException {
-        return getDynamicSqlDataSource(dataSourceConfigName).getColumnList(schemaName, tableName);
-    }
+	@Override
+	public int getDataSourceCount() throws UnifyException {
+		return dynamicSqlDataSourceMap.size();
+	}
 
-    @Override
-    public List<Object[]> getRows(String dataSourceConfigName, NativeQuery query) throws UnifyException {
-        return getDynamicSqlDataSource(dataSourceConfigName).getRows(query);
-    }
+	@Override
+	public List<String> getSchemas(String dataSourceConfigName) throws UnifyException {
+		return getDynamicSqlDataSource(dataSourceConfigName).getSchemaList();
+	}
 
-    @Override
-    public SqlDataSource getDataSource(String dataSourceConfigName) throws UnifyException {
-        return getDynamicSqlDataSource(dataSourceConfigName);
-    }
+	@Override
+	public List<SqlTableInfo> getTables(String dataSourceConfigName, String schemaName, SqlTableType sqlTableType)
+			throws UnifyException {
+		return getDynamicSqlDataSource(dataSourceConfigName).getTableList(schemaName, sqlTableType);
+	}
 
-    @Override
-    public Connection getConnection(String dataSourceConfigName) throws UnifyException {
-        return getDynamicSqlDataSource(dataSourceConfigName).getConnection();
-    }
+	@Override
+	public List<SqlColumnInfo> getColumns(String dataSourceConfigName, String schemaName, String tableName)
+			throws UnifyException {
+		return getDynamicSqlDataSource(dataSourceConfigName).getColumnList(schemaName, tableName);
+	}
 
-    @Override
-    public boolean restoreConnection(String dataSourceConfigName, Connection connection) throws UnifyException {
-        return getDynamicSqlDataSource(dataSourceConfigName).restoreConnection(connection);
-    }
+	@Override
+	public List<Object[]> getRows(String dataSourceConfigName, NativeQuery query) throws UnifyException {
+		return getDynamicSqlDataSource(dataSourceConfigName).getRows(query);
+	}
 
-    @Override
-    public void terminateConfiguration(String dataSourceConfigName) throws UnifyException {
-        SqlDataSource sqlDataSource = getDynamicSqlDataSource(dataSourceConfigName);
-        try {
-            sqlDataSource.terminate();
-        } finally {
-            dynamicSqlDataSourceMap.remove(dataSourceConfigName);
-        }
-    }
+	@Override
+	public SqlDataSource getDataSource(String dataSourceConfigName) throws UnifyException {
+		return getDynamicSqlDataSource(dataSourceConfigName);
+	}
 
-    @Override
-    public void terminateAll() throws UnifyException {
-        for (String dataSourceConfigName : new ArrayList<String>(dynamicSqlDataSourceMap.keySet())) {
-            terminateConfiguration(dataSourceConfigName);
-        }
-    }
+	@Override
+	public Connection getConnection(String dataSourceConfigName) throws UnifyException {
+		return getDynamicSqlDataSource(dataSourceConfigName).getConnection();
+	}
 
-    @Override
-    protected SqlDataSource getSqlDataSource(String dataSourceName) throws UnifyException {
-        return getDynamicSqlDataSource(dataSourceName);
-    }
+	@Override
+	public boolean restoreConnection(String dataSourceConfigName, Connection connection) throws UnifyException {
+		return getDynamicSqlDataSource(dataSourceConfigName).restoreConnection(connection);
+	}
 
-    @Override
-    protected void onInitialize() throws UnifyException {
+	@Override
+	public void terminateConfiguration(String dataSourceConfigName) throws UnifyException {
+		SqlDataSource sqlDataSource = getDynamicSqlDataSource(dataSourceConfigName);
+		try {
+			sqlDataSource.terminate();
+		} finally {
+			dynamicSqlDataSourceMap.remove(dataSourceConfigName);
+		}
+	}
 
-    }
+	@Override
+	public void terminateAll() throws UnifyException {
+		for (String dataSourceConfigName : new ArrayList<String>(dynamicSqlDataSourceMap.keySet())) {
+			terminateConfiguration(dataSourceConfigName);
+		}
+	}
 
-    @Override
-    protected void onTerminate() throws UnifyException {
-        terminateAll();
-    }
+	@Override
+	protected SqlDataSource getSqlDataSource(String dataSourceName) throws UnifyException {
+		return getDynamicSqlDataSource(dataSourceName);
+	}
+
+	@Override
+	protected void onInitialize() throws UnifyException {
+
+	}
+
+	@Override
+	protected void onTerminate() throws UnifyException {
+		terminateAll();
+	}
+
+	private class DataSourceEntry {
+
+		private final DynamicSqlDataSource dynamicSqlDataSource;
+
+		private final long versionNo;
+
+		public DataSourceEntry(DynamicSqlDataSource dynamicSqlDataSource, long versionNo) {
+			this.dynamicSqlDataSource = dynamicSqlDataSource;
+			this.versionNo = versionNo;
+		}
+
+		public DynamicSqlDataSource getDynamicSqlDataSource() {
+			return dynamicSqlDataSource;
+		}
+
+		public long getVersionNo() {
+			return versionNo;
+		}
+	}
 
 	private SqlDataSource getDynamicSqlDataSource(String dataSourceConfigName) throws UnifyException {
 		final List<String> sources = StringUtils.charToListSplit(dataSourceConfigName, ',');
@@ -221,7 +252,7 @@ public class DynamicSqlDataSourceManagerImpl extends AbstractSqlDataSourceManage
 
 		for (String source : sources) {
 			if (dynamicSqlDataSourceMap.isKey(source)) {
-				return dynamicSqlDataSourceMap.get(source);
+				return dynamicSqlDataSourceMap.get(source).getDynamicSqlDataSource();
 			}
 		}
 
@@ -246,11 +277,11 @@ public class DynamicSqlDataSourceManagerImpl extends AbstractSqlDataSourceManage
 		}
 	}
 
-    private DynamicSqlDataSource getNewDynamicSqlDataSource(DynamicSqlDataSourceConfig dynamicSqlDataSourceConfig)
-            throws UnifyException {
-        DynamicSqlDataSource dynamicSqlDataSource =
-                (DynamicSqlDataSource) getComponent(ApplicationComponents.APPLICATION_DYNAMICSQLDATASOURCE);
-        dynamicSqlDataSource.configure(dynamicSqlDataSourceConfig);
-        return dynamicSqlDataSource;
-    }
+	private DynamicSqlDataSource getNewDynamicSqlDataSource(DynamicSqlDataSourceConfig dynamicSqlDataSourceConfig)
+			throws UnifyException {
+		DynamicSqlDataSource dynamicSqlDataSource = (DynamicSqlDataSource) getComponent(
+				ApplicationComponents.APPLICATION_DYNAMICSQLDATASOURCE);
+		dynamicSqlDataSource.configure(dynamicSqlDataSourceConfig);
+		return dynamicSqlDataSource;
+	}
 }

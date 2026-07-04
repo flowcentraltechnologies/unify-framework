@@ -54,7 +54,7 @@ public class DynamicSqlDatabaseManagerTest extends AbstractUnifyComponentTest {
         // Configure data source
         dsm = (DynamicSqlDataSourceManager) getComponent(ApplicationComponents.APPLICATION_DYNAMICSQLDATASOURCEMANAGER);
         dsm.configure(new DynamicSqlDataSourceConfig(TEST_CONFIG, "hsqldb-dialect", "org.hsqldb.jdbcDriver",
-                "jdbc:hsqldb:mem:dyntest", null, null, null, 2, true));
+                "jdbc:hsqldb:mem:dyntest", null, null, null, 2, true, 0L));
         // Set database manager
         dbm = (DynamicSqlDatabaseManager) getComponent(ApplicationComponents.APPLICATION_DYNAMICSQLDATABASEMANAGER);
     }
@@ -68,6 +68,7 @@ public class DynamicSqlDatabaseManagerTest extends AbstractUnifyComponentTest {
         if (dynamicSqlDataSourceManager.isConfigured(TEST_CONFIG)) {
             dynamicSqlDataSourceManager.terminateAll();
         }
+
         deleteAll(SingleVersionBlob.class);
     }
 }

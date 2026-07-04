@@ -88,6 +88,6 @@ public class DynamicSqlDataSourceTest extends AbstractUnifyComponentTest {
 
     private DynamicSqlDataSourceConfig getConfig(int schemaIndex) {
         return new DynamicSqlDataSourceConfig("test-config", "hsqldb-dialect", "org.hsqldb.jdbcDriver",
-                "jdbc:hsqldb:mem:dyntest" + schemaIndex, null, null, null, 2, true);
+                "jdbc:hsqldb:mem:dyntest" + schemaIndex, null, null, null, 2, true, 0L);
     }
 }
