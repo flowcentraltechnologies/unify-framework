@@ -65,28 +65,7 @@ public abstract class AbstractSqlDataSourceManager extends AbstractUnifyComponen
 	@Override
 	public void initDataSource(DataSourceManagerContext ctx, String dataSourceName) throws UnifyException {
 		SqlDataSource sqlDataSource = getSqlDataSource(dataSourceName);
-		datasources.add(dataSourceName);
-		
-		if (sqlDataSource.isInitDelayed()) {
-			delayedDataSourceList.add(dataSourceName);
-		} else {
-			Connection connection = (Connection) sqlDataSource.getConnection();
-			PreparedStatement pstmt = null;
-			try {
-				buildSqlEntityFactoryInformation(ctx, dataSourceName, sqlDataSource);
-				for (SqlStatement sqlStatement : sqlDataSource.getDialect().prepareDataSourceInitStatements()) {
-					pstmt = connection.prepareStatement(sqlStatement.getSql());
-					pstmt.executeUpdate();
-					SqlUtils.close(pstmt);
-				}
-			} catch (SQLException e) {
-				throw new UnifyException(e, UnifyCoreErrorConstants.SQLSCHEMAMANAGER_MANAGE_SCHEMA_ERROR,
-						dataSourceName);
-			} finally {
-				SqlUtils.close(pstmt);
-				sqlDataSource.restoreConnection(connection);
-			}
-		}
+		initDataSource(ctx, dataSourceName, sqlDataSource);
 	}
 
 	@Override
@@ -133,6 +112,31 @@ public abstract class AbstractSqlDataSourceManager extends AbstractUnifyComponen
 	}
 
 	protected abstract SqlDataSource getSqlDataSource(String dataSourceName) throws UnifyException;
+
+	protected void initDataSource(DataSourceManagerContext ctx, String dataSourceName, SqlDataSource sqlDataSource) throws UnifyException {
+		datasources.add(dataSourceName);
+		
+		if (sqlDataSource.isInitDelayed()) {
+			delayedDataSourceList.add(dataSourceName);
+		} else {
+			Connection connection = (Connection) sqlDataSource.getConnection();
+			PreparedStatement pstmt = null;
+			try {
+				buildSqlEntityFactoryInformation(ctx, dataSourceName, sqlDataSource);
+				for (SqlStatement sqlStatement : sqlDataSource.getDialect().prepareDataSourceInitStatements()) {
+					pstmt = connection.prepareStatement(sqlStatement.getSql());
+					pstmt.executeUpdate();
+					SqlUtils.close(pstmt);
+				}
+			} catch (SQLException e) {
+				throw new UnifyException(e, UnifyCoreErrorConstants.SQLSCHEMAMANAGER_MANAGE_SCHEMA_ERROR,
+						dataSourceName);
+			} finally {
+				SqlUtils.close(pstmt);
+				sqlDataSource.restoreConnection(connection);
+			}
+		}
+	}
 
 	private void buildSqlEntityFactoryInformation(DataSourceManagerContext ctx, String dataSourceName,
 			SqlDataSource sqlDataSource) throws UnifyException {

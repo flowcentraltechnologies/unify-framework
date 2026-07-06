@@ -13,17 +13,23 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.tcdng.unify.core.database;
+package com.tcdng.unify.core.database.dynamic;
 
 /**
- * JDBC connection information.
+ * Dynamic data source configuration.
  * 
  * @author The Code Department
  * @since 4.1
  */
-public class JDBCConnectionInfo {
+public class DynamicDataSourceConfig {
+
+    private String preferredName;
+
+    private String name;
 
 	private String dialect;
+
+	private String driver;
 
 	private String host;
 
@@ -39,9 +45,19 @@ public class JDBCConnectionInfo {
 
 	private String password;
 
-	public JDBCConnectionInfo(String dialect, String host, String port, String database, String service, String schema,
-			String userName, String password) {
+	private String jdbcUrl;
+
+    private int maxConnection;
+
+    private long versionNo;
+
+	public DynamicDataSourceConfig(String preferredName, String name, String dialect, String driver, String host, String port,
+			String database, String service, String schema, String userName, String password, String jdbcUrl,
+			int maxConnection, long versionNo) {
+		this.preferredName = preferredName;
+		this.name = name;
 		this.dialect = dialect;
+		this.driver = driver;
 		this.host = host;
 		this.port = port;
 		this.database = database;
@@ -49,10 +65,25 @@ public class JDBCConnectionInfo {
 		this.schema = schema;
 		this.userName = userName;
 		this.password = password;
+		this.jdbcUrl = jdbcUrl;
+		this.maxConnection = maxConnection;
+		this.versionNo = versionNo;
+	}
+
+	public String getPreferredName() {
+		return preferredName;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	public String getDialect() {
 		return dialect;
+	}
+
+	public String getDriver() {
+		return driver;
 	}
 
 	public String getHost() {
@@ -81,6 +112,18 @@ public class JDBCConnectionInfo {
 
 	public String getPassword() {
 		return password;
+	}
+
+	public String getJdbcUrl() {
+		return jdbcUrl;
+	}
+
+	public int getMaxConnection() {
+		return maxConnection;
+	}
+
+	public long getVersionNo() {
+		return versionNo;
 	}
 
 }

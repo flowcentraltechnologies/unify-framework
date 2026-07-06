@@ -36,21 +36,20 @@ import com.tcdng.unify.core.util.StringUtils;
 @Component("sqldatasourcetablelist")
 public class DynamicSqlDataSourceTableListCommand extends AbstractDynamicSqlDataSourceListCommand {
 
-    @Override
-    public List<? extends Listable> execute(Locale locale, DynamicSqlParams params) throws UnifyException {
-        if (StringUtils.isNotBlank(params.getConfigName()) && StringUtils.isNotBlank(params.getSchemaName())) {
-            SqlTableType sqlTableType = SqlTableType.TABLE;
-            if (params.getTableName() != null) {
-                sqlTableType = SqlTableType.fromName(params.getTableName());
-            }
+	@Override
+	public List<? extends Listable> execute(Locale locale, DynamicSqlParams params) throws UnifyException {
+		if (StringUtils.isNotBlank(params.getConfigName())) {
+			SqlTableType sqlTableType = SqlTableType.TABLE;
+			if (params.getTableName() != null) {
+				sqlTableType = SqlTableType.fromName(params.getTableName());
+			}
 
-            List<SqlTableInfo> tableList =
-                    getDsManager().getTables(params.getConfigName(), params.getSchemaName(), sqlTableType);
-            DataUtils.sortAscending(tableList, SqlTableInfo.class, "listDescription");
-            return tableList;
-        }
+			List<SqlTableInfo> tableList = getDsManager().getTables(params.getConfigName(), sqlTableType);
+			DataUtils.sortAscending(tableList, SqlTableInfo.class, "listDescription");
+			return tableList;
+		}
 
-        return Collections.emptyList();
-    }
+		return Collections.emptyList();
+	}
 
 }
