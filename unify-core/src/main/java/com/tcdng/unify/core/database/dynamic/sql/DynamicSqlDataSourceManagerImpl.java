@@ -36,6 +36,7 @@ import com.tcdng.unify.core.database.DataSourceManagerOptions;
 import com.tcdng.unify.core.database.NativeQuery;
 import com.tcdng.unify.core.database.dynamic.DynamicDataSourceConfig;
 import com.tcdng.unify.core.database.dynamic.DynamicDataSourceDef;
+import com.tcdng.unify.core.database.dynamic.DynamicDataSourceDefinitionProvider;
 import com.tcdng.unify.core.database.sql.AbstractSqlDataSourceManager;
 import com.tcdng.unify.core.database.sql.SqlColumnInfo;
 import com.tcdng.unify.core.database.sql.SqlDataSource;
@@ -58,7 +59,7 @@ public class DynamicSqlDataSourceManagerImpl extends AbstractSqlDataSourceManage
 	private DataSourceEntityListProvider entityListProvider;
 
 	@Configurable
-	private DynamicSqlDataSourceDefinitionProvider configurationProvider;
+	private DynamicDataSourceDefinitionProvider definitionProvider;
 
 	private final FactoryMap<String, DataSourceEntry> dynamicSqlDataSourceMap;
 
@@ -67,7 +68,7 @@ public class DynamicSqlDataSourceManagerImpl extends AbstractSqlDataSourceManage
 
 			@Override
 			protected boolean stale(String configName, DataSourceEntry entry) throws Exception {
-				DynamicDataSourceDef dataSourceConnectionDef = configurationProvider.provide(configName);
+				DynamicDataSourceDef dataSourceConnectionDef = definitionProvider.provide(configName);
 				if (dataSourceConnectionDef == null
 						|| entry.getConfig().getVersionNo() < dataSourceConnectionDef.getVersionNo()) {
 					try {
@@ -83,7 +84,7 @@ public class DynamicSqlDataSourceManagerImpl extends AbstractSqlDataSourceManage
 
 			@Override
 			protected DataSourceEntry create(String configName, Object... params) throws Exception {
-				final DynamicDataSourceDef dynamicDataSourceDef = configurationProvider.provide(configName);
+				final DynamicDataSourceDef dynamicDataSourceDef = definitionProvider.provide(configName);
 				final DynamicDataSourceConfig config = SqlUtils.getDynamicDataSourceConfig(dynamicDataSourceDef);
 
 				final DynamicSqlDataSource dynamicSqlDataSource = (DynamicSqlDataSource) getComponent(
@@ -228,7 +229,7 @@ public class DynamicSqlDataSourceManagerImpl extends AbstractSqlDataSourceManage
 		}
 
 		for (String configName : configurations) {
-			if (dynamicSqlDataSourceMap.isKey(configName) || configurationProvider.exists(configName)) {
+			if (dynamicSqlDataSourceMap.isKey(configName) || definitionProvider.exists(configName)) {
 				return dynamicSqlDataSourceMap.get(configName).getDynamicSqlDataSource();
 			}
 		}

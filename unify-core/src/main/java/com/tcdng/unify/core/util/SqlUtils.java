@@ -139,7 +139,7 @@ public final class SqlUtils {
 
 		Map<String, JDBCConnectionDef> map = new HashMap<String, JDBCConnectionDef>();
 		map.put(SqlDialectNameConstants.HSQLDB, new JDBCConnectionDef("jdbc:hsqldb:hsql://{HOST}:{PORT}/{DATABASE}",
-				"VALUES 1",
+				"jdbc:hsqldb:mem:{DATABASE}", "VALUES 1",
 				Arrays.asList(new JDBCConnectionComponentDef(Type.DRIVER, "org.hsqldb.jdbcDriver"),
 						new JDBCConnectionComponentDef(Type.HOST, "localhost"),
 						new JDBCConnectionComponentDef(Type.PORT, "9001"),
@@ -148,7 +148,7 @@ public final class SqlUtils {
 						new JDBCConnectionComponentDef(Type.USERNAME, "SA"),
 						new JDBCConnectionComponentDef(Type.PASSWORD, ""))));
 		map.put(SqlDialectNameConstants.MSSQL, new JDBCConnectionDef(
-				"jdbc:sqlserver://{HOST}\\{SERVICE}:{PORT};databaseName={DATABASE};integratedSecurity=false",
+				"jdbc:sqlserver://{HOST}\\{SERVICE}:{PORT};databaseName={DATABASE};integratedSecurity=false", null,
 				"SELECT 1",
 				Arrays.asList(
 						new JDBCConnectionComponentDef(Type.DRIVER, "com.microsoft.sqlserver.jdbc.SQLServerDriver"),
@@ -159,7 +159,7 @@ public final class SqlUtils {
 						new JDBCConnectionComponentDef(Type.SCHEMA, "dbo"),
 						new JDBCConnectionComponentDef(Type.USERNAME), new JDBCConnectionComponentDef(Type.PASSWORD))));
 		map.put(SqlDialectNameConstants.MYSQL, new JDBCConnectionDef(
-				"jdbc:mysql://{HOST}:{PORT}/{DATABASE}?useSSL=false", "SELECT 1",
+				"jdbc:mysql://{HOST}:{PORT}/{DATABASE}?useSSL=false", null, "SELECT 1",
 				Arrays.asList(new JDBCConnectionComponentDef(Type.DRIVER, "com.mysql.cj.jdbc.Driver"),
 						new JDBCConnectionComponentDef(Type.HOST, "localhost"),
 						new JDBCConnectionComponentDef(Type.PORT, "3306"),
@@ -168,7 +168,7 @@ public final class SqlUtils {
 						new JDBCConnectionComponentDef(Type.USERNAME, "root"),
 						new JDBCConnectionComponentDef(Type.PASSWORD))));
 		map.put(SqlDialectNameConstants.MARIADB, new JDBCConnectionDef(
-				"jdbcmariadb://{HOST}:{PORT}/{DATABASE}?useSSL=false", "SELECT 1",
+				"jdbcmariadb://{HOST}:{PORT}/{DATABASE}?useSSL=false", null, "SELECT 1",
 				Arrays.asList(new JDBCConnectionComponentDef(Type.DRIVER, "org.mariadb.jdbc.Driver"),
 						new JDBCConnectionComponentDef(Type.HOST, "localhost"),
 						new JDBCConnectionComponentDef(Type.PORT, "3306"),
@@ -177,7 +177,7 @@ public final class SqlUtils {
 						new JDBCConnectionComponentDef(Type.USERNAME, "root"),
 						new JDBCConnectionComponentDef(Type.PASSWORD))));
 		map.put(SqlDialectNameConstants.ORACLE, new JDBCConnectionDef("jdbc:oracle:thin:@//{HOST}:{PORT}/{SERVICE}",
-				"SELECT 1 FROM DUAL",
+				null, "SELECT 1 FROM DUAL",
 				Arrays.asList(new JDBCConnectionComponentDef(Type.DRIVER, "oracle.jdbc.OracleDriver"),
 						new JDBCConnectionComponentDef(Type.HOST, "localhost"),
 						new JDBCConnectionComponentDef(Type.PORT, "1521"),
@@ -186,7 +186,7 @@ public final class SqlUtils {
 						new JDBCConnectionComponentDef(Type.SCHEMA, "{USERNAME}"),
 						new JDBCConnectionComponentDef(Type.USERNAME), new JDBCConnectionComponentDef(Type.PASSWORD))));
 		map.put(SqlDialectNameConstants.POSTGRESQL, new JDBCConnectionDef("jdbc:postgresql://{HOST}:{PORT}/{DATABASE}",
-				"SELECT 1",
+				null, "SELECT 1",
 				Arrays.asList(new JDBCConnectionComponentDef(Type.DRIVER, "org.postgresql.Driver"),
 						new JDBCConnectionComponentDef(Type.HOST, "localhost"),
 						new JDBCConnectionComponentDef(Type.PORT, "5432"), new JDBCConnectionComponentDef(Type.SERVICE),
@@ -273,14 +273,16 @@ public final class SqlUtils {
 		}
 
 		final JDBCConnectionDef jdbcConnectionDef = getConnectionDef(dynamicDataSourceDef.getDialect());
-		final String jdbcUrl = StringUtils.replacePlaceholders(jdbcConnectionDef.getTemplate(), values);
+		final String jdbcUrl = StringUtils
+				.replacePlaceholders(dynamicDataSourceDef.isInMemory() ? jdbcConnectionDef.getInMemoryTemplate()
+						: jdbcConnectionDef.getTemplate(), values);
 		return new DynamicDataSourceConfig(dynamicDataSourceDef.getPreferredName(), dynamicDataSourceDef.getName(),
 				dynamicDataSourceDef.getDialect(),
 				jdbcConnectionDef.getJDBCConnectionComponentDef(Type.DRIVER).getDefaultVal(),
 				dynamicDataSourceDef.getHost(), dynamicDataSourceDef.getPort(), values.get(Type.DATABASE.code()),
 				values.get(Type.SERVICE.code()), values.get(Type.SCHEMA.code()), dynamicDataSourceDef.getUserName(),
-				dynamicDataSourceDef.getPassword(), jdbcUrl, dynamicDataSourceDef.getMaxConnection(),
-				dynamicDataSourceDef.getVersionNo());
+				dynamicDataSourceDef.getPassword(), jdbcUrl, dynamicDataSourceDef.isInMemory(),
+				dynamicDataSourceDef.getMaxConnection(), dynamicDataSourceDef.getVersionNo());
 	}
 
 	/**

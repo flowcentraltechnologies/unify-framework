@@ -29,14 +29,17 @@ public class JDBCConnectionDef {
 
 	private String template;
 
+	private String inMemoryTemplate;
+
 	private String testQuery;
 
 	private Map<JDBCConnectionComponentDef.Type, JDBCConnectionComponentDef> componentsMap;
 
 	private List<JDBCConnectionComponentDef> components;
 
-	public JDBCConnectionDef(String template, String testQuery, List<JDBCConnectionComponentDef> components) {
+	public JDBCConnectionDef(String template, String inMemoryTemplate, String testQuery, List<JDBCConnectionComponentDef> components) {
 		this.template = template;
+		this.inMemoryTemplate = inMemoryTemplate;
 		this.testQuery = testQuery;
 		this.components = components;
 
@@ -52,6 +55,10 @@ public class JDBCConnectionDef {
 
 	public String getTemplate() {
 		return template;
+	}
+
+	public String getInMemoryTemplate() {
+		return inMemoryTemplate;
 	}
 
 	public String getTestQuery() {

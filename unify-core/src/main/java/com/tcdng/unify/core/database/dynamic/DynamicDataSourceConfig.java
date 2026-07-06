@@ -23,9 +23,9 @@ package com.tcdng.unify.core.database.dynamic;
  */
 public class DynamicDataSourceConfig {
 
-    private String preferredName;
+	private String preferredName;
 
-    private String name;
+	private String name;
 
 	private String dialect;
 
@@ -47,13 +47,15 @@ public class DynamicDataSourceConfig {
 
 	private String jdbcUrl;
 
-    private int maxConnection;
+	private boolean inMemory;
 
-    private long versionNo;
+	private int maxConnection;
 
-	public DynamicDataSourceConfig(String preferredName, String name, String dialect, String driver, String host, String port,
-			String database, String service, String schema, String userName, String password, String jdbcUrl,
-			int maxConnection, long versionNo) {
+	private long versionNo;
+
+	public DynamicDataSourceConfig(String preferredName, String name, String dialect, String driver, String host,
+			String port, String database, String service, String schema, String userName, String password,
+			String jdbcUrl, boolean inMemory, int maxConnection, long versionNo) {
 		this.preferredName = preferredName;
 		this.name = name;
 		this.dialect = dialect;
@@ -66,6 +68,7 @@ public class DynamicDataSourceConfig {
 		this.userName = userName;
 		this.password = password;
 		this.jdbcUrl = jdbcUrl;
+		this.inMemory = inMemory;
 		this.maxConnection = maxConnection;
 		this.versionNo = versionNo;
 	}
@@ -116,6 +119,10 @@ public class DynamicDataSourceConfig {
 
 	public String getJdbcUrl() {
 		return jdbcUrl;
+	}
+
+	public boolean isInMemory() {
+		return inMemory;
 	}
 
 	public int getMaxConnection() {

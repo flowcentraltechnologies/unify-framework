@@ -13,19 +13,18 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.tcdng.unify.core.database.dynamic.sql;
+package com.tcdng.unify.core.database.dynamic;
 
 import com.tcdng.unify.core.UnifyComponent;
 import com.tcdng.unify.core.UnifyException;
-import com.tcdng.unify.core.database.dynamic.DynamicDataSourceDef;
 
 /**
- * Dynamic SQL data source definition provider.
+ * Dynamic data source definition provider.
  * 
  * @author The Code Department
  * @since 4.1
  */
-public interface DynamicSqlDataSourceDefinitionProvider extends UnifyComponent {
+public interface DynamicDataSourceDefinitionProvider extends UnifyComponent {
 
 	/**
 	 * Provides dynamic data source definition.

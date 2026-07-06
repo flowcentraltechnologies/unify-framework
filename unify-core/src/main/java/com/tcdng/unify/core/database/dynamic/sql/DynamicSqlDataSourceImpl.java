@@ -54,7 +54,7 @@ public class DynamicSqlDataSourceImpl extends AbstractSqlDataSource implements D
         setUsername(dataSourceConfig.getUserName());
         setPassword(dataSourceConfig.getPassword());
         setMaxConnections(dataSourceConfig.getMaxConnection());
-        setShutdownOnTerminate(false);
+        setShutdownOnTerminate(dataSourceConfig.isInMemory());
         doInitConnectionPool();
     }
 
