@@ -21,6 +21,7 @@ import java.util.Map;
 
 import com.tcdng.unify.common.constants.StandardFormatType;
 import com.tcdng.unify.convert.FormatContext;
+import com.tcdng.unify.core.util.StringUtils;
 
 /**
  * JSON object composition.
@@ -97,4 +98,7 @@ public class JsonObjectComposition {
 		return fields;
 	}
 
+	public String toString() {
+		return StringUtils.toXmlString(this);
+	}
 }

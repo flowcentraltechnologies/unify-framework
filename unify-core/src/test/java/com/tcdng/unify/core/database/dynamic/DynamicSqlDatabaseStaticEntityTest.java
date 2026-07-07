@@ -29,7 +29,6 @@ import com.tcdng.unify.core.ApplicationComponents;
 import com.tcdng.unify.core.Setting;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.database.DatabaseTransactionManager;
-import com.tcdng.unify.core.database.dynamic.sql.DynamicSqlDataSourceConfig;
 import com.tcdng.unify.core.database.dynamic.sql.DynamicSqlDataSourceManager;
 import com.tcdng.unify.core.database.dynamic.sql.DynamicSqlDatabase;
 import com.tcdng.unify.core.database.sql.NameSqlDataSourceSchemaImpl;
@@ -43,7 +42,7 @@ import com.tcdng.unify.core.util.SqlUtils;
  */
 public class DynamicSqlDatabaseStaticEntityTest extends AbstractUnifyComponentTest {
 
-    private static final String TEST_CONFIG = "test-config";
+    private static final String TEST_CONFIG_MANAGED = "test-config-managed";
 
     private DatabaseTransactionManager tm;
     
@@ -75,7 +74,7 @@ public class DynamicSqlDatabaseStaticEntityTest extends AbstractUnifyComponentTe
     @Test
     public void testCreateRecordAdhocEntity() throws Exception {
         DynamicSqlDatabase db = (DynamicSqlDatabase) getComponent(ApplicationComponents.APPLICATION_DYNAMICSQLDATABASE,
-                new Setting("dataSourceConfigName", TEST_CONFIG));
+                new Setting("dataSourceConfigName", TEST_CONFIG_MANAGED));
         assertNotNull(db);
         tm.beginTransaction();
         try {
@@ -89,7 +88,7 @@ public class DynamicSqlDatabaseStaticEntityTest extends AbstractUnifyComponentTe
     @Test
     public void testFindRecordByIdAdhocEntity() throws Exception {
         DynamicSqlDatabase db = (DynamicSqlDatabase) getComponent(ApplicationComponents.APPLICATION_DYNAMICSQLDATABASE,
-                new Setting("dataSourceConfigName", TEST_CONFIG));
+                new Setting("dataSourceConfigName", TEST_CONFIG_MANAGED));
         assertNotNull(db);
         tm.beginTransaction();
         try {
@@ -109,7 +108,7 @@ public class DynamicSqlDatabaseStaticEntityTest extends AbstractUnifyComponentTe
     @Test
     public void testUpdateRecordByIdAdhocEntity() throws Exception {
         DynamicSqlDatabase db = (DynamicSqlDatabase) getComponent(ApplicationComponents.APPLICATION_DYNAMICSQLDATABASE,
-                new Setting("dataSourceConfigName", TEST_CONFIG));
+                new Setting("dataSourceConfigName", TEST_CONFIG_MANAGED));
         assertNotNull(db);
         tm.beginTransaction();
         try {
@@ -132,7 +131,7 @@ public class DynamicSqlDatabaseStaticEntityTest extends AbstractUnifyComponentTe
     @Test
     public void testDeleteRecordByIdAdhocEntity() throws Exception {
         DynamicSqlDatabase db = (DynamicSqlDatabase) getComponent(ApplicationComponents.APPLICATION_DYNAMICSQLDATABASE,
-                new Setting("dataSourceConfigName", TEST_CONFIG));
+                new Setting("dataSourceConfigName", TEST_CONFIG_MANAGED));
         assertNotNull(db);
         tm.beginTransaction();
         try {
@@ -148,7 +147,7 @@ public class DynamicSqlDatabaseStaticEntityTest extends AbstractUnifyComponentTe
     @Test
     public void testCreateRecordPreferredEntity() throws Exception {
         DynamicSqlDatabase db = (DynamicSqlDatabase) getComponent(ApplicationComponents.APPLICATION_DYNAMICSQLDATABASE,
-                new Setting("dataSourceConfigName", TEST_CONFIG));
+                new Setting("dataSourceConfigName", TEST_CONFIG_MANAGED));
         assertNotNull(db);
         tm.beginTransaction();
         try {
@@ -162,7 +161,7 @@ public class DynamicSqlDatabaseStaticEntityTest extends AbstractUnifyComponentTe
     @Test
     public void testFindRecordByIdPreferredEntity() throws Exception {
         DynamicSqlDatabase db = (DynamicSqlDatabase) getComponent(ApplicationComponents.APPLICATION_DYNAMICSQLDATABASE,
-                new Setting("dataSourceConfigName", TEST_CONFIG));
+                new Setting("dataSourceConfigName", TEST_CONFIG_MANAGED));
         assertNotNull(db);
         tm.beginTransaction();
         try {
@@ -182,7 +181,7 @@ public class DynamicSqlDatabaseStaticEntityTest extends AbstractUnifyComponentTe
     @Test
     public void testUpdateRecordByIdPreferredEntity() throws Exception {
         DynamicSqlDatabase db = (DynamicSqlDatabase) getComponent(ApplicationComponents.APPLICATION_DYNAMICSQLDATABASE,
-                new Setting("dataSourceConfigName", TEST_CONFIG));
+                new Setting("dataSourceConfigName", TEST_CONFIG_MANAGED));
         assertNotNull(db);
         tm.beginTransaction();
         try {
@@ -205,7 +204,7 @@ public class DynamicSqlDatabaseStaticEntityTest extends AbstractUnifyComponentTe
     @Test
     public void testDeleteRecordByIdPreferredEntity() throws Exception {
         DynamicSqlDatabase db = (DynamicSqlDatabase) getComponent(ApplicationComponents.APPLICATION_DYNAMICSQLDATABASE,
-                new Setting("dataSourceConfigName", TEST_CONFIG));
+                new Setting("dataSourceConfigName", TEST_CONFIG_MANAGED));
         assertNotNull(db);
         tm.beginTransaction();
         try {
@@ -227,16 +226,12 @@ public class DynamicSqlDatabaseStaticEntityTest extends AbstractUnifyComponentTe
     @Override
     protected void onSetup() throws Exception {
         // Get transaction manager
-        tm = (DatabaseTransactionManager) getComponent(ApplicationComponents.APPLICATION_DATABASETRANSACTIONMANAGER);;
+        tm = (DatabaseTransactionManager) getComponent(ApplicationComponents.APPLICATION_DATABASETRANSACTIONMANAGER);
         
         // Configure data source and create adhoc (unmanaged) tables
         DynamicSqlDataSourceManager dynamicSqlDataSourceManager = (DynamicSqlDataSourceManager) getComponent(
                 ApplicationComponents.APPLICATION_DYNAMICSQLDATASOURCEMANAGER);
-        DynamicSqlDataSourceConfig config = new DynamicSqlDataSourceConfig("inventory", TEST_CONFIG, "hsqldb-dialect",
-                "org.hsqldb.jdbcDriver", "jdbc:hsqldb:mem:dyntest", null, null, null, 2, true);
-        config.setManageSchema(true);
-        dynamicSqlDataSourceManager.configure(config);
-        Connection connection = dynamicSqlDataSourceManager.getConnection(TEST_CONFIG);
+        Connection connection = dynamicSqlDataSourceManager.getConnection(TEST_CONFIG_MANAGED);
         Statement stmt = null;
         try {
             stmt = connection.createStatement();
@@ -245,7 +240,7 @@ public class DynamicSqlDatabaseStaticEntityTest extends AbstractUnifyComponentTe
             connection.commit();
         } finally {
             SqlUtils.close(stmt);
-            dynamicSqlDataSourceManager.restoreConnection(TEST_CONFIG, connection);
+            dynamicSqlDataSourceManager.restoreConnection(TEST_CONFIG_MANAGED, connection);
         }
     }
 
@@ -254,8 +249,6 @@ public class DynamicSqlDatabaseStaticEntityTest extends AbstractUnifyComponentTe
         // Unconfigure and drop data source
         DynamicSqlDataSourceManager dynamicSqlDataSourceManager = (DynamicSqlDataSourceManager) getComponent(
                 ApplicationComponents.APPLICATION_DYNAMICSQLDATASOURCEMANAGER);
-        if (dynamicSqlDataSourceManager.isConfigured(TEST_CONFIG)) {
-            dynamicSqlDataSourceManager.terminateAll();
-        }
+        dynamicSqlDataSourceManager.terminateAll();
     }
 }

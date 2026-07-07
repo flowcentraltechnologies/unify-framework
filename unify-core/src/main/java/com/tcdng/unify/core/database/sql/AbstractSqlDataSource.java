@@ -381,7 +381,7 @@ public abstract class AbstractSqlDataSource extends AbstractDataSource implement
     }
 
     @Override
-    public boolean restoreConnection(Connection connection) throws UnifyException {
+    public boolean restoreConnection(Connection connection) {
         return sqlConnectionPool.returnObject(connection);
     }
 

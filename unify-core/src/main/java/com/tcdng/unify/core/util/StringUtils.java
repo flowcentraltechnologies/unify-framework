@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import com.tcdng.unify.common.util.StringToken;
@@ -818,6 +819,27 @@ public final class StringUtils {
 		return text;
 	}
 
+	/**
+	 * replace place holders with values.
+	 * 
+	 * @param template the string template
+	 * @param values   the values by placeholder map
+	 * @return the replaced string
+	 */
+	public static String replacePlaceholders(String template, Map<String, String> values) {
+		if (!StringUtils.isBlank(template)) {
+			for (Map.Entry<String, String> entry : values.entrySet()) {
+				if (entry.getValue() != null) {
+					template = template.replace(entry.getKey(), entry.getValue());
+				} else {
+					template = template.replace(entry.getKey(), "");
+				}
+			}
+		}
+
+		return template;
+	}
+	
 	/**
 	 * Builds a string by concatenating supplied objects.
 	 * 

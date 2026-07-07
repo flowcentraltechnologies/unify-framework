@@ -42,22 +42,15 @@ public abstract class AbstractDynamicSqlDataSourceListCommand
 
     public class DynamicSqlParams extends AbstractListParam {
         private String configName;
-        private String schemaName;
         private String tableName;
 
-        public DynamicSqlParams(String configName, String schemaName, String tableName) {
-            super();
+        public DynamicSqlParams(String configName, String tableName) {
             this.configName = configName;
-            this.schemaName = schemaName;
             this.tableName = tableName;
         }
 
         public String getConfigName() {
             return configName;
-        }
-
-        public String getSchemaName() {
-            return schemaName;
         }
 
         public String getTableName() {

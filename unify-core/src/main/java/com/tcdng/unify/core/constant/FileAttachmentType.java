@@ -35,6 +35,7 @@ public enum FileAttachmentType implements EnumConst {
 
     AUDIO("AUD", "file-audio","audio/*,audio/mp3", "#ff9800", MimeType.AUDIO, false),
     CSV("CSV", "file-csv", ".csv", "#4caf50", MimeType.TEXT_CSV, false),
+    JSON("JSN", "file-alt", ".json", "#4caf50", MimeType.APPLICATION_JSON, false),
     EXCEL("XLS", "file-excel", ".xls,.xlsx", "#217346", MimeType.APPLICATION_EXCEL, false),
     IMAGE("IMG", "file-image", "image/*", "#03a9f4", MimeType.IMAGE, true),
     IMAGE_PNG("PNG", "file-image", ".png", "#03a9f4", MimeType.IMAGE_PNG, true),

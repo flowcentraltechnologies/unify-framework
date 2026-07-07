@@ -16,6 +16,7 @@
 package com.tcdng.unify.core.database.dynamic.sql;
 
 import com.tcdng.unify.core.UnifyException;
+import com.tcdng.unify.core.database.dynamic.DynamicDataSourceConfig;
 import com.tcdng.unify.core.database.sql.SqlDataSource;
 
 /**
@@ -26,21 +27,19 @@ import com.tcdng.unify.core.database.sql.SqlDataSource;
  */
 public interface DynamicSqlDataSource extends SqlDataSource {
 
-    /**
-     * Configures data source using supplied configuration.
-     * 
-     * @param dynamicSqlDataSourceConfig
-     *            the configuration to use
-     * @throws UnifyException
-     *             if data source is already configured. If an error occurs
-     */
-    void configure(DynamicSqlDataSourceConfig dynamicSqlDataSourceConfig) throws UnifyException;
+	/**
+	 * Configures data source using supplied configuration.
+	 * 
+	 * @param dynamicDataSourceConfig the configuration to use
+	 * @throws UnifyException if data source is already configured. If an error
+	 *                        occurs
+	 */
+	void configure(DynamicDataSourceConfig dynamicDataSourceConfig) throws UnifyException;
 
-    /**
-     * Returns true if data source is configured.
-     * 
-     * @throws UnifyException
-     *             if an error occurs
-     */
-    boolean isConfigured() throws UnifyException;
+	/**
+	 * Returns true if data source is configured.
+	 * 
+	 * @throws UnifyException if an error occurs
+	 */
+	boolean isConfigured() throws UnifyException;
 }

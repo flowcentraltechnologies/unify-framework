@@ -21,6 +21,7 @@ import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.annotation.Singleton;
 import com.tcdng.unify.core.database.DataSourceDialect;
+import com.tcdng.unify.core.database.dynamic.DynamicDataSourceConfig;
 import com.tcdng.unify.core.database.sql.AbstractSqlDataSource;
 
 /**
@@ -38,7 +39,7 @@ public class DynamicSqlDataSourceImpl extends AbstractSqlDataSource implements D
     private boolean configured;
     
     @Override
-    public void configure(DynamicSqlDataSourceConfig dataSourceConfig) throws UnifyException {
+    public void configure(DynamicDataSourceConfig dataSourceConfig) throws UnifyException {
         if (isConfigured()) {
             throw new UnifyException(UnifyCoreErrorConstants.DYNAMIC_DATASOURCE_ALREADY_CONFIGURED,
                     dataSourceConfig.getName());
@@ -48,12 +49,12 @@ public class DynamicSqlDataSourceImpl extends AbstractSqlDataSource implements D
         configured = true;
         setDialect((DataSourceDialect) getComponent(dataSourceConfig.getDialect()));
         setDriver(dataSourceConfig.getDriver());
-        setConnectionUrl(dataSourceConfig.getConnectionUrl());
-        setAppSchema(dataSourceConfig.getDbSchema());
-        setUsername(dataSourceConfig.getDbUsername());
-        setPassword(dataSourceConfig.getDbPassword());
+        setConnectionUrl(dataSourceConfig.getJdbcUrl());
+        setAppSchema(dataSourceConfig.getSchema());
+        setUsername(dataSourceConfig.getUserName());
+        setPassword(dataSourceConfig.getPassword());
         setMaxConnections(dataSourceConfig.getMaxConnection());
-        setShutdownOnTerminate(dataSourceConfig.isShutdownOnTerminate());
+        setShutdownOnTerminate(dataSourceConfig.isInMemory());
         doInitConnectionPool();
     }
 

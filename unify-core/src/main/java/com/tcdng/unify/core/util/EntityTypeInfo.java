@@ -34,9 +34,18 @@ public class EntityTypeInfo {
 
 	private String name;
 
+	private String tableName;
+
 	private int depth;
 
 	private List<EntityTypeFieldInfo> fields;
+
+	private EntityTypeInfo(String name, String tableName, int depth) {
+		this.name = name;
+		this.tableName = tableName;
+		this.depth = depth;
+		this.fields = Collections.emptyList();
+	}
 
 	private EntityTypeInfo(String name, int depth) {
 		this.name = name;
@@ -52,6 +61,14 @@ public class EntityTypeInfo {
 		this.name = name;
 	}
 
+	public String getTableName() {
+		return tableName;
+	}
+
+	public void setTableName(String tableName) {
+		this.tableName = tableName;
+	}
+
 	public int getDepth() {
 		return depth;
 	}
@@ -64,6 +81,10 @@ public class EntityTypeInfo {
 		return fields;
 	}
 
+	public static Builder newBuilder(String name, String tableName, int depth) {
+		return new Builder(name, tableName, depth);
+	}
+
 	public static Builder newBuilder(String name, int depth) {
 		return new Builder(name, depth);
 	}
@@ -73,6 +94,11 @@ public class EntityTypeInfo {
 		private Map<String, EntityTypeFieldInfo> fields;
 
 		private EntityTypeInfo prefetch;
+
+		public Builder(String name, String tableName, int depth) {
+			this.prefetch = new EntityTypeInfo(name, tableName, depth);
+			this.fields = new LinkedHashMap<String, EntityTypeFieldInfo>();
+		}
 
 		public Builder(String name, int depth) {
 			this.prefetch = new EntityTypeInfo(name, depth);

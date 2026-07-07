@@ -31,20 +31,20 @@ import com.tcdng.unify.core.database.sql.AbstractSqlDatabase;
 @Singleton(false)
 public abstract class AbstractDynamicSqlDatabase extends AbstractSqlDatabase implements DynamicSqlDatabase {
 
-    @Configurable
-    private DynamicSqlDataSourceManager dynamicSqlDataSourceManager;
+	@Configurable
+	private DynamicSqlDataSourceManager dynamicSqlDataSourceManager;
 
-    @Configurable
-    private String dataSourceConfigName;
+	@Configurable
+	private String dataSourceConfigName;
 
-    @Override
-    public String getDataSourceName() throws UnifyException {
-        return getDataSource().getName();
-    }
+	@Override
+	public String getDataSourceName() throws UnifyException {
+		return getDataSource().getName();
+	}
 
-    @Override
-    public DataSource getDataSource() throws UnifyException {
-        return dynamicSqlDataSourceManager.getDataSource(dataSourceConfigName);
-    }
+	@Override
+	public DataSource getDataSource() throws UnifyException {
+		return dynamicSqlDataSourceManager.getDataSource(dataSourceConfigName);
+	}
 
 }

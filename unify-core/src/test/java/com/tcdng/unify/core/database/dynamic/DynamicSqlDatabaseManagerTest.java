@@ -22,7 +22,6 @@ import org.junit.Test;
 
 import com.tcdng.unify.core.AbstractUnifyComponentTest;
 import com.tcdng.unify.core.ApplicationComponents;
-import com.tcdng.unify.core.database.dynamic.sql.DynamicSqlDataSourceConfig;
 import com.tcdng.unify.core.database.dynamic.sql.DynamicSqlDataSourceManager;
 import com.tcdng.unify.core.database.dynamic.sql.DynamicSqlDatabase;
 import com.tcdng.unify.core.database.dynamic.sql.DynamicSqlDatabaseManager;
@@ -53,8 +52,6 @@ public class DynamicSqlDatabaseManagerTest extends AbstractUnifyComponentTest {
     protected void onSetup() throws Exception {
         // Configure data source
         dsm = (DynamicSqlDataSourceManager) getComponent(ApplicationComponents.APPLICATION_DYNAMICSQLDATASOURCEMANAGER);
-        dsm.configure(new DynamicSqlDataSourceConfig(TEST_CONFIG, "hsqldb-dialect", "org.hsqldb.jdbcDriver",
-                "jdbc:hsqldb:mem:dyntest", null, null, null, 2, true));
         // Set database manager
         dbm = (DynamicSqlDatabaseManager) getComponent(ApplicationComponents.APPLICATION_DYNAMICSQLDATABASEMANAGER);
     }
@@ -63,11 +60,8 @@ public class DynamicSqlDatabaseManagerTest extends AbstractUnifyComponentTest {
     @Override
     protected void onTearDown() throws Exception {
         // De-configure data source
-        DynamicSqlDataSourceManager dynamicSqlDataSourceManager = (DynamicSqlDataSourceManager) getComponent(
-                ApplicationComponents.APPLICATION_DYNAMICSQLDATASOURCEMANAGER);
-        if (dynamicSqlDataSourceManager.isConfigured(TEST_CONFIG)) {
-            dynamicSqlDataSourceManager.terminateAll();
-        }
+        dsm.terminateAll();
+
         deleteAll(SingleVersionBlob.class);
     }
 }

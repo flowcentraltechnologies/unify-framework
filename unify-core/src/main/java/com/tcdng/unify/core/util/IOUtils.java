@@ -483,9 +483,12 @@ public class IOUtils {
 	 */
 	public static byte[] readAll(InputStream inputStream) throws UnifyException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		IOUtils.writeAll(baos, inputStream);
-		IOUtils.close(baos);
-		return baos.toByteArray();
+		try {
+			IOUtils.writeAll(baos, inputStream);
+			return baos.toByteArray();
+		} finally {
+			IOUtils.close(baos);
+		}
 	}
 
 	public static String readAll(Reader reader) throws UnifyException {
@@ -496,12 +499,15 @@ public class IOUtils {
 		try {
 			StringBuilder sb = new StringBuilder();
 			String line = null;
+			String newline = System.lineSeparator();
 			while ((line = reader.readLine()) != null) {
-				sb.append(line);
+				sb.append(line).append(newline);
 			}
 			return sb.toString();
 		} catch (Exception e) {
 			throw new UnifyException(e, UnifyCoreErrorConstants.IOUTIL_STREAM_RW_ERROR);
+		} finally {
+			IOUtils.close(reader);
 		}
 	}
 
@@ -515,6 +521,8 @@ public class IOUtils {
 			return lines;
 		} catch (Exception e) {
 			throw new UnifyException(e, UnifyCoreErrorConstants.IOUTIL_STREAM_RW_ERROR);
+		} finally {
+			IOUtils.close(reader);
 		}
 	}
 
