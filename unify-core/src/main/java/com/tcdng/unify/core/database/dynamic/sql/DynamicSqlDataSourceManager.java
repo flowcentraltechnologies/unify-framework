@@ -116,12 +116,9 @@ public interface DynamicSqlDataSourceManager extends SqlDataSourceManager {
      *            the data source configuration name
      * @param connection
      *            the connection to restore
-     * @return a true value if connection was restored to the right data source
-     * @throws UnifyException
-     *             if data source with supplied configuration name is not
-     *             configured. If an error occurs
+     * @return a true value if connection was restored to the right data source otherwise false
      */
-    boolean restoreConnection(String dataSourceConfigName, Connection connection) throws UnifyException;
+    boolean restoreConnection(String dataSourceConfigName, Connection connection);
 
     /**
      * Terminates configuration from this dynamic SQl data source manager.

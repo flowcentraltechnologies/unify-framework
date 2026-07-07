@@ -184,12 +184,9 @@ public interface SqlDataSource extends DataSource, NameSqlDataSourceSchema {
      * 
      * @param connection
      *            the connection to restore
-     * @return true if connection is restored.
-     * @throws UnifyException
-     *             if supplied connection object did not originate from this data
-     *             source. if an error occurs.
+     * @return true if connection is restored otherwise false.
      */
-    boolean restoreConnection(Connection connection) throws UnifyException;
+    boolean restoreConnection(Connection connection);
 
     /**
      * Tests connection to data source

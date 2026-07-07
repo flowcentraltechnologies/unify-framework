@@ -166,8 +166,14 @@ public class DynamicSqlDataSourceManagerImpl extends AbstractSqlDataSourceManage
 	}
 
 	@Override
-	public boolean restoreConnection(String dataSourceConfigName, Connection connection) throws UnifyException {
-		return getDynamicSqlDataSource(dataSourceConfigName).restoreConnection(connection);
+	public boolean restoreConnection(String dataSourceConfigName, Connection connection) {
+		try {
+			return getDynamicSqlDataSource(dataSourceConfigName).restoreConnection(connection);
+		} catch (Exception e) {
+			logError(e);
+		}
+		
+		return false;
 	}
 
 	@Override
