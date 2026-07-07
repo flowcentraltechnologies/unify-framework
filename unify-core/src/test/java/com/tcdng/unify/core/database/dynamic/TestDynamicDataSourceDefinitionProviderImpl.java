@@ -40,9 +40,17 @@ public class TestDynamicDataSourceDefinitionProviderImpl extends AbstractUnifyCo
 	public TestDynamicDataSourceDefinitionProviderImpl() {
 		Map<String, DynamicDataSourceDef> _map = new HashMap<String, DynamicDataSourceDef>();
 		_map.put(MockService.CREDITCHECK_DATASOURCECONFIG,
-				new DynamicDataSourceDef(null, MockService.CREDITCHECK_DATASOURCECONFIG,
-						"Test credit datasource configuration", SqlDialectNameConstants.HSQLDB, "locallhost", null,
-						"dyntest", null, null, null, null, 4, true, 0L, 1L));
+				new DynamicDataSourceDef(MockService.CREDITCHECK_DATASOURCECONFIG, null,
+						"Test credit datasource configuration", SqlDialectNameConstants.HSQLDB, "localhost", null,
+						"dyntest", null, null, null, null, 4, false, true, 0L, 1L));
+		_map.put("test-config",
+				new DynamicDataSourceDef("test-config", null,
+						"Test datasource configuration", SqlDialectNameConstants.HSQLDB, "localhost", null,
+						"dyntest", null, null, null, null, 4, false, true, 0L, 1L));
+		_map.put("test-config-managed",
+				new DynamicDataSourceDef("test-config-managed", "inventory",
+						"Test datasource configuration (Managed)", SqlDialectNameConstants.HSQLDB, "localhost", null,
+						"dyntest", null, null, null, null, 4, true, true, 0L, 1L));
 		this.map = Collections.unmodifiableMap(_map);
 	}
 

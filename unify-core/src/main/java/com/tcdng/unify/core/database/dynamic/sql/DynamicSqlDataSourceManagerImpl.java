@@ -99,6 +99,9 @@ public class DynamicSqlDataSourceManagerImpl extends AbstractSqlDataSourceManage
 								ForceConstraints.fromBoolean(!getContainerSetting(boolean.class,
 										UnifyCorePropertyConstants.APPLICATION_FOREIGNKEY_EASE, false))));
 				initDataSource(ctx, dynamicDataSourceDef.getName(), dynamicSqlDataSource);
+				if (dynamicDataSourceDef.isManaged()) {
+					manageDataSource(ctx, dynamicDataSourceDef.getName(), dynamicSqlDataSource);
+				}
 
 				return new DataSourceEntry(dynamicSqlDataSource, config);
 			}

@@ -24,9 +24,9 @@ package com.tcdng.unify.core.database.dynamic;
  */
 public class DynamicDataSourceDef {
 
-	private String preferredName;
-
 	private String name;
+
+	private String preferredName;
 
 	private String description;
 
@@ -48,17 +48,19 @@ public class DynamicDataSourceDef {
 
 	private int maxConnection;
 
+	private boolean managed;
+
 	private boolean inMemory;
 
 	private Long id;
 
 	private long versionNo;
 
-	public DynamicDataSourceDef(String preferredName, String name, String description, String dialect, String host,
+	public DynamicDataSourceDef(String name, String preferredName, String description, String dialect, String host,
 			String port, String database, String service, String schema, String userName, String password,
-			int maxConnection, boolean inMemory, Long id, long versionNo) {
-		this.preferredName = preferredName;
+			int maxConnection, boolean managed, boolean inMemory, Long id, long versionNo) {
 		this.name = name;
+		this.preferredName = preferredName;
 		this.description = description;
 		this.dialect = dialect;
 		this.host = host;
@@ -69,6 +71,7 @@ public class DynamicDataSourceDef {
 		this.userName = userName;
 		this.password = password;
 		this.maxConnection = maxConnection;
+		this.managed = managed;
 		this.inMemory = inMemory;
 		this.id = id;
 		this.versionNo = versionNo;
@@ -124,6 +127,10 @@ public class DynamicDataSourceDef {
 
 	public boolean isInMemory() {
 		return inMemory;
+	}
+
+	public boolean isManaged() {
+		return managed;
 	}
 
 	public Long getId() {
