@@ -100,7 +100,7 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 	private FactoryMap<String, RequestPathParts> requestPathParts;
 
 	private Set<String> restrictedPaths;
-	
+
 	private boolean isTenantPathEnabled;
 
 	private boolean isNoCachingEnabled;
@@ -223,7 +223,7 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 				if (restrictedPaths.contains(requestPathParts.getControllerName())) {
 					throwOperationErrorException(new IllegalArgumentException("Attempt to access restricted page"));
 				}
-				
+
 				controller = controllerFinder.findController(requestPathParts.getControllerPathParts());
 				if (controller.isRefererRequired()
 						&& StringUtils.isBlank(httpRequest.getHeader(HttpRequestHeaderConstants.REFERER))) {
@@ -480,9 +480,9 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 
 				ContentDisposition contentDisposition = getContentDisposition(part);
 				if (contentDisposition.isFileName()) {
-					UploadedFile frmFile = UploadedFile.createUsingTempFile(contentDisposition.getFileName(),
-							contentDisposition.getCreationDate(), contentDisposition.getModificationDate(),
-							part.getInputStream());
+					UploadedFile frmFile = UploadedFile.createUsingTempFileWithChecksum(
+							contentDisposition.getFileName(), contentDisposition.getCreationDate(),
+							contentDisposition.getModificationDate(), part.getInputStream());
 					List<UploadedFile> list = uploadedFileMap.get(name);
 					if (list == null) {
 						list = new ArrayList<UploadedFile>();
