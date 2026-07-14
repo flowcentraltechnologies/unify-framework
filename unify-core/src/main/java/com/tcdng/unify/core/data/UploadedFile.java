@@ -19,6 +19,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.DigestInputStream;
+import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.util.Date;
 
@@ -54,8 +55,12 @@ public class UploadedFile {
 
 	private final boolean usesTempFile;
 
+	private final boolean computeChecksum;
+	
 	private byte[] bin;
 
+	private MessageDigest odigest;
+	
 	private InputStream in;
 
 	private OutputStream out;
@@ -75,6 +80,11 @@ public class UploadedFile {
 		return new UploadedFile(filename, now, now, null, null, true, false);
 	}
 
+	public static UploadedFile createWithChecksum(String filename) throws UnifyException {
+		final Date now = new Date();
+		return new UploadedFile(filename, now, now, null, null, true, true);
+	}
+
 	public static UploadedFile createUsingTempFile(String filename, Date creationDate, Date modificationDate,
 			InputStream in) throws UnifyException {
 		return new UploadedFile(filename, creationDate, modificationDate, null, in, true, false);
@@ -92,6 +102,7 @@ public class UploadedFile {
 		this.creationDate = creationDate;
 		this.modificationDate = modificationDate;
 		this.usesTempFile = usesTempFile;
+		this.computeChecksum = computeChecksum;
 		if (usesTempFile) {
 			if (in != null) {
 				if (computeChecksum) {
@@ -125,6 +136,7 @@ public class UploadedFile {
 
 	private UploadedFile() {
 		this.usesTempFile = false;
+		this.computeChecksum = false;
 	}
 
 	public OutputStream getOut() throws UnifyException {
@@ -132,11 +144,28 @@ public class UploadedFile {
 			out = FileUtils.openTemporaryFileForWrite(tempFileId);
 		}
 
+		if (computeChecksum && out != null && odigest == null) {
+			try {
+				odigest = MessageDigest.getInstance("SHA-256");
+				out = new DigestOutputStream(out, odigest);
+			} catch (Exception e) {
+				throw new UnifyOperationException(e);
+			}
+		}
+		
 		return out;
 	}
 
 	public void closeOut() throws UnifyException {
 		IOUtils.close(out);
+		if (out != null) {
+			if (computeChecksum && odigest != null) {
+				checksum = EncodingUtils.getBase64String(odigest.digest());
+			}
+			out = null;
+			odigest = null;
+		}
+
 	}
 
 	public String getFilename() {
