@@ -26,10 +26,10 @@ import com.tcdng.unify.core.annotation.Component;
  * @since 4.1
  */
 @Component("testentitynorest-policy")
-public class TestEntityNoRestPolicy extends TestEntityPolicy {
+public class TestEntityNoRestPolicy<T extends Entity> extends TestEntityPolicy<T> {
 
     @Override
-    public void preQuery(Query<? extends Entity> query) throws UnifyException {
+    public void preQuery(Query<T> query) throws UnifyException {
 
     }
 }

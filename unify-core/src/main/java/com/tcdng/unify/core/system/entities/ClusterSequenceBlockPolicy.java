@@ -17,7 +17,6 @@ package com.tcdng.unify.core.system.entities;
 
 import java.util.Date;
 
-import com.tcdng.unify.common.database.Entity;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.database.AbstractEntityPolicy;
@@ -29,24 +28,22 @@ import com.tcdng.unify.core.database.AbstractEntityPolicy;
  * @since 4.1
  */
 @Component("sequenceblock-policy")
-public class ClusterSequenceBlockPolicy extends AbstractEntityPolicy {
+public class ClusterSequenceBlockPolicy extends AbstractEntityPolicy<ClusterSequenceBlock> {
 
     @Override
-    public Object preCreate(Entity record, Date now) throws UnifyException {
-        ((ClusterSequenceBlock) record).setVersionNo(1L);
+    public Object preCreate(ClusterSequenceBlock record, Date now) throws UnifyException {
+        record.setVersionNo(1L);
         return record.getId();
     }
 
     @Override
-    public void preUpdate(Entity record, Date now) throws UnifyException {
-        ClusterSequenceBlock clusterSequenceBlock = (ClusterSequenceBlock) record;
-        clusterSequenceBlock.setVersionNo(clusterSequenceBlock.getVersionNo() + 1L);
+    public void preUpdate(ClusterSequenceBlock record, Date now) throws UnifyException {
+        record.setVersionNo(record.getVersionNo() + 1L);
     }
 
     @Override
-    public void onUpdateError(Entity record) {
-        ClusterSequenceBlock clusterSequenceBlock = (ClusterSequenceBlock) record;
-        clusterSequenceBlock.setVersionNo(clusterSequenceBlock.getVersionNo() - 1L);
+    public void onUpdateError(ClusterSequenceBlock record) {
+        record.setVersionNo(record.getVersionNo() - 1L);
     }
 
     @Override

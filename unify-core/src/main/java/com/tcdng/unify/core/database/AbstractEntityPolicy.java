@@ -28,90 +28,90 @@ import com.tcdng.unify.core.criterion.Update;
  * @author The Code Department
  * @since 4.1
  */
-public abstract class AbstractEntityPolicy extends AbstractUnifyComponent implements EntityPolicy {
+public abstract class AbstractEntityPolicy<T extends Entity> extends AbstractUnifyComponent implements EntityPolicy<T> {
 
-    private boolean setNow;
+	private boolean setNow;
 
-    public AbstractEntityPolicy() {
-        this(false);
-    }
+	public AbstractEntityPolicy() {
+		this(false);
+	}
 
-    public AbstractEntityPolicy(boolean setNow) {
-        this.setNow = setNow;
-    }
+	public AbstractEntityPolicy(boolean setNow) {
+		this.setNow = setNow;
+	}
 
-    @Override
-    public boolean isSetNow() {
-        return setNow;
-    }
+	@Override
+	public boolean isSetNow() {
+		return setNow;
+	}
 
-    @Override
-    public Object preCreate(Entity record, Date now) throws UnifyException {
-        return null;
-    }
+	@Override
+	public Object preCreate(T entity, Date now) throws UnifyException {
+		return null;
+	}
 
-    @Override
-    public void preUpdate(Entity record, Date now) throws UnifyException {
+	@Override
+	public void preUpdate(T entity, Date now) throws UnifyException {
 
-    }
+	}
 
-    @Override
+	@Override
 	public void preUpdate(Update update, Date now) throws UnifyException {
-		
+
 	}
 
 	@Override
-    public void preDelete(Entity record, Date now) throws UnifyException {
+	public void preDelete(T entity, Date now) throws UnifyException {
 
-    }
-
-    @Override
-    public void preQuery(Query<? extends Entity> query) throws UnifyException {
-
-    }
-
-    @Override
-	public void postCreate(Entity record, Date now) throws UnifyException {
-		
 	}
 
 	@Override
-	public void postUpdate(Entity record, Date now) throws UnifyException {
-		
+	public void preQuery(Query<T> query) throws UnifyException {
+
+	}
+
+	@Override
+	public void postCreate(T entity, Date now) throws UnifyException {
+
+	}
+
+	@Override
+	public void postUpdate(T entity, Date now) throws UnifyException {
+
 	}
 
 	@Override
 	public void postUpdate(Update update, Date now) throws UnifyException {
-		
+
 	}
 
 	@Override
-	public void postDelete(Entity record, Date now) throws UnifyException {
-		
+	public void postDelete(T entity, Date now) throws UnifyException {
+
 	}
 
 	@Override
-    public void onCreateError(Entity record) {
+	public void onCreateError(T entity) {
 
-    }
+	}
 
-    @Override
-    public void onUpdateError(Entity record) {
+	@Override
+	public void onUpdateError(T entity) {
 
-    }
+	}
 
-    @Override
-    public void onDeleteError(Entity record) {
+	@Override
+	public void onDeleteError(T entity) {
 
-    }
+	}
 
-    @Override
-    protected void onInitialize() throws UnifyException {
+	@Override
+	protected void onInitialize() throws UnifyException {
 
-    }
+	}
 
-    @Override
-    protected void onTerminate() throws UnifyException {
+	@Override
+	protected void onTerminate() throws UnifyException {
 
-    }
+	}
 }

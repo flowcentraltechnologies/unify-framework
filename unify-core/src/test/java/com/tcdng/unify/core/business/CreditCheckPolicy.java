@@ -17,7 +17,6 @@ package com.tcdng.unify.core.business;
 
 import java.util.Date;
 
-import com.tcdng.unify.common.database.Entity;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.database.AbstractEntityPolicy;
@@ -29,35 +28,35 @@ import com.tcdng.unify.core.database.AbstractEntityPolicy;
  * @since 4.1
  */
 @Component("creditcheck-policy")
-public class CreditCheckPolicy extends AbstractEntityPolicy {
+public class CreditCheckPolicy extends AbstractEntityPolicy<CreditCheck> {
 
     @Override
-    public Object preCreate(Entity record, Date now) throws UnifyException {
-        return ((CreditCheck) record).getId() ;
+    public Object preCreate(CreditCheck record, Date now) throws UnifyException {
+        return record.getId() ;
     }
 
     @Override
-    public void preUpdate(Entity record, Date now) throws UnifyException {
+    public void preUpdate(CreditCheck record, Date now) throws UnifyException {
         
     }
 
     @Override
-    public void preDelete(Entity record, Date now) throws UnifyException {
+    public void preDelete(CreditCheck record, Date now) throws UnifyException {
         
     }
 
     @Override
-    public void onCreateError(Entity record) {
+    public void onCreateError(CreditCheck record) {
         
     }
 
     @Override
-    public void onUpdateError(Entity record) {
+    public void onUpdateError(CreditCheck record) {
         
     }
 
     @Override
-    public void onDeleteError(Entity record) {
+    public void onDeleteError(CreditCheck record) {
         
     }
 }

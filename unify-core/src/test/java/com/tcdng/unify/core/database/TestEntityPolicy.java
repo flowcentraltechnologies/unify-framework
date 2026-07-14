@@ -29,14 +29,14 @@ import com.tcdng.unify.core.criterion.Restriction;
  * @since 4.1
  */
 @Component("testentity-policy")
-public class TestEntityPolicy extends AbstractEntityPolicy {
+public class TestEntityPolicy<T extends Entity> extends AbstractEntityPolicy<T> {
 
     private Restriction restriction;
 
     private long idCounter;
 
     @Override
-    public Object preCreate(Entity record, Date now) throws UnifyException {
+    public Object preCreate(T record, Date now) throws UnifyException {
         Long id = Long.valueOf(++idCounter);
         ((AbstractTestTableEntity) record).setId(id);
         return id;
@@ -48,7 +48,7 @@ public class TestEntityPolicy extends AbstractEntityPolicy {
     }
 
     @Override
-    public void preQuery(Query<? extends Entity> query) throws UnifyException {
+    public void preQuery(Query<T> query) throws UnifyException {
         if (restriction != null) {
             query.addRestriction(restriction);
         }

@@ -28,34 +28,34 @@ import com.tcdng.unify.core.criterion.Update;
  * @author The Code Department
  * @since 4.1
  */
-public interface EntityPolicy extends UnifyComponent {
+public interface EntityPolicy<T extends Entity> extends UnifyComponent {
     /**
-     * Entity pre-create method. Called before creation of record.
+     * Entity pre-create method. Called before creation of entity.
      * 
-     * @param record
-     *            the record to be created
+     * @param entity
+     *            the entity to be created
      * @param now
      *            the now time stamp
-     * @return Object the record primary key
+     * @return Object the entity primary key
      * @throws UnifyException
      *             if an error occurs
      */
-    Object preCreate(Entity record, Date now) throws UnifyException;
+    Object preCreate(T entity, Date now) throws UnifyException;
 
     /**
-     * Entity pre-update method. Called before update of record.
+     * Entity pre-update method. Called before update of entity.
      * 
-     * @param record
-     *            the record to be updated
+     * @param entity
+     *            the entity to be updated
      * @param now
      *            the now time stamp
      * @throws UnifyException
      *             if an error occurs
      */
-    void preUpdate(Entity record, Date now) throws UnifyException;
+    void preUpdate(T entity, Date now) throws UnifyException;
 
     /**
-     * Entity pre-update method. Called before update of record.
+     * Entity pre-update method. Called before update of entity.
      * 
      * @param update
      *            the update object
@@ -67,16 +67,16 @@ public interface EntityPolicy extends UnifyComponent {
     void preUpdate(Update update, Date now) throws UnifyException;
 
     /**
-     * Entity pre-delete method. Called before delete of record.
+     * Entity pre-delete method. Called before delete of entity.
      * 
-     * @param record
-     *            the record to be deleted
+     * @param entity
+     *            the entity to be deleted
      * @param now
      *            the now time stamp
      * @throws UnifyException
      *             if an error occurs
      */
-    void preDelete(Entity record, Date now) throws UnifyException;
+    void preDelete(T entity, Date now) throws UnifyException;
 
     /**
      * Called before usage of query object.
@@ -86,34 +86,34 @@ public interface EntityPolicy extends UnifyComponent {
      * @throws UnifyException
      *             if an error occurs
      */
-    void preQuery(Query<? extends Entity> query) throws UnifyException;
+    void preQuery(Query<T> query) throws UnifyException;
     
     /**
-     * Entity post-create method. Called after creation of record.
+     * Entity post-create method. Called after creation of entity.
      * 
-     * @param record
-     *            the created record
+     * @param entity
+     *            the created entity
      * @param now
      *            the now time stamp
      * @throws UnifyException
      *             if an error occurs
      */
-    void postCreate(Entity record, Date now) throws UnifyException;
+    void postCreate(T entity, Date now) throws UnifyException;
 
     /**
-     * Entity post-update method. Called after update of record.
+     * Entity post-update method. Called after update of entity.
      * 
-     * @param record
-     *            the updated record
+     * @param entity
+     *            the updated entity
      * @param now
      *            the now time stamp
      * @throws UnifyException
      *             if an error occurs
      */
-    void postUpdate(Entity record, Date now) throws UnifyException;
+    void postUpdate(T entity, Date now) throws UnifyException;
 
     /**
-     * Entity post-update method. Called after update of record.
+     * Entity post-update method. Called after update of entity.
      * 
      * @param update
      *            the update object
@@ -125,40 +125,40 @@ public interface EntityPolicy extends UnifyComponent {
     void postUpdate(Update update, Date now) throws UnifyException;
 
     /**
-     * Entity post-delete method. Called after delete of record.
+     * Entity post-delete method. Called after delete of entity.
      * 
-     * @param record
-     *            the deleted record
+     * @param entity
+     *            the deleted entity
      * @param now
      *            the now time stamp
      * @throws UnifyException
      *             if an error occurs
      */
-    void postDelete(Entity record, Date now) throws UnifyException;
+    void postDelete(T entity, Date now) throws UnifyException;
 
     /**
-     * Called on creation of record error.
+     * Called on creation of entity error.
      * 
-     * @param record
-     *            the record to be created
+     * @param entity
+     *            the entity to be created
      */
-    void onCreateError(Entity record);
+    void onCreateError(T entity);
 
     /**
-     * Called on update of record error.
+     * Called on update of entity error.
      * 
-     * @param record
-     *            the record to be updated
+     * @param entity
+     *            the entity to be updated
      */
-    void onUpdateError(Entity record);
+    void onUpdateError(T entity);
 
     /**
-     * Called on delete of record error.
+     * Called on delete of entity error.
      * 
-     * @param record
-     *            the record to be deleted
+     * @param entity
+     *            the entity to be deleted
      */
-    void onDeleteError(Entity record);
+    void onDeleteError(T entity);
 
     /**
      * Indicates if now should be set in alter methods

@@ -17,30 +17,29 @@ package com.tcdng.unify.core.database;
 
 import java.util.Date;
 
-import com.tcdng.unify.common.database.Entity;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
 
 /**
- * Policy class for test versioned record.
+ * Policy class for test versioned entity.
  * 
  * @author The Code Department
  * @since 4.1
  */
 @Component("testversionedentity-policy")
-public class TestVersionedEntityPolicy extends TestEntityPolicy {
+public class TestVersionedEntityPolicy<T extends AbstractTestVersionedTableEntity> extends TestEntityPolicy<T> {
 
     @Override
-    public Object preCreate(Entity record, Date now) throws UnifyException {
-        Object id = super.preCreate(record, now);
-        ((AbstractTestVersionedTableEntity) record).setVersion(1L);
+    public Object preCreate(T entity, Date now) throws UnifyException {
+        Object id = super.preCreate(entity, now);
+        ((AbstractTestVersionedTableEntity) entity).setVersion(1L);
         return id;
     }
 
     @Override
-    public void preUpdate(Entity record, Date now) throws UnifyException {
-        super.preUpdate(record, now);
-        ((AbstractTestVersionedTableEntity) record)
-                .setVersion(((AbstractTestVersionedTableEntity) record).getVersion() + 1L);
+    public void preUpdate(T entity, Date now) throws UnifyException {
+        super.preUpdate(entity, now);
+        ((AbstractTestVersionedTableEntity) entity)
+                .setVersion(((AbstractTestVersionedTableEntity) entity).getVersion() + 1L);
     }
 }
