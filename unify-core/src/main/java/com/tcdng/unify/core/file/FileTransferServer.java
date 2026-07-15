@@ -15,7 +15,10 @@
  */
 package com.tcdng.unify.core.file;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
+import java.util.Optional;
 
 import com.tcdng.unify.core.UnifyComponent;
 import com.tcdng.unify.core.UnifyException;
@@ -195,6 +198,34 @@ public interface FileTransferServer extends UnifyComponent {
     void uploadFile(FileTransferSetup fileTransferSetup, String serverFile, String localFile) throws UnifyException;
 
     /**
+     * Upload a file to remote file server.
+     * 
+     * @param fileTransferSetup
+     *            the file transfer information
+     * @param serverFile
+     *            the server file name
+     * @param in
+     *            the file input stream
+     * @throws UnifyException
+     *             if an error occurs
+     */
+    void uploadFile(FileTransferSetup fileTransferSetup, String serverFile, InputStream in) throws UnifyException;
+
+    /**
+     * Upload a file to remote file server.
+     * 
+     * @param fileTransferSetup
+     *            the file transfer information
+     * @param serverFile
+     *            the server file name
+     * @param file
+     *            the file data array
+     * @throws UnifyException
+     *             if an error occurs
+     */
+    void uploadFile(FileTransferSetup fileTransferSetup, String serverFile, byte[] file) throws UnifyException;
+
+    /**
      * Upload all files including subfolders to remote file server.
      * 
      * @param fileTransferSetup
@@ -217,6 +248,33 @@ public interface FileTransferServer extends UnifyComponent {
      *             if an error occurs
      */
     void downloadFile(FileTransferSetup fileTransferSetup, String serverFile, String localFile) throws UnifyException;
+
+    /**
+     * Download a file from remote file server.
+     * 
+     * @param fileTransferSetup
+     *            the file transfer information
+     * @param serverFile
+     *            the server file name
+     * @param out
+     *            the output stream
+     * @throws UnifyException
+     *             if an error occurs
+     */
+    void downloadFile(FileTransferSetup fileTransferSetup, String serverFile, OutputStream out) throws UnifyException;
+
+    /**
+     * Download a file from remote file server.
+     * 
+     * @param fileTransferSetup
+     *            the file transfer information
+     * @param serverFile
+     *            the server file name
+     * @return the downloaded file
+     * @throws UnifyException
+     *             if an error occurs
+     */
+	Optional<byte[]> downloadFile(FileTransferSetup fileTransferSetup, String serverFile) throws UnifyException;
 
     /**
      * Download all files including subfolders from remote file server.
