@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileFilter;
@@ -402,6 +403,7 @@ public class FtpFileTransferServer extends AbstractFileTransferServer {
                 throw new Exception("Failed to log into FTP server [" + fileTransferSetup.getRemoteHost() + "].");
             }
 
+            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
             ftpClient.enterLocalPassiveMode();
         } catch (Exception e) {
             throwOperationErrorException(e);

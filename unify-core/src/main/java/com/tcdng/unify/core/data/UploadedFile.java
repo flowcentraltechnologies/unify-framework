@@ -23,6 +23,8 @@ import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.util.Date;
 
+import org.apache.commons.io.output.CountingOutputStream;
+
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.UnifyOperationException;
 import com.tcdng.unify.core.util.EncodingUtils;
@@ -153,15 +155,19 @@ public class UploadedFile {
 			}
 		}
 		
+		out = new CountingOutputStream(out);
 		return out;
 	}
 
 	public void closeOut() throws UnifyException {
-		IOUtils.close(out);
 		if (out != null) {
+			fileSize = ((CountingOutputStream) out).getByteCount();
+			
+			IOUtils.close(out);
 			if (computeChecksum && odigest != null) {
 				checksum = EncodingUtils.getBase64String(odigest.digest());
 			}
+			
 			out = null;
 			odigest = null;
 		}
