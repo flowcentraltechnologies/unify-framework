@@ -66,4 +66,9 @@ public class ContentDisposition {
 	public boolean isInline() {
 		return "inline".equals(type);
 	}
+
+	@Override
+	public String toString() {
+		return "ContentDisposition [type=" + type + ", fileName=" + fileName + ", fileSize=" + fileSize + "]";
+	}
 }
