@@ -331,6 +331,58 @@ public class StringUtilsTest {
     }
 
     @Test
+    public void testCommaSplitQuoted() throws Exception {
+        String[] result = StringUtils.commaSplitQuoted(null);
+        assertEquals(0, result.length);
+
+        String testValue1 = "";
+        result = StringUtils.commaSplitQuoted(testValue1);
+        assertEquals(1, result.length);
+        assertEquals("", result[0]);
+
+        String testValue2 = "\"     \"";
+        result = StringUtils.commaSplitQuoted(testValue2);
+        assertEquals(1, result.length);
+        assertEquals("\"     \"", result[0]);
+
+        String testValue2_1 = "\",     \"";
+        result = StringUtils.commaSplitQuoted(testValue2_1);
+        assertEquals(1, result.length);
+        assertEquals("\",     \"", result[0]);
+
+        String testValue2_2 = "\",     \",";
+        result = StringUtils.commaSplitQuoted(testValue2_2);
+        assertEquals(2, result.length);
+        assertEquals("\",     \"", result[0]);
+        assertEquals("", result[1]);
+
+        String testValue3 = "I,\"Dig,\",It";
+        result = StringUtils.commaSplitQuoted(testValue3);
+        assertEquals(3, result.length);
+        assertEquals("I", result[0]);
+        assertEquals("\"Dig,\"", result[1]);
+        assertEquals("It", result[2]);
+
+        String testValue4 = ",\"I Dig\"";
+        result = StringUtils.commaSplitQuoted(testValue4);
+        assertEquals(2, result.length);
+        assertEquals("", result[0]);
+        assertEquals("\"I Dig\"", result[1]);
+
+        String testValue5 = "\",I Dig,\"";
+        result = StringUtils.commaSplitQuoted(testValue5);
+        assertEquals(1, result.length);
+        assertEquals("\",I Dig,\"", result[0]);
+
+        String testValue6 = ",,";
+        result = StringUtils.commaSplitQuoted(testValue6);
+        assertEquals(3, result.length);
+        assertEquals("", result[0]);
+        assertEquals("", result[1]);
+        assertEquals("", result[2]);
+    }
+
+    @Test
     public void testDotSplit() throws Exception {
         String[] result = StringUtils.dotSplit(null);
         assertEquals(0, result.length);
@@ -509,6 +561,32 @@ public class StringUtilsTest {
         assertEquals("a,b,c", result[1]);
         assertEquals("d", result[2]);
         assertEquals("e", result[3]);
+    }
+
+    @Test
+    public void testUnquote() throws Exception {
+        String result = StringUtils.unquote(null);
+        assertNull(result);
+
+        String testValue1 = "";
+        result = StringUtils.unquote(testValue1);
+        assertEquals("", result);
+
+        String testValue1_1 = "\"";
+        result = StringUtils.unquote(testValue1_1);
+        assertEquals("\"", result);
+
+        String testValue2 = "\"     \"";
+        result = StringUtils.unquote(testValue2);
+        assertEquals("     ", result);
+
+        String testValue3 = "\" Cook     \"";
+        result = StringUtils.unquote(testValue3);
+        assertEquals(" Cook     ", result);
+
+        String testValue3_1 = "\" Cook     \" ";
+        result = StringUtils.unquote(testValue3_1);
+        assertEquals("\" Cook     \" ", result);
     }
 
     @Test

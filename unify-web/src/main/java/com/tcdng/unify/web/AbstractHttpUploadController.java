@@ -17,6 +17,7 @@ package com.tcdng.unify.web;
 
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.util.Optional;
 
 import com.tcdng.unify.core.AbstractUnifyComponent;
 import com.tcdng.unify.core.UnifyException;
@@ -41,8 +42,9 @@ public abstract class AbstractHttpUploadController extends AbstractUnifyComponen
 	@Override
 	public String upload(HttpUploadRequest httpUploadRequest) throws UnifyException {
 		final HttpRequestHeaders headers = httpUploadRequest.getHeaders();
-		final ContentDisposition contentDisposition = HttpUtils.getUnifyContentDisposition(headers);
-		return handleUpload(headers, contentDisposition, httpUploadRequest.getIn());
+		final Optional<ContentDisposition> contentDisposition = HttpUtils.getUnifyContentDisposition(headers);
+		return handleUpload(headers, contentDisposition.isPresent() ? contentDisposition.get() : null,
+				httpUploadRequest.getIn());
 	}
 
 	@Override

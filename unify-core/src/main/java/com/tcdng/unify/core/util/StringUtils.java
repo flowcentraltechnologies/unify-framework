@@ -262,6 +262,16 @@ public final class StringUtils {
 	}
 
 	/**
+	 * Split a string into tokens using the comma character (quoted).
+	 * 
+	 * @param string the string to split
+	 * @return the result tokens
+	 */
+	public static String[] commaSplitQuoted(String string) {
+		return StringUtils.charSplitQuoted(string, ',');
+	}
+
+	/**
 	 * Split a string into tokens using the dot character.
 	 * 
 	 * @param string the string to split
@@ -272,7 +282,56 @@ public final class StringUtils {
 	}
 
 	/**
-	 * Split a string into tokens using supplied character character.
+	 * Split a string into tokens using the dot character (quoted).
+	 * 
+	 * @param string the string to split
+	 * @return the result tokens
+	 */
+	public static String[] dotSplitQuoted(String string) {
+		return StringUtils.charSplitQuoted(string, '.');
+	}
+
+	/**
+	 * Split a string into tokens using supplied character quoted.
+	 * 
+	 * @param text the string to split
+	 * @param ch     the character to use
+	 * @return the result tokens
+	 */
+	public static String[] charSplitQuoted(String text, final char ch) {
+		if (text != null) {
+			List<String> result = new ArrayList<String>();
+			StringBuilder current = new StringBuilder();
+			boolean inQuote = false;
+			boolean escaped = false;
+
+			for (char c : text.toCharArray()) {
+				if (escaped) {
+					current.append(c);
+					escaped = false;
+				} else if (c == '\\' && inQuote) {
+					current.append(c);
+					escaped = true;
+				} else if (c == '"') {
+					inQuote = !inQuote;
+					current.append(c);
+				} else if (c == ch && !inQuote) {
+					result.add(current.toString());
+					current.setLength(0);
+				} else {
+					current.append(c);
+				}
+			}
+			
+			result.add(current.toString());
+			return result.toArray(new String[result.size()]);
+		}
+
+		return DataUtils.ZEROLEN_STRING_ARRAY;
+	}
+
+	/**
+	 * Split a string into tokens using supplied character.
 	 * 
 	 * @param text the string to split
 	 * @param ch     the character to use
@@ -332,6 +391,37 @@ public final class StringUtils {
 		}
 
 		return null;
+	}
+	
+	/**
+	 * Unquotes a string.
+	 * 
+	 * @param string the string to unquoted
+	 * @return the unquoted string
+	 */
+	public static String unquote(String string) {
+		int lim = 0;
+		if (string != null && string.length() >= 2 && (string.charAt(0) == '"')
+				&& (string.charAt(lim = string.length() - 1) == '"')) {
+			StringBuilder sb = new StringBuilder();
+			char[] array = string.toCharArray();
+			boolean escaped = false;
+			for (int i = 1; i < lim; i++) {
+				char c = array[i];
+				if (escaped) {
+					sb.append(c);
+					escaped = false;
+				} else if (c == '\\') {
+					escaped = true;
+				} else {
+					sb.append(c);
+				}
+			}
+
+			return sb.toString();
+		}
+
+		return string;
 	}
 
 	/**

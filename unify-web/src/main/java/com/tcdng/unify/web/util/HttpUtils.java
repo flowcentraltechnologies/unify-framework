@@ -16,13 +16,12 @@
 
 package com.tcdng.unify.web.util;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 import com.tcdng.unify.core.UnifyException;
-import com.tcdng.unify.core.UnifyOperationException;
-import com.tcdng.unify.core.util.CalendarUtils;
 import com.tcdng.unify.core.util.StringUtils;
 import com.tcdng.unify.core.util.json.JsonUtils;
 import com.tcdng.unify.web.http.HttpPart;
@@ -37,12 +36,7 @@ import com.tcdng.unify.web.http.HttpRequestHeaders;
  */
 public final class HttpUtils {
 
-	private static final String CONTENT_DISPOSITION = "content-disposition";
-	private static final String DISPOSITION_FILENAME = "filename";
-	private static final String DISPOSITION_CREATIONDATE = "creation-date";
-	private static final String DISPOSITION_MODIFICATIONDATE = "modification-date";
-
-	private static final String DATETIME_FORMAT = "ddMMyyyy HH:mm:ss";
+	private static final String CONTENT_DISPOSITION = "Content-Disposition";
 	
     private HttpUtils() {
         
@@ -56,55 +50,70 @@ public final class HttpUtils {
 		return sb.toString();
 	}
 
-	public static String getUploadHeader(ContentDisposition contentDisposition) {
-		final SimpleDateFormat format = new SimpleDateFormat(DATETIME_FORMAT);
-		return contentDisposition.getFileName() + ";" + format.format(contentDisposition.getCreationDate()) + ";"
-				+ format.format(contentDisposition.getModificationDate());
+	public static String getUnifyContentDisposition(ContentDisposition contentDisposition) {
+		return contentDisposition.getType() + "]" + contentDisposition.getFileName() + "]"
+				+ String.valueOf(contentDisposition.getFileSize());
 	}
     
-	public static ContentDisposition getUnifyContentDisposition(HttpRequestHeaders headers)
+	public static Optional<ContentDisposition> getUnifyContentDisposition(HttpRequestHeaders headers)
 			throws UnifyException {
-		ContentDisposition contentDisposition = null;
-		final String upload = headers.getHeader(HttpRequestHeaderConstants.X_UNIFY_UPLOAD);
+		final String upload = headers.getHeader(HttpRequestHeaderConstants.X_UNIFY_DISPOSITION);
 		if (!StringUtils.isBlank(upload)) {
-			try {
-				final SimpleDateFormat format = new SimpleDateFormat(DATETIME_FORMAT);
-				final String[] parts = upload.split(";");
-				final String fileName = parts[0];
-				final Date creationDate = format.parse(parts[1]);
-				final Date modificationDate = format.parse(parts[2]);
-				contentDisposition = new ContentDisposition(fileName, creationDate, modificationDate);
-			} catch (ParseException e) {
-				throw new UnifyOperationException(e);
+			final String[] parts = upload.split("]");
+			if (parts.length == 3) {
+				return Optional.of(new ContentDisposition(parts[0], parts[1], Long.parseLong(parts[2])));
 			}
 		}
 
-		return contentDisposition;
+		return Optional.empty();
 	}
     
-	public static ContentDisposition getContentDisposition(HttpPart part) throws UnifyException {
-		String fileName = null;
-		Date creationDate = null;
-		Date modificationDate = null;
-		for (String disposition : part.getHeader(CONTENT_DISPOSITION).split(";")) {
-			if (disposition.trim().startsWith(DISPOSITION_FILENAME)) {
-				fileName = disposition.substring(disposition.indexOf('=') + 1).trim().replace("\"", "");
-				continue;
+
+	public static Optional<ContentDisposition> getHttpFileContentDisposition(HttpPart part) throws UnifyException {
+		final String disposition = part.getHeader(CONTENT_DISPOSITION);
+		if (disposition != null) {
+			String[] parts = StringUtils.charSplitQuoted(disposition, ';');
+			final String type = parts[0].trim();
+			String extended = null;
+			String plain = null;
+
+			for (int i = 1; i < parts.length; i++) {
+				final String entry = parts[i].trim();
+				int index = entry.indexOf('=');
+				if (index > 0) {
+					String name = entry.substring(0, index).trim().toLowerCase();
+					String val = StringUtils.unquote(entry.substring(index + 1).trim());
+
+					if (name.equals("filename*")) {
+						extended = decodeExtendedVal(val);
+					} else if (name.equals("filename")) {
+						plain = val;
+					}
+				}
 			}
 
-			if (disposition.trim().startsWith(DISPOSITION_CREATIONDATE)) {
-				creationDate = CalendarUtils
-						.parseRfc822Date(disposition.substring(disposition.indexOf('=') + 1).trim());
-				continue;
-			}
-
-			if (disposition.trim().startsWith(DISPOSITION_MODIFICATIONDATE)) {
-				modificationDate = CalendarUtils
-						.parseRfc822Date(disposition.substring(disposition.indexOf('=') + 1).trim());
-				continue;
+			String filename = !StringUtils.isBlank(extended) ? extended : plain;
+			if (!StringUtils.isBlank(filename)) {
+				return Optional.of(new ContentDisposition(type, filename));
 			}
 		}
 
-		return new ContentDisposition(fileName, creationDate, modificationDate);
+		return Optional.empty();
+	}
+	
+	private static String decodeExtendedVal(String val) {
+		int first = val.indexOf('\'');
+		int second = first >= 0 ? val.indexOf('\'', first + 1) : -1;
+		if (first < 0 || second < 0) {
+			return val;
+		}
+
+		String charset = val.substring(0, first);
+		String encoded = val.substring(second + 1);
+		try {
+			return URLDecoder.decode(encoded, charset.isBlank() ? StandardCharsets.UTF_8.name() : charset);
+		} catch (UnsupportedEncodingException e) {
+			return encoded;
+		}
 	}
 }

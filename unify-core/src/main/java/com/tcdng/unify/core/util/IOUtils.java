@@ -43,7 +43,6 @@ import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -1598,8 +1597,7 @@ public class IOUtils {
 			final int status = conn.getResponseCode();
 			final boolean success = status >= 200 && status < 300;
 			if (success) {
-				Date now = new Date();
-				resp = UploadedFile.createUsingTempFile("file", now, now, conn.getInputStream());
+				resp = UploadedFile.createUsingTempFile("file", conn.getInputStream());
 			} else {
 				StringBuilder rsb = new StringBuilder();
 				try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getErrorStream(), "utf-8"))) {

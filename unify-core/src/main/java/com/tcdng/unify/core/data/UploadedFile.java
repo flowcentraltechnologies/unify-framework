@@ -21,7 +21,6 @@ import java.io.OutputStream;
 import java.security.DigestInputStream;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
-import java.util.Date;
 
 import org.apache.commons.io.output.CountingOutputStream;
 
@@ -42,10 +41,6 @@ public class UploadedFile {
 	public static final UploadedFile BLANK = new UploadedFile();
 
 	private String filename;
-
-	private Date creationDate;
-
-	private Date modificationDate;
 
 	private String tempFileId;
 
@@ -68,41 +63,33 @@ public class UploadedFile {
 	private OutputStream out;
 
 	public static UploadedFile create(String filename, byte[] in) throws UnifyException {
-		final Date now = new Date();
-		return new UploadedFile(filename, now, now, in, null, false, false);
+		return new UploadedFile(filename, in, null, false, false);
 	}
 
 	public static UploadedFile create(String filename, InputStream in) throws UnifyException {
-		final Date now = new Date();
-		return new UploadedFile(filename, now, now, null, in, false, false);
+		return new UploadedFile(filename, null, in, false, false);
 	}
 
 	public static UploadedFile create(String filename) throws UnifyException {
-		final Date now = new Date();
-		return new UploadedFile(filename, now, now, null, null, true, false);
+		return new UploadedFile(filename, null, null, true, false);
 	}
 
 	public static UploadedFile createWithChecksum(String filename) throws UnifyException {
-		final Date now = new Date();
-		return new UploadedFile(filename, now, now, null, null, true, true);
+		return new UploadedFile(filename, null, null, true, true);
 	}
 
-	public static UploadedFile createUsingTempFile(String filename, Date creationDate, Date modificationDate,
-			InputStream in) throws UnifyException {
-		return new UploadedFile(filename, creationDate, modificationDate, null, in, true, false);
+	public static UploadedFile createUsingTempFile(String filename, InputStream in) throws UnifyException {
+		return new UploadedFile(filename, null, in, true, false);
 	}
 
-	public static UploadedFile createUsingTempFileWithChecksum(String filename, Date creationDate,
-			Date modificationDate, InputStream in) throws UnifyException {
-		return new UploadedFile(filename, creationDate, modificationDate, null, in, true, true);
+	public static UploadedFile createUsingTempFileWithChecksum(String filename, InputStream in) throws UnifyException {
+		return new UploadedFile(filename, null, in, true, true);
 	}
 
-	private UploadedFile(String filename, Date creationDate, Date modificationDate, byte[] bin, InputStream in,
+	private UploadedFile(String filename, byte[] bin, InputStream in,
 			boolean usesTempFile, boolean computeChecksum) throws UnifyException {
 		this.detect = new byte[4];
 		this.filename = filename;
-		this.creationDate = creationDate;
-		this.modificationDate = modificationDate;
 		this.usesTempFile = usesTempFile;
 		this.computeChecksum = computeChecksum;
 		if (usesTempFile) {
@@ -180,14 +167,6 @@ public class UploadedFile {
 
 	public long getFileSize() {
 		return fileSize;
-	}
-
-	public Date getCreationDate() {
-		return creationDate;
-	}
-
-	public Date getModificationDate() {
-		return modificationDate;
 	}
 
 	public boolean isUsesTempFile() {
