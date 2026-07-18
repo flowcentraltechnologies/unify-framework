@@ -718,7 +718,17 @@ public abstract class AbstractWidget extends AbstractUplComponent implements Wid
 
 		return null;
 	}
-
+	
+    @SuppressWarnings("unchecked")
+	protected <U> U getDocumentAttribute(Class<U> clazz, String name) throws UnifyException {
+        Document document = getRequestContextUtil().getRequestDocument();
+        if (document != null) {
+            return (U) document.getAttribute(name);
+        }
+        
+        return null;
+    }
+    
 	protected void setPageAttribute(String name, Object value) throws UnifyException {
 		Page page = resolveRequestPage();
 		if (page != null) {

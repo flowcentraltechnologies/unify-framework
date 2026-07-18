@@ -33,6 +33,7 @@ import com.tcdng.unify.web.ui.PageRequestContextUtil;
 import com.tcdng.unify.web.ui.WebUIApplicationComponents;
 import com.tcdng.unify.web.ui.util.WebUtils;
 import com.tcdng.unify.web.ui.util.WriterUtils;
+import com.tcdng.unify.web.ui.widget.Document;
 import com.tcdng.unify.web.ui.widget.PageAction;
 import com.tcdng.unify.web.ui.widget.PageManager;
 import com.tcdng.unify.web.ui.widget.ResponseWriter;
@@ -988,7 +989,7 @@ public abstract class AbstractDhtmlWriter extends AbstractUplComponentWriter {
 			writer.keepPostCommandRefs(componentList);
 		}
 	}
-
+ 
 	@SuppressWarnings("unchecked")
 	private List<String> getActionRefComponentList(ResponseWriter writer, String id, PageAction pageAction)
 			throws UnifyException {
@@ -1036,6 +1037,16 @@ public abstract class AbstractDhtmlWriter extends AbstractUplComponentWriter {
 	protected final <T> T getPageAttribute(Class<T> type, String name) throws UnifyException {
 		return getRequestContextUtil().getRequestPage().getAttribute(type, name);
 	}
+	
+    @SuppressWarnings("unchecked")
+	protected <U> U getDocumentAttribute(Class<U> clazz, String name) throws UnifyException {
+        Document document = getRequestContextUtil().getRequestDocument();
+        if (document != null) {
+            return (U) document.getAttribute(name);
+        }
+        
+        return null;
+    }
 	
 	protected void writeStringParameter(ResponseWriter writer, String string) {
 		if (string != null && !string.trim().isEmpty()) {
