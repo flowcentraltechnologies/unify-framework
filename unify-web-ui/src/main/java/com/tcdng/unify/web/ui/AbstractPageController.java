@@ -855,14 +855,15 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 	 * @return the attribute value if found, otherwise null.
 	 * @throws UnifyException if an error occurs
 	 */
-	@SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
 	protected <U> U getDocumentAttribute(Class<U> clazz, String name) throws UnifyException {
-		Document document = getPageRequestContextUtil().getRequestDocument();
-		if (document != null) {
-			return (U) document.getAttribute(name);
-		}
-		return null;
-	}
+        Document document = getPageRequestContextUtil().getRequestDocument();
+        if (document != null) {
+            return (U) document.getAttribute(name);
+        }
+        
+        return null;
+    }
 
 	/**
 	 * Sets the value of attribute in current request page.
