@@ -226,7 +226,10 @@ public class UIControllerUtilImpl extends AbstractUnifyComponent implements UICo
     @Override
     public Page loadRequestPage(ControllerPathParts controllerPathParts) throws UnifyException {
 		final String pageId = pageManager.getCurrentRequestPageId(controllerPathParts);
-        Page page = (Page) getSessionContext().getAttribute(pageId);
+		System.out.println("@prime: sessionCtx = " + getSessionContext());
+		System.out.println("@prime: pid = " + getRequestContext().getPid());
+		System.out.println("@prime: pageId = " + pageId);
+        Page page = (Page) getSessionAttribute(pageId);
         pageRequestContextUtil.setRequestPage(page);
         return page;
     }

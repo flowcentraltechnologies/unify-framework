@@ -96,7 +96,10 @@ public abstract class Context {
         if (!attributes.isEmpty()) {
             Iterator<Map.Entry<String, Attribute>> iterator = attributes.entrySet().iterator();
             while (iterator.hasNext()) {
-                if (!iterator.next().getValue().isSticky()) {
+            	Map.Entry<String, Attribute> entry = iterator.next();
+                if (!entry.getValue().isSticky()) {
+                	System.out.println("@combo: removing name = " + entry.getKey());
+                	System.out.println("@combo: removing val = " + entry.getValue().getValue());
                     iterator.remove();
                 }
             }
@@ -107,6 +110,10 @@ public abstract class Context {
         return attributes.containsKey(name);
     }
 
+    protected final void clear() {
+    	attributes.clear();
+    }
+    
     protected class Attribute {
 
         private Object value;

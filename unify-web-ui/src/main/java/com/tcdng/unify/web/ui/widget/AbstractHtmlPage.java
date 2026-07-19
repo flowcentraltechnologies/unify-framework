@@ -41,7 +41,7 @@ import com.tcdng.unify.core.annotation.UplAttributes;
 public abstract class AbstractHtmlPage extends AbstractPage {
 
     @Override
-    public boolean isDocument() {
+    public final boolean isDocument() {
         return true;
     }
 	

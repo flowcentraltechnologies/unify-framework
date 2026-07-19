@@ -57,4 +57,8 @@ public class DocPathParts {
 	public boolean isWithSection() {
 		return !StringUtils.isBlank(section);
 	}
+
+	public String toString() {
+		return StringUtils.toXmlString(this);
+	}
 }

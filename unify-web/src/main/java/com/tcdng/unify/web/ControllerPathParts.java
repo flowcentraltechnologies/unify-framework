@@ -19,6 +19,7 @@ package com.tcdng.unify.web;
 import java.util.List;
 
 import com.tcdng.unify.core.util.DataUtils;
+import com.tcdng.unify.core.util.StringUtils;
 
 /**
  * Controller path parts.
@@ -47,6 +48,8 @@ public class ControllerPathParts {
 	private Long resourceId;
 
 	private boolean sessionless;
+
+	private boolean document;
 
 	private boolean multiplePagesPerSession;
 
@@ -108,6 +111,14 @@ public class ControllerPathParts {
 		return sessionless;
 	}
 
+	public boolean isDocument() {
+		return document;
+	}
+
+	public void setDocument(boolean document) {
+		this.document = document;
+	}
+
 	public boolean isMultiplePagesPerSession() {
 		return multiplePagesPerSession;
 	}
@@ -140,6 +151,10 @@ public class ControllerPathParts {
 		if (this.requestTarget == null) {
 			this.requestTarget = requestTarget;
 		}
+	}
+
+	public String toString() {
+		return StringUtils.toXmlString(this);
 	}
 
 }
