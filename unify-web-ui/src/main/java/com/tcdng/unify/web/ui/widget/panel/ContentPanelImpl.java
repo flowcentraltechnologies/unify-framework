@@ -276,10 +276,6 @@ public class ContentPanelImpl extends AbstractContentPanel {
 
 	@Override
 	public List<String> evaluateRemoveContent(Page page, ClosePageMode closePageMode) throws UnifyException {
-		if (page.isDocument()) {
-			return Collections.emptyList();
-		}
-
 		List<String> toRemovePathIdList = new ArrayList<String>();
 		if (closePageMode == null) {
 			closePageMode = ClosePageMode.CLOSE;
@@ -303,7 +299,9 @@ public class ContentPanelImpl extends AbstractContentPanel {
 					}
 				} else {
 					if (!stickyPaths.contains(contentInfo.getOpenPath())) {
-						toRemovePathIdList.add(remPage.getPageId());
+						if (!remPage.isDocument()) {
+							toRemovePathIdList.add(remPage.getPageId());
+						}
 					}
 				}
 			}
@@ -313,7 +311,9 @@ public class ContentPanelImpl extends AbstractContentPanel {
 		}
 
 		if (removeSrc) {
-			toRemovePathIdList.add(page.getPageId());
+			if (!page.isDocument()) {
+				toRemovePathIdList.add(page.getPageId());
+			}
 		}
 
 		return toRemovePathIdList;

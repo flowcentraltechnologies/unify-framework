@@ -123,9 +123,7 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 			final Page page = pm.createPage(sessionContext.getLocale(), controllerPathParts.getControllerName());
 			controllerPathParts.setDocument(page.isDocument());
 			page.setPathParts(controllerPathParts, pageId);
-			System.out.println("@zoom: pageId = " + pageId);
-			System.out.println("@zoom: page = " + page);
-			System.out.println("@zoom: sessionCtx = " + sessionContext);
+
 			Class<? extends PageBean> pageBeanClass = getPageBeanClass();
 			if (VoidPageBean.class.equals(pageBeanClass)) {
 				page.setPageBean(VoidPageBean.INSTANCE);

@@ -15,7 +15,6 @@
  */
 package com.tcdng.unify.core;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -83,37 +82,6 @@ public class SessionContext extends Context {
 		this.isNewLastAccessTime = true;
 		setAttribute(TRUE_ATTRIBUTE, Boolean.TRUE);
 		setAttribute(FALSE_ATTRIBUTE, Boolean.FALSE);
-	}
-
-	@Override
-	public Object removeAttribute(String name) {
-		if ("/applicationstudio".equals(name)) {
-			System.out.println("@moop: removeAttribute(/applicationstudio)");
-		}
-		
-		return super.removeAttribute(name);
-	}
-
-	@Override
-	public void removeAttributes(String... names) {
-		for (String name : names) {
-			if ("/applicationstudio".equals(name)) {
-				System.out.println("@moop: removeAttributes(/applicationstudio)");
-			}
-		}
-
-		super.removeAttributes(names);
-	}
-
-	@Override
-	public void removeAttributes(Collection<String> names) {
-		for (String name : names) {
-			if ("/applicationstudio".equals(name)) {
-				System.out.println("@moop: removeAttributesCol(/applicationstudio)");
-			}
-		}
-
-		super.removeAttributes(names);
 	}
 
 	@Override
