@@ -180,6 +180,8 @@ public abstract class AbstractBootService<T extends FeatureDefinition> extends A
 				logInfo("Installing newer application auxiliary version {0}. Current auxiliary  version is {1}.",
 						auxVersionToDeploy, lastAuxiliaryVersion);
 			}
+			
+			logInfo("Please wait...");
 
 			InstallationContext ictx = new InstallationContext();
 			BootInstallationInfo<T> bootInstallationInfo = prepareBootInstallation();
