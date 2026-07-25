@@ -873,6 +873,15 @@ public interface DatabaseSession {
     int count(Query<? extends Entity> query) throws UnifyException;
 
 	/**
+	 * Checks is any record that matches criteria exists.
+	 * 
+	 * @param query the query object
+	 * @return true if at least one record that matches criteria exists
+	 * @throws UnifyException if an error occurs
+	 */
+	<T extends Entity> boolean exists(Query<T> query) throws UnifyException;
+
+	/**
 	 * Gets unique constraints for entity.
 	 * 
 	 * @param entityClass the entity class

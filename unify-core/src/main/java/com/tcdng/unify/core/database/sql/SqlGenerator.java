@@ -662,6 +662,19 @@ public interface SqlGenerator extends UnifyComponent {
     String generateCountRecordSql(SqlEntitySchemaInfo sqlEntitySchemaInfo, QueryAgainst queryAgainst) throws UnifyException;
 
     /**
+     * Generates native exists record SQL for specified record type.
+     * 
+     * @param sqlEntitySchemaInfo
+     *            record schema information
+     * @param queryAgainst
+     *            indicates what to query against
+     * @return the count SQL
+     * @throws UnifyException
+     *             if an error occurs
+     */
+    String generateExistsRecordSql(SqlEntitySchemaInfo sqlEntitySchemaInfo, QueryAgainst queryAgainst) throws UnifyException;
+
+    /**
      * Generates connection test SQL.
      * 
      * @return the test SQL
