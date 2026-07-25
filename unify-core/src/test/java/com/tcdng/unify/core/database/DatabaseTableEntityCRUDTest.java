@@ -611,6 +611,32 @@ public class DatabaseTableEntityCRUDTest extends AbstractUnifyComponentTest {
 	}
 
 	@Test
+	public void testExistsRecord() throws Exception {
+		tm.beginTransaction();
+		try {
+			assertFalse(db.exists(new FruitQuery().ignoreEmptyCriteria(true)));
+			assertFalse(db.exists(new FruitQuery().addLessThanEqual("price", 20.00)));
+			
+			db.create(new Fruit("apple", "red", 20.00));
+			db.create(new Fruit("pineapple", "cyan", 60.00));
+			db.create(new Fruit("banana", "yellow", 45.00));
+			db.create(new Fruit("orange", "orange", 15.00));
+			
+			assertTrue(db.exists(new FruitQuery().ignoreEmptyCriteria(true)));
+			assertTrue(db.exists(new FruitQuery().addLessThanEqual("price", 20.00)));
+			assertTrue(db.exists(new FruitQuery().addBeginsWith("name", "ban")));
+			
+			assertFalse(db.exists(new FruitQuery().addGreaterThanEqual("price", 65.00)));
+			assertFalse(db.exists(new FruitQuery().addBeginsWith("name", "tan")));
+		} catch (Exception e) {
+			tm.setRollback();
+			throw e;
+		} finally {
+			tm.endTransaction();
+		}
+	}
+
+	@Test
 	public void testGetMinValueEmptyCriteria() throws Exception {
 		tm.beginTransaction();
 		try {
