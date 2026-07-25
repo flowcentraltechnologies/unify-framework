@@ -94,7 +94,7 @@ public class SequenceNumberServiceImpl extends AbstractBusinessService implement
 						query.addNotEquals("id", id);
 					}
 
-					if (!query.isEmptyCriteria() && db(entityClass).countAll(query) > 0) {
+					if (!query.isEmptyCriteria() && db(entityClass).exists(query)) {
 						return true;
 					}
 				}
@@ -122,7 +122,7 @@ public class SequenceNumberServiceImpl extends AbstractBusinessService implement
 					query.addNotEquals("id", id);
 				}
 
-				if (db(entityClass).countAll(query) > 0) {
+				if (db(entityClass).exists(query)) {
 					return true;
 				}
 			}
@@ -133,7 +133,7 @@ public class SequenceNumberServiceImpl extends AbstractBusinessService implement
 
 	@Override
 	public boolean exists(Query<? extends Entity> query) throws UnifyException {
-		return db(query.getEntityClass()).countAll(query) > 0;
+		return db(query.getEntityClass()).exists(query);
 	}
 
 	@Override
