@@ -20,6 +20,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -43,11 +44,15 @@ public final class StringUtils {
 	public static final String MASK = "********";
 
 	public static final String NULL_STRING = null;
-
+	
+	private static final String MAP_ENTRY_MARKER= "\u001E";
+	
+	private static final String MAP_NULL= "\u001F";
+	
 	private StringUtils() {
 
 	}
-
+	
 	/**
 	 * Trims all non-null strings.
 	 * 
@@ -1167,6 +1172,66 @@ public final class StringUtils {
 		}
 
 		return "";
+	}
+
+	/**
+	 * Converts map to string.
+	 * 
+	 * @param map the map to convert
+	 * @return the string
+	 */
+	public static String mapToString(Map<String, String> map) {
+		if (map != null) {
+			final StringBuilder sb = new StringBuilder();
+			boolean appendSym = false;
+			for (Map.Entry<String, String> entry : map.entrySet()) {
+				if (appendSym) {
+					sb.append(MAP_ENTRY_MARKER);
+				} else {
+					appendSym = true;
+				}
+
+				sb.append(entry.getKey()).append('=');
+				final String val = entry.getValue();
+				if (val == null) {
+					sb.append(MAP_NULL);
+				} else {
+					sb.append(val);
+				}
+			}
+
+			return sb.toString();
+		}
+
+		return null;
+	}
+	
+	/**
+	 * Converts string back to map.
+	 * 
+	 * @param str string to convert
+	 * @return the map
+	 */
+	public static Map<String, String> mapFromString(String str) {
+		if (str != null) {
+			Map<String, String> map = new LinkedHashMap<String, String>();
+			final String[] lines = str.split(MAP_ENTRY_MARKER);
+			for (String line: lines) {
+				int index = line.indexOf('=');
+				if (index > 0) {
+					String val = line.substring(index + 1);
+					if (MAP_NULL.equals(val)) {
+						val = null;
+					}
+
+					map.put(line.substring(0, index), val);
+				}
+			}
+			
+			return map;
+		}
+		
+		return null;
 	}
 
 	public static String getFirstNonBlank(String... values) {
