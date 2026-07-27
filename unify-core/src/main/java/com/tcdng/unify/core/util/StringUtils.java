@@ -47,7 +47,7 @@ public final class StringUtils {
 	
 	private static final String MAP_ENTRY_MARKER= "\u001E";
 	
-	private static final String MAP_NULL= "\u001F";
+	private static final String MAP_NULL= "\u0000";
 	
 	private StringUtils() {
 

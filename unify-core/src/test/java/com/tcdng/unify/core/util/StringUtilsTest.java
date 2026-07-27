@@ -22,7 +22,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -979,5 +983,98 @@ public class StringUtilsTest {
         assertEquals(0, StringUtils.charOccurences("Hello World!", 'Z'));
         assertEquals(1, StringUtils.charOccurences("Hello World!", 'W'));
         assertEquals(3, StringUtils.charOccurences("Hello World!", 'l'));
+    }
+    
+    @Test
+    public void testMapToString() throws Exception {
+        String str1 = StringUtils.mapToString(null);
+        assertNull(str1);
+        
+        String str2 = StringUtils.mapToString(Collections.emptyMap());
+        assertNotNull(str2);
+        assertEquals(0, str2.length());
+        
+        Map<String, String> map1 = new HashMap<String, String>();
+        map1.put("pv:name", null);
+        String str3 = StringUtils.mapToString(map1);
+        assertNotNull(str3);
+        assertEquals("pv:name=\u0000", str3);
+        
+        Map<String, String> map2 = new LinkedHashMap<String, String>();
+        map2.put("pv:name", null);
+        map2.put("pv:age", null);
+        String str4 = StringUtils.mapToString(map2);
+        assertNotNull(str4);
+        assertEquals("pv:name=\u0000\u001Epv:age=\u0000", str4);
+        
+        Map<String, String> map3 = new LinkedHashMap<String, String>();
+        map3.put("pv:name", "Samuel Adah");
+        map3.put("pv:age", null);
+        String str5 = StringUtils.mapToString(map3);
+        assertNotNull(str5);
+        assertEquals("pv:name=Samuel Adah\u001Epv:age=\u0000", str5);
+        
+        Map<String, String> map4 = new LinkedHashMap<String, String>();
+        map4.put("pv:name", null);
+        map4.put("pv:age", "22");
+        String str6 = StringUtils.mapToString(map4);
+        assertNotNull(str6);
+        assertEquals("pv:name=\u0000\u001Epv:age=22", str6);
+        
+        Map<String, String> map5 = new LinkedHashMap<String, String>();
+        map5.put("pv:name", "Samuel Adah");
+        map5.put("pv:age", "22");
+        String str7 = StringUtils.mapToString(map5);
+        assertNotNull(str7);
+        assertEquals("pv:name=Samuel Adah\u001Epv:age=22", str7);
+    }
+    
+    
+    @Test
+    public void testMapFromString() throws Exception {
+    	Map<String, String> map1 = StringUtils.mapFromString(null);
+    	assertNull(map1);
+    	
+    	Map<String, String> map2 = StringUtils.mapFromString("");
+    	assertNotNull(map2);
+    	assertTrue(map2.isEmpty());
+    	
+    	Map<String, String> map3 = StringUtils.mapFromString("pv:name=\u0000");
+    	assertNotNull(map3);
+    	assertEquals(1, map3.size());
+    	assertTrue(map3.containsKey("pv:name"));
+    	assertNull(map3.get("pv:name"));
+    	
+    	Map<String, String> map4 = StringUtils.mapFromString("pv:name=\u0000\u001Epv:age=\u0000");
+    	assertNotNull(map4);
+    	assertEquals(2, map4.size());
+    	assertTrue(map4.containsKey("pv:name"));
+    	assertNull(map4.get("pv:name"));
+    	assertTrue(map4.containsKey("pv:age"));
+    	assertNull(map4.get("pv:age"));
+    	
+    	Map<String, String> map5 = StringUtils.mapFromString("pv:name=Samuel Adah\u001Epv:age=\u0000");
+    	assertNotNull(map5);
+    	assertEquals(2, map5.size());
+    	assertTrue(map5.containsKey("pv:name"));
+    	assertEquals("Samuel Adah", map5.get("pv:name"));
+    	assertTrue(map5.containsKey("pv:age"));
+    	assertNull(map5.get("pv:age"));
+    	
+    	Map<String, String> map6 = StringUtils.mapFromString("pv:name=\u0000\u001Epv:age=22");
+    	assertNotNull(map6);
+    	assertEquals(2, map6.size());
+    	assertTrue(map6.containsKey("pv:name"));
+    	assertNull(map6.get("pv:name"));
+    	assertTrue(map6.containsKey("pv:age"));
+    	assertEquals("22", map6.get("pv:age"));
+    	
+    	Map<String, String> map7 = StringUtils.mapFromString("pv:name=Samuel Adah\u001Epv:age=22");
+    	assertNotNull(map7);
+    	assertEquals(2, map7.size());
+    	assertTrue(map5.containsKey("pv:name"));
+    	assertEquals("Samuel Adah", map5.get("pv:name"));
+    	assertTrue(map7.containsKey("pv:age"));
+    	assertEquals("22", map6.get("pv:age"));
     }
 }
