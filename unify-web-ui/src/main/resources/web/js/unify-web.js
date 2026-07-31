@@ -99,6 +99,8 @@ ux.docPid = null;
 ux.shortcuts = [];
 ux.pagenamealiases = [];
 ux.delayedpanelposting = [];
+
+ux.debounceEnabled = true;
 ux.debouncetime = [];
 
 ux.resizefunctions = {};
@@ -5265,40 +5267,46 @@ ux.fireDelayedPost = function(pgNm) {
 
 /** Debounce */
 ux.registerDebounce = function(pgNmlist, clear) {
-	if (clear) {
-		ux.debouncetime = [];
-	}
-	
-	if(pgNmlist) {
-		var timestamp = new Date().getTime();
-		for (var i = 0; i < pgNmlist.length; i++) {
-			ux.debouncetime[pgNmlist[i]] = timestamp;
+	if (ux.debounceEnabled) {
+		if (clear) {
+			ux.debouncetime = [];
+		}
+
+		if(pgNmlist) {
+			var timestamp = new Date().getTime();
+			for (var i = 0; i < pgNmlist.length; i++) {
+				ux.debouncetime[pgNmlist[i]] = timestamp;
+			}
 		}
 	}
 }
 
 ux.effectDebounce = function() {
 	var debounced = [];
-	for(var pgNm in ux.debouncetime) {
-		var elem = _id(pgNm);
-		if (elem && !elem.disabled) {
-			elem.disabled = true;
-			debounced[pgNm] = ux.debouncetime[pgNm];
+	if (ux.debounceEnabled) {
+		for(var pgNm in ux.debouncetime) {
+			var elem = _id(pgNm);
+			if (elem && !elem.disabled) {
+				elem.disabled = true;
+				debounced[pgNm] = ux.debouncetime[pgNm];
+			}
 		}
 	}
-	
+
 	return debounced;
 }
 
 ux.clearDebounce = function(debounced) {
-	if (debounced) {
-		for(var pgNm in debounced) {
-			if(debounced[pgNm] == ux.debouncetime[pgNm]) {
-				var elem = _id(pgNm);
-				if (elem) {
-					elem.disabled = false;
-				}				
-			} 
+	if (ux.debounceEnabled) {
+		if (debounced) {
+			for(var pgNm in debounced) {
+				if(debounced[pgNm] == ux.debouncetime[pgNm]) {
+					var elem = _id(pgNm);
+					if (elem) {
+						elem.disabled = false;
+					}				
+				} 
+			}
 		}
 	}
 }
@@ -5909,6 +5917,10 @@ ux.setHiddenValues = function(references, hiddenValues) {
 }
 
 /** Document functions and event handlers */
+ux.setDebounce = function(debounce) {
+	ux.debounceEnabled = debounce;
+}
+
 ux.init = function() {
 	ux.resizeTimeout = null;
 	ux.textoptions = new Map();
