@@ -64,10 +64,10 @@ public class IndentedMultiSelectWriter extends AbstractControlWriter {
 				}
 
 				if (info.isRow()) {
-					writer.write("<span style=\"display:inline-block;\">");
+					writer.write("<span style=\"display:inline-block;\"><div style=\"display:table;\">");
 					boolean rows = true;
 					while (rows && i < len) {
-						writer.write("<div style=\"display:table;\"><div style=\"display:table-row;\">");
+						writer.write("<div style=\"display:table-row;\">");
 						int j = 0;
 						while (i < len && j < columns) {
 							valueStore = multiSelect.getItemValueStoreAt(i);
@@ -91,9 +91,10 @@ public class IndentedMultiSelectWriter extends AbstractControlWriter {
 							j++;
 						}
 						
-						writer.write("</div></div>");
+						writer.write("</div>");
 					}
-					writer.write("</span>");
+					
+					writer.write("</div></span>");
 				} else {
 					selectCtrl.setValueStore(valueStore);
 					writeItem(writer, id, selectCtrl, info);
