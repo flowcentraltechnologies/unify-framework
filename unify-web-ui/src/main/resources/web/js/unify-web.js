@@ -2538,11 +2538,13 @@ ux.dcfInput = function(uEv) {
 /** Indented Multi-select */
 ux.rigIndentedSelect= function(rgp) {
 	if (rgp.pSel) {
-		const pids = rgp.pSel;
-		for (var i = 0; i < pids.length; i++) {
-			const fid = "fac_" + pids[i];
-			const evp = {uIndex:i, uPid:pids, uDep:rgp.pDep};
-			ux.addHdl(_id(fid), "change", ux.inSelectCheck, evp);	
+		if (rgp.pWave) {
+			const pids = rgp.pSel;
+			for (var i = 0; i < pids.length; i++) {
+				const fid = "fac_" + pids[i];
+				const evp = {uIndex:i, uPid:pids, uDep:rgp.pDep};
+				ux.addHdl(_id(fid), "change", ux.inSelectCheck, evp);	
+			}
 		}
 	}
 }

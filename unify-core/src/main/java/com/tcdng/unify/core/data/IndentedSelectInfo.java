@@ -15,8 +15,6 @@
  */
 package com.tcdng.unify.core.data;
 
-import com.tcdng.unify.core.util.StringUtils;
-
 /**
  * Indented select information.
  * 
@@ -33,21 +31,16 @@ public class IndentedSelectInfo {
 
     private int depth;
 
+    private boolean row;
+
     private boolean selected;
 
-    public IndentedSelectInfo(String code, String caption, String description, int depth, boolean selected) {
+    public IndentedSelectInfo(String code, String caption, String description, int depth, boolean row, boolean selected) {
 		this.code = code;
 		this.caption = caption;
 		this.description = description;
 		this.depth = depth;
-		this.selected = selected;
-	}
-
-	public boolean isSelected() {
-		return selected;
-	}
-
-	public void setSelected(boolean selected) {
+		this.row = row;
 		this.selected = selected;
 	}
 
@@ -67,9 +60,16 @@ public class IndentedSelectInfo {
 		return description;
 	}
 
-	@Override
-	public String toString() {
-		return StringUtils.toXmlString(this);
+	public boolean isRow() {
+		return row;
+	}
+
+	public boolean isSelected() {
+		return selected;
+	}
+
+	public void setSelected(boolean selected) {
+		this.selected = selected;
 	}
 
 }

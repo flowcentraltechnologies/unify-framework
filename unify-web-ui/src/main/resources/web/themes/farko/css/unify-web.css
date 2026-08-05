@@ -691,8 +691,6 @@ overflow-x:hidden;overflow-y:scroll;border-top: solid 1px #A0A0A0;border-left: s
 /** Indented multi select */
 .ui-indentedmultiselect {width:100%}
 .ui-indentedmultiselect .inrow {}
-.ui-indentedmultiselect .inodd {}
-.ui-indentedmultiselect .ineven {}
 .ui-indentedmultiselect .intab {display:inline-block;width:24px;}
 .ui-indentedmultiselect .insel {display:inline-block;vertical-align: top;}
 .ui-indentedmultiselect .incon {display:inline-block;vertical-align: top;padding: 4px 2px;}
