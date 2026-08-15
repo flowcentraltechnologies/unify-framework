@@ -34,6 +34,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.HttpURLConnection;
@@ -725,6 +726,36 @@ public class IOUtils {
 		} finally {
 			IOUtils.close(outputStream);
 		}
+	}
+
+	/**
+	 * Writes all reader data into file.
+	 * 
+	 * @param file   the file
+	 * @param reader the reader
+	 * @throws UnifyException if an error occurs
+	 */
+	public static void writeToFile(File file, Reader reader) throws UnifyException {
+		OutputStream outputStream = null;
+		try {
+			outputStream = new FileOutputStream(file);
+			IOUtils.writeAll(outputStream, reader);
+		} catch (FileNotFoundException e) {
+			throw new UnifyException(e, UnifyCoreErrorConstants.IOUTIL_STREAM_RW_ERROR);
+		} finally {
+			IOUtils.close(outputStream);
+		}
+	}
+
+	/**
+	 * Writes all string into file.
+	 * 
+	 * @param file the file
+	 * @param txt  the string
+	 * @throws UnifyException if an error occurs
+	 */
+	public static void writeToFile(File file, String txt) throws UnifyException {
+		IOUtils.writeToFile(file, new StringReader(txt));
 	}
 
 	/**
