@@ -452,7 +452,7 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 				if (mimeType == null || !mimeType.isTextable()) {
 					result.put(BODY_BYTES, IOUtils.readAll(httpRequest.getInputStream()));
 				} else {
-					result.put(BODY_TEXT, IOUtils.readAll(httpRequest.getReader()));
+					result.put(BODY_TEXT, IOUtils.readAllAsString(httpRequest.getReader()));
 				}
 			} catch (UnifyException e) {
 				throw e;

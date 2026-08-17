@@ -40,6 +40,7 @@ import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -452,6 +453,17 @@ public class IOUtils {
 	}
 
 	/**
+	 * Reads all data from file as a string.
+	 * 
+	 * @param file the file
+	 * @return String the resulting string
+	 * @throws UnifyException if an error occurs
+	 */
+	public static String readAllAsString(File file) throws UnifyException {
+		return new String(IOUtils.readAll(file), StandardCharsets.UTF_8);
+	}
+	
+	/**
 	 * Reads all data from file into a byte array.
 	 * 
 	 * @param file the file
@@ -491,11 +503,11 @@ public class IOUtils {
 		}
 	}
 
-	public static String readAll(Reader reader) throws UnifyException {
-		return IOUtils.readAll(new BufferedReader(reader));
+	public static String readAllAsString(Reader reader) throws UnifyException {
+		return IOUtils.readAllAsString(new BufferedReader(reader));
 	}
 
-	public static String readAll(BufferedReader reader) throws UnifyException {
+	public static String readAllAsString(BufferedReader reader) throws UnifyException {
 		try {
 			StringBuilder sb = new StringBuilder();
 			String line = null;
