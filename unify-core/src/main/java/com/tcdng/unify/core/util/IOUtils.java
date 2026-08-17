@@ -41,6 +41,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -932,9 +933,35 @@ public class IOUtils {
 		return index > 0 ? path.substring(0, index + 1) : "";
 	}
 
-	public static boolean deleteDirectory(String path) {
-		File folder = new File(IOUtils.conform(System.getProperty("file.separator"), path));
-		if (folder.isDirectory()) {
+	/**
+	 * Deletes directory with entire contents.
+	 * 
+	 * @param path the directory path
+	 * @return true if successful otherwise false
+	 */
+	public static boolean deleteDirectoryAndContents(String path) {
+		return IOUtils
+				.deleteDirectoryAndContents(new File(IOUtils.conform(System.getProperty("file.separator"), path)));
+	}
+
+	/**
+	 * Deletes directory with entire contents.
+	 * 
+	 * @param path the directory path
+	 * @return true if successful otherwise false
+	 */
+	public static boolean deleteDirectoryAndContents(Path path) {
+		return IOUtils.deleteDirectoryAndContents(path.toFile());
+	}
+
+	/**
+	 * Deletes directory with entire contents.
+	 * 
+	 * @param folder the directory
+	 * @return true if successful otherwise false
+	 */
+	public static boolean deleteDirectoryAndContents(File folder) {
+		if (folder != null && folder.isDirectory()) {
 			File[] files = folder.listFiles();
 			if (files != null) {
 				for (File file : files) {
