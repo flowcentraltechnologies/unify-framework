@@ -4728,7 +4728,6 @@ ux.buildFormParams = function(trgObj, evp, refs) {
 
 ux.buildReqParams = function(trgObj, evp, refs) {
 	var param = {};
-	param.value = "morsic=" + new Date().getTime();
 	param.isForm = false;
 	ux.buildObjParams(trgObj, evp, param, refs);
 	return param;

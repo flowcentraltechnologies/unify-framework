@@ -423,15 +423,9 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 			processParts(result, httpRequest);
 		} else {
 			try {
-				boolean chkMorsic = true;
 				Map<String, String[]> httpRequestParamMap = httpRequest.getParameterMap();
 				for (Map.Entry<String, String[]> entry : httpRequestParamMap.entrySet()) {
 					String key = entry.getKey();
-					if (chkMorsic && RequestParameterConstants.MORSIC.equals(key)) {
-						chkMorsic = false;
-						continue;
-					}
-
 					String[] values = entry.getValue();
 					if (values.length == 1) {
 						if (!values[0].isEmpty()) {
@@ -469,14 +463,8 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 			Map<String, List<String>> stringMap = new HashMap<String, List<String>>();
 			Map<String, List<UploadedFile>> uploadedFileMap = new HashMap<String, List<UploadedFile>>();
 			char[] buffer = new char[BUFFER_SIZE];
-			boolean chkMorsic = true;
 			for (HttpPart part : httpRequest.getParts()) {
 				final String name = part.getName();
-				if (chkMorsic && RequestParameterConstants.MORSIC.equals(name)) {
-					chkMorsic = false;
-					continue;
-				}
-
 				Optional<ContentDisposition> contentDisposition = HttpUtils.getHttpFileContentDisposition(part);
 				if (contentDisposition.isPresent()) {
 					UploadedFile frmFile = UploadedFile.createUsingTempFileWithChecksum(

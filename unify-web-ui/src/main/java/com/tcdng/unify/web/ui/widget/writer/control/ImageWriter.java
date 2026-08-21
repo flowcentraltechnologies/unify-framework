@@ -58,7 +58,6 @@ public class ImageWriter extends AbstractTargetControlWriter {
        } else {
             String src = imageCtrl.getSrc();
             if (StringUtils.isNotBlank(src)) {
-                boolean alwaysFetch = imageCtrl.isAlwaysFetch();
                 if (TokenUtils.isContextScopeTag(src)) {
                     String imageName = TokenUtils.extractTokenValue(src);
                     writer.writeScopeImageContextURL(imageName, imageCtrl.isClearOnRead());
@@ -66,15 +65,8 @@ public class ImageWriter extends AbstractTargetControlWriter {
                     if (StringUtils.isNotBlank(scope)) {
                         writer.writeURLParameter("scope", scope);
                     }
-
-                    if (alwaysFetch) {
-                        writer.writeURLParameter("morsic", String.valueOf(System.currentTimeMillis()));
-                    }
                 } else { 
                     writer.writeFileImageContextURL(src);
-                    if (alwaysFetch) {
-                        writer.writeURLParameter("morsic", String.valueOf(System.currentTimeMillis()));
-                    }
                 }
             }
         }

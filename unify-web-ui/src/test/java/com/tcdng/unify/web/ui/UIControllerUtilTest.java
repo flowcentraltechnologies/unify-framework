@@ -149,7 +149,7 @@ public class UIControllerUtilTest extends AbstractUnifyWebTest {
 		assertTrue(properties.contains("resourceName"));
 		assertTrue(properties.contains("contentType"));
 		assertTrue(properties.contains("attachment"));
-		assertTrue(properties.contains("morsic"));
+//		assertTrue(properties.contains("morsic"));
 		assertTrue(properties.contains("accountNo"));
 		assertTrue(properties.contains("balance"));
 	}

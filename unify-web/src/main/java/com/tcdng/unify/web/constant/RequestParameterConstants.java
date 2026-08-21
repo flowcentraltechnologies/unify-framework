@@ -23,8 +23,6 @@ package com.tcdng.unify.web.constant;
  */
 public interface RequestParameterConstants {
 
-    String MORSIC = "morsic";
-
     String REMOTE_CALL_FORMAT = "req_rcf";
 
     String EXTERNAL_FORWARD = "req_fwd";

@@ -50,9 +50,6 @@ public abstract class AbstractPageResourceController extends AbstractUIControlle
     @RequestParameter
     private boolean attachment;
 
-    @RequestParameter
-    private String morsic;
-
     private Map<String, String> metaDataMap;
 
     public AbstractPageResourceController(Secured secured) {
@@ -94,14 +91,6 @@ public abstract class AbstractPageResourceController extends AbstractUIControlle
     @Override
     public void reset() throws UnifyException {
 
-    }
-
-    public String getMorsic() {
-        return morsic;
-    }
-
-    public void setMorsic(String morsic) {
-        this.morsic = morsic;
     }
 
     @SuppressWarnings("unchecked")
