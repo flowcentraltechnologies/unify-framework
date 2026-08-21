@@ -138,13 +138,13 @@ public class UIControllerUtilTest extends AbstractUnifyWebTest {
 
 		Set<String> pageNames = rbbi.getPropertyIds();
 		assertNotNull(pageNames);
-		assertEquals(4 + 2, pageNames.size());
+		assertEquals(4 + 1, pageNames.size());
 
 		Set<String> properties = new HashSet<String>();
 		for (String pageName : pageNames) {
 			properties.add(rbbi.getPropertyInfo(pageName).getProperty());
 		}
-		assertEquals(4 + 2, properties.size());
+		assertEquals(4 + 1, properties.size());
 
 		assertTrue(properties.contains("resourceName"));
 		assertTrue(properties.contains("contentType"));
