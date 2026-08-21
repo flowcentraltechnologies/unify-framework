@@ -4721,14 +4721,14 @@ ux.getPushRefs = function(evp) {
 ux.buildFormParams = function(trgObj, evp, refs) {
 	var param = {};
 	param.value = new FormData();
-	param.isForm = true;
+	param.frm = true;
 	ux.buildObjParams(trgObj, evp, param, refs);
 	return param;
 }
 
 ux.buildReqParams = function(trgObj, evp, refs) {
 	var param = {};
-	param.isForm = false;
+	param.frm = false;
 	ux.buildObjParams(trgObj, evp, param, refs);
 	return param;
 }
@@ -4742,10 +4742,10 @@ ux.buildObjParams = function(trgObj, evp, param, refs) {
 		}
 	}
 
+	const frm = param.frm;
 	var pb = param.value;
-	var isForm = param.isForm;
 	if (_df(evp.uLoginId)) {
-		if (isForm) {
+		if (frm) {
 			pb.append("req_uid", evp.uLoginId);
 			pb.append("req_unm", evp.uUserName);
 			if (evp.uRole) {
@@ -4761,7 +4761,8 @@ ux.buildObjParams = function(trgObj, evp, param, refs) {
 				pb.append("req_csm", evp.uColor);
 			}
 		} else {
-			pb += ("&req_uid=" + _enc(evp.uLoginId));
+			pb = ux.checkPrm(pb);
+			pb += ("req_uid=" + _enc(evp.uLoginId));
 			pb += ("&req_unm=" + _enc(evp.uUserName));
 			if (evp.uRole) {
 				pb += ("&req_rcd=" + _enc(evp.uRole));
@@ -4779,20 +4780,22 @@ ux.buildObjParams = function(trgObj, evp, param, refs) {
 	}
 
 	if (_df(evp.uConfMsg)) {
-		if (isForm) {
+		if (frm) {
 			pb.append("req_cmsg", evp.uConfMsg);
 			pb.append("req_cmsgicon", evp.uIconIndex);
 		} else {
-			pb += ("&req_cmsg=" + _enc(evp.uConfMsg));
+			pb = ux.checkPrm(pb);
+			pb += ("req_cmsg=" + _enc(evp.uConfMsg));
 			pb += ("&req_cmsgicon=" + _enc(evp.uIconIndex));
 		}
 	}
 
 	if (_df(evp.uConfPrm)) {
-		if (isForm) {
+		if (frm) {
 			pb.append("req_cprm", evp.uConfPrm);
 		} else {
-			pb += ("&req_cprm=" + _enc(evp.uConfPrm));
+			pb = ux.checkPrm(pb);
+			pb += ("req_cprm=" + _enc(evp.uConfPrm));
 		}
 	}
 	
@@ -4824,10 +4827,11 @@ ux.buildObjParams = function(trgObj, evp, param, refs) {
 		}
 		
 		if (_val !== undefined) {
-			if (isForm) {
+			if (frm) {
 				pb.append("req_trg", _val);
 			} else {
-				pb += ("&req_trg=" + _enc(_val));
+				pb = ux.checkPrm(pb);
+				pb += ("req_trg=" + _enc(_val));
 			}
 			
 			evp.uSendTrg = undefined; //Disallow multiple target values
@@ -4835,14 +4839,15 @@ ux.buildObjParams = function(trgObj, evp, param, refs) {
 	}
 
 	if (_df(evp.uSendTrg)) {
-		if (isForm) {
+		if (frm) {
 			pb.append("req_trg", evp.uSendTrg);
 		} else {
-			pb += ("&req_trg=" + _enc(evp.uSendTrg));
+			pb = ux.checkPrm(pb);
+			pb += ("req_trg=" + _enc(evp.uSendTrg));
 		}
 	}
 
-	if (isForm) {
+	if (frm) {
 		if (evp.uViewer) {
 			pb.append("req_rv", evp.uViewer);
 			pb.append("req_rsi", ux.docSessionId);
@@ -4868,11 +4873,12 @@ ux.buildObjParams = function(trgObj, evp, param, refs) {
 			}
 		}
 	} else {
+		pb = ux.checkPrm(pb);
 		if (evp.uViewer) {
-			pb += ("&req_rv=" + _enc(evp.uViewer));
+			pb += ("req_rv=" + _enc(evp.uViewer));
 			pb += ("&req_rsi=" + _enc(ux.docSessionId));
 		} else {
-			pb += ("&req_doc=" + _enc(ux.docPath));
+			pb += ("req_doc=" + _enc(ux.docPath));
 			pb += ("&req_win=" + _enc(window.name));
 		}
 		if (evp.uValidateAct) {
@@ -4895,6 +4901,10 @@ ux.buildObjParams = function(trgObj, evp, param, refs) {
 	}
 	
 	param.value = pb;
+}
+
+ux.checkPrm = function(prm) {
+	return prm ? (prm + "&") : "";
 }
 
 ux.buildNameParams = function(name, builtNames, param) {
@@ -4974,7 +4984,7 @@ ux.extractObjParams = function(elem, param) {
 }
 
 ux.appendParam = function(id, value, param) {
-	if (param.isForm) {
+	if (param.frm) {
 		param.value.append(id, value);
 	} else {
 		param.value += "&" + id + "="
