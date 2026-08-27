@@ -290,7 +290,8 @@ public class PageManagerImpl extends AbstractUnifyComponent implements PageManag
 	public String getCurrentRequestPageId(ControllerPathParts controllerPathParts) throws UnifyException {
 		return controllerPathParts.isMultiplePagesPerSession()
 				? WebPathUtils.getPageId(controllerPathParts.getControllerPathId(), getRequestClientPageId())
-				: controllerPathParts.getControllerPathId();
+				: (controllerPathParts.isDocument() ? controllerPathParts.getControllerPath()
+						: controllerPathParts.getControllerPathId());
 	}
 
 	@Override
