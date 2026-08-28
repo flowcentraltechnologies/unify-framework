@@ -111,7 +111,7 @@ public final class HttpUtils {
 		String charset = val.substring(0, first);
 		String encoded = val.substring(second + 1);
 		try {
-			return URLDecoder.decode(encoded, charset.isBlank() ? StandardCharsets.UTF_8.name() : charset);
+			return URLDecoder.decode(encoded, StringUtils.isBlank(charset) ? StandardCharsets.UTF_8.name() : charset);
 		} catch (UnsupportedEncodingException e) {
 			return encoded;
 		}
