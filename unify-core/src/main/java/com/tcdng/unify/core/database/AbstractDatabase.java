@@ -380,6 +380,11 @@ public abstract class AbstractDatabase extends AbstractUnifyComponent implements
     }
 
     @Override
+	public <T extends Entity> boolean exists(Query<T> query) throws UnifyException {
+        return getDatabaseSession().exists(query);
+	}
+
+	@Override
 	public List<Set<String>> getUniqueConstraints(Class<? extends Entity> entityClass) throws UnifyException {
 		return getDatabaseSession().getUniqueConstraints(entityClass);
 	}

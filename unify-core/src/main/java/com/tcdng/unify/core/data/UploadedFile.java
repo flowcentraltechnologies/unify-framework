@@ -18,10 +18,15 @@ package com.tcdng.unify.core.data;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Date;
+import java.security.DigestInputStream;
+import java.security.DigestOutputStream;
+import java.security.MessageDigest;
+
+import org.apache.commons.io.output.CountingOutputStream;
 
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.UnifyOperationException;
+import com.tcdng.unify.core.util.EncodingUtils;
 import com.tcdng.unify.core.util.FileUtils;
 import com.tcdng.unify.core.util.IOUtils;
 
@@ -34,59 +39,81 @@ import com.tcdng.unify.core.util.IOUtils;
 public class UploadedFile {
 
 	public static final UploadedFile BLANK = new UploadedFile();
-	
+
 	private String filename;
 
-	private Date creationDate;
-
-	private Date modificationDate;
-
 	private String tempFileId;
+
+	private String checksum;
 
 	private long fileSize;
 
 	private byte[] detect;
-	
+
 	private final boolean usesTempFile;
+
+	private final boolean computeChecksum;
 	
 	private byte[] bin;
+
+	private MessageDigest odigest;
 	
 	private InputStream in;
-	
+
 	private OutputStream out;
-	
+
 	public static UploadedFile create(String filename, byte[] in) throws UnifyException {
-		final Date now = new Date();
-		return new UploadedFile(filename, now, now, in, null, false);
+		return new UploadedFile(filename, in, null, false, false);
 	}
-	
+
 	public static UploadedFile create(String filename, InputStream in) throws UnifyException {
-		final Date now = new Date();
-		return new UploadedFile(filename, now, now, null, in, false);
+		return new UploadedFile(filename, null, in, false, false);
 	}
-	
+
 	public static UploadedFile create(String filename) throws UnifyException {
-		final Date now = new Date();
-		return new UploadedFile(filename, now, now, null, null, true);
+		return new UploadedFile(filename, null, null, true, false);
 	}
-	
-	public static UploadedFile createUsingTempFile(String filename, Date creationDate, Date modificationDate,
-			InputStream in) throws UnifyException {
-		return new UploadedFile(filename, creationDate, modificationDate, null, in, true);
+
+	public static UploadedFile createWithChecksum(String filename) throws UnifyException {
+		return new UploadedFile(filename, null, null, true, true);
 	}
-	
-	private UploadedFile(String filename, Date creationDate, Date modificationDate, byte[] bin, InputStream in,
-			boolean usesTempFile) throws UnifyException {
+
+	public static UploadedFile createUsingTempFile(String filename, InputStream in) throws UnifyException {
+		return new UploadedFile(filename, null, in, true, false);
+	}
+
+	public static UploadedFile createUsingTempFileWithChecksum(String filename, InputStream in) throws UnifyException {
+		return new UploadedFile(filename, null, in, true, true);
+	}
+
+	private UploadedFile(String filename, byte[] bin, InputStream in,
+			boolean usesTempFile, boolean computeChecksum) throws UnifyException {
 		this.detect = new byte[4];
 		this.filename = filename;
-		this.creationDate = creationDate;
-		this.modificationDate = modificationDate;
 		this.usesTempFile = usesTempFile;
+		this.computeChecksum = computeChecksum;
 		if (usesTempFile) {
 			if (in != null) {
-				final IOInfo ioInfo = FileUtils.writeAllToTemporaryFile(in, detect);
-				this.tempFileId = ioInfo.getFileId();
-				this.fileSize = ioInfo.getFileLength();
+				if (computeChecksum) {
+					try {
+						MessageDigest digest = MessageDigest.getInstance("SHA-256");
+						try (DigestInputStream dis = new DigestInputStream(in, digest)) {
+							final IOInfo ioInfo = FileUtils.writeAllToTemporaryFile(dis, detect);
+							this.tempFileId = ioInfo.getFileId();
+							this.fileSize = ioInfo.getFileLength();
+						}
+
+						this.checksum = EncodingUtils.getBase64String(digest.digest());
+					} catch (UnifyException e) {
+						throw e;
+					} catch (Exception e) {
+						throw new UnifyOperationException(e);
+					}
+				} else {
+					final IOInfo ioInfo = FileUtils.writeAllToTemporaryFile(in, detect);
+					this.tempFileId = ioInfo.getFileId();
+					this.fileSize = ioInfo.getFileLength();
+				}
 			} else {
 				this.tempFileId = FileUtils.createTemporaryFile();
 			}
@@ -98,20 +125,42 @@ public class UploadedFile {
 
 	private UploadedFile() {
 		this.usesTempFile = false;
+		this.computeChecksum = false;
 	}
-	
+
 	public OutputStream getOut() throws UnifyException {
 		if (usesTempFile && tempFileId != null && out == null) {
 			out = FileUtils.openTemporaryFileForWrite(tempFileId);
 		}
+
+		if (computeChecksum && out != null && odigest == null) {
+			try {
+				odigest = MessageDigest.getInstance("SHA-256");
+				out = new DigestOutputStream(out, odigest);
+			} catch (Exception e) {
+				throw new UnifyOperationException(e);
+			}
+		}
 		
+		out = new CountingOutputStream(out);
 		return out;
 	}
-	
+
 	public void closeOut() throws UnifyException {
-		IOUtils.close(out);
+		if (out != null) {
+			fileSize = ((CountingOutputStream) out).getByteCount();
+			
+			IOUtils.close(out);
+			if (computeChecksum && odigest != null) {
+				checksum = EncodingUtils.getBase64String(odigest.digest());
+			}
+			
+			out = null;
+			odigest = null;
+		}
+
 	}
-	
+
 	public String getFilename() {
 		return filename;
 	}
@@ -120,22 +169,22 @@ public class UploadedFile {
 		return fileSize;
 	}
 
-	public Date getCreationDate() {
-		return creationDate;
-	}
-
-	public Date getModificationDate() {
-		return modificationDate;
-	}
-
 	public boolean isUsesTempFile() {
 		return usesTempFile;
+	}
+
+	public String getChecksum() {
+		return checksum;
+	}
+
+	public void setChecksum(String checksum) {
+		this.checksum = checksum;
 	}
 
 	public boolean isPresent() {
 		return (usesTempFile && tempFileId != null) || (!usesTempFile && (bin != null || in != null));
 	}
-	
+
 	public byte[] getDetect() {
 		final byte[] _detect = new byte[4];
 		System.arraycopy(detect, 0, _detect, 0, 4);
@@ -151,7 +200,7 @@ public class UploadedFile {
 	public long size() throws UnifyException {
 		return fileSize;
 	}
-	
+
 	/**
 	 * Writes this upload file to output stream.
 	 * 
@@ -200,7 +249,7 @@ public class UploadedFile {
 		if (bin != null) {
 			return bin;
 		}
-		
+
 		try {
 			return IOUtils.readAll(getIn());
 		} finally {
@@ -234,7 +283,7 @@ public class UploadedFile {
 		}
 
 		bin = null;
-		
+
 		if (in != null) {
 			IOUtils.close(in);
 			in = null;

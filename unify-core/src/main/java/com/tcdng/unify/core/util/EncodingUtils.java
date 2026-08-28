@@ -30,6 +30,10 @@ public final class EncodingUtils {
 		return str != null ? Base64.getEncoder().encodeToString(str.getBytes(StandardCharsets.UTF_8)) : null;
 	}
 
+	public static String getBase64String(byte[] data) {
+		return data != null ? Base64.getEncoder().encodeToString(data) : null;
+	}
+
 	public static String decodeBase64String(String str) {
 		return str != null ? new String(Base64.getDecoder().decode(str), StandardCharsets.UTF_8) : null;
 	}

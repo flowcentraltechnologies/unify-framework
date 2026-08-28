@@ -42,7 +42,11 @@ public class RequestContext extends Context {
         this.requestTarget = requestTarget;
         this.sessionContext = sessionContext;
     }
-
+    
+    public void removeAllAttributes() {
+    	clear();
+    }
+    
     public String getContextPath() {
         return sessionContext.getContextPath();
     }

@@ -228,7 +228,7 @@ public final class FileUtils {
 	}
 	
 	private static final Set<String> THEMABLES = Collections
-			.unmodifiableSet(new HashSet<String>(Arrays.asList(".css",".jpg", ".jpeg", ".png", ".gif", ".bmp")));
+			.unmodifiableSet(new HashSet<String>(Arrays.asList(".css",".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp")));
 	
 	public static String detectPresentAndGetThemeFileName(final String fileName, final String theme,
 			final String workingPath) {

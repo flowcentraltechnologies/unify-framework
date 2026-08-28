@@ -191,7 +191,15 @@ public class PageRequestContextUtilImpl extends AbstractUnifyComponent implement
 
 	@Override
 	public Document getRequestDocument() throws UnifyException {
-		return (Document) getRequestAttribute(REQUEST_DOCUMENT);
+		Document doc =  (Document) getRequestAttribute(REQUEST_DOCUMENT);
+		if (doc == null) {
+			Page page = getRequestPage();
+			if (page.isDocument()) {
+				return (Document) page;
+			}
+		}
+		
+		return doc;
 	}
 
 	@Override

@@ -34,16 +34,18 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -452,6 +454,17 @@ public class IOUtils {
 	}
 
 	/**
+	 * Reads all data from file as a string.
+	 * 
+	 * @param file the file
+	 * @return String the resulting string
+	 * @throws UnifyException if an error occurs
+	 */
+	public static String readAllAsString(File file) throws UnifyException {
+		return new String(IOUtils.readAll(file), StandardCharsets.UTF_8);
+	}
+	
+	/**
 	 * Reads all data from file into a byte array.
 	 * 
 	 * @param file the file
@@ -491,11 +504,11 @@ public class IOUtils {
 		}
 	}
 
-	public static String readAll(Reader reader) throws UnifyException {
-		return IOUtils.readAll(new BufferedReader(reader));
+	public static String readAllAsString(Reader reader) throws UnifyException {
+		return IOUtils.readAllAsString(new BufferedReader(reader));
 	}
 
-	public static String readAll(BufferedReader reader) throws UnifyException {
+	public static String readAllAsString(BufferedReader reader) throws UnifyException {
 		try {
 			StringBuilder sb = new StringBuilder();
 			String line = null;
@@ -729,6 +742,36 @@ public class IOUtils {
 	}
 
 	/**
+	 * Writes all reader data into file.
+	 * 
+	 * @param file   the file
+	 * @param reader the reader
+	 * @throws UnifyException if an error occurs
+	 */
+	public static void writeToFile(File file, Reader reader) throws UnifyException {
+		OutputStream outputStream = null;
+		try {
+			outputStream = new FileOutputStream(file);
+			IOUtils.writeAll(outputStream, reader);
+		} catch (FileNotFoundException e) {
+			throw new UnifyException(e, UnifyCoreErrorConstants.IOUTIL_STREAM_RW_ERROR);
+		} finally {
+			IOUtils.close(outputStream);
+		}
+	}
+
+	/**
+	 * Writes all string into file.
+	 * 
+	 * @param file the file
+	 * @param txt  the string
+	 * @throws UnifyException if an error occurs
+	 */
+	public static void writeToFile(File file, String txt) throws UnifyException {
+		IOUtils.writeToFile(file, new StringReader(txt));
+	}
+
+	/**
 	 * Writes all input stream data into file.
 	 * 
 	 * @param filename the file name
@@ -890,9 +933,35 @@ public class IOUtils {
 		return index > 0 ? path.substring(0, index + 1) : "";
 	}
 
-	public static boolean deleteDirectory(String path) {
-		File folder = new File(IOUtils.conform(System.getProperty("file.separator"), path));
-		if (folder.isDirectory()) {
+	/**
+	 * Deletes directory with entire contents.
+	 * 
+	 * @param path the directory path
+	 * @return true if successful otherwise false
+	 */
+	public static boolean deleteDirectoryAndContents(String path) {
+		return IOUtils
+				.deleteDirectoryAndContents(new File(IOUtils.conform(System.getProperty("file.separator"), path)));
+	}
+
+	/**
+	 * Deletes directory with entire contents.
+	 * 
+	 * @param path the directory path
+	 * @return true if successful otherwise false
+	 */
+	public static boolean deleteDirectoryAndContents(Path path) {
+		return IOUtils.deleteDirectoryAndContents(path.toFile());
+	}
+
+	/**
+	 * Deletes directory with entire contents.
+	 * 
+	 * @param folder the directory
+	 * @return true if successful otherwise false
+	 */
+	public static boolean deleteDirectoryAndContents(File folder) {
+		if (folder != null && folder.isDirectory()) {
 			File[] files = folder.listFiles();
 			if (files != null) {
 				for (File file : files) {
@@ -1598,8 +1667,7 @@ public class IOUtils {
 			final int status = conn.getResponseCode();
 			final boolean success = status >= 200 && status < 300;
 			if (success) {
-				Date now = new Date();
-				resp = UploadedFile.createUsingTempFile("file", now, now, conn.getInputStream());
+				resp = UploadedFile.createUsingTempFile("file", conn.getInputStream());
 			} else {
 				StringBuilder rsb = new StringBuilder();
 				try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getErrorStream(), "utf-8"))) {

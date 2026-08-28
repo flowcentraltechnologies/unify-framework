@@ -107,6 +107,10 @@ public abstract class Context {
         return attributes.containsKey(name);
     }
 
+    protected final void clear() {
+    	attributes.clear();
+    }
+    
     protected class Attribute {
 
         private Object value;

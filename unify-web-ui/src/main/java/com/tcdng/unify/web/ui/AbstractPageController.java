@@ -16,6 +16,7 @@
 package com.tcdng.unify.web.ui;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -120,7 +121,9 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 		if (sessionContext != null && sessionContext.getAttribute(pageId) == null) {
 			final PageRequestContextUtil prcUtil = getPageRequestContextUtil();
 			final Page page = pm.createPage(sessionContext.getLocale(), controllerPathParts.getControllerName());
+			controllerPathParts.setDocument(page.isDocument());
 			page.setPathParts(controllerPathParts, pageId);
+
 			Class<? extends PageBean> pageBeanClass = getPageBeanClass();
 			if (VoidPageBean.class.equals(pageBeanClass)) {
 				page.setPageBean(VoidPageBean.INSTANCE);
@@ -855,14 +858,15 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 	 * @return the attribute value if found, otherwise null.
 	 * @throws UnifyException if an error occurs
 	 */
-	@SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
 	protected <U> U getDocumentAttribute(Class<U> clazz, String name) throws UnifyException {
-		Document document = getPageRequestContextUtil().getRequestDocument();
-		if (document != null) {
-			return (U) document.getAttribute(name);
-		}
-		return null;
-	}
+        Document document = getPageRequestContextUtil().getRequestDocument();
+        if (document != null) {
+            return (U) document.getAttribute(name);
+        }
+        
+        return null;
+    }
 
 	/**
 	 * Sets the value of attribute in current request page.
@@ -1217,21 +1221,25 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 			PageRequestContextUtil pageRequestContextUtil = getPageRequestContextUtil();
 			Page currentPage = pageRequestContextUtil.getRequestPage();
 			try {
-				if (isFireClose) {
-					// Fire closePage() for all targets
-					for (String closePathId : toClosePathIdList) {
-						ControllerPathParts controllerPathParts = getPathInfoRepository()
-								.getControllerPathParts(closePathId);
-						getUIControllerUtil().loadRequestPage(controllerPathParts);
-						((PageController<?>) getComponent(controllerPathParts.getControllerName())).closePage();
+				List<String> actClosePathIdList = new ArrayList<String>();
+				for (String closePathId : toClosePathIdList) {
+					ControllerPathParts controllerPathParts = getPathInfoRepository()
+							.getControllerPathParts(closePathId);
+					if (!controllerPathParts.isDocument()) {
+						if (isFireClose) {
+							getUIControllerUtil().loadRequestPage(controllerPathParts);
+							((PageController<?>) getComponent(controllerPathParts.getControllerName())).closePage();
+						}
+
+						actClosePathIdList.add(closePathId);
 					}
 				}
 
 				// Do actual content removal
-				contentPanel.removeContent(toClosePathIdList);
+				contentPanel.removeContent(actClosePathIdList);
 
 				// Set pages for removal
-				pageRequestContextUtil.setClosedPagePaths(toClosePathIdList);
+				pageRequestContextUtil.setClosedPagePaths(actClosePathIdList);
 			} finally {
 				// Restore request page
 				pageRequestContextUtil.setRequestPage(currentPage);

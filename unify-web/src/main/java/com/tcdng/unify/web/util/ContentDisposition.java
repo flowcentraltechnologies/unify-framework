@@ -15,8 +15,6 @@
  */
 package com.tcdng.unify.web.util;
 
-import java.util.Date;
-
 /**
  * Content disposition
  * 
@@ -25,31 +23,52 @@ import java.util.Date;
  */
 public class ContentDisposition {
 
+	private String type;
+
 	private String fileName;
 
-	private Date creationDate;
+	private long fileSize;
 
-	private Date modificationDate;
-
-	public ContentDisposition(String fileName, Date creationDate, Date modificationDate) {
+	public ContentDisposition(String type, String fileName, long fileSize) {
+		this.type = type;
 		this.fileName = fileName;
-		this.creationDate = creationDate;
-		this.modificationDate = modificationDate;
+		this.fileSize = fileSize;
+	}
+
+	public ContentDisposition(String type, String fileName) {
+		this.type = type;
+		this.fileName = fileName;
+	}
+	
+	public ContentDisposition(ContentDisposition cd, long fileSize) {
+		this.type = cd.type;
+		this.fileName = cd.fileName;
+		this.fileSize = fileSize;
+	}
+
+
+	public String getType() {
+		return type;
 	}
 
 	public String getFileName() {
 		return fileName;
 	}
 
-	public Date getCreationDate() {
-		return creationDate;
+	public long getFileSize() {
+		return fileSize;
 	}
 
-	public Date getModificationDate() {
-		return modificationDate;
+	public boolean isAttachment() {
+		return "attachment".equals(type);
 	}
 
-	public boolean isFileName() {
-		return fileName != null;
+	public boolean isInline() {
+		return "inline".equals(type);
+	}
+
+	@Override
+	public String toString() {
+		return "ContentDisposition [type=" + type + ", fileName=" + fileName + ", fileSize=" + fileSize + "]";
 	}
 }

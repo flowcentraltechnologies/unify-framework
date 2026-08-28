@@ -16,10 +16,13 @@
 package com.tcdng.unify.core.file;
 
 import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Configurable;
@@ -115,6 +118,17 @@ public class TestFileTransferServer extends AbstractFileTransferServer {
     }
 
     @Override
+	public void uploadFile(FileTransferSetup fileTransferSetup, String serverFile, InputStream in)
+			throws UnifyException {
+		
+	}
+
+	@Override
+	public void uploadFile(FileTransferSetup fileTransferSetup, String serverFile, byte[] file) throws UnifyException {
+		
+	}
+
+	@Override
     public void downloadFile(FileTransferSetup fileTransferSetup, String serverFile, String localFile)
             throws UnifyException {
         if (!remoteFiles.containsKey(serverFile)) {
@@ -123,6 +137,17 @@ public class TestFileTransferServer extends AbstractFileTransferServer {
     }
 
     @Override
+	public void downloadFile(FileTransferSetup fileTransferSetup, String serverFile, OutputStream out)
+			throws UnifyException {
+		
+	}
+
+	@Override
+	public Optional<byte[]> downloadFile(FileTransferSetup fileTransferSetup, String serverFile) throws UnifyException {
+		return Optional.empty();
+	}
+
+	@Override
     public void uploadFiles(FileTransferSetup fileTransferSetup) throws UnifyException {
 
     }

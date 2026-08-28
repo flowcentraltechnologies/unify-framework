@@ -355,6 +355,16 @@ public interface SqlDataSourceDialect extends DataSourceDialect, SqlGenerator {
 	SqlStatement prepareCountStatement(Query<? extends Entity> query, QueryAgainst queryAgainst) throws UnifyException;
 
 	/**
+	 * Prepares exists record statement.
+	 * 
+	 * @param query        the record criteria
+	 * @param queryAgainst indicates what to query against
+	 * @return the exists statement.
+	 * @throws UnifyException if an error occurs
+	 */
+	SqlStatement prepareExistStatement(Query<? extends Entity> query, QueryAgainst queryAgainst) throws UnifyException;
+
+	/**
 	 * Prepares select min statement.
 	 * 
 	 * @param columnName the value column.

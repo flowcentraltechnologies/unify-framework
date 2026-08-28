@@ -62,6 +62,7 @@ public enum FileAttachmentType implements EnumConst {
 		map.put(".jpeg", IMAGE_JPG);
 		map.put(".gif", IMAGE_GIF);
 		map.put(".bmp", IMAGE_BMP);
+		map.put(".webp", IMAGE);
 		map.put(".pdf", PDF);
 		map.put(".xml", XML);
 		map.put(".txt", TEXT);
@@ -175,7 +176,7 @@ public enum FileAttachmentType implements EnumConst {
             }
         }
 
-        return type;
+        return type != null ? type: WILDCARD;
     }
 
     public static FileAttachmentType fromCode(String code) {

@@ -13,33 +13,44 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.tcdng.unify.web.http;
+
+package com.tcdng.unify.core;
+
+import com.tcdng.unify.common.data.Listable;
 
 /**
- * HTTP request header constants.
+ * Setting data object.
  * 
  * @author The Code Department
  * @since 4.1
  */
-public interface HttpRequestHeaderConstants {
-	
-	String AUTHORIZATION = "Authorization";
-	
-	String HOST = "Host";
-	
-	String ORIGIN = "Origin";
-	
-	String REFERER = "Referer";
-	
-	String PROXY_CLIENT_IP = "Proxy-Client-IP";
-	
-	String USER_AGENT = "User-Agent";
-	
-	String WL_PROXY_CLIENT_IP = "WL-Proxy-Client-IP";
-	
-	String X_FORWARDED_FOR = "X-FORWARDED-FOR";
-	
-	String X_UNIFY_PID= "X-Unify-Pid";
-	
-	String X_UNIFY_DISPOSITION = "X-Unify-Disposition";
+public class RoleOption implements Listable {
+
+    private String roleCode;
+
+    private String roleDescription;
+
+	public RoleOption(String roleCode, String roleDescription) {
+		this.roleCode = roleCode;
+		this.roleDescription = roleDescription;
+	}
+
+	@Override
+	public String getListKey() {
+		return roleCode;
+	}
+
+	@Override
+	public String getListDescription() {
+		return roleDescription;
+	}
+
+	public String getRoleCode() {
+		return roleCode;
+	}
+
+	public String getRoleDescription() {
+		return roleDescription;
+	}
+
 }

@@ -194,46 +194,52 @@ public class ContentPanelImpl extends AbstractContentPanel {
 
 	@Override
 	public void addContent(Page page) throws UnifyException {
-		ContentInfo contentInfo = contentByPathIdMap.get(page.getPageId());
-		if (contentInfo != null) {
-			contentIndex = contentInfo.getPageIndex();
-			return;
-		}
+		if (!page.isDocument()) {
+			ContentInfo contentInfo = contentByPathIdMap.get(page.getPageId());
+			if (contentInfo != null) {
+				contentIndex = contentInfo.getPageIndex();
+				return;
+			}
 
-		untabbedClear();
-		contentIndex = contentList.size();
-		contentInfo = new ContentInfo(page, contentIndex);
-		contentList.add(contentInfo);
-		contentByPathIdMap.put(page.getPageId(), contentInfo);
+			untabbedClear();
+			contentIndex = contentList.size();
+			contentInfo = new ContentInfo(page, contentIndex);
+			contentList.add(contentInfo);
+			contentByPathIdMap.put(page.getPageId(), contentInfo);
+		}		
 	}
 
 	@Override
 	public String insertContent(Page page) throws UnifyException {
-		ContentInfo contentInfo = contentByPathIdMap.get(page.getPageId());
-		if (contentInfo != null) {
-			contentIndex = contentInfo.getPageIndex();
-			return null;
-		}
-
-		untabbedClear();
-
-		String replacedPathId = null;
-		final int len = contentList.size();
-		if (len <= 1) {
-			contentIndex = len;
-			contentInfo = new ContentInfo(page, contentIndex);
-			contentList.add(contentInfo);
-		} else {
-			replacedPathId = contentList.get(contentIndex).getPageId();
-			contentInfo = new ContentInfo(page, contentIndex);
-			contentList.add(contentIndex, contentInfo);
-			for (int i = contentIndex + 1; i <= len; i++) {
-				contentList.get(i).incPageIndex();
+		if (!page.isDocument()) {
+			ContentInfo contentInfo = contentByPathIdMap.get(page.getPageId());
+			if (contentInfo != null) {
+				contentIndex = contentInfo.getPageIndex();
+				return null;
 			}
+
+			untabbedClear();
+
+			String replacedPathId = null;
+			final int len = contentList.size();
+			if (len <= 1) {
+				contentIndex = len;
+				contentInfo = new ContentInfo(page, contentIndex);
+				contentList.add(contentInfo);
+			} else {
+				replacedPathId = contentList.get(contentIndex).getPageId();
+				contentInfo = new ContentInfo(page, contentIndex);
+				contentList.add(contentIndex, contentInfo);
+				for (int i = contentIndex + 1; i <= len; i++) {
+					contentList.get(i).incPageIndex();
+				}
+			}
+
+			contentByPathIdMap.put(page.getPageId(), contentInfo);
+			return replacedPathId;
 		}
 
-		contentByPathIdMap.put(page.getPageId(), contentInfo);
-		return replacedPathId;
+		return null;
 	}
 
 	private List<String> getPaths(List<String> src, String attr, String binding) throws UnifyException {
@@ -293,7 +299,9 @@ public class ContentPanelImpl extends AbstractContentPanel {
 					}
 				} else {
 					if (!stickyPaths.contains(contentInfo.getOpenPath())) {
-						toRemovePathIdList.add(remPage.getPageId());					
+						if (!remPage.isDocument()) {
+							toRemovePathIdList.add(remPage.getPageId());
+						}
 					}
 				}
 			}
@@ -303,7 +311,9 @@ public class ContentPanelImpl extends AbstractContentPanel {
 		}
 
 		if (removeSrc) {
-			toRemovePathIdList.add(page.getPageId());
+			if (!page.isDocument()) {
+				toRemovePathIdList.add(page.getPageId());
+			}
 		}
 
 		return toRemovePathIdList;

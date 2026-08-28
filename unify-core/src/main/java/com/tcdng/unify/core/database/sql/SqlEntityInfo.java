@@ -56,7 +56,7 @@ public class SqlEntityInfo implements SqlEntitySchemaInfo {
 
 	private Class<? extends EnumConst> enumConstClass;
 
-	private EntityPolicy entityPolicy;
+	private EntityPolicy<?> entityPolicy;
 
 	private MappedEntityRepository mappedEntityRepository;
 
@@ -139,7 +139,7 @@ public class SqlEntityInfo implements SqlEntitySchemaInfo {
 	private EntityDTO entityDTO;
 	
 	public SqlEntityInfo(Long index, Class<? extends Entity> entityClass, Class<? extends EnumConst> enumConstClass,
-			EntityPolicy recordPolicy, MappedEntityRepository mappedEntityRepository, String schema,
+			EntityPolicy<?> recordPolicy, MappedEntityRepository mappedEntityRepository, String schema,
 			String tableName, String preferredTableName, String schemaTableName, String tableAlias, String viewName,
 			String preferredViewName, String schemaViewName, SqlFieldInfo idFieldInfo, SqlFieldInfo versionFieldInfo,
 			SqlFieldInfo tenantIdFieldInfo, SqlFieldInfo fosterParentTypeFieldInfo,
@@ -565,8 +565,9 @@ public class SqlEntityInfo implements SqlEntitySchemaInfo {
 		return entityClass;
 	}
 
-	public EntityPolicy getEntityPolicy() {
-		return entityPolicy;
+	@SuppressWarnings("unchecked")
+	public <T extends Entity> EntityPolicy<T> getEntityPolicy() {
+		return (EntityPolicy<T>) entityPolicy;
 	}
 
 	public Set<String> getListFieldNames() {

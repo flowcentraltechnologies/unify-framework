@@ -46,46 +46,61 @@ public class IndentedMultiSelectWriter extends AbstractControlWriter {
 		writer.write(">");
 
 		final int len = multiSelect.getItemCount();
+		final int columns = multiSelect.getColumns();
+		final String id = multiSelect.getId();
 		if (len > 0) {
 			Control selectCtrl = multiSelect.getSelectCtrl();
 			selectCtrl.setEditable(true);
 			selectCtrl.setDisabled(false);
 			for (int i = 0; i < len; i++) {
-				writer.write("<div class=\"inrow ");
-				if (i % 2 == 0) {
-					writer.write("ineven");
+				writer.write("<div class=\"inrow\">");
+
+				ValueStore valueStore = multiSelect.getItemValueStoreAt(i);
+				IndentedSelectInfo info = multiSelect.getItemAt();
+
+				final int depth = info.getDepth();
+				for (int j = 0; j < depth; j++) {
+					writer.write("<span class=\"intab\"></span>");
+				}
+
+				if (info.isRow()) {
+					writer.write("<span style=\"display:inline-block;\"><div style=\"display:table;\">");
+					boolean rows = true;
+					while (rows && i < len) {
+						writer.write("<div style=\"display:table-row;\">");
+						int j = 0;
+						while (i < len && j < columns) {
+							valueStore = multiSelect.getItemValueStoreAt(i);
+							info = multiSelect.getItemAt();
+							if (info.getDepth() == depth && info.isRow()) {
+								selectCtrl.setValueStore(valueStore);
+								writer.write("<div style=\"display:table-cell;\">");
+								writeItem(writer, id, selectCtrl, info);
+								writer.write("</div>");
+								j++;
+								i++;
+							} else {
+								rows = false;
+								i--;
+								break;
+							}
+						}
+
+						while (j < columns) {
+							writer.write("<div style=\"display:table-cell;\"></div>");
+							j++;
+						}
+						
+						writer.write("</div>");
+					}
+					
+					writer.write("</div></span>");
 				} else {
-					writer.write("inodd");
-				}
-				
-				writer.write("\">");
-				
-				final ValueStore valueStore = multiSelect.getItemValueStoreAt(i);
-				final IndentedSelectInfo info = multiSelect.getItemAt();
-				selectCtrl.setValueStore(valueStore);
-				
-				for(int j = 0; j < info.getDepth(); j++) {
-					writer.write("<span class=\"intab\"></span>");					
+					selectCtrl.setValueStore(valueStore);
+					writeItem(writer, id, selectCtrl, info);
 				}
 
-				writer.write("<span class=\"insel\">");
-				writer.writeStructureAndContent(selectCtrl);
-				writer.write("</span>");
-
-				writer.write("<span class=\"incon\">");				
-				writer.write("<span class=\"incap\">");
-				writer.writeWithHtmlEscape(info.getCaption());
-				writer.write("</span>");
-				if (!StringUtils.isBlank(info.getDescription())) {
-					writer.write("<span class=\"indes\">");
-					writer.writeWithHtmlEscape(info.getDescription());
-					writer.write("</span>");
-				}
-				writer.write("</span>");
-				
 				writer.write("</div>");
-				
-				addPageAlias(multiSelect.getId(), selectCtrl);
 			}
 		}
 
@@ -97,30 +112,51 @@ public class IndentedMultiSelectWriter extends AbstractControlWriter {
 			throws UnifyException {
 		super.doWriteBehavior(writer, widget, handlers);
 		IndentedMultiSelect multiSelect = (IndentedMultiSelect) widget;
-		
+
 		final int len = multiSelect.getItemCount();
 		if (len > 0) {
 			Control selectCtrl = multiSelect.getSelectCtrl();
 			selectCtrl.setGroupId(null);
-			
+
 			String[] ids = new String[len];
 			int[] depths = new int[len];
 			for (int i = 0; i < len; i++) {
 				final ValueStore valueStore = multiSelect.getItemValueStoreAt(i);
 				selectCtrl.setValueStore(valueStore);
 				writer.writeBehavior(selectCtrl);
-				
+
 				ids[i] = selectCtrl.getId();
 				depths[i] = multiSelect.getItemAt().getDepth();
 			}
-			
+
 			writer.beginFunction("ux.rigIndentedSelect");
 			writer.writeParam("pId", multiSelect.getId());
 			writer.writeParam("pContId", multiSelect.getContainerId());
 			writer.writeCommandURLParam("pCmdURL");
+			writer.writeParam("pWave", multiSelect.isWave());
 			writer.writeParam("pSel", ids);
 			writer.writeParam("pDep", depths);
 			writer.endFunction();
-		}		
+		}
+	}
+
+	private void writeItem(ResponseWriter writer, String id, Control selectCtrl, IndentedSelectInfo info)
+			throws UnifyException {
+		writer.write("<span class=\"insel\">");
+		writer.writeStructureAndContent(selectCtrl);
+		writer.write("</span>");
+
+		writer.write("<span class=\"incon\">");
+		writer.write("<span class=\"incap\">");
+		writer.writeWithHtmlEscape(info.getCaption());
+		writer.write("</span>");
+		if (!StringUtils.isBlank(info.getDescription())) {
+			writer.write("<span class=\"indes\">");
+			writer.writeWithHtmlEscape(info.getDescription());
+			writer.write("</span>");
+		}
+		writer.write("</span>");
+
+		addPageAlias(id, selectCtrl);
 	}
 }

@@ -359,6 +359,7 @@ public class UnifyContainer {
 		Map<String, Set<String>> componentPluginSocketsMap = new HashMap<String, Set<String>>();
 		List<UnifyComponentConfig> managedBusinessServiceConfigList = new ArrayList<UnifyComponentConfig>();
 		int businessServiceCount = 0;
+		int periodicMethodCount = 0;
 		for (Map.Entry<String, InternalUnifyComponentInfo> entry : internalUnifyComponentInfos.entrySet()) {
 			InternalUnifyComponentInfo iuci = entry.getValue();
 			// Fetch periodic method information
@@ -412,6 +413,7 @@ public class UnifyContainer {
 				logDebug("[{0}] periodic methods detected for Component [{1}].", periodicMethodMap.size(),
 						iuci.getName());
 				componentPeriodMethodMap.put(iuci.getName(), periodicMethodMap);
+				periodicMethodCount += periodicMethodMap.size();
 			}
 
 			if (!pluginSockets.isEmpty()) {
@@ -425,6 +427,7 @@ public class UnifyContainer {
 				businessServiceCount++;
 			}
 		}
+		logDebug("Total of [{0}] periodic methods detected.", periodicMethodCount);
 		logDebug("Total of [{0}] business components detected.", businessServiceCount);
 
 		// Detect business logic plug-ins

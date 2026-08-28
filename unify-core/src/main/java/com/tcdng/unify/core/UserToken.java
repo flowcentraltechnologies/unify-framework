@@ -15,6 +15,8 @@
  */
 package com.tcdng.unify.core;
 
+import java.util.List;
+
 import com.tcdng.unify.common.database.Entity;
 import com.tcdng.unify.core.util.StringUtils;
 
@@ -70,6 +72,8 @@ public class UserToken {
 
 	private boolean authorized;
 
+	private List<RoleOption> roleOptions;
+	
 	public UserToken(Long tenantId) {
 		this.tenantId = tenantId;
 	}
@@ -189,6 +193,14 @@ public class UserToken {
 
 	public void setRoleCode(String roleCode) {
 		this.roleCode = roleCode;
+	}
+
+	public List<RoleOption> getRoleOptions() {
+		return roleOptions;
+	}
+
+	public void setRoleOptions(List<RoleOption> roleOptions) {
+		this.roleOptions = roleOptions;
 	}
 
 	public String getThemePath() {

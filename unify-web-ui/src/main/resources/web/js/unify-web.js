@@ -99,6 +99,8 @@ ux.docPid = null;
 ux.shortcuts = [];
 ux.pagenamealiases = [];
 ux.delayedpanelposting = [];
+
+ux.debounceEnabled = true;
 ux.debouncetime = [];
 
 ux.resizefunctions = {};
@@ -2536,11 +2538,13 @@ ux.dcfInput = function(uEv) {
 /** Indented Multi-select */
 ux.rigIndentedSelect= function(rgp) {
 	if (rgp.pSel) {
-		const pids = rgp.pSel;
-		for (var i = 0; i < pids.length; i++) {
-			const fid = "fac_" + pids[i];
-			const evp = {uIndex:i, uPid:pids, uDep:rgp.pDep};
-			ux.addHdl(_id(fid), "change", ux.inSelectCheck, evp);	
+		if (rgp.pWave) {
+			const pids = rgp.pSel;
+			for (var i = 0; i < pids.length; i++) {
+				const fid = "fac_" + pids[i];
+				const evp = {uIndex:i, uPid:pids, uDep:rgp.pDep};
+				ux.addHdl(_id(fid), "change", ux.inSelectCheck, evp);	
+			}
 		}
 	}
 }
@@ -4717,15 +4721,14 @@ ux.getPushRefs = function(evp) {
 ux.buildFormParams = function(trgObj, evp, refs) {
 	var param = {};
 	param.value = new FormData();
-	param.isForm = true;
+	param.frm = true;
 	ux.buildObjParams(trgObj, evp, param, refs);
 	return param;
 }
 
 ux.buildReqParams = function(trgObj, evp, refs) {
 	var param = {};
-	param.value = "morsic=" + new Date().getTime();
-	param.isForm = false;
+	param.frm = false;
 	ux.buildObjParams(trgObj, evp, param, refs);
 	return param;
 }
@@ -4739,10 +4742,10 @@ ux.buildObjParams = function(trgObj, evp, param, refs) {
 		}
 	}
 
+	const frm = param.frm;
 	var pb = param.value;
-	var isForm = param.isForm;
 	if (_df(evp.uLoginId)) {
-		if (isForm) {
+		if (frm) {
 			pb.append("req_uid", evp.uLoginId);
 			pb.append("req_unm", evp.uUserName);
 			if (evp.uRole) {
@@ -4758,7 +4761,8 @@ ux.buildObjParams = function(trgObj, evp, param, refs) {
 				pb.append("req_csm", evp.uColor);
 			}
 		} else {
-			pb += ("&req_uid=" + _enc(evp.uLoginId));
+			pb = ux.checkPrm(pb);
+			pb += ("req_uid=" + _enc(evp.uLoginId));
 			pb += ("&req_unm=" + _enc(evp.uUserName));
 			if (evp.uRole) {
 				pb += ("&req_rcd=" + _enc(evp.uRole));
@@ -4776,20 +4780,22 @@ ux.buildObjParams = function(trgObj, evp, param, refs) {
 	}
 
 	if (_df(evp.uConfMsg)) {
-		if (isForm) {
+		if (frm) {
 			pb.append("req_cmsg", evp.uConfMsg);
 			pb.append("req_cmsgicon", evp.uIconIndex);
 		} else {
-			pb += ("&req_cmsg=" + _enc(evp.uConfMsg));
+			pb = ux.checkPrm(pb);
+			pb += ("req_cmsg=" + _enc(evp.uConfMsg));
 			pb += ("&req_cmsgicon=" + _enc(evp.uIconIndex));
 		}
 	}
 
 	if (_df(evp.uConfPrm)) {
-		if (isForm) {
+		if (frm) {
 			pb.append("req_cprm", evp.uConfPrm);
 		} else {
-			pb += ("&req_cprm=" + _enc(evp.uConfPrm));
+			pb = ux.checkPrm(pb);
+			pb += ("req_cprm=" + _enc(evp.uConfPrm));
 		}
 	}
 	
@@ -4821,10 +4827,11 @@ ux.buildObjParams = function(trgObj, evp, param, refs) {
 		}
 		
 		if (_val !== undefined) {
-			if (isForm) {
+			if (frm) {
 				pb.append("req_trg", _val);
 			} else {
-				pb += ("&req_trg=" + _enc(_val));
+				pb = ux.checkPrm(pb);
+				pb += ("req_trg=" + _enc(_val));
 			}
 			
 			evp.uSendTrg = undefined; //Disallow multiple target values
@@ -4832,14 +4839,15 @@ ux.buildObjParams = function(trgObj, evp, param, refs) {
 	}
 
 	if (_df(evp.uSendTrg)) {
-		if (isForm) {
+		if (frm) {
 			pb.append("req_trg", evp.uSendTrg);
 		} else {
-			pb += ("&req_trg=" + _enc(evp.uSendTrg));
+			pb = ux.checkPrm(pb);
+			pb += ("req_trg=" + _enc(evp.uSendTrg));
 		}
 	}
 
-	if (isForm) {
+	if (frm) {
 		if (evp.uViewer) {
 			pb.append("req_rv", evp.uViewer);
 			pb.append("req_rsi", ux.docSessionId);
@@ -4865,11 +4873,12 @@ ux.buildObjParams = function(trgObj, evp, param, refs) {
 			}
 		}
 	} else {
+		pb = ux.checkPrm(pb);
 		if (evp.uViewer) {
-			pb += ("&req_rv=" + _enc(evp.uViewer));
+			pb += ("req_rv=" + _enc(evp.uViewer));
 			pb += ("&req_rsi=" + _enc(ux.docSessionId));
 		} else {
-			pb += ("&req_doc=" + _enc(ux.docPath));
+			pb += ("req_doc=" + _enc(ux.docPath));
 			pb += ("&req_win=" + _enc(window.name));
 		}
 		if (evp.uValidateAct) {
@@ -4892,6 +4901,10 @@ ux.buildObjParams = function(trgObj, evp, param, refs) {
 	}
 	
 	param.value = pb;
+}
+
+ux.checkPrm = function(prm) {
+	return prm ? (prm + "&") : "";
 }
 
 ux.buildNameParams = function(name, builtNames, param) {
@@ -4971,7 +4984,7 @@ ux.extractObjParams = function(elem, param) {
 }
 
 ux.appendParam = function(id, value, param) {
-	if (param.isForm) {
+	if (param.frm) {
 		param.value.append(id, value);
 	} else {
 		param.value += "&" + id + "="
@@ -5265,40 +5278,46 @@ ux.fireDelayedPost = function(pgNm) {
 
 /** Debounce */
 ux.registerDebounce = function(pgNmlist, clear) {
-	if (clear) {
-		ux.debouncetime = [];
-	}
-	
-	if(pgNmlist) {
-		var timestamp = new Date().getTime();
-		for (var i = 0; i < pgNmlist.length; i++) {
-			ux.debouncetime[pgNmlist[i]] = timestamp;
+	if (ux.debounceEnabled) {
+		if (clear) {
+			ux.debouncetime = [];
+		}
+
+		if(pgNmlist) {
+			var timestamp = new Date().getTime();
+			for (var i = 0; i < pgNmlist.length; i++) {
+				ux.debouncetime[pgNmlist[i]] = timestamp;
+			}
 		}
 	}
 }
 
 ux.effectDebounce = function() {
 	var debounced = [];
-	for(var pgNm in ux.debouncetime) {
-		var elem = _id(pgNm);
-		if (elem && !elem.disabled) {
-			elem.disabled = true;
-			debounced[pgNm] = ux.debouncetime[pgNm];
+	if (ux.debounceEnabled) {
+		for(var pgNm in ux.debouncetime) {
+			var elem = _id(pgNm);
+			if (elem && !elem.disabled) {
+				elem.disabled = true;
+				debounced[pgNm] = ux.debouncetime[pgNm];
+			}
 		}
 	}
-	
+
 	return debounced;
 }
 
 ux.clearDebounce = function(debounced) {
-	if (debounced) {
-		for(var pgNm in debounced) {
-			if(debounced[pgNm] == ux.debouncetime[pgNm]) {
-				var elem = _id(pgNm);
-				if (elem) {
-					elem.disabled = false;
-				}				
-			} 
+	if (ux.debounceEnabled) {
+		if (debounced) {
+			for(var pgNm in debounced) {
+				if(debounced[pgNm] == ux.debouncetime[pgNm]) {
+					var elem = _id(pgNm);
+					if (elem) {
+						elem.disabled = false;
+					}				
+				} 
+			}
 		}
 	}
 }
@@ -5909,6 +5928,10 @@ ux.setHiddenValues = function(references, hiddenValues) {
 }
 
 /** Document functions and event handlers */
+ux.setDebounce = function(debounce) {
+	ux.debounceEnabled = debounce;
+}
+
 ux.init = function() {
 	ux.resizeTimeout = null;
 	ux.textoptions = new Map();

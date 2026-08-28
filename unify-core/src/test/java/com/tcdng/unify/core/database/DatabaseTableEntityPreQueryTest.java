@@ -63,7 +63,7 @@ public class DatabaseTableEntityPreQueryTest extends AbstractUnifyComponentTest 
 
     private Database db;
 
-    private TestEntityPolicy testEntityPolicy;
+    private TestEntityPolicy<?> testEntityPolicy;
 
     @Test
     public void testCountRecord() throws Exception {
@@ -1832,7 +1832,7 @@ public class DatabaseTableEntityPreQueryTest extends AbstractUnifyComponentTest 
     protected void onSetup() throws Exception {
         tm = (DatabaseTransactionManager) getComponent(ApplicationComponents.APPLICATION_DATABASETRANSACTIONMANAGER);
         db = (Database) getComponent(ApplicationComponents.APPLICATION_DATABASE);
-        testEntityPolicy = (TestEntityPolicy) getComponent("testversionedentity-policy");
+        testEntityPolicy = (TestEntityPolicy<?>) getComponent("testversionedentity-policy");
     }
 
     @SuppressWarnings({ "unchecked" })

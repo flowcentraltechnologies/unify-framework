@@ -17,7 +17,6 @@ package com.tcdng.unify.core.system.entities;
 
 import java.util.Date;
 
-import com.tcdng.unify.common.database.Entity;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.database.AbstractEntityPolicy;
@@ -29,18 +28,17 @@ import com.tcdng.unify.core.database.AbstractEntityPolicy;
  * @since 4.1
  */
 @Component("usersessiontracking-entitypolicy")
-public class UserSessionTrackingPolicy extends AbstractEntityPolicy {
+public class UserSessionTrackingPolicy extends AbstractEntityPolicy<UserSessionTracking> {
 
     public UserSessionTrackingPolicy() {
         super(true);
     }
 
     @Override
-    public Object preCreate(Entity record, Date now) throws UnifyException {
-        UserSessionTracking userSessionTracking = (UserSessionTracking) record;
-        userSessionTracking.setCreateTime(now);
-        userSessionTracking.setLastAccessTime(now);
-        return userSessionTracking.getId();
+    public Object preCreate(UserSessionTracking record, Date now) throws UnifyException {
+    	record.setCreateTime(now);
+    	record.setLastAccessTime(now);
+        return record.getId();
     }
 
 }

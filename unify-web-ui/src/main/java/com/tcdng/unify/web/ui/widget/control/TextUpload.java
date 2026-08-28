@@ -59,7 +59,7 @@ public class TextUpload extends AbstractAutoRefreshMultiControl {
 		super.populate(transferBlock);
 
 		if (uploadedFile != null && uploadedFile.length > 0) {
-			setValue(IOUtils.readAll(new InputStreamReader(uploadedFile[0].getIn())));
+			setValue(IOUtils.readAllAsString(new InputStreamReader(uploadedFile[0].getIn())));
 		} else {
 			setValue(null);
 		}

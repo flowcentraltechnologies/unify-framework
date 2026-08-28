@@ -970,6 +970,20 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 	}
 
 	@Override
+	public String generateExistsRecordSql(SqlEntitySchemaInfo sqlEntitySchemaInfo, QueryAgainst queryAgainst)
+			throws UnifyException {
+		StringBuffer existSql = new StringBuffer();
+		existSql.append("SELECT 1 FROM ");
+		if (queryAgainst.isAgainstView()) {
+			existSql.append(sqlEntitySchemaInfo.getSchemaViewName());
+		} else {
+			existSql.append(sqlEntitySchemaInfo.getSchemaTableName());
+		}
+
+		return existSql.toString();
+	}
+
+	@Override
 	public final String generateLikeParameter(SqlLikeType type, Object param) throws UnifyException {
 		return getSqlDataSourceDialectPolicies().generateLikeParameter(type, null, param);
 	}
@@ -1038,6 +1052,28 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 
 		appendWhereClause(countSql, parameterInfoList, sqlEntityInfo, query, SqlQueryType.SELECT);
 		return new SqlStatement(sqlEntityInfo, SqlStatementType.COUNT, countSql.toString(), parameterInfoList);
+	}
+
+	@Override
+	public SqlStatement prepareExistStatement(Query<? extends Entity> query, QueryAgainst queryAgainst)
+			throws UnifyException {
+		final int oldLimit = query.getLimit();
+		try {
+			SqlEntityInfo sqlEntityInfo = resolveSqlEntityInfo(query);
+			List<SqlParameter> parameterInfoList = new ArrayList<SqlParameter>();
+			StringBuilder existSql = new StringBuilder();
+			if (queryAgainst.isAgainstView()) {
+				existSql.append(sqlCacheFactory.get(query.getEntityClass()).getExistViewSql());
+			} else {
+				existSql.append(sqlCacheFactory.get(query.getEntityClass()).getExistSql());
+			}
+
+			query.setLimit(1);
+			appendWhereClause(existSql, parameterInfoList, sqlEntityInfo, query, SqlQueryType.SELECT);
+			return new SqlStatement(sqlEntityInfo, SqlStatementType.COUNT, existSql.toString(), parameterInfoList);
+		} finally {
+			query.setLimit(oldLimit);
+		}
 	}
 
 	@Override
@@ -2764,7 +2800,9 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 						generateListRecordSql(sqlEntitySchemaInfo), generateListRecordByPkSql(sqlEntitySchemaInfo),
 						generateListRecordByPkVersionSql(sqlEntitySchemaInfo), null, null, null, null, null, null, null,
 						null, generateCountRecordSql(sqlEntitySchemaInfo, QueryAgainst.VIEW),
-						generateCountRecordSql(sqlEntitySchemaInfo, QueryAgainst.VIEW), generateTestSql());
+						generateCountRecordSql(sqlEntitySchemaInfo, QueryAgainst.VIEW),
+						generateExistsRecordSql(sqlEntitySchemaInfo, QueryAgainst.VIEW),
+						generateExistsRecordSql(sqlEntitySchemaInfo, QueryAgainst.VIEW), generateTestSql());
 			}
 
 			return new SqlCache(generateFindRecordSql(sqlEntitySchemaInfo, QueryAgainst.TABLE),
@@ -2779,7 +2817,9 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 					generateDeleteRecordSql(sqlEntitySchemaInfo), generateDeleteRecordByPkSql(sqlEntitySchemaInfo),
 					generateDeleteRecordByPkVersionSql(sqlEntitySchemaInfo),
 					generateCountRecordSql(sqlEntitySchemaInfo, QueryAgainst.TABLE),
-					generateCountRecordSql(sqlEntitySchemaInfo, QueryAgainst.VIEW), generateTestSql());
+					generateCountRecordSql(sqlEntitySchemaInfo, QueryAgainst.VIEW),
+					generateExistsRecordSql(sqlEntitySchemaInfo, QueryAgainst.TABLE),
+					generateExistsRecordSql(sqlEntitySchemaInfo, QueryAgainst.VIEW), generateTestSql());
 		}
 	};
 

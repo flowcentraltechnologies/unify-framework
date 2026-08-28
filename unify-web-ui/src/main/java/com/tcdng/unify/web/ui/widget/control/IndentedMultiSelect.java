@@ -19,6 +19,8 @@ import java.util.List;
 
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
+import com.tcdng.unify.core.annotation.UplAttribute;
+import com.tcdng.unify.core.annotation.UplAttributes;
 import com.tcdng.unify.core.data.IndentedSelectInfo;
 import com.tcdng.unify.web.ui.DataTransferBlock;
 import com.tcdng.unify.web.ui.widget.AbstractItemListMultiControl;
@@ -31,6 +33,10 @@ import com.tcdng.unify.web.ui.widget.Control;
  * @since 4.1
  */
 @Component("ui-indentedmultiselect")
+@UplAttributes({
+	@UplAttribute(name = "wave", type = boolean.class),
+	@UplAttribute(name = "columns", type = int.class, defaultVal = "4")
+})
 public class IndentedMultiSelect extends AbstractItemListMultiControl<IndentedSelectInfo> {
 
 	private Control selectCtrl;
@@ -47,6 +53,14 @@ public class IndentedMultiSelect extends AbstractItemListMultiControl<IndentedSe
 		return selectCtrl;
 	}
 
+	public int getColumns() throws UnifyException {
+		return getUplAttribute(int.class, "columns");
+	}
+
+	public boolean isWave() throws UnifyException {
+		return getUplAttribute(boolean.class, "wave");
+	}
+	
 	@Override
 	protected void doOnPageConstruct() throws UnifyException {
 		selectCtrl = (Control) addInternalChildWidget("!ui-checkbox binding:selected");

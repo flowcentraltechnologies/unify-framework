@@ -17,7 +17,6 @@ package com.tcdng.unify.core.database.dynamic;
 
 import java.util.Date;
 
-import com.tcdng.unify.common.database.Entity;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.database.AbstractEntityPolicy;
@@ -29,35 +28,35 @@ import com.tcdng.unify.core.database.AbstractEntityPolicy;
  * @since 4.1
  */
 @Component("product-policy")
-public class ProductPolicy extends AbstractEntityPolicy {
+public class ProductPolicy extends AbstractEntityPolicy<Product> {
 
     @Override
-    public Object preCreate(Entity record, Date now) throws UnifyException {
-        return ((Product) record).getId() ;
+    public Object preCreate(Product record, Date now) throws UnifyException {
+        return record.getId() ;
     }
 
     @Override
-    public void preUpdate(Entity record, Date now) throws UnifyException {
+    public void preUpdate(Product record, Date now) throws UnifyException {
         
     }
 
     @Override
-    public void preDelete(Entity record, Date now) throws UnifyException {
+    public void preDelete(Product record, Date now) throws UnifyException {
         
     }
 
     @Override
-    public void onCreateError(Entity record) {
+    public void onCreateError(Product record) {
         
     }
 
     @Override
-    public void onUpdateError(Entity record) {
+    public void onUpdateError(Product record) {
         
     }
 
     @Override
-    public void onDeleteError(Entity record) {
+    public void onDeleteError(Product record) {
         
     }
 }

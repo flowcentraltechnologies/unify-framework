@@ -20,6 +20,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -43,11 +44,15 @@ public final class StringUtils {
 	public static final String MASK = "********";
 
 	public static final String NULL_STRING = null;
-
+	
+	private static final String MAP_ENTRY_MARKER= "\u001E";
+	
+	private static final String MAP_NULL= "\u0000";
+	
 	private StringUtils() {
 
 	}
-
+	
 	/**
 	 * Trims all non-null strings.
 	 * 
@@ -262,6 +267,16 @@ public final class StringUtils {
 	}
 
 	/**
+	 * Split a string into tokens using the comma character (quoted).
+	 * 
+	 * @param string the string to split
+	 * @return the result tokens
+	 */
+	public static String[] commaSplitQuoted(String string) {
+		return StringUtils.charSplitQuoted(string, ',');
+	}
+
+	/**
 	 * Split a string into tokens using the dot character.
 	 * 
 	 * @param string the string to split
@@ -272,7 +287,56 @@ public final class StringUtils {
 	}
 
 	/**
-	 * Split a string into tokens using supplied character character.
+	 * Split a string into tokens using the dot character (quoted).
+	 * 
+	 * @param string the string to split
+	 * @return the result tokens
+	 */
+	public static String[] dotSplitQuoted(String string) {
+		return StringUtils.charSplitQuoted(string, '.');
+	}
+
+	/**
+	 * Split a string into tokens using supplied character quoted.
+	 * 
+	 * @param text the string to split
+	 * @param ch     the character to use
+	 * @return the result tokens
+	 */
+	public static String[] charSplitQuoted(String text, final char ch) {
+		if (text != null) {
+			List<String> result = new ArrayList<String>();
+			StringBuilder current = new StringBuilder();
+			boolean inQuote = false;
+			boolean escaped = false;
+
+			for (char c : text.toCharArray()) {
+				if (escaped) {
+					current.append(c);
+					escaped = false;
+				} else if (c == '\\' && inQuote) {
+					current.append(c);
+					escaped = true;
+				} else if (c == '"') {
+					inQuote = !inQuote;
+					current.append(c);
+				} else if (c == ch && !inQuote) {
+					result.add(current.toString());
+					current.setLength(0);
+				} else {
+					current.append(c);
+				}
+			}
+			
+			result.add(current.toString());
+			return result.toArray(new String[result.size()]);
+		}
+
+		return DataUtils.ZEROLEN_STRING_ARRAY;
+	}
+
+	/**
+	 * Split a string into tokens using supplied character.
 	 * 
 	 * @param text the string to split
 	 * @param ch     the character to use
@@ -332,6 +396,37 @@ public final class StringUtils {
 		}
 
 		return null;
+	}
+	
+	/**
+	 * Unquotes a string.
+	 * 
+	 * @param string the string to unquoted
+	 * @return the unquoted string
+	 */
+	public static String unquote(String string) {
+		int lim = 0;
+		if (string != null && string.length() >= 2 && (string.charAt(0) == '"')
+				&& (string.charAt(lim = string.length() - 1) == '"')) {
+			StringBuilder sb = new StringBuilder();
+			char[] array = string.toCharArray();
+			boolean escaped = false;
+			for (int i = 1; i < lim; i++) {
+				char c = array[i];
+				if (escaped) {
+					sb.append(c);
+					escaped = false;
+				} else if (c == '\\') {
+					escaped = true;
+				} else {
+					sb.append(c);
+				}
+			}
+
+			return sb.toString();
+		}
+
+		return string;
 	}
 
 	/**
@@ -1077,6 +1172,66 @@ public final class StringUtils {
 		}
 
 		return "";
+	}
+
+	/**
+	 * Converts map to string.
+	 * 
+	 * @param map the map to convert
+	 * @return the string
+	 */
+	public static String mapToString(Map<String, String> map) {
+		if (map != null) {
+			final StringBuilder sb = new StringBuilder();
+			boolean appendSym = false;
+			for (Map.Entry<String, String> entry : map.entrySet()) {
+				if (appendSym) {
+					sb.append(MAP_ENTRY_MARKER);
+				} else {
+					appendSym = true;
+				}
+
+				sb.append(entry.getKey()).append('=');
+				final String val = entry.getValue();
+				if (val == null) {
+					sb.append(MAP_NULL);
+				} else {
+					sb.append(val);
+				}
+			}
+
+			return sb.toString();
+		}
+
+		return null;
+	}
+	
+	/**
+	 * Converts string back to map.
+	 * 
+	 * @param str string to convert
+	 * @return the map
+	 */
+	public static Map<String, String> mapFromString(String str) {
+		if (str != null) {
+			Map<String, String> map = new LinkedHashMap<String, String>();
+			final String[] lines = str.split(MAP_ENTRY_MARKER);
+			for (String line: lines) {
+				int index = line.indexOf('=');
+				if (index > 0) {
+					String val = line.substring(index + 1);
+					if (MAP_NULL.equals(val)) {
+						val = null;
+					}
+
+					map.put(line.substring(0, index), val);
+				}
+			}
+			
+			return map;
+		}
+		
+		return null;
 	}
 
 	public static String getFirstNonBlank(String... values) {

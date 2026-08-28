@@ -40,13 +40,15 @@ public class SqlCache {
     private String deleteByPkVersionSql;
     private String countSql;
     private String countViewSql;
+    private String existSql;
+    private String existViewSql;
     private String testSql;
 
     public SqlCache(String findSql, String findViewSql, String findByPkSql, final String findByPkVersionSql,
             String listSql, final String listByPkSql, String listByPkVersionSql, final String createSql,
             final String createUnmanagedIdentitySql, String updateSql, final String updateByPkSql,
             String updateByPkVersionSql, final String deleteSql, String deleteByPkSql,
-            final String deleteByPkVersionSql, String countSql, String countViewSql, final String testSql) {
+            final String deleteByPkVersionSql, String countSql, String countViewSql, String existSql,  String existViewSql, final String testSql) {
         this.findSql = findSql;
         this.findViewSql = findViewSql;
         this.findByPkSql = findByPkSql;
@@ -64,6 +66,8 @@ public class SqlCache {
         this.deleteByPkVersionSql = deleteByPkVersionSql;
         this.countSql = countSql;
         this.countViewSql = countViewSql;
+        this.existSql = existSql;
+        this.existViewSql = existViewSql;
         this.testSql = testSql;
     }
 
@@ -135,7 +139,15 @@ public class SqlCache {
         return countViewSql;
     }
 
-    public String getTestSql() {
+    public String getExistSql() {
+		return existSql;
+	}
+
+	public String getExistViewSql() {
+		return existViewSql;
+	}
+
+	public String getTestSql() {
         return testSql;
     }
 

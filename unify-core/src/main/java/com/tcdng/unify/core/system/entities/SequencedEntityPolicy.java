@@ -17,7 +17,6 @@ package com.tcdng.unify.core.system.entities;
 
 import java.util.Date;
 
-import com.tcdng.unify.common.database.Entity;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.annotation.Configurable;
@@ -31,7 +30,7 @@ import com.tcdng.unify.core.system.SequenceNumberService;
  * @since 4.1
  */
 @Component("sequencedentity-policy")
-public class SequencedEntityPolicy extends AbstractEntityPolicy {
+public class SequencedEntityPolicy<T extends AbstractSequencedEntity> extends AbstractEntityPolicy<T> {
 
     @Configurable
     private SequenceNumberService sequenceNumberService;
@@ -45,14 +44,14 @@ public class SequencedEntityPolicy extends AbstractEntityPolicy {
     }
 
     @Override
-	public Object preCreate(Entity record, Date now) throws UnifyException {
-		if (!sequenceNumberService.isOfThisSequence(record.getClass())) {
+	public Object preCreate(T entity, Date now) throws UnifyException {
+		if (!sequenceNumberService.isOfThisSequence(entity.getClass())) {
 			throw new IllegalArgumentException(
-					"Sequence for entity class [" + record.getClass().getName() + "] is unsupported.");
+					"Sequence for entity class [" + entity.getClass().getName() + "] is unsupported.");
 		}
 
-		Long id = sequenceNumberService.getCachedBlockNextSequenceNumber(record.getClass().getName());
-		((AbstractSequencedEntity) record).setId(id);
+		Long id = sequenceNumberService.getCachedBlockNextSequenceNumber(entity.getClass().getName());
+		entity.setId(id);
 		return id;
 	}
 

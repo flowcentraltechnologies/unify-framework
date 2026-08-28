@@ -22,12 +22,12 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import com.tcdng.unify.core.AbstractUnifyComponent;
@@ -62,6 +62,8 @@ import com.tcdng.unify.web.WebApplicationComponents;
 import com.tcdng.unify.web.constant.RequestParameterConstants;
 import com.tcdng.unify.web.constant.ReservedPageControllerConstants;
 import com.tcdng.unify.web.constant.UnifyWebRequestAttributeConstants;
+import com.tcdng.unify.web.util.ContentDisposition;
+import com.tcdng.unify.web.util.HttpUtils;
 
 /**
  * Default application HTTP request handler.
@@ -71,9 +73,6 @@ import com.tcdng.unify.web.constant.UnifyWebRequestAttributeConstants;
  */
 @Component(WebApplicationComponents.APPLICATION_HTTPREQUESTHANDLER)
 public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements HttpRequestHandler {
-
-	private static final String CONTENT_DISPOSITION = "content-disposition";
-	private static final String DISPOSITION_FILENAME = "filename";
 
 	private static final String BODY_TEXT = "__bodyText";
 	private static final String BODY_BYTES = "__bodyBytes";
@@ -100,7 +99,7 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 	private FactoryMap<String, RequestPathParts> requestPathParts;
 
 	private Set<String> restrictedPaths;
-	
+
 	private boolean isTenantPathEnabled;
 
 	private boolean isNoCachingEnabled;
@@ -223,7 +222,7 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 				if (restrictedPaths.contains(requestPathParts.getControllerName())) {
 					throwOperationErrorException(new IllegalArgumentException("Attempt to access restricted page"));
 				}
-				
+
 				controller = controllerFinder.findController(requestPathParts.getControllerPathParts());
 				if (controller.isRefererRequired()
 						&& StringUtils.isBlank(httpRequest.getHeader(HttpRequestHeaderConstants.REFERER))) {
@@ -424,15 +423,9 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 			processParts(result, httpRequest);
 		} else {
 			try {
-				boolean chkMorsic = true;
 				Map<String, String[]> httpRequestParamMap = httpRequest.getParameterMap();
 				for (Map.Entry<String, String[]> entry : httpRequestParamMap.entrySet()) {
 					String key = entry.getKey();
-					if (chkMorsic && RequestParameterConstants.MORSIC.equals(key)) {
-						chkMorsic = false;
-						continue;
-					}
-
 					String[] values = entry.getValue();
 					if (values.length == 1) {
 						if (!values[0].isEmpty()) {
@@ -453,7 +446,7 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 				if (mimeType == null || !mimeType.isTextable()) {
 					result.put(BODY_BYTES, IOUtils.readAll(httpRequest.getInputStream()));
 				} else {
-					result.put(BODY_TEXT, IOUtils.readAll(httpRequest.getReader()));
+					result.put(BODY_TEXT, IOUtils.readAllAsString(httpRequest.getReader()));
 				}
 			} catch (UnifyException e) {
 				throw e;
@@ -470,35 +463,32 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 			Map<String, List<String>> stringMap = new HashMap<String, List<String>>();
 			Map<String, List<UploadedFile>> uploadedFileMap = new HashMap<String, List<UploadedFile>>();
 			char[] buffer = new char[BUFFER_SIZE];
-			boolean chkMorsic = true;
 			for (HttpPart part : httpRequest.getParts()) {
-				String name = part.getName();
-				if (chkMorsic && RequestParameterConstants.MORSIC.equals(name)) {
-					chkMorsic = false;
-					continue;
-				}
-
-				ContentDisposition contentDisposition = getContentDisposition(part);
-				if (contentDisposition.isFileName()) {
-					UploadedFile frmFile = UploadedFile.createUsingTempFile(contentDisposition.getFileName(),
-							contentDisposition.getCreationDate(), contentDisposition.getModificationDate(),
-							part.getInputStream());
+				final String name = part.getName();
+				Optional<ContentDisposition> contentDisposition = HttpUtils.getHttpFileContentDisposition(part);
+				if (contentDisposition.isPresent()) {
+					UploadedFile frmFile = UploadedFile.createUsingTempFileWithChecksum(
+							contentDisposition.get().getFileName(), part.getInputStream());
 					List<UploadedFile> list = uploadedFileMap.get(name);
 					if (list == null) {
 						list = new ArrayList<UploadedFile>();
 						uploadedFileMap.put(name, list);
 					}
+					
 					list.add(frmFile);
 				} else {
 					BufferedReader reader = new BufferedReader(new InputStreamReader(part.getInputStream()));
 					StringBuilder sb = new StringBuilder();
-					for (int length = 0; (length = reader.read(buffer)) > 0;)
+					for (int length = 0; (length = reader.read(buffer)) > 0;) {
 						sb.append(buffer, 0, length);
+					}
+					
 					List<String> list = stringMap.get(name);
 					if (list == null) {
 						list = new ArrayList<String>();
 						stringMap.put(name, list);
 					}
+					
 					list.add(sb.toString());
 				}
 			}
@@ -524,50 +514,6 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 			throw e;
 		} catch (Exception e) {
 			throwOperationErrorException(e);
-		}
-	}
-
-	private ContentDisposition getContentDisposition(HttpPart part) throws UnifyException {
-		String fileName = null;
-		for (String disposition : part.getHeader(CONTENT_DISPOSITION).split(";")) {
-			if (disposition.trim().startsWith(DISPOSITION_FILENAME)) {
-				fileName = disposition.substring(disposition.indexOf('=') + 1).trim().replace("\"", "");
-				break;
-			}
-		}
-
-		final Date now = new Date();
-		return new ContentDisposition(fileName, now, now);
-	}
-
-	private class ContentDisposition {
-
-		private String fileName;
-
-		private Date creationDate;
-
-		private Date modificationDate;
-
-		public ContentDisposition(String fileName, Date creationDate, Date modificationDate) {
-			this.fileName = fileName;
-			this.creationDate = creationDate;
-			this.modificationDate = modificationDate;
-		}
-
-		public String getFileName() {
-			return fileName;
-		}
-
-		public Date getCreationDate() {
-			return creationDate;
-		}
-
-		public Date getModificationDate() {
-			return modificationDate;
-		}
-
-		public boolean isFileName() {
-			return fileName != null;
 		}
 	}
 }

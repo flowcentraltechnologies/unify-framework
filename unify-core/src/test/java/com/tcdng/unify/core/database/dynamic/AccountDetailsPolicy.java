@@ -17,7 +17,6 @@ package com.tcdng.unify.core.database.dynamic;
 
 import java.util.Date;
 
-import com.tcdng.unify.common.database.Entity;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.database.AbstractEntityPolicy;
@@ -29,35 +28,35 @@ import com.tcdng.unify.core.database.AbstractEntityPolicy;
  * @since 4.1
  */
 @Component("accountdetails-policy")
-public class AccountDetailsPolicy extends AbstractEntityPolicy {
+public class AccountDetailsPolicy extends AbstractEntityPolicy<AccountDetails> {
 
     @Override
-    public Object preCreate(Entity record, Date now) throws UnifyException {
-        return ((AccountDetails) record).getId() ;
+    public Object preCreate(AccountDetails record, Date now) throws UnifyException {
+        return record.getId() ;
     }
 
     @Override
-    public void preUpdate(Entity record, Date now) throws UnifyException {
+    public void preUpdate(AccountDetails record, Date now) throws UnifyException {
         
     }
 
     @Override
-    public void preDelete(Entity record, Date now) throws UnifyException {
+    public void preDelete(AccountDetails record, Date now) throws UnifyException {
         
     }
 
     @Override
-    public void onCreateError(Entity record) {
+    public void onCreateError(AccountDetails record) {
         
     }
 
     @Override
-    public void onUpdateError(Entity record) {
+    public void onUpdateError(AccountDetails record) {
         
     }
 
     @Override
-    public void onDeleteError(Entity record) {
+    public void onDeleteError(AccountDetails record) {
         
     }
 }

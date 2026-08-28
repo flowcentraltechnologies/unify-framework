@@ -45,9 +45,6 @@ public class SwappableImageWriter extends AbstractControlWriter {
         writeTagAttributes(writer, swappableImage);
         writer.write(" src=\"");
         writer.writeFileImageContextURL(src[index]);
-        if (swappableImage.isAlwaysFetch()) {
-            writer.writeURLParameter("morsic", String.valueOf(System.currentTimeMillis()));
-        }
         writer.write("\">");
     }
 }

@@ -971,6 +971,15 @@ public interface Database extends UnifyComponent {
      *             if an error occurs
      */
     <T extends Entity> int countAll(Query<T> query) throws UnifyException;
+
+	/**
+	 * Checks is any record that matches criteria exists.
+	 * 
+	 * @param query the query object
+	 * @return true if at least one record that matches criteria exists
+	 * @throws UnifyException if an error occurs
+	 */
+	<T extends Entity> boolean exists(Query<T> query) throws UnifyException;
     
 	/**
 	 * Gets unique constraints for entity.
