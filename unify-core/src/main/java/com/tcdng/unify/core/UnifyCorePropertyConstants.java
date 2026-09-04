@@ -41,8 +41,6 @@ public interface UnifyCorePropertyConstants {
 
     String APPLICATION_INTERFACES = "application.interfaces";
 
-    String APPLICATION_VERSION= "application.version";
-
     String APPLICATION_PROPERTIES= "application.properties";
 
     String APPLICATION_OSMODE = "application.osmode";
@@ -96,4 +94,6 @@ public interface UnifyCorePropertyConstants {
     String APPLICATION_RETRICTED_JAR_MODE= "application.restricted.jar.mode";
 
     String APPLICATION_IGNORE_SSL_HOSTNAMES= "application.ignore.ssl.hostnames";
+
+    String APPLICATION_PLUGINS_VERSION= "application.plugins.version";
 }
