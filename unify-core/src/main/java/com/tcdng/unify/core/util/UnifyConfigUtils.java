@@ -294,7 +294,7 @@ public final class UnifyConfigUtils {
 					if (val != null && val.indexOf(',') >= 0) {
 						List<String> valItems = DataUtils.convert(List.class, String.class, val);
 						uccb.setProperty(property, valItems);
-					} else { 
+					} else {
 						uccb.setProperty(property, val);
 					}
 				}
@@ -361,6 +361,7 @@ public final class UnifyConfigUtils {
 							final String propPrefix = componentName + '.';
 							for (String property : propertyNames) {
 								if (property.startsWith(propPrefix)) {
+									UnifyConfigUtils.log("Overriding component property [{0}]...", property);
 									String val = UnifyConfigUtils.replacePlaceHolderValues(
 											appProperties.getProperty(property), workingFolder);
 									ub.setProperty(property.substring(propPrefix.length()), val);
@@ -384,8 +385,10 @@ public final class UnifyConfigUtils {
 		Properties properties = new Properties();
 		List<String> applicationPropFiles = DataUtils.convert(List.class, String.class, uccb.getProperty(propertyName));
 		if (!DataUtils.isBlank(applicationPropFiles)) {
+			UnifyConfigUtils.log("Additional configuration from properties files, [{0}]...", applicationPropFiles);
 			properties = IOUtils.readPropertiesFromFileResources(applicationPropFiles, workingFolder);
 		}
+
 		return properties;
 	}
 
