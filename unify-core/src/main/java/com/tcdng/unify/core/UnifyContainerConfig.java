@@ -21,11 +21,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.tcdng.unify.common.constants.UnifyStaticSettings;
+import com.tcdng.unify.common.data.UnifyContainerProperty;
 import com.tcdng.unify.core.util.DataUtils;
 import com.tcdng.unify.core.util.StringUtils;
 import com.tcdng.unify.core.util.TypeRepository;
@@ -39,254 +41,274 @@ import com.tcdng.unify.core.util.UnifyConfigUtils;
  */
 public class UnifyContainerConfig {
 
-    private Map<String, UnifyComponentConfig> unifyComponentConfigs;
+	private Map<String, UnifyComponentConfig> unifyComponentConfigs;
 
-    private Map<String, Object> settings;
+	private Map<String, Object> settings;
 
-    private Map<String, String> aliases;
+	private Map<String, String> aliases;
 
-    private List<UnifyStaticSettings> staticSettings;
+	private List<UnifyStaticSettings> staticSettings;
 
-    private String deploymentVersion;
+	private String deploymentVersion;
 
-    private String auxiliaryVersion;
+	private String auxiliaryVersion;
 
-    private String nodeId;
+	private String nodeId;
 
-    private short preferredPort;
+	private short preferredPort;
 
-    private boolean clusterMode;
+	private boolean clusterMode;
 
-    private boolean productionMode;
+	private boolean productionMode;
 
-    private boolean deploymentMode;
+	private boolean deploymentMode;
 
-    private UnifyContainerConfig(Map<String, UnifyComponentConfig> unifyComponentConfigs, Map<String, Object> settings,
-            Map<String, String> aliases, List<UnifyStaticSettings> staticSettings, String deploymentVersion,
-            String auxiliaryVersion, String nodeId, short preferredPort, boolean clusterMode, boolean productionMode, boolean deploymentMode) {
-        this.unifyComponentConfigs = unifyComponentConfigs;
-        this.settings = settings;
-        this.aliases = aliases;
-        this.staticSettings = staticSettings;
-        this.deploymentVersion = deploymentVersion;
-        this.auxiliaryVersion = auxiliaryVersion;
-        this.nodeId = nodeId;
-        this.preferredPort = preferredPort;
-        this.clusterMode = clusterMode;
-        this.productionMode = productionMode;
-        this.deploymentMode = deploymentMode;
-    }
+	private UnifyContainerConfig(Map<String, UnifyComponentConfig> unifyComponentConfigs, Map<String, Object> settings,
+			Map<String, String> aliases, List<UnifyStaticSettings> staticSettings, String deploymentVersion,
+			String auxiliaryVersion, String nodeId, short preferredPort, boolean clusterMode, boolean productionMode,
+			boolean deploymentMode) {
+		this.unifyComponentConfigs = unifyComponentConfigs;
+		this.settings = settings;
+		this.aliases = aliases;
+		this.staticSettings = staticSettings;
+		this.deploymentVersion = deploymentVersion;
+		this.auxiliaryVersion = auxiliaryVersion;
+		this.nodeId = nodeId;
+		this.preferredPort = preferredPort;
+		this.clusterMode = clusterMode;
+		this.productionMode = productionMode;
+		this.deploymentMode = deploymentMode;
+	}
 
-    public String getDeploymentVersion() {
-        return deploymentVersion;
-    }
+	public String getDeploymentVersion() {
+		return deploymentVersion;
+	}
 
-    public String getAuxiliaryVersion() {
-        return auxiliaryVersion;
-    }
+	public String getAuxiliaryVersion() {
+		return auxiliaryVersion;
+	}
 
-    public String getNodeId() {
-        return nodeId;
-    }
+	public String getNodeId() {
+		return nodeId;
+	}
 
-    public short getPreferredPort() {
-        return preferredPort;
-    }
+	public short getPreferredPort() {
+		return preferredPort;
+	}
 
-    public boolean isClusterMode() {
-        return clusterMode;
-    }
+	public boolean isClusterMode() {
+		return clusterMode;
+	}
 
-    public boolean isProductionMode() {
-        return productionMode;
-    }
+	public boolean isProductionMode() {
+		return productionMode;
+	}
 
-    public boolean isDeploymentMode() {
-        return deploymentMode;
-    }
+	public boolean isDeploymentMode() {
+		return deploymentMode;
+	}
 
-    public Set<String> getPropertyNames() {
-        return settings.keySet();
-    }
+	public Set<String> getPropertyNames() {
+		return settings.keySet();
+	}
 
-    public Object getProperty(String name) {
-        return settings.get(name);
-    }
+	public Object getProperty(String name) {
+		return settings.get(name);
+	}
 
-    public Map<String, Object> getProperties() {
-        return settings;
-    }
+	public Map<String, Object> getProperties() {
+		return settings;
+	}
 
-    public Map<String, String> getAliases() {
-        return aliases;
-    }
+	public Map<String, String> getAliases() {
+		return aliases;
+	}
 
-    public List<UnifyStaticSettings> getStaticSettings() {
-        return staticSettings;
-    }
+	public List<UnifyStaticSettings> getStaticSettings() {
+		return staticSettings;
+	}
 
-    public UnifyComponentConfig getComponentConfig(String name) {
-        return unifyComponentConfigs.get(name);
-    }
+	public UnifyComponentConfig getComponentConfig(String name) {
+		return unifyComponentConfigs.get(name);
+	}
 
-    public Collection<UnifyComponentConfig> getComponentConfigs() {
-        return unifyComponentConfigs.values();
-    }
+	public Collection<UnifyComponentConfig> getComponentConfigs() {
+		return unifyComponentConfigs.values();
+	}
 
-    public static Builder newBuilder() {
-        return new Builder();
-    }
+	public static Builder newBuilder() {
+		return new Builder();
+	}
 
-    public static class Builder {
+	public static class Builder {
 
-        private Map<String, UnifyComponentConfig> unifyComponentConfigs;
+		private Map<String, UnifyComponentConfig> unifyComponentConfigs;
 
-        private Map<String, Object> settings;
+		private Map<String, Object> settings;
 
-        private Map<String, String> aliases;
+		private Map<String, String> aliases;
 
-        private List<UnifyStaticSettings> staticSettings;
+		private List<UnifyStaticSettings> staticSettings;
 
-        private String deploymentVersion;
+		private Set<String> importantSet;
 
-        private String auxiliaryVersion;
-        
-        private String nodeId;
+		private String deploymentVersion;
 
-        private short preferredPort;
+		private String auxiliaryVersion;
 
-        private boolean clusterMode;
+		private String nodeId;
 
-        private boolean productionMode;
+		private short preferredPort;
 
-        private boolean deploymentMode;
+		private boolean clusterMode;
 
-        private Builder() {
-            unifyComponentConfigs = new HashMap<String, UnifyComponentConfig>();
-            settings = new HashMap<String, Object>();
-            aliases = new HashMap<String, String>();
-            staticSettings = new ArrayList<UnifyStaticSettings>();
-        }
+		private boolean productionMode;
 
-        public Builder deploymentVersion(String deploymentVersion) {
-            this.deploymentVersion = deploymentVersion;
-            return this;
-        }
+		private boolean deploymentMode;
 
-        public Builder auxiliaryVersion(String auxiliaryVersion) {
-            this.auxiliaryVersion = auxiliaryVersion;
-            return this;
-        }
+		private Builder() {
+			this.unifyComponentConfigs = new HashMap<String, UnifyComponentConfig>();
+			this.settings = new HashMap<String, Object>();
+			this.aliases = new HashMap<String, String>();
+			this.staticSettings = new ArrayList<UnifyStaticSettings>();
+			this.importantSet = new HashSet<String>();
+		}
 
-        public Builder nodeId(String nodeId) {
-            this.nodeId = nodeId;
-            return this;
-        }
+		public Builder deploymentVersion(String deploymentVersion) {
+			this.deploymentVersion = deploymentVersion;
+			return this;
+		}
 
-        public Builder preferredPort(short preferredPort) {
-            this.preferredPort = preferredPort;
-            return this;
-        }
+		public Builder auxiliaryVersion(String auxiliaryVersion) {
+			this.auxiliaryVersion = auxiliaryVersion;
+			return this;
+		}
 
-        public Builder clusterMode(boolean clusterMode) {
-            this.clusterMode = clusterMode;
-            return this;
-        }
+		public Builder nodeId(String nodeId) {
+			this.nodeId = nodeId;
+			return this;
+		}
 
-        public Builder productionMode(boolean productionMode) {
-            this.productionMode = productionMode;
-            return this;
-        }
+		public Builder preferredPort(short preferredPort) {
+			this.preferredPort = preferredPort;
+			return this;
+		}
 
-        public Builder deploymentMode(boolean deploymentMode) {
-            this.deploymentMode = deploymentMode;
-            return this;
-        }
+		public Builder clusterMode(boolean clusterMode) {
+			this.clusterMode = clusterMode;
+			return this;
+		}
 
-        public Builder setProperty(String name, Object value) {
-            settings.put(name, value);
-            return this;
-        }
+		public Builder productionMode(boolean productionMode) {
+			this.productionMode = productionMode;
+			return this;
+		}
 
-        public Object getProperty(String name) {
-            return settings.get(name);
-        }
+		public Builder deploymentMode(boolean deploymentMode) {
+			this.deploymentMode = deploymentMode;
+			return this;
+		}
 
-        public Builder setPropertyIfBlank(String name, Object value) {
-            if (settings.get(name) == null) {
-                settings.put(name, value);
-            }
-            return this;
-        }
+		public Builder setProperty(String name, Object value) {
+			if (!importantSet.contains(name)) {
+				settings.put(name, value);
+			}
 
-        public Builder setAlias(String name, String actualName) {
-            aliases.put(name, actualName);
-            return this;
-        }
+			return this;
+		}
 
-        public Builder addStaticSettings(UnifyStaticSettings unifyStaticSettings) {
-            staticSettings.add(unifyStaticSettings);
-            return this;
-        }
+		public Object getProperty(String name) {
+			return settings.get(name);
+		}
 
-        public Builder addComponentConfig(String name, String description, Class<? extends UnifyComponent> type,
-                boolean singleton) throws UnifyException {
-            addComponentConfig(name, description, type, singleton, new UnifyComponentSettings());
-            return this;
-        }
+		public Builder setPropertyIfBlank(String name, Object value) {
+			if (!importantSet.contains(name)) {
+				if (settings.get(name) == null) {
+					settings.put(name, value);
+				}
+			}
 
-        public Builder addComponentConfig(String name, String description, Class<? extends UnifyComponent> type,
-                boolean singleton, UnifyComponentSettings settings) throws UnifyException {
-            addComponentConfig(name, description, type, singleton, false, settings);
-            return this;
-        }
+			return this;
+		}
 
-        public Builder addComponentConfig(String name, String description, Class<? extends UnifyComponent> type,
-                boolean singleton, boolean overwrite, UnifyComponentSettings settings) throws UnifyException {
-            if (StringUtils.isBlank(name)) {
-                throw new UnifyException(UnifyCoreErrorConstants.COMPONENT_HAS_NO_NAME, type);
-            }
+		public Builder setAlias(String name, String actualName) {
+			aliases.put(name, actualName);
+			return this;
+		}
 
-            UnifyComponentConfig newUnifyComponentConfig = new UnifyComponentConfig(settings, name, description, type,
-                    singleton);
+		public Builder addStaticSettings(UnifyStaticSettings unifyStaticSettings) {
+			staticSettings.add(unifyStaticSettings);
+			
+			for (UnifyContainerProperty property : unifyStaticSettings.getContainerProperties()) {
+				if (property.isImportant()) {
+					importantSet.add(property.getProperty());
+				}
 
-            UnifyComponentConfig existUnifyComponentConfig = unifyComponentConfigs.get(name);
-            if (existUnifyComponentConfig != null && !overwrite) {
-                existUnifyComponentConfig.addConflict(newUnifyComponentConfig);
-                throw new UnifyException(UnifyCoreErrorConstants.COMPONENT_WITH_NAME_EXISTS, name,
-                        unifyComponentConfigs.get(name), type);
-            }
+				settings.put(property.getProperty(),
+						property.getValueList().size() == 1 ? property.getValueList().get(0) : property.getValueList());
+			}
 
-            unifyComponentConfigs.put(name, newUnifyComponentConfig);
-            return this;
-        }
+			return this;
+		}
 
-        public Builder readXml(File xmlFile, String workingFolder) throws UnifyException {
-            UnifyConfigUtils.readConfigFromXml(this, xmlFile, workingFolder);
-            return this;
-        }
+		public Builder addComponentConfig(String name, String description, Class<? extends UnifyComponent> type,
+				boolean singleton) throws UnifyException {
+			addComponentConfig(name, description, type, singleton, new UnifyComponentSettings());
+			return this;
+		}
 
-        public Builder readXml(InputStream xmlInputStream, String workingFolder) throws UnifyException {
-            UnifyConfigUtils.readConfigFromXml(this, xmlInputStream, workingFolder);
-            return this;
-        }
+		public Builder addComponentConfig(String name, String description, Class<? extends UnifyComponent> type,
+				boolean singleton, UnifyComponentSettings settings) throws UnifyException {
+			addComponentConfig(name, description, type, singleton, false, settings);
+			return this;
+		}
 
-        public Builder readXml(String xmlConfig, String workingFolder) throws UnifyException {
-            UnifyConfigUtils.readConfigFromXml(this, xmlConfig, workingFolder);
-            return this;
-        }
+		public Builder addComponentConfig(String name, String description, Class<? extends UnifyComponent> type,
+				boolean singleton, boolean overwrite, UnifyComponentSettings settings) throws UnifyException {
+			if (StringUtils.isBlank(name)) {
+				throw new UnifyException(UnifyCoreErrorConstants.COMPONENT_HAS_NO_NAME, type);
+			}
 
-        public Builder scan(TypeRepository typeRepository) throws UnifyException {
-            UnifyConfigUtils.readConfigFromTypeRepository(this, typeRepository);
-            return this;
-        }
+			UnifyComponentConfig newUnifyComponentConfig = new UnifyComponentConfig(settings, name, description, type,
+					singleton);
 
-        public UnifyContainerConfig build() throws UnifyException {
-            DataUtils.sortAscending(staticSettings, UnifyStaticSettings.class, "level");
-            return new UnifyContainerConfig(Collections.unmodifiableMap(unifyComponentConfigs),
-                    Collections.unmodifiableMap(settings), Collections.unmodifiableMap(aliases),
-                    Collections.unmodifiableList(staticSettings), deploymentVersion, auxiliaryVersion, nodeId,
-                    preferredPort, clusterMode, productionMode, deploymentMode);
-        }
-    }
+			UnifyComponentConfig existUnifyComponentConfig = unifyComponentConfigs.get(name);
+			if (existUnifyComponentConfig != null && !overwrite) {
+				existUnifyComponentConfig.addConflict(newUnifyComponentConfig);
+				throw new UnifyException(UnifyCoreErrorConstants.COMPONENT_WITH_NAME_EXISTS, name,
+						unifyComponentConfigs.get(name), type);
+			}
+
+			unifyComponentConfigs.put(name, newUnifyComponentConfig);
+			return this;
+		}
+
+		public Builder readXml(File xmlFile, String workingFolder) throws UnifyException {
+			UnifyConfigUtils.readConfigFromXml(this, xmlFile, workingFolder);
+			return this;
+		}
+
+		public Builder readXml(InputStream xmlInputStream, String workingFolder) throws UnifyException {
+			UnifyConfigUtils.readConfigFromXml(this, xmlInputStream, workingFolder);
+			return this;
+		}
+
+		public Builder readXml(String xmlConfig, String workingFolder) throws UnifyException {
+			UnifyConfigUtils.readConfigFromXml(this, xmlConfig, workingFolder);
+			return this;
+		}
+
+		public Builder scan(TypeRepository typeRepository) throws UnifyException {
+			UnifyConfigUtils.readConfigFromTypeRepository(this, typeRepository);
+			return this;
+		}
+
+		public UnifyContainerConfig build() throws UnifyException {
+			DataUtils.sortAscending(staticSettings, UnifyStaticSettings.class, "level");
+			return new UnifyContainerConfig(Collections.unmodifiableMap(unifyComponentConfigs),
+					Collections.unmodifiableMap(settings), Collections.unmodifiableMap(aliases),
+					Collections.unmodifiableList(staticSettings), deploymentVersion, auxiliaryVersion, nodeId,
+					preferredPort, clusterMode, productionMode, deploymentMode);
+		}
+	}
 }
