@@ -291,6 +291,10 @@ public class UnifyContainerConfig {
 			return this;
 		}
 
+		public boolean isComponentConfig(String name) {
+			return unifyComponentConfigs.containsKey(name);
+		}
+		
 		public Builder readXml(File xmlFile, String workingFolder) throws UnifyException {
 			UnifyConfigUtils.readConfigFromXml(this, xmlFile, workingFolder);
 			return this;

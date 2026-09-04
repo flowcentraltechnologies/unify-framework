@@ -61,6 +61,8 @@ public interface UnifyCorePropertyConstants {
 
     String APPLICATION_SQL_DEBUGGING = "application.sql.debugging";
 
+    String APPLICATION_DATASOURCES = "application.datasources";
+
     String APPLICATION_LOGGER_PATTERN_SETTING = "application.logger.pattern";
 
     String APPLICATION_LOG_TO_CONSOLE = "application.logger.toconsole";

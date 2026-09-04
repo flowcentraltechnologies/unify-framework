@@ -39,6 +39,7 @@ import com.tcdng.unify.core.annotation.Configurable;
 import com.tcdng.unify.core.annotation.Configuration;
 import com.tcdng.unify.core.annotation.Singleton;
 import com.tcdng.unify.core.application.ApplicationAuxiliaryVersion;
+import com.tcdng.unify.core.database.sql.SqlDataSourceImpl;
 import com.tcdng.unify.core.util.xml.AliasConfig;
 import com.tcdng.unify.core.util.xml.AliasesConfig;
 import com.tcdng.unify.core.util.xml.ComponentConfig;
@@ -296,6 +297,19 @@ public final class UnifyConfigUtils {
 						uccb.setProperty(property, valItems);
 					} else {
 						uccb.setProperty(property, val);
+					}
+				}
+
+				final List<String> additionalDataSources = StringUtils.charSplitToList(
+						(String) uccb.getProperty(UnifyCorePropertyConstants.APPLICATION_DATASOURCES), ',');
+				if (!DataUtils.isBlank(additionalDataSources)) {
+					for (String datasourceName : additionalDataSources) {
+						if (uccb.isComponentConfig(datasourceName)) {
+							UnifyConfigUtils.log("Datasource component [{0}] already configured...", datasourceName);
+						} else {
+							uccb.addComponentConfig(datasourceName, datasourceName, SqlDataSourceImpl.class, true,
+									UnifyConfigUtils.readComponentSettings(SqlDataSourceImpl.class));
+						}
 					}
 				}
 
