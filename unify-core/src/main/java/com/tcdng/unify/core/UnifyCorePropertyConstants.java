@@ -41,6 +41,8 @@ public interface UnifyCorePropertyConstants {
 
     String APPLICATION_INTERFACES = "application.interfaces";
 
+    String APPLICATION_VERSION= "application.version";
+
     String APPLICATION_PROPERTIES= "application.properties";
 
     String APPLICATION_OSMODE = "application.osmode";

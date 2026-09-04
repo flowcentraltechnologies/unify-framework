@@ -212,6 +212,10 @@ public class UnifyContainerConfig {
 		public Builder setProperty(String name, Object value) {
 			if (!importantSet.contains(name)) {
 				settings.put(name, value);
+
+				if (value != null && UnifyCorePropertyConstants.APPLICATION_VERSION.equals(name)) {
+					auxiliaryVersion = String.valueOf(value);
+				}
 			}
 
 			return this;
@@ -225,6 +229,10 @@ public class UnifyContainerConfig {
 			if (!importantSet.contains(name)) {
 				if (settings.get(name) == null) {
 					settings.put(name, value);
+
+					if (value != null && UnifyCorePropertyConstants.APPLICATION_VERSION.equals(name)) {
+						auxiliaryVersion = String.valueOf(value);
+					}
 				}
 			}
 

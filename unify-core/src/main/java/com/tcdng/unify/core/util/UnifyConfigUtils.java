@@ -385,7 +385,7 @@ public final class UnifyConfigUtils {
 		Properties properties = new Properties();
 		List<String> applicationPropFiles = DataUtils.convert(List.class, String.class, uccb.getProperty(propertyName));
 		if (!DataUtils.isBlank(applicationPropFiles)) {
-			UnifyConfigUtils.log("Additional configuration from properties files, [{0}]...", applicationPropFiles);
+			UnifyConfigUtils.log("Getting additional configuration from property files, {0}...", applicationPropFiles);
 			properties = IOUtils.readPropertiesFromFileResources(applicationPropFiles, workingFolder);
 		}
 
