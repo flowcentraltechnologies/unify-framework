@@ -258,8 +258,8 @@ public final class DynamicEntityUtils {
 				if (additional) {
 					esb.append("@Table(name = \"").append(dynamicEntityInfo.getTableName()).append("\",\n");
 					boolean appendSym = DynamicEntityUtils.generateOverrides(esb, overrides);
-					DynamicEntityUtils.generateIndexes(esb, dynamicEntityInfo.getIndexes(), appendSym);
-					DynamicEntityUtils.generateUniqueConstraints(esb, dynamicEntityInfo.getUniqueConstraints(),
+					appendSym |= DynamicEntityUtils.generateIndexes(esb, dynamicEntityInfo.getIndexes(), appendSym);
+					appendSym |= DynamicEntityUtils.generateUniqueConstraints(esb, dynamicEntityInfo.getUniqueConstraints(),
 							appendSym);
 					esb.append(")\n");
 				} else {
