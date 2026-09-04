@@ -104,6 +104,11 @@ public class OracleDialect extends AbstractSqlDataSourceDialect {
 	}
 
 	@Override
+	public String getDefaultDriver() {
+		return "oracle.jdbc.OracleDriver";
+	}
+
+	@Override
 	public String getCurrentTimestampSQL() {
 		return "SELECT CURRENT_TIMESTAMP FROM DUAL";
 	}

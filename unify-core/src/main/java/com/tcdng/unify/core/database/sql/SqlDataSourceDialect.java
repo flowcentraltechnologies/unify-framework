@@ -78,6 +78,12 @@ public interface SqlDataSourceDialect extends DataSourceDialect, SqlGenerator {
 	 * @return the default schema
 	 */
 	String getDefaultSchema();
+    
+    /**
+     * Gets the dialect's default driver.
+     * @return the full driver name
+     */
+    String getDefaultDriver();
 
 	/**
 	 * Checks if column default value matches native default.

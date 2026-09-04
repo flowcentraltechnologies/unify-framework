@@ -86,6 +86,11 @@ public class MsSqlDialect extends AbstractSqlDataSourceDialect {
 	}
 
 	@Override
+	public String getDefaultDriver() {
+		return "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+	}
+
+	@Override
 	public String generateTestSql() throws UnifyException {
 		return "SELECT CURRENT_TIMESTAMP";
 	}

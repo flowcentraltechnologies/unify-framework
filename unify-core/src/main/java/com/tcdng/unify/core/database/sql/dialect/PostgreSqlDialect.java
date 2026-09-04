@@ -101,6 +101,11 @@ public class PostgreSqlDialect extends AbstractSqlDataSourceDialect {
 	}
 
 	@Override
+	public String getDefaultDriver() {
+		return "org.postgresql.Driver";
+	}
+
+	@Override
 	public String getCurrentTimestampSQL() {
 		return "SELECT CURRENT_TIMESTAMP";
 	}

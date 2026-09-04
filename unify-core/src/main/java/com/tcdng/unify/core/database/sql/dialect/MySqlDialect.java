@@ -80,6 +80,11 @@ public class MySqlDialect extends AbstractSqlDataSourceDialect {
 	}
 
 	@Override
+	public String getDefaultDriver() {
+		return "com.mysql.jdbc.Driver";
+	}
+
+	@Override
 	public String getCurrentTimestampSQL() {
 		return "SELECT CURRENT_TIMESTAMP";
 	}
