@@ -18,6 +18,7 @@ package com.tcdng.unify.core.util;
 import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -243,6 +244,15 @@ public final class UnifyConfigUtils {
 			return AnnotationUtils.getAnnotationString(ca.description());
 		}
 		return null;
+	}
+
+	public static void log(String message, Object... params) {
+		System.out.println(MessageFormat.format(message, params));
+	}
+
+	public static void log(String message, Exception e) {
+		System.out.println(message);
+		e.printStackTrace();
 	}
 
 	@SuppressWarnings("unchecked")

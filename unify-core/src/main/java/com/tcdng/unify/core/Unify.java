@@ -18,7 +18,6 @@ package com.tcdng.unify.core;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -43,7 +42,7 @@ public class Unify {
 
 	public static void main(String[] args) {
 		if (args.length == 0) {
-			log("Operation argument is required");
+			UnifyConfigUtils.log("Operation argument is required");
 			System.exit(1);
 		}
 
@@ -88,7 +87,7 @@ public class Unify {
 		} else if ("help".equalsIgnoreCase(operation)) {
 			Unify.doHelp();
 		} else {
-			log("Unknown operation - [{0}]", operation);
+			UnifyConfigUtils.log("Unknown operation - [{0}]", operation);
 			System.exit(1);
 		}
 	}
@@ -151,16 +150,18 @@ public class Unify {
 			workingFolder = System.getProperty("user.dir");
 		}
 
+		UnifyConfigUtils.log("Resolved working folder [{0}]...", workingFolder);
+		
 		UnifyContainerEnvironment uce = null;
 		UnifyContainerConfig.Builder uccb = UnifyContainerConfig.newBuilder();
 		try {
-			log("Scanning classpath type repository...");
+			UnifyConfigUtils.log("Scanning classpath type repository...");
 			TypeRepository tr = TypeUtils.getTypeRepositoryFromClasspath(baseUrls);
 			uce = new UnifyContainerEnvironment(tr, workingFolder);
 			UnifyConfigUtils.readConfigFromTypeRepository(uccb, tr);
 			uccb.deploymentMode(deploymentMode);
 		} catch (Exception e) {
-			log("Failed scanning classpath type repository.", e);
+			UnifyConfigUtils.log("Failed scanning classpath type repository.", e);
 			System.exit(1);
 		}
 
@@ -171,16 +172,16 @@ public class Unify {
 
 		final String environment = System.getProperty("unify.environment");
 		if (!StringUtils.isBlank(environment)) {
-			log("Environment specification detected...");
-			log("Resolving container configuration file for environment [{0}]...", environment);
+			UnifyConfigUtils.log("Environment specification detected...");
+			UnifyConfigUtils.log("Resolving container configuration file for environment [{0}]...", environment);
 			configFile = UnifyConfigUtils.resolveConfigFileToEnvironment(configFile, environment);
 		}
 
 		try {
-			log("Reading container configuration file [{0}]...", configFile);
+			UnifyConfigUtils.log("Reading container configuration file [{0}]...", configFile);
 			xmlInputStream = IOUtils.openFileResourceInputStream(configFile, workingFolder);
 		} catch (Exception e) {
-			log("Unable to open configuration file - " + IOUtils.buildFilename(workingFolder, configFile), e);
+			UnifyConfigUtils.log("Unable to open configuration file - " + IOUtils.buildFilename(workingFolder, configFile), e);
 			System.exit(1);
 		}
 
@@ -188,7 +189,7 @@ public class Unify {
 			UnifyConfigUtils.readConfigFromXml(uccb, xmlInputStream, workingFolder);
 		} catch (UnifyException e) {
 			IOUtils.close(xmlInputStream);
-			log("Failed reading configuration file - " + IOUtils.buildFilename(workingFolder, configFile), e);
+			UnifyConfigUtils.log("Failed reading configuration file - " + IOUtils.buildFilename(workingFolder, configFile), e);
 			System.exit(1);
 		} finally {
 			IOUtils.close(xmlInputStream);
@@ -202,7 +203,7 @@ public class Unify {
 			UnifyContainerConfig ucc = uccb.build();
 			Unify.startup(uce, ucc);
 		} catch (UnifyException e) {
-			log("Error initializing Unify container.", e);
+			UnifyConfigUtils.log("Error initializing Unify container.", e);
 			System.exit(1);
 		}
 	}
@@ -240,7 +241,7 @@ public class Unify {
 				}
 			}
 		} catch (IOException e) {
-			log("Error resolving packaged JARs.", e);
+			UnifyConfigUtils.log("Error resolving packaged JARs.", e);
 		}
 
 		return baseUrls.isEmpty() ? null : baseUrls.toArray(new URL[baseUrls.size()]);
@@ -261,18 +262,9 @@ public class Unify {
 				}
 			}
 		} catch (IOException e) {
-			log("Error resolving packaged JARs.", e);
+			UnifyConfigUtils.log("Error resolving packaged JARs.", e);
 		}
 
 		return baseUrls.isEmpty() ? null : baseUrls.toArray(new URL[baseUrls.size()]);
-	}
-
-	private static void log(String message, Object... params) {
-		System.out.println(MessageFormat.format(message, params));
-	}
-
-	private static void log(String message, Exception e) {
-		System.out.println(message);
-		e.printStackTrace();
 	}
 }
