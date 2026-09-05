@@ -27,7 +27,6 @@ import com.tcdng.unify.core.UnifyComponentConfig;
 import com.tcdng.unify.core.UnifyCoreErrorConstants;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
-import com.tcdng.unify.core.annotation.Configurable;
 import com.tcdng.unify.core.util.DataUtils;
 import com.tcdng.unify.core.util.IOUtils;
 import com.tcdng.unify.core.util.RandomUtils;
@@ -44,7 +43,6 @@ public class ControllerFinderImpl extends AbstractUnifyComponent implements Cont
 
 	private final Map<String, String> controllerByAliases;
 
-	@Configurable
 	private List<RequestResourcePermissions> permissions;
 	
 	public ControllerFinderImpl() {
@@ -149,7 +147,7 @@ public class ControllerFinderImpl extends AbstractUnifyComponent implements Cont
 
 	@Override
 	protected void onInitialize() throws UnifyException {
-
+		permissions = getComponents(RequestResourcePermissions.class);
 	}
 
 	@Override
