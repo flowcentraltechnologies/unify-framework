@@ -17,6 +17,7 @@
 package com.tcdng.unify.web;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,6 +27,8 @@ import com.tcdng.unify.core.UnifyComponentConfig;
 import com.tcdng.unify.core.UnifyCoreErrorConstants;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
+import com.tcdng.unify.core.annotation.Configurable;
+import com.tcdng.unify.core.util.DataUtils;
 import com.tcdng.unify.core.util.IOUtils;
 import com.tcdng.unify.core.util.RandomUtils;
 import com.tcdng.unify.core.util.StringUtils;
@@ -41,6 +44,9 @@ public class ControllerFinderImpl extends AbstractUnifyComponent implements Cont
 
 	private final Map<String, String> controllerByAliases;
 
+	@Configurable
+	private List<RequestResourcePermissions> permissions;
+	
 	public ControllerFinderImpl() {
 		this.controllerByAliases = new ConcurrentHashMap<String, String>();
 	}
@@ -103,14 +109,15 @@ public class ControllerFinderImpl extends AbstractUnifyComponent implements Cont
 			if (unifyComponentConfig == null) {
 				// May be a class-loader resource or a real path request
 				final String cpath = path.startsWith("/") ? path.substring(1) : path;
-				if (IOUtils.isClassLoaderResource(cpath)) {
+				if (isClasspathResourcePermitted(cpath) && IOUtils.isClassLoaderResource(cpath)) {
 					ResourceController classLoaderController = (ResourceController) getComponent(
 							WebApplicationComponents.APPLICATION_CLASSLOADERRESOURCECONTROLLER);
 					classLoaderController.setResourceName(cpath);
 					return classLoaderController;
 				}
 
-				if (IOUtils.isRealPathResource(getUnifyComponentContext().getWorkingPath(), path)) {
+				if (isWorkingPathPermitted(path)
+						&& IOUtils.isRealPathResource(getUnifyComponentContext().getWorkingPath(), path)) {
 					ResourceController realPathController = (ResourceController) getComponent(
 							WebApplicationComponents.APPLICATION_REALPATHRESOURCECONTROLLER);
 					realPathController.setResourceName(path);
@@ -126,13 +133,15 @@ public class ControllerFinderImpl extends AbstractUnifyComponent implements Cont
 			if (controller.isPageController()) {
 				controllerPathParts.setMultiplePagesPerSession(controller.isMultiplePagesPerSession());
 				if (StringUtils.isBlank(getRequestClientPageId())) {
-					setRequestClientPageId(RandomUtils.generateRandomAlphanumeric(UnifyWebRequestAttributeConstants.PID_SIZE));
+					setRequestClientPageId(
+							RandomUtils.generateRandomAlphanumeric(UnifyWebRequestAttributeConstants.PID_SIZE));
 				}
 			}
 
 			controller.ensureContextResources(controllerPathParts);
 			return controller;
 		} catch (UnifyException e) {
+			e.setLogStackTrace(false);
 			logError("Error finding controller for path [{0}]...", controllerPathParts.getControllerPath());
 			throw e;
 		}
@@ -151,5 +160,29 @@ public class ControllerFinderImpl extends AbstractUnifyComponent implements Cont
 	private String getActualControllerName(String controllerName) {
 		String _actualControllerName = controllerByAliases.get(controllerName);
 		return _actualControllerName == null ? controllerName : _actualControllerName;
+	}
+	
+	private boolean isClasspathResourcePermitted(String resource) throws UnifyException {
+		if (!DataUtils.isBlank(permissions)) {
+			for(RequestResourcePermissions _permissions: permissions) {
+				if (_permissions.isClasspathResourcePermitted(resource)) {
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+
+	private boolean isWorkingPathPermitted(String path) throws UnifyException {
+		if (!DataUtils.isBlank(permissions)) {
+			for(RequestResourcePermissions _permissions: permissions) {
+				if (_permissions.isWorkingPathPermitted(path)) {
+					return true;
+				}
+			}
+		}
+		
+		return false;
 	}
 }
