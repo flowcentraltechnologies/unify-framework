@@ -32,16 +32,19 @@ public class UnifyException extends Exception {
     public UnifyException(Throwable cause, String errorCode, Object... errorParams) {
         super(UnifyException.buildMessage(errorCode, errorParams), cause);
         this.unifyError = new UnifyError(errorCode, errorParams);
+        this.logStackTrace = true;
     }
 
     public UnifyException(String errorCode, Object... errorParams) {
         super(UnifyException.buildMessage(errorCode, errorParams));
         this.unifyError = new UnifyError(errorCode, errorParams);
+        this.logStackTrace = true;
     }
 
     public UnifyException(UnifyError unifyError) {
         super(UnifyException.buildMessage(unifyError.getErrorCode(), unifyError.getErrorParams()));
         this.unifyError = unifyError;
+        this.logStackTrace = true;
     }
 
     public UnifyError getUnifyError() {
