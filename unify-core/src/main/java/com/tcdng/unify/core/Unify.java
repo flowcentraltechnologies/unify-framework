@@ -15,10 +15,14 @@
  */
 package com.tcdng.unify.core;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.LogManager;
@@ -39,7 +43,7 @@ import com.tcdng.unify.core.util.UnifyConfigUtils;
 public class Unify {
 
 	private static UnifyContainer uc;
-
+	
 	public static void main(String[] args) {
 		if (args.length == 0) {
 			UnifyConfigUtils.log("Operation argument is required");
@@ -122,6 +126,7 @@ public class Unify {
 		if (!uc.getAccessKey().equals(accessKey)) {
 			throw new UnifyException(UnifyCoreErrorConstants.INVALID_CONTAINER_RUNTIME_ACCESSKEY);
 		}
+
 		uc.shutdown();
 		uc = null;
 	}
@@ -151,6 +156,23 @@ public class Unify {
 		}
 
 		UnifyConfigUtils.log("Resolved working folder [{0}]...", workingFolder);
+		
+		final Path workRoot = Paths.get(workingFolder);
+		final Path pluginJarPath = workRoot.resolve("plugins/plugin.jar");
+		final File pluginJarFile = pluginJarPath.toFile();
+		if (pluginJarFile.exists()) {
+			UnifyConfigUtils.log("Adding plugin to scan path [{0}]...", pluginJarFile.getAbsolutePath());
+			try {
+				// Add plugin list to scan
+				URL jarUrl = pluginJarFile.toURI().toURL();
+				List<URL> list = new ArrayList<URL>(Arrays.asList(baseUrls));
+				list.add(jarUrl);
+				baseUrls = list.toArray(new URL[baseUrls.length + 1]);
+			} catch (Exception e) {
+				UnifyConfigUtils.log("Failed to load plugins.", e);
+				System.exit(1);
+			}
+		}
 		
 		UnifyContainerEnvironment uce = null;
 		UnifyContainerConfig.Builder uccb = UnifyContainerConfig.newBuilder();
