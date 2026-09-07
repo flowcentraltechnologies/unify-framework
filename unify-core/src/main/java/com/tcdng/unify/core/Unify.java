@@ -43,7 +43,7 @@ import com.tcdng.unify.core.util.UnifyConfigUtils;
 public class Unify {
 
 	private static UnifyContainer uc;
-	
+
 	public static void main(String[] args) {
 		if (args.length == 0) {
 			UnifyConfigUtils.log("Operation argument is required");
@@ -156,24 +156,30 @@ public class Unify {
 		}
 
 		UnifyConfigUtils.log("Resolved working folder [{0}]...", workingFolder);
-		
+
 		final Path workRoot = Paths.get(workingFolder);
-		final Path pluginJarPath = workRoot.resolve("plugins/plugin.jar");
-		final File pluginJarFile = pluginJarPath.toFile();
-		if (pluginJarFile.exists()) {
-			UnifyConfigUtils.log("Adding plugin to scan path [{0}]...", pluginJarFile.getAbsolutePath());
-			try {
-				// Add plugin list to scan
-				URL jarUrl = pluginJarFile.toURI().toURL();
-				List<URL> list = new ArrayList<URL>(Arrays.asList(baseUrls));
-				list.add(jarUrl);
+		final Path pluginsPath = workRoot.resolve("plugins");
+		final File pluginsDir = pluginsPath.toFile();
+		if (pluginsDir.exists() && pluginsDir.isDirectory()) {
+			File[] files = pluginsDir.listFiles();
+			if (files != null) {
+				List<URL> list = baseUrls == null ? new ArrayList<URL>() : new ArrayList<URL>(Arrays.asList(baseUrls));
+				for (File file : files) {
+					if (file.isFile() && file.getName().toLowerCase().endsWith(".jar")) {
+						UnifyConfigUtils.log("Adding plugin [{0}] to scan path...", file.getAbsolutePath());
+						try {
+							list.add(file.toURI().toURL());
+						} catch (Exception e) {
+							UnifyConfigUtils.log("Failed to add plugins to scan path.", e);
+							System.exit(1);
+						}
+					}
+				}
+
 				baseUrls = list.toArray(new URL[baseUrls.length + 1]);
-			} catch (Exception e) {
-				UnifyConfigUtils.log("Failed to load plugins.", e);
-				System.exit(1);
 			}
 		}
-		
+
 		UnifyContainerEnvironment uce = null;
 		UnifyContainerConfig.Builder uccb = UnifyContainerConfig.newBuilder();
 		try {
@@ -203,7 +209,8 @@ public class Unify {
 			UnifyConfigUtils.log("Reading container configuration file [{0}]...", configFile);
 			xmlInputStream = IOUtils.openFileResourceInputStream(configFile, workingFolder);
 		} catch (Exception e) {
-			UnifyConfigUtils.log("Unable to open configuration file - " + IOUtils.buildFilename(workingFolder, configFile), e);
+			UnifyConfigUtils
+					.log("Unable to open configuration file - " + IOUtils.buildFilename(workingFolder, configFile), e);
 			System.exit(1);
 		}
 
@@ -211,7 +218,8 @@ public class Unify {
 			UnifyConfigUtils.readConfigFromXml(uccb, xmlInputStream, workingFolder);
 		} catch (UnifyException e) {
 			IOUtils.close(xmlInputStream);
-			UnifyConfigUtils.log("Failed reading configuration file - " + IOUtils.buildFilename(workingFolder, configFile), e);
+			UnifyConfigUtils
+					.log("Failed reading configuration file - " + IOUtils.buildFilename(workingFolder, configFile), e);
 			System.exit(1);
 		} finally {
 			IOUtils.close(xmlInputStream);
