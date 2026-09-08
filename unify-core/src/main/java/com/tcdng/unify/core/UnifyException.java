@@ -27,19 +27,24 @@ public class UnifyException extends Exception {
 
     private UnifyError unifyError;
 
+    private boolean logStackTrace;
+    
     public UnifyException(Throwable cause, String errorCode, Object... errorParams) {
         super(UnifyException.buildMessage(errorCode, errorParams), cause);
         this.unifyError = new UnifyError(errorCode, errorParams);
+        this.logStackTrace = true;
     }
 
     public UnifyException(String errorCode, Object... errorParams) {
         super(UnifyException.buildMessage(errorCode, errorParams));
         this.unifyError = new UnifyError(errorCode, errorParams);
+        this.logStackTrace = true;
     }
 
     public UnifyException(UnifyError unifyError) {
         super(UnifyException.buildMessage(unifyError.getErrorCode(), unifyError.getErrorParams()));
         this.unifyError = unifyError;
+        this.logStackTrace = true;
     }
 
     public UnifyError getUnifyError() {
@@ -54,7 +59,15 @@ public class UnifyException extends Exception {
         return this.unifyError.getErrorParams();
     }
 
-    private static String buildMessage(String errorCode, Object... errorParams) {
+    public boolean isLogStackTrace() {
+		return logStackTrace;
+	}
+
+	public void setLogStackTrace(boolean logStackTrace) {
+		this.logStackTrace = logStackTrace;
+	}
+
+	private static String buildMessage(String errorCode, Object... errorParams) {
         StringBuilder sb = new StringBuilder();
         sb.append("Error Code: ").append(errorCode);
         sb.append(", Parameter(s): [");

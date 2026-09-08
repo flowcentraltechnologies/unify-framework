@@ -46,7 +46,7 @@ public class DynamicSqlDatabaseStaticEntityTest extends AbstractUnifyComponentTe
 
     private DatabaseTransactionManager tm;
     
-    @Test(expected = NullPointerException.class)
+    @Test(expected = UnifyException.class)
     public void testGetDynamicSqlDatabaseNoDatasourceSetting() throws Exception {
         DynamicSqlDatabase db = (DynamicSqlDatabase) getComponent(ApplicationComponents.APPLICATION_DYNAMICSQLDATABASE);
         assertNotNull(db);

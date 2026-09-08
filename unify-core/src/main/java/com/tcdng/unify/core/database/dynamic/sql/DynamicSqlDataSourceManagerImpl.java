@@ -230,7 +230,7 @@ public class DynamicSqlDataSourceManagerImpl extends AbstractSqlDataSourceManage
 	}
 
 	private SqlDataSource getDynamicSqlDataSource(String dataSourceConfigName) throws UnifyException {
-		final List<String> configurations = StringUtils.charToListSplit(dataSourceConfigName, ',');
+		final List<String> configurations = StringUtils.charSplitToList(dataSourceConfigName, ',');
 		for (String configName : configurations) {
 			if (isComponent(configName)) {
 				return getComponent(SqlDataSource.class, configName);

@@ -2022,9 +2022,12 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 				Logger logger = unifyComponentContext.getLogger();
 				boolean enabled = logger.isEnabled(loggingLevel);
 				if (enabled || taskMonitor != null) {
-					String msg = getExceptionMessage(LocaleType.APPLICATION, exception);
+					final String msg = getExceptionMessage(LocaleType.APPLICATION, exception);
+					final boolean trace = exception instanceof UnifyException
+							? ((UnifyException) exception).isLogStackTrace()
+							: true;
 					if (enabled) {
-						logger.log(loggingLevel, msg, loggingLevel.isLogStackTrace() ? exception : null);
+						logger.log(loggingLevel, msg, trace && loggingLevel.isLogStackTrace() ? exception : null);
 					}
 
 					if (taskMonitor != null) {

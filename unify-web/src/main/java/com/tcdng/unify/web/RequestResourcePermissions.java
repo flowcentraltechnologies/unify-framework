@@ -1,0 +1,48 @@
+/*
+ * Copyright (c) 2018-2026 The Code Department.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
+package com.tcdng.unify.web;
+
+import com.tcdng.unify.core.UnifyComponent;
+import com.tcdng.unify.core.UnifyException;
+
+/**
+ * Request resource permissions component.
+ * 
+ * @author The Code Department
+ * @since 4.1
+ */
+public interface RequestResourcePermissions extends UnifyComponent {
+
+	/**
+	 * Checks if access to classpath resource is permitted.
+	 * 
+	 * @param resource the resource
+	 * @return true if permitted otherwise false
+	 * @throws UnifyException if an error occurs
+	 */
+	boolean isClasspathResourcePermitted(String resource) throws UnifyException;
+
+	/**
+	 * Checks if access to working path is permitted.
+	 * 
+	 * @param path the path
+	 * @return true if permitted otherwise false
+	 * @throws UnifyException if an error occurs
+	 */
+	boolean isWorkingPathPermitted(String path) throws UnifyException;
+
+}

@@ -61,6 +61,8 @@ public interface UnifyCorePropertyConstants {
 
     String APPLICATION_SQL_DEBUGGING = "application.sql.debugging";
 
+    String APPLICATION_DATASOURCES = "application.datasources";
+
     String APPLICATION_LOGGER_PATTERN_SETTING = "application.logger.pattern";
 
     String APPLICATION_LOG_TO_CONSOLE = "application.logger.toconsole";
@@ -94,4 +96,6 @@ public interface UnifyCorePropertyConstants {
     String APPLICATION_RETRICTED_JAR_MODE= "application.restricted.jar.mode";
 
     String APPLICATION_IGNORE_SSL_HOSTNAMES= "application.ignore.ssl.hostnames";
+
+    String APPLICATION_PLUGINS_VERSION= "application.plugins.version";
 }

@@ -97,6 +97,11 @@ public class HSqlDbDialect extends AbstractSqlDataSourceDialect {
 	}
 
 	@Override
+	public String getDefaultDriver() {
+		return "org.hsqldb.jdbc.JDBCDriver";
+	}
+
+	@Override
 	public String getCurrentTimestampSQL() {
 		return "VALUES (CURRENT_TIMESTAMP)";
 	}

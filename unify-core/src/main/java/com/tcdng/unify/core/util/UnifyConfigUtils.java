@@ -18,6 +18,7 @@ package com.tcdng.unify.core.util;
 import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -38,6 +39,7 @@ import com.tcdng.unify.core.annotation.Configurable;
 import com.tcdng.unify.core.annotation.Configuration;
 import com.tcdng.unify.core.annotation.Singleton;
 import com.tcdng.unify.core.application.ApplicationAuxiliaryVersion;
+import com.tcdng.unify.core.database.sql.SqlDataSourceImpl;
 import com.tcdng.unify.core.util.xml.AliasConfig;
 import com.tcdng.unify.core.util.xml.AliasesConfig;
 import com.tcdng.unify.core.util.xml.ComponentConfig;
@@ -245,6 +247,15 @@ public final class UnifyConfigUtils {
 		return null;
 	}
 
+	public static void log(String message, Object... params) {
+		System.out.println(MessageFormat.format(message, params));
+	}
+
+	public static void log(String message, Exception e) {
+		System.out.println(message);
+		e.printStackTrace();
+	}
+
 	@SuppressWarnings("unchecked")
 	private static void readXmlConfigurationObject(UnifyContainerConfig.Builder uccb, Object xmlConfigObject,
 			String workingFolder) throws UnifyException {
@@ -284,8 +295,21 @@ public final class UnifyConfigUtils {
 					if (val != null && val.indexOf(',') >= 0) {
 						List<String> valItems = DataUtils.convert(List.class, String.class, val);
 						uccb.setProperty(property, valItems);
-					} else { 
+					} else {
 						uccb.setProperty(property, val);
+					}
+				}
+
+				final List<String> additionalDataSources = StringUtils.charSplitToList(
+						(String) uccb.getProperty(UnifyCorePropertyConstants.APPLICATION_DATASOURCES), ',');
+				if (!DataUtils.isBlank(additionalDataSources)) {
+					for (String datasourceName : additionalDataSources) {
+						if (uccb.isComponentConfig(datasourceName)) {
+							UnifyConfigUtils.log("Datasource component [{0}] already configured...", datasourceName);
+						} else {
+							uccb.addComponentConfig(datasourceName, datasourceName, SqlDataSourceImpl.class, true,
+									UnifyConfigUtils.readComponentSettings(SqlDataSourceImpl.class));
+						}
 					}
 				}
 
@@ -351,6 +375,7 @@ public final class UnifyConfigUtils {
 							final String propPrefix = componentName + '.';
 							for (String property : propertyNames) {
 								if (property.startsWith(propPrefix)) {
+									UnifyConfigUtils.log("Overriding component property [{0}]...", property);
 									String val = UnifyConfigUtils.replacePlaceHolderValues(
 											appProperties.getProperty(property), workingFolder);
 									ub.setProperty(property.substring(propPrefix.length()), val);
@@ -374,8 +399,15 @@ public final class UnifyConfigUtils {
 		Properties properties = new Properties();
 		List<String> applicationPropFiles = DataUtils.convert(List.class, String.class, uccb.getProperty(propertyName));
 		if (!DataUtils.isBlank(applicationPropFiles)) {
-			properties = IOUtils.readPropertiesFromFileResources(applicationPropFiles, workingFolder);
+			UnifyConfigUtils.log("Getting additional configuration from property files, {0}...", applicationPropFiles);
+			try {
+				properties = IOUtils.readPropertiesFromFileResources(applicationPropFiles, workingFolder);
+			} catch (Exception e) {
+				UnifyConfigUtils.log("Unable to read additional property files, [{0}]...", e.getMessage());
+				UnifyConfigUtils.log("Proceeding...");
+			}
 		}
+
 		return properties;
 	}
 

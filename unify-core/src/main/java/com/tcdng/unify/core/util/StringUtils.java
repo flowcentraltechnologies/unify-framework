@@ -20,6 +20,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -374,7 +375,7 @@ public final class StringUtils {
 	 * @param ch     the character to use
 	 * @return the result tokens
 	 */
-	public static List<String> charToListSplit(String string, char ch) {
+	public static List<String> charSplitToList(String string, char ch) {
 		if (string != null) {
 			int len = string.length();
 			if (len > 0) {
@@ -395,7 +396,7 @@ public final class StringUtils {
 			}
 		}
 
-		return null;
+		return Collections.emptyList();
 	}
 	
 	/**
