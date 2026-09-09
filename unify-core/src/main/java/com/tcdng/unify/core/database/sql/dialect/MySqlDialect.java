@@ -102,11 +102,18 @@ public class MySqlDialect extends AbstractSqlDataSourceDialect {
 	@Override
 	public String generateGetCheckConstraintsSql(SqlEntitySchemaInfo sqlEntitySchemaInfo, PrintFormat format)
 			throws UnifyException {
-		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT CONSTRAINT_NAME FROM INFORMATION_SCHEMA.CHECK_CONSTRAINTS WHERE CONSTRAINT_SCHEMA = '")
-				.append(sqlEntitySchemaInfo.getSchema()).append("' AND TABLE_NAME  = '")
-				.append(sqlEntitySchemaInfo.getTableName()).append("'");
-		return sb.toString();
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT ");
+        sb.append("tc.CONSTRAINT_NAME ");
+        sb.append("FROM information_schema.TABLE_CONSTRAINTS tc ");
+        sb.append("JOIN information_schema.CHECK_CONSTRAINTS cc ");
+        sb.append("  ON tc.CONSTRAINT_SCHEMA = cc.CONSTRAINT_SCHEMA ");
+        sb.append("  AND tc.CONSTRAINT_NAME = cc.CONSTRAINT_NAME ");
+        sb.append("WHERE tc.CONSTRAINT_TYPE = 'CHECK' ");
+        sb.append("  AND tc.TABLE_SCHEMA = '").append(sqlEntitySchemaInfo.getSchema()).append("' ");
+        sb.append("  AND tc.TABLE_NAME = '").append(sqlEntitySchemaInfo.getTableName()).append("'");
+        return sb.toString();
+		
 	}
 
 	@Override

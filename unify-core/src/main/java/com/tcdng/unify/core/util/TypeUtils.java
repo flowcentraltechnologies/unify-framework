@@ -18,7 +18,6 @@ package com.tcdng.unify.core.util;
 import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -54,12 +53,20 @@ public class TypeUtils {
 
                         List<URL> finalUrls = new ArrayList<URL>();
                         if (baseUrls != null) {
-                            finalUrls.addAll(Arrays.asList(baseUrls));
+                        	for (URL url: baseUrls) {
+                        		if (url != null) {
+                                    finalUrls.add(url);
+                        		}
+                        	}
                         }
                         
-                        URL[] urls = ClasspathUrlFinder.findClassPaths();
-                        if (urls != null) {
-                            finalUrls.addAll(Arrays.asList(urls));
+                        URL[] classPathUrls = ClasspathUrlFinder.findClassPaths();
+                        if (classPathUrls != null) {
+                        	for (URL url: classPathUrls) {
+                        		if (url != null) {
+                                    finalUrls.add(url);
+                        		}
+                        	}
                         }
 
                         classpathDB.scanArchives(DataUtils.toArray(URL.class, finalUrls));
