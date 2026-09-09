@@ -75,6 +75,11 @@ public class MySqlDialect extends AbstractSqlDataSourceDialect {
 	}
 
 	@Override
+	public boolean isSchemaDatabase() {
+		return true;
+	}
+
+	@Override
 	public String getDefaultSchema() {
 		return null;
 	}

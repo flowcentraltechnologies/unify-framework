@@ -189,6 +189,11 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 	}
 
 	@Override
+	public boolean isSchemaDatabase() {
+		return false;
+	}
+
+	@Override
 	public List<SqlEntityInfo> getSqlEntityInfos() throws UnifyException {
 		return sqlEntityInfoFactory.getSqlEntityInfos();
 	}

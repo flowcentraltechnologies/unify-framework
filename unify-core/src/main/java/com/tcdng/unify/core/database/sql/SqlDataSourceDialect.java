@@ -49,6 +49,8 @@ public interface SqlDataSourceDialect extends DataSourceDialect, SqlGenerator {
 	 */
 	boolean isTenancyEnabled() throws UnifyException;
 
+	boolean isSchemaDatabase();
+	
 	/**
 	 * Gets the current user tenant ID.
 	 * 

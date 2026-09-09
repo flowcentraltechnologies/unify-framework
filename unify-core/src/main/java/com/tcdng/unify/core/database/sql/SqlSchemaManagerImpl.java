@@ -264,7 +264,9 @@ public class SqlSchemaManagerImpl extends AbstractSqlSchemaManager {
 			}
 
 			List<String> tableUpdateSql = new ArrayList<String>();
-			rs = databaseMetaData.getTables(null, schema, sqlEntityInfo.getTableName(), null);
+			rs = sqlDataSourceDialect.isSchemaDatabase()
+					? databaseMetaData.getTables(schema, null, sqlEntityInfo.getTableName(), null)
+					: databaseMetaData.getTables(null, schema, sqlEntityInfo.getTableName(), null);
 			if (rs.next()) {
 				// Table exists. Check for updates
 				List<String> alterTableColumnsSql = Collections.emptyList();
@@ -683,7 +685,9 @@ public class SqlSchemaManagerImpl extends AbstractSqlSchemaManager {
 			if (sqlEntityInfo.isViewable() || sqlEntityInfo.isViewOnly()) {
 				boolean isViewNew = false;
 				boolean isDropView = false;
-				rs = databaseMetaData.getTables(null, appSchema, sqlEntityInfo.getViewName(), null);
+				rs = sqlDataSourceDialect.isSchemaDatabase()
+						? databaseMetaData.getTables(appSchema, null, sqlEntityInfo.getViewName(), null)
+						: databaseMetaData.getTables(null, appSchema, sqlEntityInfo.getViewName(), null);
 				if (rs.next()) {
 					final String tableType = rs.getString("TABLE_TYPE");
 					if (!"VIEW".equalsIgnoreCase(tableType)) {
