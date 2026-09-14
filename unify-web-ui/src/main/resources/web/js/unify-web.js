@@ -391,14 +391,7 @@ ux.respHdl = {
 	},
 
 	reloadWinHdl : function(resp) {
-		if ('caches' in window) {
-		  var names = await caches.keys();
-		  for (var i = 0; i < names.length; i++) {
-		    await caches.delete(names[i]);
-		  }
-		}
-		
-		location.reload();
+		ux.reloadWindow();
 	},
 	
 	refreshMenuHdl : function(resp) {
@@ -628,6 +621,17 @@ ux.setPageNameAliases = function(resp) {
 			// End generate 2020-06-01
 		}
 	}
+}
+
+ux.reloadWindow = async function() {
+  if ('caches' in window) {
+    var names = await caches.keys();
+    for (var i = 0; i < names.length; i++) {
+      await caches.delete(names[i]);
+    }
+  }
+  
+  location.reload();
 }
 
 /**
