@@ -31,6 +31,8 @@ public interface ResultMappingConstants {
 
     String POST_RESPONSE = "resrv.postresponse";
 
+    String RELOAD_WINDOW = "resrv.reloadwindow";
+
     String HIDE_POPUP = "resrv.hidepopup";
 
     String HIDE_POPUP_FIRE_CONFIRM = "resrv.hidepopupfireconfirm";

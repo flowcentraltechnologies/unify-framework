@@ -42,15 +42,27 @@ public class TaskMonitorInfo {
 
 	private String onFailurePath;
 
+	private boolean reloadWindow;
+
 	public TaskMonitorInfo(TaskMonitor taskMonitor, String caption) {
-		this(taskMonitor, caption, null, null);
+		this(taskMonitor, caption, null, null, false);
+	}
+
+	public TaskMonitorInfo(TaskMonitor taskMonitor, String caption, boolean reloadWindow) {
+		this(taskMonitor, caption, null, null, reloadWindow);
 	}
 
 	public TaskMonitorInfo(TaskMonitor taskMonitor, String caption, String onSuccessPath, String onFailurePath) {
+		this(taskMonitor, caption, onSuccessPath, onFailurePath, false);
+	}
+
+	private TaskMonitorInfo(TaskMonitor taskMonitor, String caption, String onSuccessPath, String onFailurePath,
+			boolean reloadWindow) {
 		this.taskMonitor = taskMonitor;
 		this.caption = caption;
 		this.onSuccessPath = onSuccessPath;
 		this.onFailurePath = onFailurePath;
+		this.reloadWindow = reloadWindow;
 	}
 
 	public String getCaption() {
@@ -75,6 +87,10 @@ public class TaskMonitorInfo {
 
 	public TaskOutput getTaskOutput() {
 		return taskMonitor.getTaskOutput();
+	}
+
+	public boolean isReloadWindow() {
+		return reloadWindow;
 	}
 
 	public int getTaskState() {

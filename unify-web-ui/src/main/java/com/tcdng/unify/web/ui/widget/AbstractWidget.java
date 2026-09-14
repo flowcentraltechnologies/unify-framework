@@ -853,6 +853,11 @@ public abstract class AbstractWidget extends AbstractUplComponent implements Wid
 		return (Popup) removeSessionAttribute(UnifyWebSessionAttributeConstants.POPUP);
 	}
 
+	protected void reloadWindow() throws UnifyException {
+		removeCurrentPopup();
+		setCommandResultMapping(ResultMappingConstants.RELOAD_WINDOW);
+	}
+
 	protected void commandHidePopup() throws UnifyException {
 		removeCurrentPopup();
 		getRequestContextUtil().removeResponseRefreshPanel(getLongName());

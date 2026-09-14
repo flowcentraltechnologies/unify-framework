@@ -362,6 +362,10 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 		}
 	}
 
+	protected String reloadWindow() throws UnifyException {
+		return ResultMappingConstants.RELOAD_WINDOW;
+	}
+
 	/**
 	 * Indicates if page controller supports addition to content panel
 	 * 
@@ -773,8 +777,9 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 	protected String launchTaskWithMonitorBox(TaskSetup taskSetup, String caption, String onSuccessPath,
 			String onFailurePath) throws UnifyException {
 		TaskMonitor taskMonitor = launchTask(taskSetup);
-		TaskMonitorInfo taskMonitorInfo = new TaskMonitorInfo(taskMonitor, resolveSessionMessage(caption),
-				onSuccessPath, onFailurePath);
+		TaskMonitorInfo taskMonitorInfo = taskSetup.isReloadWindow()
+				? new TaskMonitorInfo(taskMonitor, resolveSessionMessage(caption), true)
+				: new TaskMonitorInfo(taskMonitor, resolveSessionMessage(caption), onSuccessPath, onFailurePath);
 		setSessionAttribute(UnifyWebSessionAttributeConstants.TASKMONITORINFO, taskMonitorInfo);
 		return "showapplicationtaskmonitor";
 	}

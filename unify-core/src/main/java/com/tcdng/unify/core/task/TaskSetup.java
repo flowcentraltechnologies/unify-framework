@@ -50,9 +50,11 @@ public class TaskSetup {
 
 	private boolean messages;
 
+	private boolean reloadWindow;
+
 	private TaskSetup(TaskExecType type, String taskName, Map<String, Object> parameters, String eventCode,
 			List<String> eventDetails, String logger, long delayInMillSec, long periodInMillSec, int numberOfTimes,
-			boolean messages) {
+			boolean messages, boolean reloadWindow) {
 		this.type = type;
 		this.taskName = taskName;
 		this.parameters = parameters;
@@ -63,6 +65,7 @@ public class TaskSetup {
 		this.periodInMillSec = periodInMillSec;
 		this.numberOfTimes = numberOfTimes;
 		this.messages = messages;
+		this.reloadWindow = reloadWindow;
 	}
 
 	public TaskExecType getType() {
@@ -105,6 +108,10 @@ public class TaskSetup {
 		return messages;
 	}
 
+	public boolean isReloadWindow() {
+		return reloadWindow;
+	}
+
 	public static Builder newBuilder(String taskName) {
 		return new Builder(taskName);
 	}
@@ -134,6 +141,8 @@ public class TaskSetup {
 		private int numberOfTimes;
 
 		private boolean messages;
+
+		private boolean reloadWindow;
 
 		private Builder(String taskName) {
 			this(TaskExecType.RUN_IMMEDIATE, taskName);
@@ -193,6 +202,11 @@ public class TaskSetup {
 			return this;
 		}
 
+		public Builder reloadWindow() {
+			this.reloadWindow = true;
+			return this;
+		}
+
 		public Builder logMessages() {
 			this.messages = true;
 			return this;
@@ -201,7 +215,7 @@ public class TaskSetup {
 		public TaskSetup build() {
 			return new TaskSetup(type, taskName, DataUtils.unmodifiableMap(parameters), eventCode,
 					DataUtils.unmodifiableList(eventDetails), logger, delayInMillSec, periodInMillSec, numberOfTimes,
-					messages);
+					messages, reloadWindow);
 		}
 
 	}

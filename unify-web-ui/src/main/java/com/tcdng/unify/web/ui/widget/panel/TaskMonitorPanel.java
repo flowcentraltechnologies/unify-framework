@@ -56,6 +56,11 @@ public class TaskMonitorPanel extends AbstractPanel {
     @Action
     public void taskDone() throws UnifyException {
         TaskMonitorInfo taskMonitorInfo = getValue(TaskMonitorInfo.class);
+        if (taskMonitorInfo.isReloadWindow()) {
+        	reloadWindow();
+        	return;
+        }
+        
         String taskDonePath = null;
         if (taskMonitorInfo.getTaskState() == TaskMonitorInfo.PASS) {
             taskDonePath = taskMonitorInfo.getOnSuccessPath();

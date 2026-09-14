@@ -390,6 +390,17 @@ ux.respHdl = {
 		ux.postPath(resp);
 	},
 
+	reloadWinHdl : function(resp) {
+		if ('caches' in window) {
+		  var names = await caches.keys();
+		  for (var i = 0; i < names.length; i++) {
+		    await caches.delete(names[i]);
+		  }
+		}
+		
+		location.reload();
+	},
+	
 	refreshMenuHdl : function(resp) {
 		ux.refreshPanels(resp);
 	},
@@ -868,9 +879,11 @@ ux.openWindow = function(uEv) {
 	if (evp.uURL) {
 		const refs = ux.getPushRefs(evp);
 		var url = evp.uURL;
-		var param = ux.buildReqParams(null, evp, refs);
-		if (param.value) {
-			url = url + (url.indexOf('?') >= 0 ? "&":"?") + param.value;
+		if (refs && refs.length > 0) {
+			var param = ux.buildReqParams(null, evp, refs);
+			if (param.value) {
+				url = url + (url.indexOf('?') >= 0 ? "&":"?") + param.value;
+			}
 		}
 		
 		if (evp.uWinName) {
