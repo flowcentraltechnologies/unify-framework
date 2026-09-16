@@ -103,7 +103,7 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	public final boolean isInitialized() {
 		return unifyComponentContext != null;
 	}
-	
+
 	/**
 	 * Gets the component context.
 	 *
@@ -1136,6 +1136,36 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	}
 
 	/**
+	 * Gets current session user branch code.
+	 * 
+	 * @return the current session user branch code
+	 * @throws UnifyException if an error occurs
+	 */
+	protected String getUserBranchCode() throws UnifyException {
+		return unifyComponentContext.getSessionContext().getUserBranchCode();
+	}
+
+	/**
+	 * Gets current session user role code.
+	 * 
+	 * @return the current session user role code
+	 * @throws UnifyException if an error occurs
+	 */
+	protected String getUserRoleCode() throws UnifyException {
+		return unifyComponentContext.getSessionContext().getUserRoleCode();
+	}
+
+	/**
+	 * Gets current session user department code.
+	 * 
+	 * @return the current session user department code
+	 * @throws UnifyException if an error occurs
+	 */
+	protected String getUserDepartmentCode() throws UnifyException {
+		return unifyComponentContext.getSessionContext().getUserDepartmentCode();
+	}
+
+	/**
 	 * Sets the user token tenant ID for current session.
 	 * 
 	 * @param tenantId the tenant ID
@@ -1154,7 +1184,7 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	protected void setRequestClientPageId(String pid) throws UnifyException {
 		unifyComponentContext.getRequestContext().setPid(pid);
 	}
-	
+
 	/**
 	 * Gets request page ID (pid)
 	 * 
@@ -1164,7 +1194,7 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	protected String getRequestClientPageId() throws UnifyException {
 		return unifyComponentContext.getRequestContext().getPid();
 	}
-	
+
 	/**
 	 * Gets client request target
 	 * 
@@ -1174,7 +1204,7 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	protected String getClientRequestTarget() throws UnifyException {
 		return unifyComponentContext.getRequestContext().getRequestTarget();
 	}
-	
+
 	/**
 	 * Sets an attribute in current request.
 	 * 
@@ -1309,8 +1339,8 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	 * Logs a exception and message at DEBUG level.
 	 * 
 	 * @param exception the exception to log
-	 * @param message the message to log
-	 * @param params  message parameters
+	 * @param message   the message to log
+	 * @param params    message parameters
 	 */
 	protected void logDebug(Exception exception, String message, Object... params) {
 		log(null, LoggingLevel.DEBUG, null, message, params);
@@ -1369,8 +1399,8 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	 * Logs a message at SEVERE level.
 	 * 
 	 * @param exception the exception to log
-	 * @param message the message to log
-	 * @param params  message parameters
+	 * @param message   the message to log
+	 * @param params    message parameters
 	 */
 	protected void logSevere(Exception exception, String message, Object... params) {
 		log(null, LoggingLevel.SEVERE, exception, message, params);
@@ -1938,7 +1968,7 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	protected void pause(long milliSeconds) {
 		ThreadUtils.sleep(milliSeconds);
 	}
-	
+
 	/**
 	 * Executes on initialization. Called after the component's context has been
 	 * properly set. Implementing classes are expected to perform initialization in

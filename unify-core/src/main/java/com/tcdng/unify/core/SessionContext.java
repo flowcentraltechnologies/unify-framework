@@ -127,6 +127,18 @@ public class SessionContext extends Context {
 	public String getUserLoginId() {
 		return userToken != null ? userToken.getUserLoginId() : null;
 	}
+
+	public String getUserBranchCode() {
+		return userToken != null ? userToken.getBranchCode() : null;
+	}
+
+	public String getUserRoleCode() {
+		return userToken != null ? userToken.getRoleCode() : null;
+	}
+
+	public String getUserDepartmentCode() {
+		return userToken != null ? userToken.getDepartmentCode() : null;
+	}
 	
 	public Locale getLocale() {
 		return locale;
