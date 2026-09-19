@@ -50,6 +50,7 @@ import com.tcdng.unify.web.ControllerFinder;
 import com.tcdng.unify.web.ControllerPathParts;
 import com.tcdng.unify.web.HttpDownloadController;
 import com.tcdng.unify.web.HttpUploadController;
+import com.tcdng.unify.web.PageAccessChecker;
 import com.tcdng.unify.web.PathInfoRepository;
 import com.tcdng.unify.web.RequestPathParts;
 import com.tcdng.unify.web.TenantPathManager;
@@ -79,6 +80,9 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 	private static final int BUFFER_SIZE = 4096;
 
 	private static final String USER_HINT_LIST = "USER_HINT_LIST";
+
+	@Configurable
+	private PageAccessChecker pageAccessChecker;
 
 	@Configurable
 	private ControllerFinder controllerFinder;
@@ -221,6 +225,12 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 					throwOperationErrorException(
 							new IllegalArgumentException("Referer required for controller type [" + controller.getName()
 									+ "]. " + clientRequest.getRequestPathParts().getControllerPathParts()));
+				}
+
+				final String roleCode = getUserToken() != null ? getUserToken().getRoleCode() : null;
+				if (controller.isPageController() && pageAccessChecker != null && !pageAccessChecker
+						.isPageAccessible(roleCode, requestPathParts.getControllerPathParts().getControllerPath())) {
+					throwOperationErrorException(new IllegalArgumentException("Path is not allowed for this role."));
 				}
 			} catch (Exception e) {
 				logError(e);
