@@ -31,7 +31,7 @@ import java.util.Optional;
 import java.util.TimeZone;
 
 import com.tcdng.unify.core.SessionAttributeProvider;
-import com.tcdng.unify.core.SessionContext;
+import com.tcdng.unify.core.UserSession;
 import com.tcdng.unify.web.ClientCookie;
 
 import jakarta.servlet.http.Cookie;
@@ -232,15 +232,15 @@ public class HttpRequestImpl implements HttpRequest {
 	@Override
 	public void swapToNewSession() {
 		HttpSession httpSession = request.getSession(false);
-		SessionContext ctx = null;
+		UserSession userSession = null;
 		if (httpSession != null) {
-        	ctx = (SessionContext) httpSession.getAttribute(HttpConstants.USER_SESSION);
+        	userSession = (UserSession) httpSession.getAttribute(HttpConstants.USER_SESSION);
 			httpSession.invalidate();
 		}
 		
 		httpSession = request.getSession(true);
-		if (ctx != null) {
-			httpSession.setAttribute(HttpConstants.USER_SESSION, ctx);
+		if (userSession != null) {
+			httpSession.setAttribute(HttpConstants.USER_SESSION, userSession);
 		}
 	}
 
