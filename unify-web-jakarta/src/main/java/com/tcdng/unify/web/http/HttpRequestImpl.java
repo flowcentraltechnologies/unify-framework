@@ -31,6 +31,7 @@ import java.util.Optional;
 import java.util.TimeZone;
 
 import com.tcdng.unify.core.SessionAttributeProvider;
+import com.tcdng.unify.core.SessionContext;
 import com.tcdng.unify.web.ClientCookie;
 
 import jakarta.servlet.http.Cookie;
@@ -228,8 +229,23 @@ public class HttpRequestImpl implements HttpRequest {
 				tenantPath, request.getRemoteHost(), remoteIpAddress, request.getRemoteUser());
 	}
 
+	@Override
+	public void swapToNewSession() {
+		HttpSession httpSession = request.getSession(false);
+		SessionContext ctx = null;
+		if (httpSession != null) {
+        	ctx = (SessionContext) httpSession.getAttribute(HttpConstants.USER_SESSION);
+			httpSession.invalidate();
+		}
+		
+		httpSession = request.getSession(true);
+		if (ctx != null) {
+			httpSession.setAttribute(HttpConstants.USER_SESSION, ctx);
+		}
+	}
+
     @Override
-    public void invalidateSession() {
+    public void invalidateCurrentSession() {
         HttpSession httpSession = request.getSession(false);
         if (httpSession != null) {
             httpSession.invalidate();

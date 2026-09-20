@@ -27,60 +27,60 @@ import com.tcdng.unify.core.data.Context;
  * @since 4.1
  */
 public class RequestContext extends Context {
-    
-    private UnifyClientRequest clientRequest;
 
-    private SessionContext sessionContext;
-    
-    private Object quickReference;
+	private UnifyClientRequest clientRequest;
 
-    private String requestPath;
+	private SessionContext sessionContext;
 
-    private String requestTarget;
+	private Object quickReference;
 
-    private String pid;
-    
-    public RequestContext(String requestPath, String requestTarget, SessionContext sessionContext) {
-        this.requestPath = requestPath;
-        this.requestTarget = requestTarget;
-        this.sessionContext = sessionContext;
-    }
+	private String requestPath;
 
-    public String getContextPath() {
-        return sessionContext.getContextPath();
-    }
+	private String requestTarget;
 
-    public String getTenantPath() {
-        return sessionContext.getTenantPath();
-    }
+	private String pid;
 
-    public boolean isWithTenantPath() {
-        return sessionContext.isWithTenantPath();
-    }
+	public RequestContext(String requestPath, String requestTarget, SessionContext sessionContext) {
+		this.requestPath = requestPath;
+		this.requestTarget = requestTarget;
+		this.sessionContext = sessionContext;
+	}
 
-    public String getRequestPath() {
-        return requestPath;
-    }
+	public String getContextPath() {
+		return sessionContext.getContextPath();
+	}
 
-    public String getRequestTarget() {
+	public String getTenantPath() {
+		return sessionContext.getTenantPath();
+	}
+
+	public boolean isWithTenantPath() {
+		return sessionContext.isWithTenantPath();
+	}
+
+	public String getRequestPath() {
+		return requestPath;
+	}
+
+	public String getRequestTarget() {
 		return requestTarget;
 	}
 
 	public SessionContext getSessionContext() {
-        return sessionContext;
-    }
+		return sessionContext;
+	}
 
-    public Locale getLocale() {
-        return sessionContext.getLocale();
-    }
+	public Locale getLocale() {
+		return sessionContext.getLocale();
+	}
 
-    public Object getQuickReference() {
-        return quickReference;
-    }
+	public Object getQuickReference() {
+		return quickReference;
+	}
 
-    public void setQuickReference(Object quickReference) {
-        this.quickReference = quickReference;
-    }
+	public void setQuickReference(Object quickReference) {
+		this.quickReference = quickReference;
+	}
 
 	public String getPid() {
 		return pid;
@@ -98,7 +98,17 @@ public class RequestContext extends Context {
 		this.clientRequest = clientRequest;
 	}
 
+	public void swapSession() {
+		if (clientRequest != null) {
+			clientRequest.swapSession();
+		}
+	}
+	
 	public void invalidateSession() {
+		if (sessionContext != null) {
+			sessionContext.invalidate();
+		}
+
 		if (clientRequest != null) {
 			clientRequest.invalidateSession();
 		}

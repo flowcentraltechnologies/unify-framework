@@ -102,8 +102,13 @@ public class HttpClientRequest extends AbstractClientRequest {
 	}
 
 	@Override
+	public void swapSession() {
+		httpRequest.swapToNewSession();
+	}
+
+	@Override
 	public void invalidateSession() {
-		httpRequest.invalidateSession();
+		httpRequest.invalidateCurrentSession();
 	}
 
 	@Override

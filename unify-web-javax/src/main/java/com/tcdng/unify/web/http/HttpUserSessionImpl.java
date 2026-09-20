@@ -45,7 +45,6 @@ public class HttpUserSessionImpl extends AbstractHttpUserSession implements Http
 
 	@Override
 	public void valueUnbound(HttpSessionBindingEvent event) {
-    	System.out.println("@prime: HttpUserSessionImpl valueUnbound()");
 		invalidate();
 	}
 }

@@ -23,5 +23,7 @@ package com.tcdng.unify.core.data;
  */
 public interface UnifyClientRequest {
 
+	void swapSession();
+
 	void invalidateSession();
 }

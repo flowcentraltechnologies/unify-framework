@@ -66,6 +66,8 @@ public class SessionContext extends Context {
 
 	private boolean useDaylightSavings;
 
+	private boolean invalidated;
+
 	public SessionContext(SessionAttributeProvider attributeProvider, String id, Locale locale, TimeZone timeZone,
 			String uriBase, String contextPath, String tenantPath, String remoteHost, String remoteAddress,
 			String remoteUser) {
@@ -216,6 +218,14 @@ public class SessionContext extends Context {
 
 	public void setUseDaylightSavings(boolean useDaylightSavings) {
 		this.useDaylightSavings = useDaylightSavings;
+	}
+
+	public boolean isInvalidated() {
+		return invalidated;
+	}
+
+	public void invalidate() {
+		this.invalidated = true;
 	}
 
 	public long getTimeZoneOffset() {
