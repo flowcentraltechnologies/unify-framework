@@ -4,7 +4,7 @@ name: Deploy Unify Framework
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, v4.1.x ]
 
 jobs:
   build:
