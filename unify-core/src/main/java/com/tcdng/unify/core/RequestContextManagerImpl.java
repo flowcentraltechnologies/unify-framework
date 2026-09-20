@@ -15,7 +15,13 @@
  */
 package com.tcdng.unify.core;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Locale;
+import java.util.TimeZone;
+
 import com.tcdng.unify.core.annotation.Component;
+import com.tcdng.unify.core.util.ApplicationUtils;
 
 /**
  * Default implementation of request context manager.
@@ -25,6 +31,10 @@ import com.tcdng.unify.core.annotation.Component;
  */
 @Component(ApplicationComponents.APPLICATION_REQUESTCONTEXTMANAGER)
 public class RequestContextManagerImpl extends AbstractUnifyComponent implements RequestContextManager {
+	
+    private static Locale applicationLocale;
+
+    private static TimeZone applicationTimeZone;
 
     private static final ThreadLocal<ThreadRequestContextInfo> requestContextThreadLocal =
             new ThreadLocal<ThreadRequestContextInfo>() {
@@ -45,7 +55,7 @@ public class RequestContextManagerImpl extends AbstractUnifyComponent implements
 	public void loadRequestContext(UserSession userSession, String requestPath, String requestTarget)
 			throws UnifyException {
 		requestContextThreadLocal.get().setRequestContext(new RequestContext(requestPath != null ? requestPath : "",
-				requestTarget, userSession));
+				requestTarget, userSession != null ? userSession.getSessionContext() : null));
 	}
 
     @Override
@@ -75,7 +85,8 @@ public class RequestContextManagerImpl extends AbstractUnifyComponent implements
 
 	@Override
     protected void onInitialize() throws UnifyException {
-
+        applicationLocale = getApplicationLocale();
+        applicationTimeZone = getApplicationTimeZone();
     }
 
     @Override
@@ -84,7 +95,15 @@ public class RequestContextManagerImpl extends AbstractUnifyComponent implements
     }
 
     private static RequestContext newDefaultContext() {
-        return new RequestContext();
+        try {
+            InetAddress inetAddress = InetAddress.getLocalHost();
+            return new RequestContext(null, null,
+                    new SessionContext(null, ApplicationUtils.generateSessionContextId(), applicationLocale,
+                            applicationTimeZone, "http://localhost", "", null, inetAddress.getHostName(),
+                            inetAddress.getHostAddress(), null));
+        } catch (UnknownHostException e) {
+        }
+        return null;
     }
 
     private static class ThreadRequestContextInfo {

@@ -18,7 +18,6 @@ package com.tcdng.unify.web.http;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
@@ -32,23 +31,11 @@ import com.tcdng.unify.core.SessionAttributeProvider;
  */
 public class HttpUserSessionImpl extends AbstractHttpUserSession implements HttpSessionBindingListener {
 
-	private transient HttpSession httpSession;
-	
-	private boolean invalidated;
-
-	public HttpUserSessionImpl(HttpSession httpSession, SessionAttributeProvider attributeProvider, Locale locale, TimeZone timeZone,
+	public HttpUserSessionImpl(SessionAttributeProvider attributeProvider, Locale locale, TimeZone timeZone,
 			String sessionId, String uriBase, String contextPath, String tenantPath, String remoteHost,
 			String remoteIpAddress, String remoteUser) {
 		super(attributeProvider, locale, timeZone, sessionId, uriBase, contextPath, tenantPath, remoteHost,
 				remoteIpAddress, remoteUser);
-	}
-
-	@Override
-	public void manualInvalidate() {
-		if (!invalidated) {
-			invalidated = true;
-			httpSession.invalidate();
-		}
 	}
 
 	@Override
@@ -58,9 +45,6 @@ public class HttpUserSessionImpl extends AbstractHttpUserSession implements Http
 
 	@Override
 	public void valueUnbound(HttpSessionBindingEvent event) {
-		if (!invalidated) {
-			invalidated = true;
-			autoInvalidate();
-		}
+		invalidate();
 	}
 }

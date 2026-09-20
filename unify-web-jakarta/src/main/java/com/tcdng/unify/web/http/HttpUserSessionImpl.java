@@ -20,7 +20,6 @@ import java.util.TimeZone;
 
 import com.tcdng.unify.core.SessionAttributeProvider;
 
-import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpSessionBindingEvent;
 import jakarta.servlet.http.HttpSessionBindingListener;
 
@@ -32,24 +31,11 @@ import jakarta.servlet.http.HttpSessionBindingListener;
  */
 public class HttpUserSessionImpl extends AbstractHttpUserSession implements HttpSessionBindingListener {
 
-	private transient HttpSession httpSession;
-
-	private boolean invalidated;
-
-	public HttpUserSessionImpl(HttpSession httpSession, SessionAttributeProvider attributeProvider, Locale locale,
-			TimeZone timeZone, String sessionId, String uriBase, String contextPath, String tenantPath,
-			String remoteHost, String remoteIpAddress, String remoteUser) {
+	public HttpUserSessionImpl(SessionAttributeProvider attributeProvider, Locale locale, TimeZone timeZone,
+			String sessionId, String uriBase, String contextPath, String tenantPath, String remoteHost,
+			String remoteIpAddress, String remoteUser) {
 		super(attributeProvider, locale, timeZone, sessionId, uriBase, contextPath, tenantPath, remoteHost,
 				remoteIpAddress, remoteUser);
-		this.httpSession = httpSession;
-	}
-
-	@Override
-	public void manualInvalidate() {
-		if (!invalidated) {
-			invalidated = true;
-			httpSession.invalidate();
-		}
 	}
 
 	@Override
@@ -59,9 +45,6 @@ public class HttpUserSessionImpl extends AbstractHttpUserSession implements Http
 
 	@Override
 	public void valueUnbound(HttpSessionBindingEvent event) {
-		if (!invalidated) {
-			invalidated = true;
-			autoInvalidate();
-		}
+		invalidate();
 	}
 }

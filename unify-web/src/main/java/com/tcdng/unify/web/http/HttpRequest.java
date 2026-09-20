@@ -79,7 +79,7 @@ public interface HttpRequest extends HttpRequestHeaders, HttpRequestParameters {
 	 
 	boolean isWithCookie(String name);
 	
-	void manualInvalidateSession();
+	void invalidateSession();
 
 	void setSessionAttribute(String name, Object val);
 

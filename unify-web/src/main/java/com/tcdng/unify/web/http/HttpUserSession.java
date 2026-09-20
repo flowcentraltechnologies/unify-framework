@@ -27,7 +27,7 @@ import com.tcdng.unify.core.system.UserSessionManager;
  */
 public interface HttpUserSession extends UserSession {
     
-    void autoInvalidate();
+    void invalidate();
 
     void setUserSessionManager(UserSessionManager userSessionManager);
     

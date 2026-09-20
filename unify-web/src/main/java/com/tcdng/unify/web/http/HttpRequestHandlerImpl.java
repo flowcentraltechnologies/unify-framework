@@ -305,14 +305,14 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 			RequestPathParts reqPathParts) throws UnifyException {
 		HttpUserSession userSession = null;
 		if (reqPathParts.isSessionless()) {
-			httpRequest.manualInvalidateSession();
+			httpRequest.invalidateSession();
 			userSession = createHttpUserSession(httpModule, httpRequest, reqPathParts, null);
 		} else {
 			userSession = (HttpUserSession) httpRequest.getSessionAttribute(HttpConstants.USER_SESSION);
 			if (httpModule.isTenantPathEnabled() && userSession != null
 					&& !DataUtils.equals(reqPathParts.getTenantPath(), userSession.getTenantPath())) {
 				httpRequest.removeSessionAttribute(HttpConstants.USER_SESSION);
-				userSession.manualInvalidate();
+				userSession.invalidate();
 				userSession = null;
 			}
 
