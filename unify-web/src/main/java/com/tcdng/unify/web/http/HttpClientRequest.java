@@ -42,27 +42,24 @@ public class HttpClientRequest extends AbstractClientRequest {
 
 	private Charset charset;
 
-	private HttpRequestHeaders headers;
+	private HttpRequest httpRequest;
 
 	private Parameters parameters;
 
 	private Map<String, ClientCookie> cookies;
-
-	private String queryString;
 	
 	private String text;
 	
 	private byte[] bytes;
 	
 	public HttpClientRequest(ClientPlatform clientPlatform, HttpRequestMethodType methodType,
-			RequestPathParts requestPathParts, Charset charset, HttpRequestHeaders headers, String queryString,
+			RequestPathParts requestPathParts, Charset charset, HttpRequest httpRequest,
 			Map<String, Object> parameters, Map<String, ClientCookie> cookies, String text, byte[] bytes) {
 		this.clientPlatform = clientPlatform;
 		this.methodType = methodType;
 		this.requestPathParts = requestPathParts;
-		this.headers = headers;
+		this.httpRequest = httpRequest;
 		this.charset = charset;
-		this.queryString = queryString;
 		this.parameters = new Parameters(parameters);
 		this.cookies = cookies;
 		this.text = text;
@@ -91,7 +88,7 @@ public class HttpClientRequest extends AbstractClientRequest {
 
 	@Override
 	public String getQueryString() {
-		return queryString;
+		return httpRequest.getQueryString();
 	}
 
 	@Override
@@ -101,7 +98,17 @@ public class HttpClientRequest extends AbstractClientRequest {
 
 	@Override
 	public HttpRequestHeaders getRequestHeaders() {
-		return headers;
+		return httpRequest;
+	}
+
+	@Override
+	public void swapSession() {
+		httpRequest.swapToNewSession();
+	}
+
+	@Override
+	public void invalidateSession() {
+		httpRequest.invalidateCurrentSession();
 	}
 
 	@Override

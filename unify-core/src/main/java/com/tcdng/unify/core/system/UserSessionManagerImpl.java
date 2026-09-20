@@ -96,12 +96,14 @@ public class UserSessionManagerImpl extends AbstractBusinessService implements U
         userSessions.put(sessionContext.getId(), userSession);
     }
 
-    @Override
-    public void removeUserSession(UserSession userSession) throws UnifyException {
-        SessionContext sessionContext = userSession.getSessionContext();
-        db().delete(UserSessionTracking.class, sessionContext.getId());
-        userSessions.remove(sessionContext.getId());
-    }
+	@Override
+	public void removeUserSession(UserSession userSession) throws UnifyException {
+		SessionContext sessionContext = userSession.getSessionContext();
+		if (sessionContext != null) {
+			db().delete(UserSessionTracking.class, sessionContext.getId());
+			userSessions.remove(sessionContext.getId());
+		}
+	}
 
     @Override
     public void updateCurrentSessionLastAccessTime() throws UnifyException {
@@ -151,6 +153,8 @@ public class UserSessionManagerImpl extends AbstractBusinessService implements U
 
         // Update session context
         sessionContext.setUserToken(userToken);
+        
+        getRequestContext().swapSession();
     }
 
     @Override
@@ -160,11 +164,14 @@ public class UserSessionManagerImpl extends AbstractBusinessService implements U
         } else {
             getRequestContext().getSessionContext().setUserToken(null);
         }
+        
+        getRequestContext().invalidateSession();
     }
 
     @Override
     public void logout(String sessionId) throws UnifyException {
-        logOut(userSessions.get(sessionId));
+        logOut(userSessions.get(sessionId));     
+        getRequestContext().invalidateSession();
     }
 
     @Broadcast
