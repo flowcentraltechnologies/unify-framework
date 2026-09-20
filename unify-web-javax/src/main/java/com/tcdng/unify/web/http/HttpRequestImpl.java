@@ -231,6 +231,7 @@ public class HttpRequestImpl implements HttpRequest {
 	public void invalidateSession() {
 		HttpSession httpSession = request.getSession(false);
 		if (httpSession != null) {
+        	System.out.println("@prime: HttpRequestImpl invalidateSession()");
 			httpSession.invalidate();
 		}
 	}

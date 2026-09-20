@@ -201,11 +201,11 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 
 			final Map<String, Object> parameters = extractRequestParameters(httpRequest, charset);
 			ClientRequest clientRequest = new HttpClientRequest(detectClientPlatform(httpRequest), methodType,
-					requestPathParts, charset, httpRequest, httpRequest.getQueryString(), parameters,
-					extractCookies(httpRequest), (String) parameters.remove(BODY_TEXT),
-					(byte[]) parameters.remove(BODY_BYTES));
+					requestPathParts, charset, httpRequest, parameters, extractCookies(httpRequest),
+					(String) parameters.remove(BODY_TEXT), (byte[]) parameters.remove(BODY_BYTES));
 			ClientResponse clientResponse = new HttpClientResponse(httpResponse);
-
+			getRequestContext().setClientRequest(clientRequest);
+			
 			String origin = httpRequest.getHeader("origin");
 			origin = origin != null ? origin : httpRequest.getHeader(HttpRequestHeaderConstants.ORIGIN);
 			if (!StringUtils.isBlank(origin)) {
