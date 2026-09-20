@@ -35,9 +35,6 @@ import com.tcdng.unify.web.util.CookieUtils;
  * @since 4.1
  */
 public abstract class AbstractEmbeddedHttpWebServer extends AbstractHttpWebInterface implements EmbeddedHttpWebServer {
-
-	@Configurable
-	private LongUserSessionManager longUserSessionManager;
 	
     @Configurable("8080")
     private int httpPort;
@@ -138,9 +135,8 @@ public abstract class AbstractEmbeddedHttpWebServer extends AbstractHttpWebInter
 	}
 	
 	protected int getSessionSeconds() throws UnifyException {
-		return longUserSessionManager != null ? longUserSessionManager.getDefaultLongSessionSeconds()
-				: (getContainerSetting(int.class, UnifyCorePropertyConstants.APPLICATION_SESSION_TIMEOUT,
-						UnifyCoreConstants.DEFAULT_APPLICATION_SESSION_TIMEOUT_SECONDS));
+		return getContainerSetting(int.class, UnifyCorePropertyConstants.APPLICATION_SESSION_TIMEOUT,
+						UnifyCoreConstants.DEFAULT_APPLICATION_SESSION_TIMEOUT_SECONDS);
 	}
  
 }

@@ -115,4 +115,14 @@ public class TestClientRequest extends AbstractClientRequest {
     public ClientCookie getCookie(String name) {
         return null;
     }
+
+	@Override
+	public void swapSession() {
+		
+	}
+
+	@Override
+	public void invalidateSession() {
+		
+	}
 }

@@ -32,7 +32,6 @@ import java.util.Set;
 
 import com.tcdng.unify.core.AbstractUnifyComponent;
 import com.tcdng.unify.core.SessionAttributeProvider;
-import com.tcdng.unify.core.UnifyCoreErrorConstants;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.UserSession;
 import com.tcdng.unify.core.annotation.Component;
@@ -92,9 +91,6 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 
 	@Configurable
 	private SessionAttributeProvider attributeProvider;
-
-	@Configurable
-	private LongUserSessionManager longUserSessionManager;
 
 	private FactoryMap<String, RequestPathParts> requestPathParts;
 
@@ -201,10 +197,11 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 
 			final Map<String, Object> parameters = extractRequestParameters(httpRequest, charset);
 			ClientRequest clientRequest = new HttpClientRequest(detectClientPlatform(httpRequest), methodType,
-					requestPathParts, charset, httpRequest, httpRequest.getQueryString(), parameters,
+					requestPathParts, charset, httpRequest, parameters,
 					extractCookies(httpRequest), (String) parameters.remove(BODY_TEXT),
 					(byte[]) parameters.remove(BODY_BYTES));
 			ClientResponse clientResponse = new HttpClientResponse(httpResponse);
+			getRequestContext().setClientRequest(clientRequest);
 
 			String origin = httpRequest.getHeader("origin");
 			origin = origin != null ? origin : httpRequest.getHeader(HttpRequestHeaderConstants.ORIGIN);
@@ -303,7 +300,7 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 			RequestPathParts reqPathParts) throws UnifyException {
 		HttpUserSession userSession = null;
 		if (reqPathParts.isSessionless()) {
-			httpRequest.invalidateSession();
+			httpRequest.invalidateCurrentSession();
 			userSession = createHttpUserSession(httpModule, httpRequest, reqPathParts, null);
 		} else {
 			userSession = (HttpUserSession) httpRequest.getSessionAttribute(HttpConstants.USER_SESSION);
@@ -321,18 +318,6 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 						userSession = createHttpUserSession(httpModule, httpRequest, reqPathParts, null);
 						httpRequest.setSessionAttribute(HttpConstants.USER_SESSION, userSession);
 					}
-				}
-			}
-		}
-
-		if (longUserSessionManager != null) {
-			try {
-				longUserSessionManager.performAutoLogin(httpRequest, httpResponse, userSession);
-			} catch (UnifyException e) {
-				if (UnifyCoreErrorConstants.IOUTIL_STREAM_RW_ERROR.equals(e.getErrorCode())) {
-					userSession.setServiceUnavailable(true);
-				} else {
-					throw e;
 				}
 			}
 		}

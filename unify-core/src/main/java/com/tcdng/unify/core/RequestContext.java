@@ -18,6 +18,7 @@ package com.tcdng.unify.core;
 import java.util.Locale;
 
 import com.tcdng.unify.core.data.Context;
+import com.tcdng.unify.core.data.UnifyClientRequest;
 
 /**
  * Request context class.
@@ -26,6 +27,8 @@ import com.tcdng.unify.core.data.Context;
  * @since 4.1
  */
 public class RequestContext extends Context {
+
+	private UnifyClientRequest clientRequest;
 
     private SessionContext sessionContext;
 
@@ -89,6 +92,30 @@ public class RequestContext extends Context {
 
 	public void setPid(String pid) {
 		this.pid = pid;
+	}
+
+	public UnifyClientRequest getClientRequest() {
+		return clientRequest;
+	}
+
+	public void setClientRequest(UnifyClientRequest clientRequest) {
+		this.clientRequest = clientRequest;
+	}
+
+	public void swapSession() {
+		if (clientRequest != null) {
+			clientRequest.swapSession();
+		}
+	}
+	
+	public void invalidateSession() {
+		if (sessionContext != null) {
+			sessionContext.invalidate();
+		}
+
+		if (clientRequest != null) {
+			clientRequest.invalidateSession();
+		}
 	}
 
 }

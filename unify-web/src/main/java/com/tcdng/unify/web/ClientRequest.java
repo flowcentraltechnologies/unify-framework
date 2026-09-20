@@ -21,6 +21,7 @@ import java.util.Set;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.constant.ClientPlatform;
 import com.tcdng.unify.core.data.Parameters;
+import com.tcdng.unify.core.data.UnifyClientRequest;
 import com.tcdng.unify.web.constant.ClientRequestType;
 import com.tcdng.unify.web.http.HttpRequestHeaders;
 
@@ -30,7 +31,7 @@ import com.tcdng.unify.web.http.HttpRequestHeaders;
  * @author The Code Department
  * @since 4.1
  */
-public interface ClientRequest {
+public interface ClientRequest extends UnifyClientRequest {
 
     /**
      * Gets the client platform.

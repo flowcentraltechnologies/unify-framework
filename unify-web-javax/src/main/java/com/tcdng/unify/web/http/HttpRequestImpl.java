@@ -36,6 +36,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
 import com.tcdng.unify.core.SessionAttributeProvider;
+import com.tcdng.unify.core.UserSession;
 import com.tcdng.unify.web.ClientCookie;
 
 /**
@@ -228,7 +229,22 @@ public class HttpRequestImpl implements HttpRequest {
 	}
 
 	@Override
-	public void invalidateSession() {
+	public void swapToNewSession() {
+		HttpSession httpSession = request.getSession(false);
+		UserSession userSession = null;
+		if (httpSession != null) {
+        	userSession = (UserSession) httpSession.getAttribute(HttpConstants.USER_SESSION);
+			httpSession.invalidate();
+		}
+		
+		httpSession = request.getSession(true);
+		if (userSession != null) {
+			httpSession.setAttribute(HttpConstants.USER_SESSION, userSession);
+		}
+	}
+
+	@Override
+	public void invalidateCurrentSession() {
 		HttpSession httpSession = request.getSession(false);
 		if (httpSession != null) {
 			httpSession.invalidate();

@@ -23,7 +23,6 @@ import java.util.List;
 import com.tcdng.unify.common.database.Entity;
 import com.tcdng.unify.core.SessionContext;
 import com.tcdng.unify.core.UnifyException;
-import com.tcdng.unify.core.UserToken;
 import com.tcdng.unify.core.annotation.Configurable;
 import com.tcdng.unify.core.annotation.Singleton;
 import com.tcdng.unify.core.annotation.UplBinding;
@@ -31,15 +30,12 @@ import com.tcdng.unify.core.constant.MimeType;
 import com.tcdng.unify.core.constant.TopicEventType;
 import com.tcdng.unify.core.data.DownloadFile;
 import com.tcdng.unify.core.data.FileAttachmentInfo;
-import com.tcdng.unify.core.security.TwoWayStringCryptograph;
 import com.tcdng.unify.core.task.TaskLauncher;
 import com.tcdng.unify.core.task.TaskMonitor;
 import com.tcdng.unify.core.task.TaskSetup;
 import com.tcdng.unify.core.upl.UplElementReferences;
-import com.tcdng.unify.core.util.ApplicationUtils;
 import com.tcdng.unify.core.util.ReflectUtils;
 import com.tcdng.unify.core.util.StringUtils;
-import com.tcdng.unify.web.ClientCookie;
 import com.tcdng.unify.web.ClientRequest;
 import com.tcdng.unify.web.ClientResponse;
 import com.tcdng.unify.web.ControllerPathParts;
@@ -54,7 +50,6 @@ import com.tcdng.unify.web.constant.ResultMappingConstants;
 import com.tcdng.unify.web.constant.Secured;
 import com.tcdng.unify.web.constant.UnifyWebRequestAttributeConstants;
 import com.tcdng.unify.web.data.MenuDetectInfo;
-import com.tcdng.unify.web.http.LongUserSessionManager;
 import com.tcdng.unify.web.http.MenuDetector;
 import com.tcdng.unify.web.ui.widget.ContentPanel;
 import com.tcdng.unify.web.ui.widget.DataTransferWidget;
@@ -490,59 +485,6 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 	 */
 	protected void postCommand(String widgetName, String command) throws UnifyException {
 
-	}
-
-	/**
-	 * Creates long user session.
-	 * 
-	 * @return true if set otherwise false
-	 * @throws UnifyException if an error occurs
-	 */
-	protected boolean createLongUserSession() throws UnifyException {
-		final ClientResponse response = getPageRequestContextUtil().getClientResponse();
-		if (response != null) {
-			if (isComponent(LongUserSessionManager.class)) {
-				final LongUserSessionManager longUserSessionManager = getComponent(LongUserSessionManager.class);
-				final TwoWayStringCryptograph cryptograph = getComponent(TwoWayStringCryptograph.class);
-				final UserToken userToken = getUserToken();
-				final int sessionInSecs = longUserSessionManager.getDefaultLongSessionSeconds();
-				userToken.setSessionInSecs(sessionInSecs);
-				final String cookieId = cryptograph.encrypt(ApplicationUtils.generateLongSessionCookieId(userToken));
-				if (longUserSessionManager.saveLongSession(userToken.getUserLoginId(), cookieId)) {
-					response.setCookie(longUserSessionManager.getLongSessionCookieName(), cookieId, sessionInSecs);
-					return true;
-				}
-			}
-		}
-
-		return false;
-	}
-
-	/**
-	 * Deletes long user session.
-	 * 
-	 * @param sessionInSecs session in seconds.
-	 * @return true if set otherwise false
-	 * @throws UnifyException if an error occurs
-	 */
-	protected boolean deleteLongUserSession() throws UnifyException {
-		final ClientRequest request = getPageRequestContextUtil().getClientRequest();
-		final ClientResponse response = getPageRequestContextUtil().getClientResponse();
-		if (request != null && response != null) {
-			if (isComponent(LongUserSessionManager.class)) {
-				final LongUserSessionManager longUserSessionManager = getComponent(LongUserSessionManager.class);
-				final String cookieName = longUserSessionManager.getLongSessionCookieName();
-				ClientCookie clientCookie = request.getCookie(cookieName);
-				if (clientCookie != null) {
-					final String cookieId = clientCookie.getVal();
-					longUserSessionManager.deleteLongSession(cookieId);
-					response.setCookie(cookieName, cookieId, 0);
-					return true;
-				}
-			}
-		}
-
-		return false;
 	}
 
 	/**

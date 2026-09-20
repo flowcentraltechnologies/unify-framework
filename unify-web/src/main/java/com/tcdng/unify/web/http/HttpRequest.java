@@ -79,7 +79,9 @@ public interface HttpRequest extends HttpRequestHeaders, HttpRequestParameters {
 	 
 	boolean isWithCookie(String name);
 	
-	void invalidateSession();
+	void swapToNewSession();
+	
+	void invalidateCurrentSession();
 
 	void setSessionAttribute(String name, Object val);
 
