@@ -117,6 +117,11 @@ public class TestClientRequest extends AbstractClientRequest {
     }
 
 	@Override
+	public void swapSession() {
+		
+	}
+
+	@Override
 	public void invalidateSession() {
 		
 	}
