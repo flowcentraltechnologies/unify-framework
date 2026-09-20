@@ -153,18 +153,19 @@ public class UserSessionManagerImpl extends AbstractBusinessService implements U
         sessionContext.setUserToken(userToken);
     }
 
-    @Override
-    public void logout(boolean clearCompleteSession) throws UnifyException {
-        if (clearCompleteSession) {
-            logOut(userSessions.get(getRequestContext().getSessionContext().getId()));
-        } else {
-            getRequestContext().getSessionContext().setUserToken(null);
-        }
-    }
+	@Override
+	public void logout(boolean clearCompleteSession) throws UnifyException {
+		if (clearCompleteSession) {
+			logOut(userSessions.get(getRequestContext().getSessionContext().getId()));
+		} else {
+			getRequestContext().getSessionContext().setUserToken(null);
+			getRequestContext().manualInvalidateSession();
+		}
+	}
 
     @Override
     public void logout(String sessionId) throws UnifyException {
-        logOut(userSessions.get(sessionId));
+        logOut(userSessions.remove(sessionId));
     }
 
     @Broadcast
@@ -228,6 +229,7 @@ public class UserSessionManagerImpl extends AbstractBusinessService implements U
                     new Update().add("userLoginId", null).add("userName", null));
             sessionContext.setUserToken(null);
             sessionContext.removeAllAttributes();
+            userSession.manualInvalidate();
         }
     }
 
@@ -274,6 +276,11 @@ public class UserSessionManagerImpl extends AbstractBusinessService implements U
 		@Override
 		public boolean isServiceUnavailable() {
 			return serviceUnavailable;
+		}
+
+		@Override
+		public void manualInvalidate() {
+			
 		}
 
 		@Override

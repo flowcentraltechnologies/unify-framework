@@ -36,6 +36,8 @@ public interface UserSession {
 	boolean isWithSessionContext();
 
 	boolean isServiceUnavailable();
+    
+    void manualInvalidate();
 	
 	void setServiceUnavailable(boolean serviceUnavailable);
 }

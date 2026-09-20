@@ -76,7 +76,7 @@ public abstract class AbstractHttpUserSession implements HttpUserSession {
 	}
 
 	@Override
-	public void invalidate() {
+	public void autoInvalidate() {
 		if (sessionContext != null) {
 			try {
 				userSessionManager.removeUserSession(this);

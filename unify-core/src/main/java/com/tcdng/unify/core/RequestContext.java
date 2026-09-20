@@ -27,57 +27,67 @@ import com.tcdng.unify.core.data.Context;
  */
 public class RequestContext extends Context {
 
-    private SessionContext sessionContext;
+	private UserSession userSession;
 
-    private Object quickReference;
+	private Object quickReference;
 
-    private String requestPath;
+	private String requestPath;
 
-    private String requestTarget;
+	private String requestTarget;
 
-    private String pid;
-    
-    public RequestContext(String requestPath, String requestTarget, SessionContext sessionContext) {
-        this.requestPath = requestPath;
-        this.requestTarget = requestTarget;
-        this.sessionContext = sessionContext;
-    }
+	private String pid;
 
-    public String getContextPath() {
-        return sessionContext.getContextPath();
-    }
+	public RequestContext(String requestPath, String requestTarget, UserSession userSession) {
+		this.requestPath = requestPath;
+		this.requestTarget = requestTarget;
+		this.userSession = userSession;
+	}
 
-    public String getTenantPath() {
-        return sessionContext.getTenantPath();
-    }
+	public RequestContext() {
 
-    public boolean isWithTenantPath() {
-        return sessionContext.isWithTenantPath();
-    }
+	}
 
-    public String getRequestPath() {
-        return requestPath;
-    }
+	public String getContextPath() {
+		return userSession != null ? userSession.getSessionContext().getContextPath() : null;
+	}
 
-    public String getRequestTarget() {
+	public String getTenantPath() {
+		return userSession != null ? userSession.getSessionContext().getTenantPath() : null;
+	}
+
+	public boolean isWithTenantPath() {
+		return userSession != null ? userSession.getSessionContext().isWithTenantPath() : null;
+	}
+
+	public String getRequestPath() {
+		return requestPath;
+	}
+
+	public String getRequestTarget() {
 		return requestTarget;
 	}
 
 	public SessionContext getSessionContext() {
-        return sessionContext;
-    }
+		return userSession != null ? userSession.getSessionContext() : null;
+	}
 
-    public Locale getLocale() {
-        return sessionContext.getLocale();
-    }
+	public Locale getLocale() {
+		return userSession != null ? userSession.getSessionContext().getLocale() : null;
+	}
 
-    public Object getQuickReference() {
-        return quickReference;
-    }
+	public void manualInvalidateSession() {
+		if (userSession != null) {
+			userSession.manualInvalidate();
+		}
+	}
+	
+	public Object getQuickReference() {
+		return quickReference;
+	}
 
-    public void setQuickReference(Object quickReference) {
-        this.quickReference = quickReference;
-    }
+	public void setQuickReference(Object quickReference) {
+		this.quickReference = quickReference;
+	}
 
 	public String getPid() {
 		return pid;
