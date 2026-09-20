@@ -233,7 +233,6 @@ public class HttpRequestImpl implements HttpRequest {
 		HttpSession httpSession = request.getSession(false);
 		UserSession userSession = null;
 		if (httpSession != null) {
-        	System.out.println("@prime: HttpRequestImpl swapSession()");
         	userSession = (UserSession) httpSession.getAttribute(HttpConstants.USER_SESSION);
 			httpSession.invalidate();
 		}
@@ -248,7 +247,6 @@ public class HttpRequestImpl implements HttpRequest {
 	public void invalidateCurrentSession() {
 		HttpSession httpSession = request.getSession(false);
 		if (httpSession != null) {
-        	System.out.println("@prime: HttpRequestImpl invalidateSession()");
 			httpSession.invalidate();
 		}
 	}
