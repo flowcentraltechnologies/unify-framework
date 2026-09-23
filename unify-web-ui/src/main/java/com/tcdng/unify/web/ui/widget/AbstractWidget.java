@@ -942,6 +942,21 @@ public abstract class AbstractWidget extends AbstractUplComponent implements Wid
 		}
 	}
 
+	/**
+	 * Appends a UPL attribute to a UPL string.
+	 * 
+	 * @param sb string builder that represents the UPL string to append to
+	 * @param attribute this component's UPL attribute to append
+	 * @param tagStart value start tag
+	 * @throws UnifyException if an error occurs
+	 */
+	protected void appendUplAttribute(StringBuilder sb, String attribute, String tagStart) throws UnifyException {
+		Object value = getUplAttribute(Object.class, attribute);
+		if (value != null) {
+			sb.append(' ').append(attribute).append(':').append(tagStart).append(value).append("}");
+		}
+	}
+
 	protected <T> T getUplAttribute(Class<T> type, String attribute, String bindingAttribute) throws UnifyException {
 		String binding = getUplAttribute(String.class, bindingAttribute);
 		if (StringUtils.isNotBlank(binding)) {

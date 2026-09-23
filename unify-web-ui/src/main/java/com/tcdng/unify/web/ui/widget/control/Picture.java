@@ -111,15 +111,15 @@ public class Picture extends AbstractAutoRefreshMultiControl {
 			sb.append("!ui-image src:");
 			sb.append(!StringUtils.isBlank(src) ? src : "$t{images/camera.png}");
 			sb.append(" binding:handler");
-			appendUplAttribute(sb, "styleClass");
-			appendUplAttribute(sb, "style");
+			appendUplAttribute(sb, "styleClass", "$s{");
+			appendUplAttribute(sb, "style", "$s{");
 			imageControl = (Control) addInternalChildWidget(sb.toString(), false, false);
 		} else {
 			sb.append("!ui-image src:");
 			sb.append(!StringUtils.isBlank(src) ? src : "$t{images/camera.png}");
-			appendUplAttribute(sb, "binding");
-			appendUplAttribute(sb, "styleClass");
-			appendUplAttribute(sb, "style");
+			appendUplAttribute(sb, "binding", "$s{");
+			appendUplAttribute(sb, "styleClass", "$s{");
+			appendUplAttribute(sb, "style", "$s{");
 			imageControl = (Control) addInternalChildWidget(sb.toString(), true, false);
 		}
 	}
