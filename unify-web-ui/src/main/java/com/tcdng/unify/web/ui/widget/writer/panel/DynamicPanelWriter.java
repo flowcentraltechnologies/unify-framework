@@ -36,38 +36,43 @@ import com.tcdng.unify.web.ui.widget.writer.AbstractPanelWriter;
 @Component("dynamicpanel-writer")
 public class DynamicPanelWriter extends AbstractPanelWriter {
 
-    @Override
-    protected void doWriteStructureAndContent(ResponseWriter writer, Widget widget) throws UnifyException {
-        DynamicPanel dynamicPanel = (DynamicPanel) widget;
-        writer.write("<input type=\"hidden\"");
-        writeTagId(writer, dynamicPanel.getHiddenId());
-        writer.write("/>");
-        writeLayoutContent(writer, dynamicPanel);
-    }
+	@Override
+	protected void doWriteStructureAndContent(ResponseWriter writer, Widget widget) throws UnifyException {
+		DynamicPanel dynamicPanel = (DynamicPanel) widget;
+		writer.write("<input type=\"hidden\"");
+		writeTagId(writer, dynamicPanel.getHiddenId());
+		writer.write("/>");
+		writeLayoutContent(writer, dynamicPanel);
+	}
 
-    @Override
-    protected void writeLayoutContent(ResponseWriter writer, Container container) throws UnifyException {
-        DynamicPanel dynamicPanel = (DynamicPanel) container;
-        getRequestContextUtil().setDynamicPanelPageName(dynamicPanel.getId(), dynamicPanel.getContainer().getId());
-        try {
-        	StandalonePanel standalonePanel = dynamicPanel.getStandalonePanel();
-            writer.write("<div style=\"width:100%;\"");
-            writeTagStyleClass(writer, standalonePanel.getName());
-            writer.write("/>");
-            writer.writeInnerStructureAndContent(standalonePanel);
-            writer.write("</div>");
-        } finally {
-            getRequestContextUtil().clearDynamicPanelPageName();
-        }
-    }
+	@Override
+	protected void writeLayoutContent(ResponseWriter writer, Container container) throws UnifyException {
+		DynamicPanel dynamicPanel = (DynamicPanel) container;
+		getRequestContextUtil().setDynamicPanelPageName(dynamicPanel.getId(), dynamicPanel.getContainer().getId());
+		try {
+			StandalonePanel standalonePanel = dynamicPanel.getStandalonePanel();
+			if (standalonePanel != null) {
+				writer.write("<div style=\"width:100%;\"");
+				writeTagStyleClass(writer, standalonePanel.getName());
+				writer.write("/>");
+				writer.writeInnerStructureAndContent(standalonePanel);
+				writer.write("</div>");
+			}
+		} finally {
+			getRequestContextUtil().clearDynamicPanelPageName();
+		}
+	}
 
-    @Override
+	@Override
 	protected void doWriteBehavior(ResponseWriter writer, Widget widget, EventHandler[] handlers)
 			throws UnifyException {
 		DynamicPanel dynamicPanel = (DynamicPanel) widget;
 		getRequestContextUtil().setDynamicPanelPageName(dynamicPanel.getId(), dynamicPanel.getContainer().getId());
 		try {
-			writer.writeBehavior(dynamicPanel.getStandalonePanel(), handlers);
+			StandalonePanel standalonePanel = dynamicPanel.getStandalonePanel();
+			if (standalonePanel != null) {
+				writer.writeBehavior(standalonePanel, handlers);
+			}
 		} finally {
 			getRequestContextUtil().clearDynamicPanelPageName();
 		}

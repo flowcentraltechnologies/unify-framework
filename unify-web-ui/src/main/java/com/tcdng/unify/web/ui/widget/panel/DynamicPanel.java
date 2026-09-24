@@ -51,7 +51,10 @@ public class DynamicPanel extends AbstractPanel {
 
     @Override
     public void resetState() throws UnifyException {
-        getStandalonePanel().resetState();
+		StandalonePanel standalonePanel = getStandalonePanel();
+		if (standalonePanel != null) {
+			standalonePanel.resetState();
+		}
     }
 
     @Override
@@ -68,38 +71,46 @@ public class DynamicPanel extends AbstractPanel {
         return getPrefixedId("hid_");
     }
 
-    public StandalonePanel getStandalonePanel() throws UnifyException {
-        String panelName = (String) getValue(getUplAttribute(String.class, "panelNameBinding"));
-        String uniqueName =
-                UplUtils.generateUplComponentCloneName(panelName, getPageManager().getPageName(getLongName()));
+	public StandalonePanel getStandalonePanel() throws UnifyException {
+		String panelName = (String) getValue(getUplAttribute(String.class, "panelNameBinding"));
+		if (isComponent(panelName)) {
+			String uniqueName = UplUtils.generateUplComponentCloneName(panelName,
+					getPageManager().getPageName(getLongName()));
 
-        Page page = resolveRequestPage();
-        getPageManager().invalidateStaleDocument(uniqueName);
-        if (page == null) {
-            page = (Page) getSessionAttribute(PageRequestParameterConstants.UNLOAD_ORIGIN_PAGE);
-        }
-        
-        StandalonePanel standalonePanel = page.getStandalonePanel(uniqueName);
-        if (standalonePanel == null) {
-            standalonePanel = getPageManager().createStandalonePanel(getSessionLocale(), uniqueName);
-            page.addStandalonePanel(uniqueName, standalonePanel);
-            getUIControllerUtil().updatePageControllerInfo(
-                    getRequestContextUtil().getResponsePathParts().getControllerName(), uniqueName);
-            panelNames.add(uniqueName);
-        }
-        setValueStore(standalonePanel);
+			Page page = resolveRequestPage();
+			getPageManager().invalidateStaleDocument(uniqueName);
+			if (page == null) {
+				page = (Page) getSessionAttribute(PageRequestParameterConstants.UNLOAD_ORIGIN_PAGE);
+			}
 
-        //Set stand-alone panel container. Allows stand-alone panel to inherit container state where necessary.
-        standalonePanel.setContainer(this);
+			StandalonePanel standalonePanel = page.getStandalonePanel(uniqueName);
+			if (standalonePanel == null) {
+				standalonePanel = getPageManager().createStandalonePanel(getSessionLocale(), uniqueName);
+				page.addStandalonePanel(uniqueName, standalonePanel);
+				getUIControllerUtil().updatePageControllerInfo(
+						getRequestContextUtil().getResponsePathParts().getControllerName(), uniqueName);
+				panelNames.add(uniqueName);
+			}
+			setValueStore(standalonePanel);
 
-        return standalonePanel;
-    }
+			// Set stand-alone panel container. Allows stand-alone panel to inherit
+			// container state where necessary.
+			standalonePanel.setContainer(this);
 
-    @Override
-    public void addPageAliases() throws UnifyException {
-        List<String> aliases = getPageManager().getExpandedReferences(getStandalonePanel().getId());
-        getRequestContextUtil().addPageAlias(getId(), DataUtils.toArray(String.class, aliases));
-    }
+			return standalonePanel;
+		}
+
+		return null;
+	}
+
+	@Override
+	public void addPageAliases() throws UnifyException {
+		final StandalonePanel panel = getStandalonePanel();
+		if (panel != null) {
+			List<String> aliases = getPageManager().getExpandedReferences(panel.getId());
+			getRequestContextUtil().addPageAlias(getId(), DataUtils.toArray(String.class, aliases));
+		}
+	}
 
     private void setValueStore(StandalonePanel standalonePanel) throws UnifyException {
         ValueStore valueStore = getValueStore();

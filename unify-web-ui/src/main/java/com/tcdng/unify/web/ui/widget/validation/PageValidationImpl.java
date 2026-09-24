@@ -100,8 +100,11 @@ public class PageValidationImpl extends AbstractPageValidation {
 				} else if (widget instanceof DynamicPanel) {
 					PageManager pageManager = getPageManager();
 					StandalonePanel standalonePanel = ((DynamicPanel) widget).getStandalonePanel();
-					for (String longName : standalonePanel.getPageValidationNames()) {
-						pass &= standalonePanel.getPageWidgetValidator(pageManager, longName).validate(dataTransfer);
+					if (standalonePanel != null) {
+						for (String longName : standalonePanel.getPageValidationNames()) {
+							pass &= standalonePanel.getPageWidgetValidator(pageManager, longName)
+									.validate(dataTransfer);
+						}
 					}
 				} else if (widget instanceof Control) {
 					pass &= validateWidget((Control) widget, dataTransfer);

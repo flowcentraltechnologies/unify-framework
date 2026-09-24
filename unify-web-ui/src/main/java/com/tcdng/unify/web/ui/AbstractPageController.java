@@ -259,7 +259,10 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 					widget = widget.getRelayWidget();
 				}
 
-				uiCommandManager.executeCommand(widget, requestCommand.getCommand());
+				if (widget != null) {
+					uiCommandManager.executeCommand(widget, requestCommand.getCommand());
+				}
+
 				String commandResultMapping = getPageRequestContextUtil().getCommandResultMapping();
 				if (StringUtils.isNotBlank(commandResultMapping)) {
 					postCommand(requestCommand.getParentLongName(), requestCommand.getCommand());
