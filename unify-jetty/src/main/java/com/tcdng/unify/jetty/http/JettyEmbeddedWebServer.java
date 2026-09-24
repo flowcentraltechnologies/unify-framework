@@ -27,6 +27,7 @@ import java.util.List;
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.http.HttpServletRequest;
 
+import org.eclipse.jetty.http.HttpCookie;
 import org.eclipse.jetty.http.HttpGenerator;
 import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.server.HttpConfiguration;
@@ -77,81 +78,81 @@ public class JettyEmbeddedWebServer extends AbstractEmbeddedHttpWebServer {
         return getHttpPort();
     }
 
-    @Override
-    protected void onInitialize() throws UnifyException {
-        try {
-            httpServer = new Server();
+	@Override
+	protected void onInitialize() throws UnifyException {
+		try {
+			httpServer = new Server();
 
-            List<Integer> portList = new ArrayList<Integer>();
-            String keyStorePath = getKeyStorePath();
-            if (!StringUtils.isBlank(keyStorePath)) {
-                final int httpsPort = getHttpsPort();
-                logInfo("Configuring HTTPS on port [{0}]...", Integer.toString(httpsPort));
-                HttpConfiguration https = new HttpConfiguration();
-                https.addCustomizer(new SecureRequestCustomizer());
+			List<Integer> portList = new ArrayList<Integer>();
+			String keyStorePath = getKeyStorePath();
+			if (!StringUtils.isBlank(keyStorePath)) {
+				final int httpsPort = getHttpsPort();
+				logInfo("Configuring HTTPS on port [{0}]...", Integer.toString(httpsPort));
+				HttpConfiguration https = new HttpConfiguration();
+				https.addCustomizer(new SecureRequestCustomizer());
 
-                SslContextFactory sslContextFactory = new SslContextFactory.Server();
-                Path _keyStorePath = Paths.get(keyStorePath).toAbsolutePath();
-                if (!Files.exists(_keyStorePath)) {
-                    throwOperationErrorException(new FileNotFoundException(_keyStorePath.toString()));
-                }
-                sslContextFactory.setKeyStorePath(_keyStorePath.toString());
-                String password = getKeyStorePass();
-                sslContextFactory.setKeyStorePassword(password);
-                sslContextFactory.setKeyManagerPassword(password);
+				SslContextFactory sslContextFactory = new SslContextFactory.Server();
+				Path _keyStorePath = Paths.get(keyStorePath).toAbsolutePath();
+				if (!Files.exists(_keyStorePath)) {
+					throwOperationErrorException(new FileNotFoundException(_keyStorePath.toString()));
+				}
+				sslContextFactory.setKeyStorePath(_keyStorePath.toString());
+				String password = getKeyStorePass();
+				sslContextFactory.setKeyStorePassword(password);
+				sslContextFactory.setKeyManagerPassword(password);
 
-                ServerConnector sslConnector = new ServerConnector(httpServer,
-                        new SslConnectionFactory(sslContextFactory, HttpVersion.HTTP_1_1.asString()),
-                        new HttpConnectionFactory(https));
-                sslConnector.setPort(httpsPort);
-                httpServer.addConnector(sslConnector);
-                portList.add(httpsPort);
-            }
+				ServerConnector sslConnector = new ServerConnector(httpServer,
+						new SslConnectionFactory(sslContextFactory, HttpVersion.HTTP_1_1.asString()),
+						new HttpConnectionFactory(https));
+				sslConnector.setPort(httpsPort);
+				httpServer.addConnector(sslConnector);
+				portList.add(httpsPort);
+			}
 
-            if (isHttpsOnly()) {
-                if (portList.isEmpty()) {
-                    throwOperationErrorException(new IllegalArgumentException(
-                            "You must provide SSL keystore properties since you have specified HTTPS only."));
-                }
-            } else {
-                // Setup HTTP
-                final int httpPort = getHttpPort();
-                logInfo("Configuring HTTP on port [{0}]...", Integer.toString(httpPort));
-                ServerConnector connector = new ServerConnector(httpServer);
-                connector.setPort(httpPort);
-                httpServer.addConnector(connector);
-                portList.add(httpPort);
-            }
+			if (isHttpsOnly()) {
+				if (portList.isEmpty()) {
+					throwOperationErrorException(new IllegalArgumentException(
+							"You must provide SSL keystore properties since you have specified HTTPS only."));
+				}
+			} else {
+				// Setup HTTP
+				final int httpPort = getHttpPort();
+				logInfo("Configuring HTTP on port [{0}]...", Integer.toString(httpPort));
+				ServerConnector connector = new ServerConnector(httpServer);
+				connector.setPort(httpPort);
+				httpServer.addConnector(connector);
+				portList.add(httpPort);
+			}
 
-            logInfo("Initializing HTTP server on ports {0}; using context path {1} and servlet path {2}...",
-                    portList, getContextPath(), getServletPath());
-            ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-            context.setContextPath(getContextPath());
-            context.getSessionHandler().setMaxInactiveInterval(getSessionSeconds());
-            final String sessionCookieName = generateSessionCookieName();
-            context.getSessionHandler().getSessionCookieConfig().setName(sessionCookieName);
-            httpServer.setHandler(context);
+			logInfo("Initializing HTTP server on ports {0}; using context path {1} and servlet path {2}...", portList,
+					getContextPath(), getServletPath());
+			ServletContextHandler handler = new ServletContextHandler(ServletContextHandler.SESSIONS);
+			handler.setContextPath(getContextPath());
+			handler.getSessionHandler().setMaxInactiveInterval(getSessionSeconds());
+			final String sessionCookieName = generateSessionCookieName();
+			handler.getSessionHandler().getSessionCookieConfig().setName(sessionCookieName);
+			handler.getSessionHandler().getSessionCookieConfig().setComment(HttpCookie.SAME_SITE_STRICT_COMMENT);
+			httpServer.setHandler(handler);
 
-            // Websocket
-            ServletHolder jettyHolder = new ServletHolder(JettyClientSyncWebSocketServlet.class);
-            context.addServlet(jettyHolder, ClientSyncNameConstants.SYNC_CONTEXT);
-            
-            // HTTP/HTTPS
-            ServletHolder mainHolder = new ServletHolder(new HttpApplicationServlet(createHttpServletModule()));
-            mainHolder.getRegistration().setMultipartConfig(new MultipartConfigElement(getMultipartLocation(),
-                    getMultipartMaxFileSize(), getMultipartMaxRequestSize(), getMultipartFileSizeThreshold()));
-            context.addServlet(mainHolder, getServletPath());
-            context.setErrorHandler(new CustomErrorHandler());
-            httpServer.addBean(new CustomErrorHandler());
-            
-            
-            httpServer.start();
-            HttpGenerator.setJettyVersion("");
-            logInfo("HTTP server initialization completed.");
-        } catch (Exception e) {
-            throw new UnifyException(e, UnifyCoreErrorConstants.COMPONENT_INITIALIZATION_ERROR, getName());
-        }
-    }
+			// Websocket
+			ServletHolder jettyHolder = new ServletHolder(JettyClientSyncWebSocketServlet.class);
+			handler.addServlet(jettyHolder, ClientSyncNameConstants.SYNC_CONTEXT);
+
+			// HTTP/HTTPS
+			ServletHolder mainHolder = new ServletHolder(new HttpApplicationServlet(createHttpServletModule()));
+			mainHolder.getRegistration().setMultipartConfig(new MultipartConfigElement(getMultipartLocation(),
+					getMultipartMaxFileSize(), getMultipartMaxRequestSize(), getMultipartFileSizeThreshold()));
+			handler.addServlet(mainHolder, getServletPath());
+			handler.setErrorHandler(new CustomErrorHandler());
+			httpServer.addBean(new CustomErrorHandler());
+
+			httpServer.start();
+			HttpGenerator.setJettyVersion("");
+			logInfo("HTTP server initialization completed.");
+		} catch (Exception e) {
+			throw new UnifyException(e, UnifyCoreErrorConstants.COMPONENT_INITIALIZATION_ERROR, getName());
+		}
+	}
 
     @Override
     protected void onTerminate() throws UnifyException {
