@@ -37,4 +37,12 @@ public interface PageAccessChecker extends UnifyComponent {
 	 */
 	boolean isPageAccessible(String roleCode, String pagePath) throws UnifyException;
 
+	/**
+	 * Invalidate current role code path access list.
+	 * 
+	 * @param roleCode the role code
+	 * @throws UnifyException if an error occurs
+	 */
+	void invalidateRole(String roleCode) throws UnifyException;
+
 }
