@@ -845,7 +845,8 @@ overflow-x:hidden;overflow-y:scroll;border-top: solid 1px #A0A0A0;border-left: s
 .ui-richtexteditor .sel {width: 96px;font-size:7pt;}
 
 /** Radio buttons*/
-.ui-radiobuttons {}
+.ui-radiobuttons {cursor: pointer;}
+.ui-radiolabel {display:inline-block;padding:6px 2px;cursor:pointer;}
 
 /** Search field */
 .ui-search {width: 160px;}

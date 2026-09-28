@@ -2965,7 +2965,16 @@ ux.rigPhotoUpload = function(rgp) {
 
 /** Radio buttons */
 ux.rigRadioButtons = function(rgp) {
+	const id = rgp.pId;
 	const rb = _id(rgp.pId);
+	
+	const rad = "ract_" + id;
+	const txt = "tact_" + id;
+	for (var i = 0; i < rgp.pCnt; i++) {
+		const evp = {uRid: rad + "_" + i};
+		ux.addHdl(_id(txt + "_" + i), "click", ux.rbClick, evp);
+	}
+		
 	rb._name = rgp.pNm;
 	
 	rb.setValue = function(val) {
@@ -2987,6 +2996,11 @@ ux.rigRadioButtons = function(rgp) {
 	};
 	
 	rb.setValue(rgp.pVal);
+}
+
+ux.rbClick = function(uEv) {
+	const radio = _id(uEv.evp.uRid);
+	if (radio) {radio.click()};
 }
 
 /** Search Field */

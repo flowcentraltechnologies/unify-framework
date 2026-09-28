@@ -46,6 +46,8 @@ public class RadioButtonsWriter extends AbstractControlWriter {
 		List<? extends Listable> listableList = radioButtons.getListables();
 		final boolean disabled = radioButtons.isContainerDisabled();
 		final int columns = radioButtons.getColumns();
+		final String radioPrefix = radioButtons.getPrefixedId("ract_");
+		final String txtPrefix = radioButtons.getPrefixedId("tact_");
 		if (columns > 0) {
 			writer.write("<div style=\"display:table;\">");
 
@@ -58,6 +60,9 @@ public class RadioButtonsWriter extends AbstractControlWriter {
 				for (; k < columns && i < len; k++, i++) {
 					writer.write("<div style=\"display:table-cell;\">");
 					writer.write("<input type=\"radio\"");
+					writer.write(" id=\"");
+					writer.write(radioPrefix).write("_").write(i);
+					writer.write("\"");
 					writeTagName(writer, radioButtons);
 					writeTagStyleClass(writer, radioButtons);
 					writeTagStyle(writer, radioButtons);
@@ -66,8 +71,13 @@ public class RadioButtonsWriter extends AbstractControlWriter {
 					if (disabled) {
 						writer.write(" disabled ");
 					}
+					
 					writer.write("/>");
+					writer.write("<span class=\"ui-radiolabel\" id=\"");
+					writer.write(txtPrefix).write("_").write(i);
+					writer.write("\"/>");
 					writer.writeWithHtmlEscape(listable.getListDescription());
+					writer.write("</span>");
 					writer.write("</div>");
 				}
 
@@ -83,8 +93,12 @@ public class RadioButtonsWriter extends AbstractControlWriter {
 		} else {
 			final boolean isNotFlow = !radioButtons.getUplAttribute(boolean.class, "flow");
 			int breaks = listableList.size();
+			int i = 0;
 			for (Listable listable : listableList) {
 				writer.write("<input type=\"radio\"");
+				writer.write(" id=\"");
+				writer.write(radioPrefix).write("_").write(i);
+				writer.write("\"");
 				writeTagName(writer, radioButtons);
 				writeTagStyleClass(writer, radioButtons);
 				writeTagStyle(writer, radioButtons);
@@ -92,14 +106,21 @@ public class RadioButtonsWriter extends AbstractControlWriter {
 				if (disabled) {
 					writer.write(" disabled ");
 				}
+				
 				writer.write("/>");
+				writer.write("<span class=\"ui-radiolabel\" id=\"");
+				writer.write(txtPrefix).write("_").write(i);
+				writer.write("\"/>");
 				writer.writeWithHtmlEscape(listable.getListDescription());
+				writer.write("</span>");
 
 				if (isNotFlow) {
 					if ((--breaks) > 0) {
 						writer.write("<br />");
 					}
 				}
+				
+				i++;
 			}
 		}
 	}
@@ -109,8 +130,10 @@ public class RadioButtonsWriter extends AbstractControlWriter {
 			throws UnifyException {
 		super.doWriteBehavior(writer, widget, handlers);
 		RadioButtons radioButtons = (RadioButtons) widget;
+		List<? extends Listable> listableList = radioButtons.getListables();
 		writer.beginFunction("ux.rigRadioButtons");
 		writer.writeParam("pId", radioButtons.getId());
+		writer.writeParam("pCnt", listableList.size());
 		writer.writeParam("pNm", radioButtons.getGroupId());
 		writer.writeParam("pVal", radioButtons.getValue(String.class));
 		writer.endFunction();
