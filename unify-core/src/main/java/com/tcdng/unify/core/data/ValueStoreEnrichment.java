@@ -16,6 +16,7 @@
 
 package com.tcdng.unify.core.data;
 
+import com.tcdng.unify.core.UnifyComponent;
 import com.tcdng.unify.core.UnifyException;
 
 /**
@@ -24,7 +25,7 @@ import com.tcdng.unify.core.UnifyException;
  * @author The Code Department
  * @since 4.1
  */
-public interface ValueStoreEnrichment {
+public interface ValueStoreEnrichment extends UnifyComponent {
 
 	/**
 	 * Enriches supplied value store.
