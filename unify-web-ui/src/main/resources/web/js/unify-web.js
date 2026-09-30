@@ -185,8 +185,15 @@ ux.wsReceive = function(txt) {
 	}
 }
 
-ux.processJSON = function(jsonstring) {
-	const fullResp = JSON.parse(jsonstring);
+ux.processJSON = function(json) {
+	if (json.startsWith('<!DOCTYPE html>') || json.startsWith('<html')) {
+		document.open();
+		document.write(json);
+		document.close();
+		return;
+	}
+	
+	const fullResp = JSON.parse(json);
 	ux.remoteView = fullResp.remoteView;
 	if (fullResp.jsonResp) {
 		ux.allpush = fullResp.allPush;
