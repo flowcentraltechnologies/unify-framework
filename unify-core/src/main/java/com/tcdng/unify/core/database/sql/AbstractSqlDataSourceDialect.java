@@ -1163,7 +1163,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 					aggregateSql.append(type.sql()).append("(*)");
 				} else {
 					aggregateSql.append(AggregateType.SUM.sql()).append("(CASE ");
-					appendWhenClause(aggregateSql, parameterInfoList, sqlEntityInfo, query);
+					internalAppendWhenClause(aggregateSql, parameterInfoList, sqlEntityInfo, query);
 					aggregateSql.append(" THEN 1 ELSE 0 END)");
 				}
 			} else if (type.isSum()) {
@@ -1171,7 +1171,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 					aggregateSql.append(type.sql()).append("(").append(sqlFieldInfo.getPreferredColumnName()).append(")");
 				} else {
 					aggregateSql.append(type.sql()).append("(CASE ");
-					appendWhenClause(aggregateSql, parameterInfoList, sqlEntityInfo, query);
+					internalAppendWhenClause(aggregateSql, parameterInfoList, sqlEntityInfo, query);
 					aggregateSql.append(" THEN ").append(sqlFieldInfo.getPreferredColumnName()).append(" ELSE 0 END)");
 				}
 			} else {
@@ -1179,7 +1179,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 					aggregateSql.append(type.sql()).append("(").append(sqlFieldInfo.getPreferredColumnName()).append(")");
 				} else {
 					aggregateSql.append(type.sql()).append("(CASE ");
-					appendWhenClause(aggregateSql, parameterInfoList, sqlEntityInfo, query);
+					internalAppendWhenClause(aggregateSql, parameterInfoList, sqlEntityInfo, query);
 					aggregateSql.append(" THEN ").append(sqlFieldInfo.getPreferredColumnName()).append(" END)");
 				}
 			}
@@ -2256,6 +2256,21 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 				}
 			}
 		}
+	}
+
+	private boolean internalAppendWhenClause(StringBuilder aggregateSql, List<SqlParameter> parameterInfoList,
+			SqlEntityInfo sqlEntityInfo, Query<? extends Entity> query) throws UnifyException {
+		final Restriction restriction = resolveRestriction(sqlEntityInfo, query);
+		if (!restriction.isEmpty()) {
+			SqlCriteriaPolicy sqlCriteriaPolicy = getSqlCriteriaPolicy(
+					restriction.getConditionType().restrictionType());
+			aggregateSql.append(" WHEN ");
+			sqlCriteriaPolicy.generatePreparedStatementCriteria(aggregateSql, parameterInfoList, sqlEntityInfo,
+					restriction);
+			return true;
+		}
+
+		return false;
 	}
 
 	private boolean internalAppendWhereClause(StringBuilder sql, List<SqlParameter> parameterInfoList,
