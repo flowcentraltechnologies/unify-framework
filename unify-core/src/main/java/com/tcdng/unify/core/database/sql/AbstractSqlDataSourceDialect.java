@@ -1128,6 +1128,70 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 	}
 
 	@Override
+	public SqlStatement prepareAggregateStatement(List<AggregateFunction> aggregateFunctionList,
+			List<Query<? extends Entity>> queries) throws UnifyException {
+		final int len = aggregateFunctionList.size();
+		if (queries.size() != len) {
+			throw new IllegalArgumentException("Number of queries does not match aggregate function list size.");
+		}
+		
+		SqlEntityInfo sqlEntityInfo = resolveSqlEntityInfo(queries.get(0));
+		List<SqlParameter> parameterInfoList = new ArrayList<SqlParameter>();
+		List<SqlFieldInfo> returnFieldInfoList = new ArrayList<SqlFieldInfo>();
+		
+		StringBuilder aggregateSql = new StringBuilder();
+		aggregateSql.append("SELECT ");
+		boolean appendSym = false;
+		for (int i = 0; i < len; i++) {
+			final AggregateFunction aggregateFunction = aggregateFunctionList.get(i);
+			final AggregateType type = aggregateFunction.getType();
+			SqlFieldInfo sqlFieldInfo = sqlEntityInfo.getListFieldInfo(aggregateFunction.getFieldName());
+			if (!type.supports(ConverterUtils.getWrapperClass(sqlFieldInfo.getFieldType()))) {
+				throw new UnifyException(UnifyCoreErrorConstants.RECORD_SELECT_NOT_SUITABLE_FOR_AGGREGATE,
+						aggregateFunction.getFieldName(), sqlEntityInfo.getKeyClass());
+			}
+
+			if (appendSym) {
+				aggregateSql.append(", ");
+			} else {
+				appendSym = true;
+			}
+
+			final Query<? extends Entity> query = queries.get(i);
+			if (type.isCount()) {
+				if (query.isEmptyCriteria()) {
+					aggregateSql.append(type.sql()).append("(*)");
+				} else {
+					aggregateSql.append(AggregateType.SUM.sql()).append("(CASE ");
+					appendWhenClause(aggregateSql, parameterInfoList, sqlEntityInfo, query);
+					aggregateSql.append(" THEN 1 ELSE 0 END)");
+				}
+			} else if (type.isSum()) {
+				if (query.isEmptyCriteria()) {
+					aggregateSql.append(type.sql()).append("(").append(sqlFieldInfo.getPreferredColumnName()).append(")");
+				} else {
+					aggregateSql.append(type.sql()).append("(CASE ");
+					appendWhenClause(aggregateSql, parameterInfoList, sqlEntityInfo, query);
+					aggregateSql.append(" THEN ").append(sqlFieldInfo.getPreferredColumnName()).append(" ELSE 0 END)");
+				}
+			} else {
+				if (query.isEmptyCriteria()) {
+					aggregateSql.append(type.sql()).append("(").append(sqlFieldInfo.getPreferredColumnName()).append(")");
+				} else {
+					aggregateSql.append(type.sql()).append("(CASE ");
+					appendWhenClause(aggregateSql, parameterInfoList, sqlEntityInfo, query);
+					aggregateSql.append(" THEN ").append(sqlFieldInfo.getPreferredColumnName()).append(" END)");
+				}
+			}
+			
+			returnFieldInfoList.add(sqlFieldInfo);
+		}
+		
+		return new SqlStatement(sqlEntityInfo, SqlStatementType.FIND, aggregateSql.toString(),
+				parameterInfoList, getSqlResultList(returnFieldInfoList), false); // lenient false
+	}
+
+	@Override
 	public SqlStatement prepareAggregateStatement(AggregateFunction aggregateFunction, Query<? extends Entity> query,
 			List<GroupingFunction> groupingFunction) throws UnifyException {
 		if (groupingFunction == null) {
@@ -1752,28 +1816,11 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 	 */
 	protected void appendAggregateFunctionSql(StringBuilder sb, AggregateType aggregateType, String funcParam,
 			boolean distinct) throws UnifyException {
-		switch (aggregateType) {
-		case AVERAGE:
-			sb.append("AVG(");
-			break;
-		case MAXIMUM:
-			sb.append("MAX(");
-			break;
-		case MINIMUM:
-			sb.append("MIN(");
-			break;
-		case SUM:
-			sb.append("SUM(");
-			break;
-		case COUNT:
-		default:
-			sb.append("COUNT(");
-			break;
-		}
-
+		sb.append(aggregateType.sql()).append("(");
 		if (distinct) {
 			sb.append("DISTINCT ");
 		}
+
 		sb.append(funcParam).append(')');
 	}
 

@@ -1053,6 +1053,30 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		}
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
+	public List<Aggregation> aggregate(List<AggregateFunction> aggregateFunction, List<Query<? extends Entity>> queries)
+			throws UnifyException {
+		try {
+			final int len = queries.size();
+			for (int i = 0; i < len; i++) {
+				SqlEntityInfo sqlEntityInfo = resolveSqlEntityInfo(queries.get(i));
+				EntityPolicy entityPolicy = sqlEntityInfo.getEntityPolicy();
+				if (entityPolicy != null) {
+					entityPolicy.preQuery(queries.get(i));
+				}
+			}
+
+			return getSqlStatementExecutor().executeMultipleAggregateResultQuery(aggregateFunction, connection,
+					sqlDataSourceDialect.getSqlTypePolicy(int.class),
+					sqlDataSourceDialect.prepareAggregateStatement(aggregateFunction, queries));
+		} catch (UnifyException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new UnifyOperationException(e);
+		}
+	}
+
 	@SuppressWarnings({ "unchecked", "rawtypes"})
 	@Override
 	public List<GroupingAggregation> aggregate(AggregateFunction aggregateFunction, Query<? extends Entity> query,

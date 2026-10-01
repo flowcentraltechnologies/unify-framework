@@ -24,15 +24,18 @@ import java.util.Date;
  * @since 4.1
  */
 public enum AggregateType {
-    COUNT(Object.class),
-    SUM(Number.class),
-    AVERAGE(Number.class),
-    MAXIMUM(Number.class, Date.class),
-    MINIMUM(Number.class, Date.class);
+    COUNT("COUNT", Object.class),
+    SUM("SUM", Number.class),
+    AVERAGE("AVG", Number.class),
+    MAXIMUM("MAX", Number.class, Date.class),
+    MINIMUM("MIN", Number.class, Date.class);
 
+	private final String sql;
+	
     private final Class<?>[] supports;
 
-    private AggregateType(Class<?>... supports) {
+    private AggregateType(String sql, Class<?>... supports) {
+    	this.sql = sql;
         this.supports = supports;
     }
 
@@ -51,5 +54,29 @@ public enum AggregateType {
             }
         }
         return false;
+    }
+    
+    public String sql() {
+    	return sql;
+    }
+    
+    public boolean isCount() {
+    	return this.equals(COUNT);
+    }
+    
+    public boolean isSum() {
+    	return this.equals(SUM);
+    }
+    
+    public boolean isAverage() {
+    	return this.equals(AVERAGE);
+    }
+    
+    public boolean isMaximum() {
+    	return this.equals(MAXIMUM);
+    }
+    
+    public boolean isMinimum() {
+    	return this.equals(MINIMUM);
     }
 }
