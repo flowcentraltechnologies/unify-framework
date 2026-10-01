@@ -238,8 +238,10 @@ public class DatabaseTableEntityCRUDTest extends AbstractUnifyComponentTest {
 
 			// Sum
 			List<Aggregation> list = db.aggregate(
-					Arrays.asList(AggregateType.SUM.function("p1", "price"), AggregateType.SUM.function("p2", "quantity")),
-					new FruitQuery().ignoreEmptyCriteria(true));
+					Arrays.asList(AggregateType.SUM.function("p1", "price"),
+							AggregateType.SUM.function("p2", "quantity")),
+					Arrays.asList(new FruitQuery().ignoreEmptyCriteria(true),
+							new FruitQuery().ignoreEmptyCriteria(true)));
 			assertNotNull(list);
 			assertEquals(2, list.size());
 
@@ -252,11 +254,31 @@ public class DatabaseTableEntityCRUDTest extends AbstractUnifyComponentTest {
 			assertEquals(Double.valueOf(140.00), priceAggregate.getValue(Double.class));
 			assertEquals("quantity", qtyAggregate.getFieldName());
 			assertEquals(Integer.valueOf(84), qtyAggregate.getValue(Integer.class));
+			
+			list = db.aggregate(
+					Arrays.asList(AggregateType.SUM.function("p1", "price"),
+							AggregateType.SUM.function("p2", "quantity")),
+					Arrays.asList(new FruitQuery().addLike("name", "apple"),
+							new FruitQuery().ignoreEmptyCriteria(true)));
+			assertNotNull(list);
+			assertEquals(2, list.size());
+
+			priceAggregate = list.get(0);
+			qtyAggregate = list.get(1);
+			assertNotNull(priceAggregate);
+			assertNotNull(qtyAggregate);
+			assertEquals("price", priceAggregate.getFieldName());
+			assertEquals(80.00, priceAggregate.getValue());
+			assertEquals(Double.valueOf(80.00), priceAggregate.getValue(Double.class));
+			assertEquals("quantity", qtyAggregate.getFieldName());
+			assertEquals(Integer.valueOf(84), qtyAggregate.getValue(Integer.class));
 
 			// Combine Average and sum
 			list = db.aggregate(
-					Arrays.asList(AggregateType.AVERAGE.function("p1", "quantity"), AggregateType.SUM.function("p2", "price")),
-					new FruitQuery().addLike("name", "apple").addSelect("quantity", "price"));
+					Arrays.asList(AggregateType.AVERAGE.function("p1", "quantity"),
+							AggregateType.SUM.function("p2", "price")),
+					Arrays.asList(new FruitQuery().addLike("name", "apple"),
+							new FruitQuery().addLike("name", "apple")));
 			assertNotNull(list);
 			assertEquals(2, list.size());
 
@@ -268,6 +290,113 @@ public class DatabaseTableEntityCRUDTest extends AbstractUnifyComponentTest {
 			assertEquals(14, qtyAggregate.getValue());
 			assertEquals("price", priceAggregate.getFieldName());
 			assertEquals(80.00, priceAggregate.getValue());
+			
+			list = db.aggregate(
+					Arrays.asList(AggregateType.AVERAGE.function("p1", "quantity"),
+							AggregateType.SUM.function("p2", "price")),
+					Arrays.asList(new FruitQuery().addNotLike("name", "apple"),
+							new FruitQuery().addLike("name", "apple")));
+			assertNotNull(list);
+			assertEquals(2, list.size());
+
+			qtyAggregate = list.get(0);
+			priceAggregate = list.get(1);
+			assertNotNull(qtyAggregate);
+			assertNotNull(priceAggregate);
+			assertEquals("quantity", qtyAggregate.getFieldName());
+			assertEquals(28, qtyAggregate.getValue());
+			assertEquals("price", priceAggregate.getFieldName());
+			assertEquals(80.00, priceAggregate.getValue());
+		} catch (Exception e) {
+			tm.setRollback();
+			throw e;
+		} finally {
+			tm.endTransaction();
+		}
+	}
+
+	@Test
+	public void testAggregateMultipleCorrespondingWithCommon() throws Exception {
+		tm.beginTransaction();
+		try {
+			db.create(new Fruit("apple", "red", 20.00, 25));
+			db.create(new Fruit("pineapple", "cyan", 60.00, 3));
+			db.create(new Fruit("banana", "yellow", 45.00, 45));
+			db.create(new Fruit("orange", "orange", 15.00, 11));
+
+			final FruitQuery commonQuery = (FruitQuery) new FruitQuery().addGreaterThan("price", 20.00);
+			
+			// Sum
+			List<Aggregation> list = db.aggregate(
+					Arrays.asList(AggregateType.SUM.function("p1", "price"),
+							AggregateType.SUM.function("p2", "quantity")),
+					Arrays.asList(new FruitQuery().ignoreEmptyCriteria(true),
+							new FruitQuery().ignoreEmptyCriteria(true)), commonQuery);
+			assertNotNull(list);
+			assertEquals(2, list.size());
+
+			Aggregation priceAggregate = list.get(0);
+			Aggregation qtyAggregate = list.get(1);
+			assertNotNull(priceAggregate);
+			assertNotNull(qtyAggregate);
+			assertEquals("price", priceAggregate.getFieldName());
+			assertEquals(105.00, priceAggregate.getValue());
+			assertEquals(Double.valueOf(105.00), priceAggregate.getValue(Double.class));
+			assertEquals("quantity", qtyAggregate.getFieldName());
+			assertEquals(Integer.valueOf(48), qtyAggregate.getValue(Integer.class));
+			
+			list = db.aggregate(
+					Arrays.asList(AggregateType.SUM.function("p1", "price"),
+							AggregateType.SUM.function("p2", "quantity")),
+					Arrays.asList(new FruitQuery().addLike("name", "apple"),
+							new FruitQuery().ignoreEmptyCriteria(true)), commonQuery);
+			assertNotNull(list);
+			assertEquals(2, list.size());
+
+			priceAggregate = list.get(0);
+			qtyAggregate = list.get(1);
+			assertNotNull(priceAggregate);
+			assertNotNull(qtyAggregate);
+			assertEquals("price", priceAggregate.getFieldName());
+			assertEquals(60.00, priceAggregate.getValue());
+			assertEquals(Double.valueOf(60.00), priceAggregate.getValue(Double.class));
+			assertEquals("quantity", qtyAggregate.getFieldName());
+			assertEquals(Integer.valueOf(48), qtyAggregate.getValue(Integer.class));
+
+			// Combine Average and sum
+			list = db.aggregate(
+					Arrays.asList(AggregateType.AVERAGE.function("p1", "quantity"),
+							AggregateType.SUM.function("p2", "price")),
+					Arrays.asList(new FruitQuery().addLike("name", "apple"),
+							new FruitQuery().addLike("name", "apple")), commonQuery);
+			assertNotNull(list);
+			assertEquals(2, list.size());
+
+			qtyAggregate = list.get(0);
+			priceAggregate = list.get(1);
+			assertNotNull(qtyAggregate);
+			assertNotNull(priceAggregate);
+			assertEquals("quantity", qtyAggregate.getFieldName());
+			assertEquals(3, qtyAggregate.getValue());
+			assertEquals("price", priceAggregate.getFieldName());
+			assertEquals(60.00, priceAggregate.getValue());
+			
+			list = db.aggregate(
+					Arrays.asList(AggregateType.AVERAGE.function("p1", "quantity"),
+							AggregateType.SUM.function("p2", "price")),
+					Arrays.asList(new FruitQuery().addNotLike("name", "apple"),
+							new FruitQuery().addLike("name", "apple")), commonQuery);
+			assertNotNull(list);
+			assertEquals(2, list.size());
+
+			qtyAggregate = list.get(0);
+			priceAggregate = list.get(1);
+			assertNotNull(qtyAggregate);
+			assertNotNull(priceAggregate);
+			assertEquals("quantity", qtyAggregate.getFieldName());
+			assertEquals(45, qtyAggregate.getValue());
+			assertEquals("price", priceAggregate.getFieldName());
+			assertEquals(60.00, priceAggregate.getValue());
 		} catch (Exception e) {
 			tm.setRollback();
 			throw e;
