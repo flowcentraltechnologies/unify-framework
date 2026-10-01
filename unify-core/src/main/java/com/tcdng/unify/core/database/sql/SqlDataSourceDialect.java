@@ -425,6 +425,17 @@ public interface SqlDataSourceDialect extends DataSourceDialect, SqlGenerator {
 			List<Query<? extends Entity>> queries) throws UnifyException;
 
 	/**
+	 * Prepares an aggregate field statement with common query.
+	 * 
+	 * @param aggregateFunctionList the aggregate function list
+	 * @param queries               the aggregation corresponding queries
+	 * @param query                 the common query
+	 * @return the aggregate statement
+	 */
+	SqlStatement prepareAggregateStatement(List<AggregateFunction> aggregateFunctionList,
+			List<Query<? extends Entity>> queries, Query<? extends Entity> commonQuery) throws UnifyException;
+
+	/**
 	 * Prepares an aggregate field statement with grouping.
 	 * 
 	 * @param aggregateFunction the aggregate function

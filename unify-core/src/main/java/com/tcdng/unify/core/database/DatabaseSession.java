@@ -931,6 +931,21 @@ public interface DatabaseSession {
 			throws UnifyException;
 
 	/**
+	 * Executes a list of aggregate functions that match specified corresponding
+	 * queries with separate common query.
+	 * 
+	 * @param aggregateFunction the aggregate function
+	 * @param queries           the queries to use
+	 * @param commonQuery       the common query
+	 * @return the aggregation
+	 * @throws UnifyException If aggregate function field is unknown for entity. If
+	 *                        aggregate function field is not numeric. If an error
+	 *                        occurs
+	 */
+	List<Aggregation> aggregate(List<AggregateFunction> aggregateFunction, List<Query<? extends Entity>> queries,
+			Query<? extends Entity> commonQuery) throws UnifyException;
+
+	/**
 	 * Executes an group aggregate function that match specified query.
 	 * 
 	 * @param aggregateFunction the aggregate function

@@ -1130,15 +1130,21 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 	@Override
 	public SqlStatement prepareAggregateStatement(List<AggregateFunction> aggregateFunctionList,
 			List<Query<? extends Entity>> queries) throws UnifyException {
+		return prepareAggregateStatement(aggregateFunctionList, queries, null);
+	}
+
+	@Override
+	public SqlStatement prepareAggregateStatement(List<AggregateFunction> aggregateFunctionList,
+			List<Query<? extends Entity>> queries, Query<? extends Entity> commonQuery) throws UnifyException {
 		final int len = aggregateFunctionList.size();
 		if (queries.size() != len) {
 			throw new IllegalArgumentException("Number of queries does not match aggregate function list size.");
 		}
-		
+
 		SqlEntityInfo sqlEntityInfo = resolveSqlEntityInfo(queries.get(0));
 		List<SqlParameter> parameterInfoList = new ArrayList<SqlParameter>();
 		List<SqlFieldInfo> returnFieldInfoList = new ArrayList<SqlFieldInfo>();
-		
+
 		StringBuilder aggregateSql = new StringBuilder();
 		aggregateSql.append("SELECT ");
 		boolean appendSym = false;
@@ -1168,7 +1174,8 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 				}
 			} else if (type.isSum()) {
 				if (query.isEmptyCriteria()) {
-					aggregateSql.append(type.sql()).append("(").append(sqlFieldInfo.getPreferredColumnName()).append(")");
+					aggregateSql.append(type.sql()).append("(").append(sqlFieldInfo.getPreferredColumnName())
+							.append(")");
 				} else {
 					aggregateSql.append(type.sql()).append("(CASE ");
 					internalAppendWhenClause(aggregateSql, parameterInfoList, sqlEntityInfo, query);
@@ -1176,21 +1183,27 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 				}
 			} else {
 				if (query.isEmptyCriteria()) {
-					aggregateSql.append(type.sql()).append("(").append(sqlFieldInfo.getPreferredColumnName()).append(")");
+					aggregateSql.append(type.sql()).append("(").append(sqlFieldInfo.getPreferredColumnName())
+							.append(")");
 				} else {
 					aggregateSql.append(type.sql()).append("(CASE ");
 					internalAppendWhenClause(aggregateSql, parameterInfoList, sqlEntityInfo, query);
 					aggregateSql.append(" THEN ").append(sqlFieldInfo.getPreferredColumnName()).append(" END)");
 				}
 			}
-			
+
 			returnFieldInfoList.add(sqlFieldInfo);
 		}
 
 		aggregateSql.append(" FROM ").append(sqlEntityInfo.getSchemaViewName());
-		
-		return new SqlStatement(sqlEntityInfo, SqlStatementType.FIND, aggregateSql.toString(),
-				parameterInfoList, getSqlResultList(returnFieldInfoList), false); // lenient false
+
+		if (commonQuery != null) {
+			internalAppendWhereClause(aggregateSql, parameterInfoList, sqlEntityInfo, commonQuery, SqlQueryType.SELECT,
+					null);
+		}
+
+		return new SqlStatement(sqlEntityInfo, SqlStatementType.FIND, aggregateSql.toString(), parameterInfoList,
+				getSqlResultList(returnFieldInfoList), false); // lenient false
 	}
 
 	@Override

@@ -228,6 +228,55 @@ public class DatabaseTableEntityCRUDTest extends AbstractUnifyComponentTest {
 	}
 
 	@Test
+	public void testAggregateMultipleCorresponding() throws Exception {
+		tm.beginTransaction();
+		try {
+			db.create(new Fruit("apple", "red", 20.00, 25));
+			db.create(new Fruit("pineapple", "cyan", 60.00, 3));
+			db.create(new Fruit("banana", "yellow", 45.00, 45));
+			db.create(new Fruit("orange", "orange", 15.00, 11));
+
+			// Sum
+			List<Aggregation> list = db.aggregate(
+					Arrays.asList(AggregateType.SUM.function("p1", "price"), AggregateType.SUM.function("p2", "quantity")),
+					new FruitQuery().ignoreEmptyCriteria(true));
+			assertNotNull(list);
+			assertEquals(2, list.size());
+
+			Aggregation priceAggregate = list.get(0);
+			Aggregation qtyAggregate = list.get(1);
+			assertNotNull(priceAggregate);
+			assertNotNull(qtyAggregate);
+			assertEquals("price", priceAggregate.getFieldName());
+			assertEquals(140.00, priceAggregate.getValue());
+			assertEquals(Double.valueOf(140.00), priceAggregate.getValue(Double.class));
+			assertEquals("quantity", qtyAggregate.getFieldName());
+			assertEquals(Integer.valueOf(84), qtyAggregate.getValue(Integer.class));
+
+			// Combine Average and sum
+			list = db.aggregate(
+					Arrays.asList(AggregateType.AVERAGE.function("p1", "quantity"), AggregateType.SUM.function("p2", "price")),
+					new FruitQuery().addLike("name", "apple").addSelect("quantity", "price"));
+			assertNotNull(list);
+			assertEquals(2, list.size());
+
+			qtyAggregate = list.get(0);
+			priceAggregate = list.get(1);
+			assertNotNull(qtyAggregate);
+			assertNotNull(priceAggregate);
+			assertEquals("quantity", qtyAggregate.getFieldName());
+			assertEquals(14, qtyAggregate.getValue());
+			assertEquals("price", priceAggregate.getFieldName());
+			assertEquals(80.00, priceAggregate.getValue());
+		} catch (Exception e) {
+			tm.setRollback();
+			throw e;
+		} finally {
+			tm.endTransaction();
+		}
+	}
+
+	@Test
 	public void testAggregateCountDistinct() throws Exception {
 		tm.beginTransaction();
 		try {

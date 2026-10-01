@@ -1053,10 +1053,16 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		}
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public List<Aggregation> aggregate(List<AggregateFunction> aggregateFunction, List<Query<? extends Entity>> queries)
 			throws UnifyException {
+		return aggregate(aggregateFunction, queries, null);
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
+	public List<Aggregation> aggregate(List<AggregateFunction> aggregateFunction, List<Query<? extends Entity>> queries,
+			Query<? extends Entity> commonQuery) throws UnifyException {
 		try {
 			final int len = queries.size();
 			for (int i = 0; i < len; i++) {
@@ -1069,7 +1075,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 
 			return getSqlStatementExecutor().executeMultipleAggregateResultQuery(aggregateFunction, connection,
 					sqlDataSourceDialect.getSqlTypePolicy(int.class),
-					sqlDataSourceDialect.prepareAggregateStatement(aggregateFunction, queries));
+					sqlDataSourceDialect.prepareAggregateStatement(aggregateFunction, queries, commonQuery));
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
