@@ -1186,6 +1186,8 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 			
 			returnFieldInfoList.add(sqlFieldInfo);
 		}
+
+		aggregateSql.append(" FROM ").append(sqlEntityInfo.getSchemaViewName());
 		
 		return new SqlStatement(sqlEntityInfo, SqlStatementType.FIND, aggregateSql.toString(),
 				parameterInfoList, getSqlResultList(returnFieldInfoList), false); // lenient false
