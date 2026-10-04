@@ -1768,6 +1768,25 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	protected Listable getListItemByKey(LocaleType localeType, String listName, String itemKey) throws UnifyException {
 		return unifyComponentContext.getListManager().getListItemByKey(getLocale(localeType), listName, itemKey);
 	}
+	
+    /**
+     * Returns the list items of a list by keys.
+     * 
+     * @param locale
+     *            the request locale
+     * @param listName
+     *            the name of the list command
+     * @param listKeys
+     *            the list keys of the item to fetch
+     * @param params
+     *            optional request parameters
+     * @throws UnifyException
+     *             if list is unknown. If an error occurs
+     */
+	protected List<Listable> getListItemsByKeys(Locale locale, String listName, List<String> listKeys, Object... params)
+			throws UnifyException {
+		return unifyComponentContext.getListManager().getListItemsByKeys(locale, listName, listKeys, params);
+	}
 
 	protected Listable getListItemByDescription(LocaleType localeType, String listName, String itemDesc)
 			throws UnifyException {

@@ -177,6 +177,23 @@ public interface ListManager extends UnifyComponent {
             throws UnifyException;
 
     /**
+     * Returns the list items of a list by keys.
+     * 
+     * @param locale
+     *            the request locale
+     * @param listName
+     *            the name of the list command
+     * @param listKeys
+     *            the list keys of the item to fetch
+     * @param params
+     *            optional request parameters
+     * @throws UnifyException
+     *             if list is unknown. If an error occurs
+     */
+    List<Listable> getListItemsByKeys(Locale locale, String listName, List<String> listKeys, Object... params)
+            throws UnifyException;
+
+    /**
      * Returns the list item of a list by description.
      * 
      * @param locale
