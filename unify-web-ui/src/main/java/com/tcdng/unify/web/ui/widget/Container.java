@@ -121,6 +121,18 @@ public interface Container extends DataTransferWidget, WidgetContainer {
     void setWidgetDisabled(String shortName, boolean disabled) throws UnifyException;
 
     /**
+     * Sets the disabled state of a widgets in container.
+     * 
+     * @param shortNames
+     *            the widget short names
+     * @param disabled
+     *            the disabled flag to set
+     * @throws UnifyException
+     *             if an error occurs
+     */
+    void setWidgetDisabled(List<String> shortNames, boolean disabled) throws UnifyException;
+
+    /**
      * Returns the disabled state flag of a widget in container.
      * 
      * @param shortName
@@ -143,6 +155,18 @@ public interface Container extends DataTransferWidget, WidgetContainer {
     void setWidgetVisible(String shortName, boolean visible) throws UnifyException;
 
     /**
+     * Sets the visible state of a widgets in container.
+     * 
+     * @param shortNames
+     *            the widget short names
+     * @param visible
+     *            the disabled flag to set
+     * @throws UnifyException
+     *             if an error occurs
+     */
+    void setWidgetVisible(List<String> shortNames, boolean visible) throws UnifyException;
+
+    /**
      * Returns the visible state flag of a widget in container.
      * 
      * @param shortName
@@ -163,6 +187,18 @@ public interface Container extends DataTransferWidget, WidgetContainer {
      *             if an error occurs
      */
     void setWidgetEditable(String shortName, boolean editable) throws UnifyException;
+
+    /**
+     * Sets the editable state of a widget in container.
+     * 
+     * @param shortNames
+     *            the widget short names
+     * @param editable
+     *            the editable flag to set
+     * @throws UnifyException
+     *             if an error occurs
+     */
+    void setWidgetEditable(List<String> shortNames, boolean editable) throws UnifyException;
 
     /**
      * Returns the editable state flag of a widget in container.

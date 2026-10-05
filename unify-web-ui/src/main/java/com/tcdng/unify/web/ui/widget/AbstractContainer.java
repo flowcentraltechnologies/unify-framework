@@ -175,6 +175,13 @@ public abstract class AbstractContainer extends AbstractDataTransferWidget imple
 	}
 
 	@Override
+	public void setWidgetDisabled(List<String> shortNames, boolean disabled) throws UnifyException {
+		for (String shortName: shortNames) {
+			setDisabled(shortName, disabled);
+		}
+	}
+
+	@Override
 	public boolean isWidgetDisabled(String shortName) throws UnifyException {
 		Widget widget = getWidgetByShortName(shortName);
 		return widget != null ? widget.isDisabled() : false;
@@ -186,6 +193,13 @@ public abstract class AbstractContainer extends AbstractDataTransferWidget imple
 	}
 
 	@Override
+	public void setWidgetVisible(List<String> shortNames, boolean visible) throws UnifyException {
+		for (String shortName: shortNames) {
+			setVisible(shortName, visible);
+		}
+	}
+
+	@Override
 	public boolean isWidgetVisible(String shortName) throws UnifyException {
 		Widget widget = getWidgetByShortName(shortName);
 		return widget != null ? widget.isVisible() : false;
@@ -194,6 +208,13 @@ public abstract class AbstractContainer extends AbstractDataTransferWidget imple
 	@Override
 	public void setWidgetEditable(String shortName, boolean editable) throws UnifyException {
 		setEditable(shortName, editable);
+	}
+
+	@Override
+	public void setWidgetEditable(List<String> shortNames, boolean editable) throws UnifyException {
+		for (String shortName: shortNames) {
+			setEditable(shortName, editable);
+		}
 	}
 
 	@Override

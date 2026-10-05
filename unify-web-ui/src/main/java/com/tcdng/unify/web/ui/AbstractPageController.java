@@ -904,6 +904,10 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 		getPageRequestContextUtil().getRequestPage().setWidgetDisabled(shortName, disabled);
 	}
 
+	protected void setPageWidgetDisabled(List<String> shortName, boolean disabled) throws UnifyException {
+		getPageRequestContextUtil().getRequestPage().setWidgetDisabled(shortName, disabled);
+	}
+
 	protected boolean isPageWidgetDisabled(String shortName) throws UnifyException {
 		return getPageRequestContextUtil().getRequestPage().isWidgetDisabled(shortName);
 	}
@@ -912,11 +916,19 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 		getPageRequestContextUtil().getRequestPage().setWidgetVisible(shortName, visible);
 	}
 
+	protected void setPageWidgetVisible(List<String> shortName, boolean visible) throws UnifyException {
+		getPageRequestContextUtil().getRequestPage().setWidgetVisible(shortName, visible);
+	}
+
 	protected boolean isPageWidgetVisible(String shortName) throws UnifyException {
 		return getPageRequestContextUtil().getRequestPage().isWidgetVisible(shortName);
 	}
 
 	protected void setPageWidgetEditable(String shortName, boolean editable) throws UnifyException {
+		getPageRequestContextUtil().getRequestPage().setWidgetEditable(shortName, editable);
+	}
+
+	protected void setPageWidgetEditable(List<String> shortName, boolean editable) throws UnifyException {
 		getPageRequestContextUtil().getRequestPage().setWidgetEditable(shortName, editable);
 	}
 
