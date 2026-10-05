@@ -203,6 +203,7 @@ public class FontAwesomeSymbolManager extends AbstractFontSymbolManager {
         registerSymbol("mountain", "f6fc");
         registerSymbol("network-wired", "f6ff");
         registerSymbol("newspaper", "f1ea");
+        registerSymbol("note", "f249");
         registerSymbol("outdent", "f03b");
         registerSymbol("paint-brush", "f1fc");
         registerSymbol("paper-clip", "f0c6");
