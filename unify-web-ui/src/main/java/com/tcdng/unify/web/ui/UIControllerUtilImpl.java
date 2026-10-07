@@ -344,7 +344,8 @@ public class UIControllerUtilImpl extends AbstractUnifyComponent implements UICo
                         hintUserResponse}));
 
         defaultResultMap.put(ResultMappingConstants.REFRESH_PANELS, new Result(new PageControllerResponse[] {
-                (PageControllerResponse) getUplComponent(defaultLocale, "!refreshpanelresponse", false) }));
+                (PageControllerResponse) getUplComponent(defaultLocale, "!refreshpanelresponse", false),
+                hintUserResponse}));
 
         defaultResultMap.put(ResultMappingConstants.REFRESH_SECTION, new Result(new PageControllerResponse[] {
                 (PageControllerResponse) getUplComponent(defaultLocale, "!refreshsectionresponse", false) }));
