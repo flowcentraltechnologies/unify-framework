@@ -33,4 +33,15 @@ public interface Document extends Page, DocumentPanels {
 	 */
 	String getLatencyPanelId() throws UnifyException;
 
+	/**
+	 * Sets document PID
+	 * @param pid the PID to set
+	 */
+	void setPid(String pid);
+	
+	/**
+	 * Gets the document PID
+	 * @return the pid
+	 */
+	String getPid();
 }

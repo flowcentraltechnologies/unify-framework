@@ -221,14 +221,20 @@ public class DocumentWriter extends AbstractPageWriter {
 		writer.write(">");
 		// Set document properties
 		ControllerPathParts controllerPathParts = pathInfoRepository.getControllerPathParts(document);
-		if (StringUtils.isBlank(getRequestClientPageId())) {
-			setRequestClientPageId(RandomUtils.generateRandomAlphanumeric(UnifyWebRequestAttributeConstants.PID_SIZE));
+		String pid = getRequestClientPageId();
+		if (StringUtils.isBlank(pid)) {
+			pid = document.getPid();
+		}
+		
+		if (StringUtils.isBlank(pid)) {
+			pid = RandomUtils.generateRandomAlphanumeric(UnifyWebRequestAttributeConstants.PID_SIZE);
 		}
 
+		document.setPid(pid);
 		writer.write("ux.setupDocument(\"").write(controllerPathParts.getControllerPathId()).write("\", \"")
 				.write(document.getPopupBaseId()).write("\", \"").write(document.getPopupWinId()).write("\", \"")
 				.write(document.getPopupSysId()).write("\", \"").write(document.getLatencyPanelId()).write("\", \"")
-				.write(getSessionContext().getId()).write("\",\"").write(getRequestClientPageId()).write("\");");
+				.write(getSessionContext().getId()).write("\",\"").write(pid).write("\");");
 
 		if (document.isPushUpdate()
 				&& getContainerSetting(boolean.class, UnifyCorePropertyConstants.APPLICATION_BROADCAST_ENTITY_CHANGE)) {
