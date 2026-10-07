@@ -98,7 +98,12 @@ public abstract class AbstractUIController extends AbstractHttpClientController 
 			if (documentPath != null) {
 				docPathParts = pathInfoRepository.getControllerPathParts(documentPath);
 				docPageController = (PageController<?>) getControllerFinder().findController(docPathParts);
-				pageRequestContextUtil.setRequestDocument((Document) uiControllerUtil.loadRequestPage(docPathParts));
+				Document document = (Document) uiControllerUtil.loadRequestPage(docPathParts);
+				pageRequestContextUtil.setRequestDocument(document);
+				
+				if (!DataUtils.equals(document.getPid(), getRequestClientPageId())) {
+					throw new RuntimeException("Unauthorized document access.");
+				}
 			} else {
 				if (getSecured().isProtected()) {
 					throw new RuntimeException("Unauthorized direct path access.");

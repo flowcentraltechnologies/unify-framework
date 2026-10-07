@@ -37,7 +37,19 @@ import com.tcdng.unify.core.util.StringUtils;
         @UplAttribute(name = "pushUpdateBinding", type = String.class)})
 public abstract class AbstractDocument extends AbstractHtmlPage implements Document {
 	
-    @Override
+	private String pid;
+	
+	@Override
+    public String getPid() {
+		return pid;
+	}
+
+	@Override
+	public void setPid(String pid) {
+		this.pid = pid;
+	}
+
+	@Override
     public String getLatencyPanelId() throws UnifyException {
         return getPrefixedId("latency_");
     }
