@@ -590,7 +590,7 @@ ux._perform = function(fid, prm) {
 	try {
 		ux.getfn(fid)(prm);
 	} catch(e) {
-		console.log("_func = " + JSON.stringify(_func));
+		console.log("Exception = " + e.stack);
 	}
 }
 
