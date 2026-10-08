@@ -265,17 +265,20 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 
 				final String altResultMapping = postCommand(requestCommand.getParentLongName(),
 						requestCommand.getCommand());
-				return getPageRequestContextUtil().isWithCommandResultMapping()
+				final String resolvedResultMapping = getPageRequestContextUtil().isWithCommandResultMapping()
 						? getPageRequestContextUtil().getCommandResultMapping()
 						: altResultMapping;
+				return !StringUtils.isBlank(resolvedResultMapping) ? resolvedResultMapping
+						: ResultMappingConstants.COMMAND;
 			}
 		}
 
+		String altResultMapping = null;
 		if (requestCommand != null) {
-			return postCommand(requestCommand.getParentLongName(), requestCommand.getCommand());
+			altResultMapping = postCommand(requestCommand.getParentLongName(), requestCommand.getCommand());
 		}
 
-		return ResultMappingConstants.COMMAND;
+		return !StringUtils.isBlank(altResultMapping) ? altResultMapping : ResultMappingConstants.COMMAND;
 	}
 
 	@Action
