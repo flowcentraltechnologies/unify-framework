@@ -126,6 +126,10 @@ public class SessionContext extends Context {
 		this.userToken = userToken;
 	}
 
+	public boolean isSystemUserLoginId() {
+		return userToken != null ? "SYSTEM".equals(userToken.getUserLoginId()) : false;
+	}
+
 	public String getUserLoginId() {
 		return userToken != null ? userToken.getUserLoginId() : null;
 	}

@@ -1126,6 +1126,16 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	}
 
 	/**
+	 * Returns true if current session user is system.
+	 * 
+	 * @return true if system otherwise false
+	 * @throws UnifyException if an error occurs
+	 */
+	public boolean isSystemUserLoginId() throws UnifyException {
+		return unifyComponentContext.getSessionContext().isSystemUserLoginId();
+	}
+
+	/**
 	 * Gets current session user login ID.
 	 * 
 	 * @return the current session user login ID
