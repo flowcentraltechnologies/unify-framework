@@ -1062,6 +1062,19 @@ public class IOUtils {
 	}
 
 	/**
+	 * Returns the actual file name without extension.
+	 * 
+	 * @param absoluteFilename the absolute file name
+	 * @return the actual file name without extension
+	 */
+	public static String getActualFileNameWithoutExtension(String absoluteFilename) {
+		String fileName = new File(IOUtils.conformAbsoluteFileName(absoluteFilename)).getName();
+		int index = fileName.lastIndexOf('.');
+		return index >= 0 ? fileName.substring(0, index) : fileName;
+	}
+
+	/**
+	 * 
 	 * Returns true if supplied file name is in file system.
 	 * 
 	 * @param absoluteFilename the file name to test

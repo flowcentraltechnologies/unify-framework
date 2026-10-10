@@ -84,7 +84,7 @@ public class UploadedFilePreviewWriter extends AbstractWidgetWriter {
 				if (type.isPdf()) {
 					writer.write("<iframe style=\"width:100%;height:100%;border:none;\" src=\"data:application/pdf;base64,");
 					writer.write(Base64.getEncoder().encodeToString(uploadFile.getDataAndInvalidate()));
-					writer.write("\">");
+					writer.write("#toolbar=0&navpanes=0&scrollbar=0\">");
 					writer.write("</iframe>");
 				} else if (type.isSrcDoc()) {
 					writer.write("<iframe style=\"width:100%;height:100%;border:none;\" srcdoc=\"");
