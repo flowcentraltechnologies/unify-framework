@@ -43,7 +43,7 @@ public enum FileAttachmentType implements EnumConst {
     IMAGE_GIF("GIF", "file-image", ".gif", "#03a9f4", MimeType.IMAGE_GIF, true),
     IMAGE_BMP("BMP", "file-image", ".bmp", "#03a9f4", MimeType.IMAGE_BMP, true),
     IMAGE_WEBP("WBP", "file-image", ".webp", "#03a9f4", MimeType.IMAGE_WEBP, true),
-    IMAGE_SVG("WBP", "file-image", ".svg", "#03a9f4", MimeType.IMAGE_SVG, true),
+    IMAGE_SVG("SVG", "file-image", ".svg", "#03a9f4", MimeType.IMAGE_SVG, true),
     PDF("PDF", "file-pdf", ".pdf", "#e53935", MimeType.APPLICATION_PDF, false),
     XML("XML", "file-code", ".xml", "#607d8b", MimeType.APPLICATION_XML, false),
     TEXT("TXT", "file-alt", ".txt", "#9e9e9e", MimeType.TEXT, false),
