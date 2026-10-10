@@ -34,5 +34,5 @@ public interface UploadedFilePreviewProvider extends UnifyComponent {
 	 * @return the uploaded file preview otherwise null
 	 * @throws UnifyException if an error occurs
 	 */
-	UploadedFilePreview providePreview(String fileResourceId) throws UnifyException;
+	UploadedFilePreview providePreview(Long fileResourceId) throws UnifyException;
 }

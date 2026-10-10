@@ -55,7 +55,7 @@ public class UploadedFilePreviewWidget extends AbstractWidget {
 	public UploadedFilePreview getUploadedFilePreview() throws UnifyException {
 		final UploadedFilePreviewProvider provider = getComponent(UploadedFilePreviewProvider.class,
 				getUplAttribute(String.class, "provider"));
-		final String fileId = getValue(String.class);
+		final Long fileId = getValue(Long.class);
 		return provider.providePreview(fileId);
 	}
 }
