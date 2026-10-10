@@ -1071,6 +1071,12 @@ overflow-x:hidden;overflow-y:scroll;border-top: solid 1px #A0A0A0;border-left: s
 /** Unordered list */
 .ui-unorderedlist {list-style:square inside;}
 
+/** Uploaded file preview */
+.ui-uploadedfilepreview {width:100%;height:620px;}
+.ui-uploadedfilepreview .txtbody {padding:14px;font-family:monospace;}
+.ui-uploadedfilepreview .csvbody {padding:14px;font-family:monospace;}
+.ui-uploadedfilepreview .xlsxbody{padding:14px;}
+
 /** Word Field */
 .ui-word {}
 

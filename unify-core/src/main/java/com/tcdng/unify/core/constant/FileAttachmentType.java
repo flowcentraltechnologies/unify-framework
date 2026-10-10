@@ -36,7 +36,8 @@ public enum FileAttachmentType implements EnumConst {
     AUDIO("AUD", "file-audio","audio/*,audio/mp3", "#ff9800", MimeType.AUDIO, false),
     CSV("CSV", "file-csv", ".csv", "#4caf50", MimeType.TEXT_CSV, false),
     JSON("JSN", "file-alt", ".json", "#4caf50", MimeType.APPLICATION_JSON, false),
-    EXCEL("XLS", "file-excel", ".xls,.xlsx", "#217346", MimeType.APPLICATION_EXCEL, false),
+    EXCEL("XLS", "file-excel", ".xls", "#217346", MimeType.APPLICATION_EXCEL, false),
+    EXCELX("XLX", "file-excel", ".xlsx", "#217346", MimeType.APPLICATION_EXCEL, false),
     IMAGE("IMG", "file-image", "image/*", "#03a9f4", MimeType.IMAGE, true),
     IMAGE_PNG("PNG", "file-image", ".png", "#03a9f4", MimeType.IMAGE_PNG, true),
     IMAGE_JPG("JPG", "file-image", ".jpg,.jpeg", "#03a9f4", MimeType.IMAGE_JPG, true),
@@ -49,7 +50,8 @@ public enum FileAttachmentType implements EnumConst {
     TEXT("TXT", "file-alt", ".txt", "#9e9e9e", MimeType.TEXT, false),
     VIDEO("VID", "file-video", "video/*,video/mp4", "#9c27b0, false", MimeType.VIDEO, false),
     WILDCARD("WILD", "file", "", "#616161", MimeType.APPLICATION_OCTETSTREAM, false),
-    WORD("DOC", "file-word", ".doc,.docx", "#2b579a", MimeType.APPLICATION_WORD, false);
+    WORD("DOC", "file-word", ".doc", "#2b579a", MimeType.APPLICATION_WORD, false),
+    WORDX("DOX", "file-word", ".docx", "#2b579a", MimeType.APPLICATION_WORD, false);
 
 	private static final Map<String, FileAttachmentType> byExtension;
 	
@@ -58,7 +60,7 @@ public enum FileAttachmentType implements EnumConst {
 		map.put(".mp3", AUDIO);
 		map.put(".csv", CSV);
 		map.put(".xls", EXCEL);
-		map.put(".xlsx", EXCEL);
+		map.put(".xlsx", EXCELX);
 		map.put(".png", IMAGE_PNG);
 		map.put(".jpg", IMAGE_JPG);
 		map.put(".jpeg", IMAGE_JPG);
@@ -71,7 +73,7 @@ public enum FileAttachmentType implements EnumConst {
 		map.put(".txt", TEXT);
 		map.put(".mp4", VIDEO);
 		map.put(".doc", WORD);
-		map.put(".docx", WORD);
+		map.put(".docx", WORDX);
 		byExtension = Collections.unmodifiableMap(map);
 	}
 	
@@ -129,16 +131,52 @@ public enum FileAttachmentType implements EnumConst {
     public boolean isImage() {
     	return image;
     }
+
+    public boolean isCsv() {
+       	return CSV.equals(this);
+    }
+
+    public boolean isExcelX() {
+       	return EXCELX.equals(this);
+    }
+
+    public boolean isWordX() {
+       	return WORDX.equals(this);
+    }
+
+    public boolean isWord() {
+       	return WORD.equals(this);
+    }
+
+    public boolean isExcel() {
+       	return EXCEL.equals(this);
+    }
+
+    public boolean isPdf() {
+    	return PDF.equals(this);
+    }
+
+    public boolean isText() {
+    	return TEXT.equals(this);
+    }
+
+    public boolean isSrcDoc() {
+    	return image || isFullDoc() ||isExcelX()|| isCsv() || isText();
+    }
+
+    public boolean isFullDoc() {
+    	return isWord() || isWord();
+    }
     
     public String appendDefaultExtension(String filename) {
     	if (filename != null && filename.indexOf('.') < 0) {
     		switch(this) {
 			case AUDIO:
-				break;
+				return filename + ".mp3";
 			case CSV:
 				return filename + ".csv";
 			case EXCEL:
-				break;
+				return filename + ".xlsx";
 			case IMAGE:
 				return filename + ".jpg";
 			case IMAGE_BMP:
@@ -158,11 +196,11 @@ public enum FileAttachmentType implements EnumConst {
 			case TEXT:
 				return filename + ".txt";
 			case VIDEO:
-				break;
+				return filename + ".mp4";
 			case WILDCARD:
 				break;
 			case WORD:
-				return filename + ".doc";
+				return filename + ".docx";
 			case XML:
 				return filename + ".xml";
 			default:
