@@ -42,6 +42,8 @@ public enum FileAttachmentType implements EnumConst {
     IMAGE_JPG("JPG", "file-image", ".jpg,.jpeg", "#03a9f4", MimeType.IMAGE_JPG, true),
     IMAGE_GIF("GIF", "file-image", ".gif", "#03a9f4", MimeType.IMAGE_GIF, true),
     IMAGE_BMP("BMP", "file-image", ".bmp", "#03a9f4", MimeType.IMAGE_BMP, true),
+    IMAGE_WEBP("WBP", "file-image", ".webp", "#03a9f4", MimeType.IMAGE_WEBP, true),
+    IMAGE_SVG("WBP", "file-image", ".svg", "#03a9f4", MimeType.IMAGE_SVG, true),
     PDF("PDF", "file-pdf", ".pdf", "#e53935", MimeType.APPLICATION_PDF, false),
     XML("XML", "file-code", ".xml", "#607d8b", MimeType.APPLICATION_XML, false),
     TEXT("TXT", "file-alt", ".txt", "#9e9e9e", MimeType.TEXT, false),
@@ -62,7 +64,8 @@ public enum FileAttachmentType implements EnumConst {
 		map.put(".jpeg", IMAGE_JPG);
 		map.put(".gif", IMAGE_GIF);
 		map.put(".bmp", IMAGE_BMP);
-		map.put(".webp", IMAGE);
+		map.put(".webp", IMAGE_WEBP);
+		map.put(".svg", IMAGE_SVG);
 		map.put(".pdf", PDF);
 		map.put(".xml", XML);
 		map.put(".txt", TEXT);
@@ -123,7 +126,7 @@ public enum FileAttachmentType implements EnumConst {
     	return WILDCARD.equals(this);
     }
 
-    public boolean image() {
+    public boolean isImage() {
     	return image;
     }
     
@@ -146,6 +149,10 @@ public enum FileAttachmentType implements EnumConst {
 				return filename + ".jpg";
 			case IMAGE_PNG:
 				return filename + ".png";
+			case IMAGE_WEBP:
+				return filename + ".webp";
+			case IMAGE_SVG:
+				return filename + ".svg";
 			case PDF:
 				return filename + ".pdf";
 			case TEXT:

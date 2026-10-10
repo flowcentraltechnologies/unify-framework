@@ -49,6 +49,8 @@ public enum MimeType {
     IMAGE_JPG("image/jpg", false),
     IMAGE_GIF("image/gif", false),
     IMAGE_BMP("image/bmp", false),
+    IMAGE_WEBP("image/webp", false),
+    IMAGE_SVG("image/svg+xml", false),
     IMAGE("image/*", false),
     AUDIO("audio/*,audio/mp3", false),
     VIDEO("video/*,video/mp4", false);
@@ -78,6 +80,8 @@ public enum MimeType {
     	map.put(IMAGE_JPG.template, IMAGE_JPG);
     	map.put(IMAGE_GIF.template, IMAGE_GIF);
     	map.put(IMAGE_BMP.template, IMAGE_BMP);
+    	map.put(IMAGE_WEBP.template, IMAGE_WEBP);
+    	map.put(IMAGE_SVG.template, IMAGE_SVG);
     }
     
     private MimeType(String template, boolean text) {
