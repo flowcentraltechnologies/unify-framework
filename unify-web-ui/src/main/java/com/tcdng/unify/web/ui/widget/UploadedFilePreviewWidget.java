@@ -29,7 +29,7 @@ import com.tcdng.unify.core.data.UploadedFilePreview;
  */
 @Component("ui-uploadedfilepreview")
 @UplAttributes({
-		@UplAttribute(name = "provider", type = String.class, mandatory = true),
+		@UplAttribute(name = "provider", type = String.class),
 		@UplAttribute(name = "styleSheet", type = String[].class),
 		@UplAttribute(name = "script", type = String[].class) })
 public class UploadedFilePreviewWidget extends AbstractWidget {
@@ -53,9 +53,13 @@ public class UploadedFilePreviewWidget extends AbstractWidget {
 	}
 
 	public UploadedFilePreview getUploadedFilePreview() throws UnifyException {
-		final UploadedFilePreviewProvider provider = getComponent(UploadedFilePreviewProvider.class,
-				getUplAttribute(String.class, "provider"));
-		final Long fileId = getValue(Long.class);
-		return provider.providePreview(fileId);
+		Object val = getValue();
+		if (val instanceof Long) {
+			final UploadedFilePreviewProvider provider = getComponent(UploadedFilePreviewProvider.class,
+					getUplAttribute(String.class, "provider"));
+			return provider.providePreview((Long) val);
+		}
+
+		return (UploadedFilePreview) val;
 	}
 }
