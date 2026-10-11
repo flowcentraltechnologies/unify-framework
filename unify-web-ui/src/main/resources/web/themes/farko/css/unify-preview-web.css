@@ -19,9 +19,9 @@
 /** Uploaded file preview */
 .txtbody {padding:14px;font-family:monospace;font-size:13px;}
 
-.csvbody {margin:10px;border-collapse:collapse;background-color:#ffffff;font-size:13px;color:#1d2330;}
-.csvbody td {border: 1px solid #dddddd; text-align: left; padding: 8px;}
+.csvbody {margin:10px;background-color:#ffffff;font-size:13px;color:#1d2330;}
+.csvbody td {border:1px solid #dddddd; text-align: left;padding:8px;min-width:120px;}
+.csvbody tr:nth-child(even) {background-color: #f8f8f8;}
 
-.xlsxbody {margin:10px;border-collapse:collapse;background-color:#ffffff;font-size:13px;color:#1d2330;}
-.xlsxbody td {border: 1px solid #dddddd; text-align: left; padding: 8px;}
-/**.xlsxbody tr:nth-child(even) { background-color: #f2f2f2; }*/
+.xlsxbody {margin:10px;background-color:#ffffff;font-size:13px;color:#1d2330;}
+.xlsxbody td {border: 1px solid #dddddd; text-align: left; padding:8px;min-width:120px;}}
