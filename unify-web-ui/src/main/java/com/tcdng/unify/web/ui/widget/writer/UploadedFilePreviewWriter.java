@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -48,6 +49,7 @@ import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.annotation.Configurable;
 import com.tcdng.unify.core.annotation.Writes;
 import com.tcdng.unify.core.constant.FileAttachmentType;
+import com.tcdng.unify.core.data.FileAttachmentInfo;
 import com.tcdng.unify.core.data.UploadedFile;
 import com.tcdng.unify.core.data.UploadedFilePreview;
 import com.tcdng.unify.web.ui.util.WriterUtils;
@@ -66,6 +68,8 @@ import com.tcdng.unify.web.ui.widget.Widget;
 @Component("uploadedfilepreview-writer")
 public class UploadedFilePreviewWriter extends AbstractWidgetWriter {
 
+	private static final long MAX_USE_ENCODED = 200 * 1024; // 200K
+
 	@Configurable
 	private ResponseWriterPool responseWriterPool;
 
@@ -82,16 +86,30 @@ public class UploadedFilePreviewWriter extends AbstractWidgetWriter {
 			final UploadedFile uploadFile = preview.getDownloadFile();
 			if (type != null) {
 				if (type.isPdf()) {
-					writer.write("<iframe style=\"width:100%;height:100%;border:none;\" src=\"data:application/pdf;base64,");
-					writer.write(Base64.getEncoder().encodeToString(uploadFile.getDataAndInvalidate()));
-					writer.write("#toolbar=0&navpanes=0&scrollbar=0\">");
-					writer.write("</iframe>");
+					if (preview.getFileLength() <= MAX_USE_ENCODED) {
+						writer.write(
+								"<iframe style=\"width:100%;height:100%;border:none;\" src=\"data:application/pdf;base64,");
+						writer.write(Base64.getEncoder().encodeToString(uploadFile.getDataAndInvalidate()));
+						writer.write("#toolbar=0&navpanes=0&scrollbar=0\">");
+						writer.write("</iframe>");
+					} else {
+						final FileAttachmentInfo fileAttachmentInfo = new FileAttachmentInfo(type,
+								preview.getFileName(), preview.getFileTitle(), preview.getFileName());
+						fileAttachmentInfo.setAttachment(uploadFile);
+						final String resourceName = getTimestampedResourceName(fileAttachmentInfo.getFilename());
+						setSessionAttribute(resourceName, fileAttachmentInfo);
+						writer.write("<iframe style=\"width:100%;height:100%;border:none;\" src=\"");
+						writer.writeContextResourceURL("/resource/fileattachment", type.mimeType().template(),
+								resourceName, null, false, false);
+						writer.write("\">");
+						writer.write("</iframe>");
+					}
 				} else if (type.isSrcDoc()) {
 					writer.write("<iframe style=\"width:100%;height:100%;border:none;\" srcdoc=\"");
 					final String[] styleSheet = previewWidget.getStyleSheet();
 					final String[] script = previewWidget.getScript();
 					final String html = type.isFullDoc() ? getSrcDocHtml(type, uploadFile)
-							: getSrcDocHtml(styleSheet, script, type, uploadFile);
+							: getSrcDocHtml(styleSheet, script, type, preview, uploadFile);
 					writer.writeWithHtmlEscape(html);
 					writer.write("\">");
 					writer.write("</iframe>");
@@ -136,7 +154,7 @@ public class UploadedFilePreviewWriter extends AbstractWidgetWriter {
 	}
 
 	private String getSrcDocHtml(String[] styleSheets, String[] scripts, FileAttachmentType type,
-			UploadedFile uploadFile) throws UnifyException {
+			UploadedFilePreview preview, UploadedFile uploadFile) throws UnifyException {
 		ResponseWriter writer = responseWriterPool.getResponseWriter(getRequestContextUtil().getClientRequest());
 		try {
 			writer.setDirectFuncCall(true);
@@ -169,13 +187,13 @@ public class UploadedFilePreviewWriter extends AbstractWidgetWriter {
 			// Body
 			writer.write("<body>");
 			if (type.isImage()) {
-				writeImageHtml(writer, type, uploadFile);
+				writeImageHtml(writer, type, preview, uploadFile);
 			} else if (type.isCsv()) {
-				writeCsvHtml(writer, type, uploadFile);
+				writeCsvHtml(writer, type, preview, uploadFile);
 			} else if (type.isExcelX()) {
-				writeXlsxHtml(writer, type, uploadFile);
+				writeXlsxHtml(writer, type, preview, uploadFile);
 			} else if (type.isText()) {
-				writeTextHtml(writer, type, uploadFile);
+				writeTextHtml(writer, type, preview, uploadFile);
 			}
 
 			writer.write("</body>");
@@ -186,14 +204,23 @@ public class UploadedFilePreviewWriter extends AbstractWidgetWriter {
 		}
 	}
 
-	private void writeImageHtml(ResponseWriter writer, FileAttachmentType type, UploadedFile uploadFile)
-			throws UnifyException {
-		writer.write("<img style=\"max-width:100%;\" src=\"data:").write(type.mimeType().template()).write(";base64,")
-				.write(Base64.getEncoder().encodeToString(uploadFile.getDataAndInvalidate())).write("\" />");
+	private void writeImageHtml(ResponseWriter writer, FileAttachmentType type, UploadedFilePreview preview,
+			UploadedFile uploadFile) throws UnifyException {
+		if (preview.getFileLength() <= MAX_USE_ENCODED) {
+			writer.write("<img style=\"max-width:100%;\" src=\"data:").write(type.mimeType().template())
+					.write(";base64,").write(Base64.getEncoder().encodeToString(uploadFile.getDataAndInvalidate()))
+					.write("\" />");
+		} else {
+			String imageName = "Img_" + preview.getFileName() + '_' + new Date().getTime();
+			setSessionAttribute(imageName, uploadFile);
+			writer.write("<img style=\"max-width:100%;\" src=\"");
+			writer.writeScopeImageContextURL(imageName, true);
+			writer.write("\"/>");
+		}
 	}
 
-	private void writeXlsxHtml(ResponseWriter writer, FileAttachmentType type, UploadedFile uploadFile)
-			throws UnifyException {
+	private void writeXlsxHtml(ResponseWriter writer, FileAttachmentType type, UploadedFilePreview preview,
+			UploadedFile uploadFile) throws UnifyException {
 		writer.write("<table class=\"xlsxbody\" style=\"width:100%;max-width:100%;\">");
 		try (XSSFWorkbook workbook = new XSSFWorkbook(uploadFile.getIn());) {
 			XSSFSheet sheet = workbook.getSheetAt(0);
@@ -221,10 +248,10 @@ public class UploadedFilePreviewWriter extends AbstractWidgetWriter {
 					default:
 						writer.write("");
 					}
-					
+
 					writer.write("</td>");
 				}
-				
+
 				writer.write("</tr>");
 			}
 		} catch (IOException e) {
@@ -234,8 +261,8 @@ public class UploadedFilePreviewWriter extends AbstractWidgetWriter {
 		writer.write("</table>");
 	}
 
-	private void writeCsvHtml(ResponseWriter writer, FileAttachmentType type, UploadedFile uploadFile)
-			throws UnifyException {
+	private void writeCsvHtml(ResponseWriter writer, FileAttachmentType type, UploadedFilePreview preview,
+			UploadedFile uploadFile) throws UnifyException {
 		writer.write("<table class=\"csvbody\" style=\"width:100%;max-width:100%;\">");
 		try (BufferedReader reader = new BufferedReader(
 				new InputStreamReader(uploadFile.getIn(), StandardCharsets.UTF_8))) {
@@ -254,8 +281,8 @@ public class UploadedFilePreviewWriter extends AbstractWidgetWriter {
 		writer.write("</table>");
 	}
 
-	private void writeTextHtml(ResponseWriter writer, FileAttachmentType type, UploadedFile uploadFile)
-			throws UnifyException {
+	private void writeTextHtml(ResponseWriter writer, FileAttachmentType type, UploadedFilePreview preview,
+			UploadedFile uploadFile) throws UnifyException {
 		writer.write("<pre class=\"txtbody\" style=\"max-width:100%;\">");
 		try (BufferedReader reader = new BufferedReader(
 				new InputStreamReader(uploadFile.getIn(), StandardCharsets.UTF_8))) {

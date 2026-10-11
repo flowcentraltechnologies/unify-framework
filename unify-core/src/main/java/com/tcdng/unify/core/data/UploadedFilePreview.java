@@ -29,14 +29,21 @@ public class UploadedFilePreview {
 
 	private String fileName;
 
+	private String fileTitle;
+
 	private String fileSize;
+
+	private long fileLength;
 
 	private UploadedFile downloadFile;
 
-	public UploadedFilePreview(FileAttachmentType type, String fileName, String fileSize, UploadedFile downloadFile) {
+	public UploadedFilePreview(FileAttachmentType type, String fileName, String fileTitle, String fileSize,
+			long fileLength, UploadedFile downloadFile) {
 		this.type = type;
 		this.fileName = fileName;
+		this.fileTitle = fileTitle;
 		this.fileSize = fileSize;
+		this.fileLength = fileLength;
 		this.downloadFile = downloadFile;
 	}
 
@@ -48,8 +55,16 @@ public class UploadedFilePreview {
 		return fileName;
 	}
 
+	public String getFileTitle() {
+		return fileTitle;
+	}
+
 	public String getFileSize() {
 		return fileSize;
+	}
+
+	public long getFileLength() {
+		return fileLength;
 	}
 
 	public UploadedFile getDownloadFile() {

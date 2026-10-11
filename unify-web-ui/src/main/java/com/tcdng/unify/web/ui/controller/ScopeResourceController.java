@@ -21,6 +21,7 @@ import java.io.OutputStream;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.constant.Scope;
+import com.tcdng.unify.core.data.UploadedFile;
 import com.tcdng.unify.core.resource.ResourceGenerator;
 import com.tcdng.unify.core.util.IOUtils;
 import com.tcdng.unify.web.annotation.RequestParameter;
@@ -76,6 +77,9 @@ public class ScopeResourceController extends AbstractPageResourceController {
                 clearOnRead = true;
             } else if (resource instanceof ResourceGenerator) {
                 ((ResourceGenerator<?>) resource).generate(outputStream);
+                clearOnRead = true;
+            } else if (resource instanceof UploadedFile) {
+            	((UploadedFile) resource).writeAllAndInvalidate(outputStream);
                 clearOnRead = true;
             }
 

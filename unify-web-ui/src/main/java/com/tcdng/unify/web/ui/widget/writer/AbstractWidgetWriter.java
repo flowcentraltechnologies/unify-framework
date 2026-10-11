@@ -23,6 +23,7 @@ import com.tcdng.unify.core.UnifyCorePropertyConstants;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.UserToken;
 import com.tcdng.unify.core.annotation.Configurable;
+import com.tcdng.unify.core.format.FormatHelper;
 import com.tcdng.unify.core.util.ColorUtils;
 import com.tcdng.unify.core.util.StringUtils;
 import com.tcdng.unify.web.font.FontSymbolManager;
@@ -44,6 +45,9 @@ public abstract class AbstractWidgetWriter extends AbstractDhtmlWriter implement
 
     @Configurable
     private FontSymbolManager fontSymbolManager;
+
+    @Configurable
+    private FormatHelper formatHelper;
 
     @Override
     public void writeStructureAndContent(ResponseWriter writer, Widget widget) throws UnifyException {
@@ -101,6 +105,17 @@ public abstract class AbstractWidgetWriter extends AbstractDhtmlWriter implement
     }
 
     protected abstract void doWriteStructureAndContent(ResponseWriter writer, Widget widget) throws UnifyException;
+
+    protected String getTimestampedResourceName(String resourceName) throws UnifyException {
+        int index = resourceName.indexOf('.');
+        if (index > 0) {
+            return StringUtils.underscore(resourceName.substring(0, index)) + "_"
+                    + formatHelper.formatNow(FormatHelper.yyyyMMdd_HHmmss) + resourceName.substring(index);
+
+        }
+
+        return StringUtils.underscore(resourceName) + "_" + formatHelper.formatNow(FormatHelper.yyyyMMdd_HHmmss);
+    }
 
 	protected void writeFontIcon(ResponseWriter writer, String symbol) throws UnifyException {
 		writer.write("<span class=\"g_fsm\">");
