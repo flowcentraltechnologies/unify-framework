@@ -1082,8 +1082,8 @@ overflow-x:hidden;overflow-y:scroll;border-top: solid 1px #A0A0A0;border-left: s
 	text-transform:uppercase;background-color:#e8eefe;color:#3b6cf6;padding:3px 8px;
 	border-radius: 999px;}
 .ui-uploadedfilepreview .ufsize {flex:none;font-size:13px;color:#6a7385;}
-.ui-uploadedfilepreview .ufviewer {width:100%;height:calc(100% - 40px);}
-
+.ui-uploadedfilepreview .ufviewer {width:100%;height:calc(100% - 40px);box-sizing: border-box;}
+.ui-uploadedfilepreview .ufviewerpad {padding:10px;background-color:#e8e8e8;}
 
 /** Word Field */
 .ui-word {}

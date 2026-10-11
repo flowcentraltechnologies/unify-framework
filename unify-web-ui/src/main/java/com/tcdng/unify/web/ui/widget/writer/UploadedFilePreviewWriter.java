@@ -101,7 +101,11 @@ public class UploadedFilePreviewWriter extends AbstractWidgetWriter {
 				writer.write("</span>");
 				writer.write("</div>");
 
-				writer.write("<div class=\"ufviewer\">");
+				writer.write("<div class=\"ufviewer");
+				if (type.isSrcDoc()) {
+					writer.write(" ufviewerpad");
+				}
+				writer.write("\">");				
 				if (type.isPdf()) {
 					if (preview.getFileLength() <= MAX_USE_ENCODED) {
 						writer.write(
