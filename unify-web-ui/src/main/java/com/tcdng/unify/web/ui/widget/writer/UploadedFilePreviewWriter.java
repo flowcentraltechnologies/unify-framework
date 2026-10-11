@@ -18,6 +18,7 @@ package com.tcdng.unify.web.ui.widget.writer;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -43,6 +44,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.w3c.dom.Document;
+import org.zwobble.mammoth.DocumentConverter;
+import org.zwobble.mammoth.Result;
 
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
@@ -141,7 +144,7 @@ public class UploadedFilePreviewWriter extends AbstractWidgetWriter {
 	}
 
 	private String getSrcDocHtml(FileAttachmentType type, UploadedFile uploadFile) throws UnifyException {
-		if (type.isWord()) {
+		if (type.isDoc()) {
 			try (HWPFDocument hwpfDocument = new HWPFDocument(uploadFile.getIn());
 					ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
 				Document htmlDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
@@ -208,8 +211,10 @@ public class UploadedFilePreviewWriter extends AbstractWidgetWriter {
 				writeImageHtml(writer, type, preview, uploadFile);
 			} else if (type.isCsv()) {
 				writeCsvHtml(writer, type, preview, uploadFile);
-			} else if (type.isExcelX()) {
+			} else if (type.isXlsX()) {
 				writeXlsxHtml(writer, type, preview, uploadFile);
+			} else if (type.isDocX()) {
+				writeDocxHtml(writer, type, preview, uploadFile);
 			} else if (type.isText()) {
 				writeTextHtml(writer, type, preview, uploadFile);
 			}
@@ -277,6 +282,17 @@ public class UploadedFilePreviewWriter extends AbstractWidgetWriter {
 		}
 
 		writer.write("</table>");
+	}
+
+	private void writeDocxHtml(ResponseWriter writer, FileAttachmentType type, UploadedFilePreview preview,
+			UploadedFile uploadFile) throws UnifyException {
+		try (InputStream in = uploadFile.getIn();){
+			DocumentConverter converter = new DocumentConverter();
+			Result<String> result = converter.convertToHtml(uploadFile.getIn());
+			writer.write(result.getValue());
+		} catch (IOException e) {
+			throwOperationErrorException(e);
+		}
 	}
 
 	private void writeCsvHtml(ResponseWriter writer, FileAttachmentType type, UploadedFilePreview preview,

@@ -74,6 +74,12 @@
 			<artifactId>unify-web</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<!-- Docx dependencies -->
+		<dependency>
+			<groupId>org.zwobble.mammoth</groupId>
+			<artifactId>mammoth</artifactId>
+			<version>1.8.0</version>
+		</dependency>
 		<!-- Test dependencies -->
 		<dependency>
 			<groupId>com.tcdng.unify</groupId>

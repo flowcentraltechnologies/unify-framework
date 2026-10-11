@@ -136,15 +136,15 @@ public enum FileAttachmentType implements EnumConst {
        	return CSV.equals(this);
     }
 
-    public boolean isExcelX() {
+    public boolean isXlsX() {
        	return EXCELX.equals(this);
     }
 
-    public boolean isWordX() {
+    public boolean isDocX() {
        	return WORDX.equals(this);
     }
 
-    public boolean isWord() {
+    public boolean isDoc() {
        	return WORD.equals(this);
     }
 
@@ -160,12 +160,12 @@ public enum FileAttachmentType implements EnumConst {
     	return TEXT.equals(this);
     }
 
-    public boolean isSrcDoc() {
-    	return image || isFullDoc() ||isExcelX()|| isCsv() || isText();
-    }
+	public boolean isSrcDoc() {
+		return image || isFullDoc() || isXlsX() || isDocX() || isCsv() || isText();
+	}
 
     public boolean isFullDoc() {
-    	return isWord() || isWord();
+    	return isDoc();
     }
     
     public String appendDefaultExtension(String filename) {
