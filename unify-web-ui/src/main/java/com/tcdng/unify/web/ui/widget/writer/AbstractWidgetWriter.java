@@ -17,13 +17,16 @@ package com.tcdng.unify.web.ui.widget.writer;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
+import com.tcdng.unify.common.data.Listable;
 import com.tcdng.unify.core.RequestContext;
 import com.tcdng.unify.core.UnifyCorePropertyConstants;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.UserToken;
 import com.tcdng.unify.core.annotation.Configurable;
 import com.tcdng.unify.core.format.FormatHelper;
+import com.tcdng.unify.core.list.ListManager;
 import com.tcdng.unify.core.util.ColorUtils;
 import com.tcdng.unify.core.util.StringUtils;
 import com.tcdng.unify.web.font.FontSymbolManager;
@@ -48,6 +51,9 @@ public abstract class AbstractWidgetWriter extends AbstractDhtmlWriter implement
 
     @Configurable
     private FormatHelper formatHelper;
+
+    @Configurable
+    private ListManager listManager;
 
     @Override
     public void writeStructureAndContent(ResponseWriter writer, Widget widget) throws UnifyException {
@@ -105,6 +111,10 @@ public abstract class AbstractWidgetWriter extends AbstractDhtmlWriter implement
     }
 
     protected abstract void doWriteStructureAndContent(ResponseWriter writer, Widget widget) throws UnifyException;
+
+	protected Listable getListItemByKey(String listName, String itemKey) throws UnifyException {
+		return listManager.getListItemByKey(Locale.getDefault(), listName, itemKey);
+	}
 
     protected String getTimestampedResourceName(String resourceName) throws UnifyException {
         int index = resourceName.indexOf('.');
@@ -309,7 +319,6 @@ public abstract class AbstractWidgetWriter extends AbstractDhtmlWriter implement
 			throws UnifyException {
 		widget.updateInternalState();
 		doWriteBehavior(writer, widget, eventHandlers);
-//        widget.addPageAliases();
 	}
 
 }

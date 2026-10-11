@@ -85,6 +85,20 @@ public class UploadedFilePreviewWriter extends AbstractWidgetWriter {
 			final FileAttachmentType type = preview.getType();
 			final UploadedFile uploadFile = preview.getDownloadFile();
 			if (type != null) {
+				writer.write("<div class=\"ufinfo\">");
+				writer.write("<span class=\"ufname\">");
+				writer.writeWithHtmlEscape(preview.getFileName());
+				writer.write("</span>");
+				writer.write("<span class=\"ufbadge\">");
+				writer.writeWithHtmlEscape(
+						getListItemByKey("fileattachmenttypelist", type.code()).getListDescription());
+				writer.write("</span>");
+				writer.write("<span class=\"ufsize\">");
+				writer.writeWithHtmlEscape(preview.getFileSize());
+				writer.write("</span>");
+				writer.write("</div>");
+
+				writer.write("<div class=\"ufviewer\">");
 				if (type.isPdf()) {
 					if (preview.getFileLength() <= MAX_USE_ENCODED) {
 						writer.write(
@@ -114,6 +128,8 @@ public class UploadedFilePreviewWriter extends AbstractWidgetWriter {
 					writer.write("\">");
 					writer.write("</iframe>");
 				}
+
+				writer.write("</div>");
 			} else {
 				// TODO Unknown file type
 			}
@@ -162,6 +178,8 @@ public class UploadedFilePreviewWriter extends AbstractWidgetWriter {
 			writer.write("<html>");
 			// Head
 			writer.write("<head>");
+
+			WriterUtils.writeStyleSheet(writer, "$t{css/unify-preview-web.css}");
 			Set<String> excludeStyleSheet = new HashSet<String>();
 			if (styleSheets != null) {
 				for (String styleSheet : styleSheets) {
