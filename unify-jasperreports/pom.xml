@@ -72,6 +72,10 @@
 			<artifactId>jasperreports</artifactId>
 			<version>6.8.0</version>
 			<exclusions>
+		        <exclusion>
+		            <groupId>org.eclipse.jdt.core.compiler</groupId>
+		            <artifactId>ecj</artifactId>
+		        </exclusion>
 				<exclusion>
 					<groupId>com.lowagie</groupId>
 					<artifactId>itext</artifactId>
