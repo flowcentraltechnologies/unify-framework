@@ -39,11 +39,10 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.converter.WordToHtmlConverter;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.DateUtil;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.dhatim.fastexcel.reader.Cell;
+import org.dhatim.fastexcel.reader.ReadableWorkbook;
+import org.dhatim.fastexcel.reader.Row;
+import org.dhatim.fastexcel.reader.Sheet;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -258,33 +257,40 @@ public class UploadedFilePreviewWriter extends AbstractWidgetWriter {
 	private void writeXlsxHtml(ResponseWriter writer, FileAttachmentType type, UploadedFilePreview preview,
 			UploadedFile uploadFile) throws UnifyException {
 		writer.write("<table class=\"xlsxbody\" style=\"width:100%;max-width:100%;\">");
-		try (XSSFWorkbook workbook = new XSSFWorkbook(uploadFile.getIn());) {
-			XSSFSheet sheet = workbook.getSheetAt(0);
-			for (Row row : sheet) {
+		try (ReadableWorkbook wb = new ReadableWorkbook(uploadFile.getIn());) {
+			Sheet sheet = wb.getFirstSheet();
+			for (Row row : sheet.read()) {
 				writer.write("<tr>");
-				for (Cell cell : row) {
+				final int len = row.getCellCount();
+				for (int i = 0; i < len; i++) {
 					writer.write("<td>");
-					switch (cell.getCellType()) {
-					case STRING:
-						writer.write(cell.getStringCellValue());
-						break;
-					case NUMERIC:
-						if (DateUtil.isCellDateFormatted(cell)) {
-							writer.write(cell.getDateCellValue());
-						} else {
-							writer.write(cell.getNumericCellValue());
+					Cell cell = row.getCell(i);
+					if (cell != null) {
+						switch (cell.getType()) {
+						case BOOLEAN:
+							writer.write(cell.asString());
+							break;
+						case EMPTY:
+							break;
+						case ERROR:
+							break;
+						case FORMULA:
+							writer.write(cell.getFormula());
+							break;
+						case NUMBER:
+							if (isDateFormat(cell.getDataFormatId(), cell.getDataFormatString())) {
+								writer.write(cell.asDate());
+							} else {
+								writer.write(cell.asNumber());
+							}
+							break;
+						case STRING:
+							writer.write(cell.asString());
+							break;
+						default:
+							break;
 						}
-						break;
-					case BOOLEAN:
-						writer.write(cell.getBooleanCellValue());
-						break;
-					case FORMULA:
-						writer.write(cell.getCellFormula());
-						break;
-					default:
-						writer.write("");
 					}
-
 					writer.write("</td>");
 				}
 
@@ -296,7 +302,19 @@ public class UploadedFilePreviewWriter extends AbstractWidgetWriter {
 
 		writer.write("</table>");
 	}
+	
+	private static boolean isDateFormat(Integer formatId, String format) {
+		if (formatId != null && ((formatId >= 14 && formatId <= 22) || (formatId >= 45 && formatId <= 47))) {
+			return true;
+		}
+		if (format == null) {
+			return false;
+		}
 
+		String f = format.replaceAll("\"[^\"]*\"|\\[[^\\]]*\\]|\\\\.", "").toLowerCase();
+		return f.matches(".*[ymdhs].*");
+	}
+	
 	private void writeDocxHtml(ResponseWriter writer, FileAttachmentType type, UploadedFilePreview preview,
 			UploadedFile uploadFile) throws UnifyException {
 		try (InputStream in = uploadFile.getIn();){
