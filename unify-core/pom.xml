@@ -133,11 +133,6 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi-scratchpad</artifactId>
-			<version>4.0.1</version>
-		</dependency>
-		<dependency>
 		    <groupId>org.dhatim</groupId>
 		    <artifactId>fastexcel-reader</artifactId>
 		    <version>0.18.4</version>

@@ -16,7 +16,6 @@
 package com.tcdng.unify.web.ui.widget.writer;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -28,17 +27,10 @@ import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-import org.apache.poi.hwpf.HWPFDocument;
-import org.apache.poi.hwpf.converter.WordToHtmlConverter;
 import org.dhatim.fastexcel.reader.Cell;
 import org.dhatim.fastexcel.reader.ReadableWorkbook;
 import org.dhatim.fastexcel.reader.Row;
@@ -155,28 +147,7 @@ public class UploadedFilePreviewWriter extends AbstractWidgetWriter {
 
 	private String getSrcDocHtml(FileAttachmentType type, UploadedFile uploadFile) throws UnifyException {
 		if (type.isDoc()) {
-			try (HWPFDocument hwpfDocument = new HWPFDocument(uploadFile.getIn());
-					ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-				Document htmlDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-
-				WordToHtmlConverter wordToHtmlConverter = new WordToHtmlConverter(htmlDocument);
-				wordToHtmlConverter.processDocument(hwpfDocument);
-
-				Document docResult = wordToHtmlConverter.getDocument();
-				DOMSource domSource = new DOMSource(docResult);
-
-				StreamResult streamResult = new StreamResult(baos);
-
-				TransformerFactory tf = TransformerFactory.newInstance();
-				Transformer serializer = tf.newTransformer();
-				serializer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-				serializer.setOutputProperty(OutputKeys.INDENT, "yes");
-				serializer.setOutputProperty(OutputKeys.METHOD, "html");
-				serializer.transform(domSource, streamResult);
-				return baos.toString("UTF-8");
-			} catch (Exception e) {
-				throwOperationErrorException(e);
-			}
+			// TODO
 		}
 
 		return ""; // TODO
