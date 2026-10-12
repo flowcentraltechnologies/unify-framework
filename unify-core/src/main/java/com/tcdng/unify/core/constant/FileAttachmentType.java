@@ -140,16 +140,16 @@ public enum FileAttachmentType implements EnumConst {
        	return EXCELX.equals(this);
     }
 
+    public boolean isXls() {
+       	return EXCEL.equals(this);
+    }
+
     public boolean isDocX() {
        	return WORDX.equals(this);
     }
 
     public boolean isDoc() {
        	return WORD.equals(this);
-    }
-
-    public boolean isExcel() {
-       	return EXCEL.equals(this);
     }
 
     public boolean isPdf() {
@@ -165,7 +165,7 @@ public enum FileAttachmentType implements EnumConst {
     }
 
 	public boolean isSrcDoc() {
-		return image || isFullDoc() || isXlsX() || isDocX() || isCsv() || isText() || isXml();
+		return image || isFullDoc() || isXlsX() || isXls() || isDocX() || isCsv() || isText() || isXml();
 	}
 
     public boolean isFullDoc() {

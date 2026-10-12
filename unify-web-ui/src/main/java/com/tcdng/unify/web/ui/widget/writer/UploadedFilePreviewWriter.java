@@ -19,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Date;
@@ -31,6 +32,9 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.dhatim.fastexcel.reader.Cell;
 import org.dhatim.fastexcel.reader.ReadableWorkbook;
 import org.dhatim.fastexcel.reader.Row;
@@ -194,6 +198,8 @@ public class UploadedFilePreviewWriter extends AbstractWidgetWriter {
 				writeCsvHtml(writer, type, preview, uploadFile);
 			} else if (type.isXlsX()) {
 				writeXlsxHtml(writer, type, preview, uploadFile);
+			} else if (type.isXls()) {
+				writeXlsHtml(writer, type, preview, uploadFile);
 			} else if (type.isDocX()) {
 				writeDocxHtml(writer, type, preview, uploadFile);
 			} else if (type.isText()) {
@@ -223,6 +229,57 @@ public class UploadedFilePreviewWriter extends AbstractWidgetWriter {
 			writer.writeScopeImageContextURL(imageName, true);
 			writer.write("\"/>");
 		}
+	}
+	
+	private void writeXlsHtml(ResponseWriter writer, FileAttachmentType type, UploadedFilePreview preview,
+			UploadedFile uploadFile) throws UnifyException {
+		writer.write("<table class=\"xlsxbody\" style=\"width:100%;max-width:100%;\">");
+		try (Workbook wb = new HSSFWorkbook(uploadFile.getIn())) {
+			org.apache.poi.ss.usermodel.Sheet sheet = wb.getSheetAt(0);
+			final int lastRow = sheet.getLastRowNum();
+			for (int r = 0; r <= lastRow; r++) {
+				org.apache.poi.ss.usermodel.Row row = sheet.getRow(r);
+				writer.write("<tr>");
+				final int len = row != null ? row.getLastCellNum() : 0;
+				for (int i = 0; i < len; i++) {
+					writer.write("<td>");
+					org.apache.poi.ss.usermodel.Cell cell = row.getCell(i);
+					if (cell != null) {
+						switch (cell.getCellType()) {
+						case BOOLEAN:
+							writer.write(String.valueOf(cell.getBooleanCellValue()));
+							break;
+						case BLANK:
+							break;
+						case ERROR:
+							break;
+						case FORMULA:
+							writer.write(cell.getCellFormula());
+							break;
+						case NUMERIC:
+							if (DateUtil.isCellDateFormatted(cell)) {
+								writer.write(cell.getDateCellValue());
+							} else {
+								writer.write(BigDecimal.valueOf(cell.getNumericCellValue()));
+							}
+							break;
+						case STRING:
+							writer.write(cell.getStringCellValue());
+							break;
+						default:
+							break;
+						}
+					}
+					writer.write("</td>");
+				}
+
+				writer.write("</tr>");
+			}
+		} catch (IOException e) {
+			throwOperationErrorException(e);
+		}
+
+		writer.write("</table>");
 	}
 
 	private void writeXlsxHtml(ResponseWriter writer, FileAttachmentType type, UploadedFilePreview preview,
