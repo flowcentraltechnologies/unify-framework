@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -44,6 +45,9 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 import org.zwobble.mammoth.DocumentConverter;
 import org.zwobble.mammoth.Result;
 
@@ -72,6 +76,8 @@ import com.tcdng.unify.web.ui.widget.Widget;
 public class UploadedFilePreviewWriter extends AbstractWidgetWriter {
 
 	private static final long MAX_USE_ENCODED = 200 * 1024; // 200K
+
+    private static final String INDENT = "    "; // 4 spaces per level
 
 	@Configurable
 	private ResponseWriterPool responseWriterPool;
@@ -105,6 +111,7 @@ public class UploadedFilePreviewWriter extends AbstractWidgetWriter {
 				if (type.isSrcDoc()) {
 					writer.write(" ufviewerpad");
 				}
+				
 				writer.write("\">");				
 				if (type.isPdf()) {
 					if (preview.getFileLength() <= MAX_USE_ENCODED) {
@@ -221,6 +228,8 @@ public class UploadedFilePreviewWriter extends AbstractWidgetWriter {
 				writeDocxHtml(writer, type, preview, uploadFile);
 			} else if (type.isText()) {
 				writeTextHtml(writer, type, preview, uploadFile);
+			} else if (type.isXml()) {
+				writeXmlHtml(writer, type, preview, uploadFile);
 			}
 
 			writer.write("</body>");
@@ -333,4 +342,54 @@ public class UploadedFilePreviewWriter extends AbstractWidgetWriter {
 		}
 		writer.write("</pre>");
 	}
+
+	private void writeXmlHtml(ResponseWriter writer, FileAttachmentType type, UploadedFilePreview preview,
+			UploadedFile uploadFile) throws UnifyException {
+		try (InputStream in = uploadFile.getIn();) {
+			Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(in);
+			doc.getDocumentElement().normalize();
+
+			StringBuilder sb = new StringBuilder();
+			convertNode(doc.getDocumentElement(), sb, 0);
+			writer.write(sb.toString());
+		} catch (IOException e) {
+			throwOperationErrorException(e);
+		} catch (SAXException e) {
+			throwOperationErrorException(e);
+		} catch (ParserConfigurationException e) {
+			throwOperationErrorException(e);
+		}
+	}
+	
+    private void convertNode(Node node, StringBuilder sb, int depth) {
+        if (node.getNodeType() == Node.ELEMENT_NODE) {
+            final String pad = INDENT.repeat(depth);
+            final String name = node.getNodeName();
+
+            NodeList children = node.getChildNodes();
+            final boolean leaf = children.getLength() == 0
+                    || (children.getLength() == 1 && children.item(0).getNodeType() == Node.TEXT_NODE);
+
+            sb.append(pad).append("<div class='xmlnode'>\n");
+
+            if (leaf) {
+                sb.append(pad).append(INDENT)
+                    .append("<span class='xmltag'>&lt;").append(name).append("&gt;</span>")
+                    .append("<span class='xmlval'>").append(node.getTextContent().trim()).append("</span>")
+                    .append("<span class='xmltag'>&lt;/").append(name).append("&gt;</span>\n");
+            } else {
+                sb.append(pad).append(INDENT)
+                    .append("<span class='xmltag'>&lt;").append(name).append("&gt;</span>\n");
+                for (int i = 0; i < children.getLength(); i++) {
+                    convertNode(children.item(i), sb, depth + 1);
+                }
+
+                sb.append(pad).append(INDENT)
+                    .append("<span class='xmltag'>&lt;/").append(name).append("&gt;</span>\n");
+            }
+
+            sb.append(pad).append("</div>\n");
+        }
+    }
+
 }

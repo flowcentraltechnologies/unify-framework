@@ -160,8 +160,12 @@ public enum FileAttachmentType implements EnumConst {
     	return TEXT.equals(this);
     }
 
+    public boolean isXml() {
+    	return XML.equals(this);
+    }
+
 	public boolean isSrcDoc() {
-		return image || isFullDoc() || isXlsX() || isDocX() || isCsv() || isText();
+		return image || isFullDoc() || isXlsX() || isDocX() || isCsv() || isText() || isXml();
 	}
 
     public boolean isFullDoc() {

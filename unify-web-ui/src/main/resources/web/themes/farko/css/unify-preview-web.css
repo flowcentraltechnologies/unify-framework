@@ -26,3 +26,8 @@ body {background-color:#ffffff;}
 
 .xlsxbody {border-collapse:collapse;font-size:13px;color:#1d2330;}
 .xlsxbody td {border: 1px solid #dddddd; text-align: left; padding:8px;min-width:120px;}}
+
+.xmlnode {margin-left:20px;border-left:1px dashed #ccc;padding-left:10px;}
+.xmltag {color:#a52a2a;font-weight: bold;}
+.xmlval {color:#000000;}
+
