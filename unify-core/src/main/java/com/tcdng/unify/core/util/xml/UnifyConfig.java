@@ -31,16 +31,9 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 @JsonPropertyOrder({"propertiesConfig", "componentsConfig" })
 public class UnifyConfig {
 
-    @JacksonXmlProperty(isAttribute = true)
-    private final String xmlns;
-
-    @JacksonXmlProperty(isAttribute = true, localName = "xmlns:xsi")
-    private final String xmlnsXsi;
-
-    @JacksonXmlProperty(isAttribute = true, localName = "xsi:schemaLocation")
-    private final String xsiSchemaLocation;
-
-    private String schemaLocation;
+    @JacksonXmlProperty(isAttribute = true, namespace = "http://www.w3.org/2001/XMLSchema-instance",
+            localName = "noNamespaceSchemaLocation")
+    private final String noNamespaceSchemaLocation;
 
 	@JacksonXmlProperty(isAttribute = true)
     private String version;
@@ -61,29 +54,11 @@ public class UnifyConfig {
     private ComponentsConfig componentsConfig;
 
     public UnifyConfig() {
-        this.xmlns = "http://flowcentraltech.com/schema-common";
-        this.xmlnsXsi = "http://www.w3.org/2001/XMLSchema-instance";
-        this.xsiSchemaLocation = this.xmlns + " https://schema.flowcentralplatform.com/xsd/unify-4.0.0.xsd";
+        this.noNamespaceSchemaLocation = "https://schema.flowcentralplatform.com/xsd/4.2.0/unify.xsd";
     }
 
-    public final String getXmlns() {
-        return xmlns;
-    }
-
-    public final String getXmlnsXsi() {
-        return xmlnsXsi;
-    }
-
-    public final String getXsiSchemaLocation() {
-        return xsiSchemaLocation;
-    }
-
-    public String getSchemaLocation() {
-        return schemaLocation;
-    }
-
-    public void setSchemaLocation(String schemaLocation) {
-        this.schemaLocation = schemaLocation;
+    public String getNoNamespaceSchemaLocation() {
+        return noNamespaceSchemaLocation;
     }
 
     public String getVersion() {
