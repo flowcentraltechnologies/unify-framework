@@ -27,6 +27,7 @@ import java.nio.charset.StandardCharsets;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.UnifyOperationException;
 import com.tcdng.unify.core.data.XmlConfig;
@@ -39,64 +40,61 @@ import com.tcdng.unify.core.data.XmlConfig;
  */
 public final class XmlConfigUtils {
 
-    private XmlConfigUtils() {
+	private XmlConfigUtils() {
 
-    }
+	}
 
-    public static <T> T readXmlConfig(Class<T> xmlDataClazz, Object xmlSrcObject) throws UnifyException {
-        try {
-            XmlMapper unmarshaller = new XmlMapper();
-            if (xmlSrcObject instanceof String) {
-                Reader reader = new CharArrayReader(((String) xmlSrcObject).toCharArray());
-                return unmarshaller.readValue(reader, xmlDataClazz);
-            } else if (xmlSrcObject instanceof Reader) {
-                return unmarshaller.readValue((Reader) xmlSrcObject, xmlDataClazz);
-            } else if (xmlSrcObject instanceof InputStream) {
-                return unmarshaller.readValue((InputStream) xmlSrcObject, xmlDataClazz);
-            }
+	public static <T> T readXmlConfig(Class<T> xmlDataClazz, Object xmlSrcObject) throws UnifyException {
+		try {
+			XmlMapper unmarshaller = new XmlMapper();
+			if (xmlSrcObject instanceof String) {
+				Reader reader = new CharArrayReader(((String) xmlSrcObject).toCharArray());
+				return unmarshaller.readValue(reader, xmlDataClazz);
+			} else if (xmlSrcObject instanceof Reader) {
+				return unmarshaller.readValue((Reader) xmlSrcObject, xmlDataClazz);
+			} else if (xmlSrcObject instanceof InputStream) {
+				return unmarshaller.readValue((InputStream) xmlSrcObject, xmlDataClazz);
+			}
 
-            return unmarshaller.readValue((File) xmlSrcObject, xmlDataClazz);
-        } catch (Exception e) {
-            throw new UnifyOperationException(e);
-        }
-    }
+			return unmarshaller.readValue((File) xmlSrcObject, xmlDataClazz);
+		} catch (Exception e) {
+			throw new UnifyOperationException(e);
+		}
+	}
 
-    public static void writeXmlConfig(XmlConfig configObject, OutputStream outputStream) throws UnifyException {
-    	XmlConfigUtils.writeXmlConfig(configObject, outputStream, false);
-    }
+	public static void writeXmlConfig(XmlConfig configObject, OutputStream outputStream) throws UnifyException {
+		XmlConfigUtils.writeXmlConfig(configObject, outputStream, false);
+	}
 
-    public static void writeXmlConfigNoEscape(XmlConfig configObject, OutputStream outputStream) throws UnifyException {
-    	XmlConfigUtils.writeXmlConfig(configObject, outputStream, true);
-    }
+	public static void writeXmlConfigNoEscape(XmlConfig configObject, OutputStream outputStream) throws UnifyException {
+		XmlConfigUtils.writeXmlConfig(configObject, outputStream, true);
+	}
 
-    public static void writeXmlConfig(XmlConfig configObject, Writer writer) throws UnifyException {
-    	XmlConfigUtils.writeXmlConfig(configObject, writer, false);
-    }
+	public static void writeXmlConfig(XmlConfig configObject, Writer writer) throws UnifyException {
+		XmlConfigUtils.writeXmlConfig(configObject, writer, false);
+	}
 
-    public static void writeXmlConfigNoEscape(XmlConfig configObject, Writer writer) throws UnifyException {
-    	XmlConfigUtils.writeXmlConfig(configObject, writer, true);
-    }
+	public static void writeXmlConfigNoEscape(XmlConfig configObject, Writer writer) throws UnifyException {
+		XmlConfigUtils.writeXmlConfig(configObject, writer, true);
+	}
 
-    public static String getXmlConfigAsString(XmlConfig configObject) throws UnifyException {
-    	StringWriter writer = new StringWriter();
-    	XmlConfigUtils.writeXmlConfig(configObject, writer, false);
-    	return writer.toString();
-    }
+	public static String getXmlConfigAsString(XmlConfig configObject) throws UnifyException {
+		StringWriter writer = new StringWriter();
+		XmlConfigUtils.writeXmlConfig(configObject, writer, false);
+		return writer.toString();
+	}
 
-    public static String getXmlConfigAsStringNoEscape(XmlConfig configObject) throws UnifyException {
-    	StringWriter writer = new StringWriter();
-    	XmlConfigUtils.writeXmlConfig(configObject, writer, true);
-    	return writer.toString();
-    }
+	public static String getXmlConfigAsStringNoEscape(XmlConfig configObject) throws UnifyException {
+		StringWriter writer = new StringWriter();
+		XmlConfigUtils.writeXmlConfig(configObject, writer, true);
+		return writer.toString();
+	}
 
 	private static void writeXmlConfig(XmlConfig configObject, OutputStream outputStream, boolean noEscape)
 			throws UnifyException {
 		try {
-			if (configObject.includeXmlDeclaration()) {
-				outputStream.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n".getBytes(StandardCharsets.UTF_8));
-			}
-
 			XmlMapper marshaller = new XmlMapper();
+			marshaller.configure(ToXmlGenerator.Feature.WRITE_XML_DECLARATION, configObject.includeXmlDeclaration());
 			marshaller.enable(SerializationFeature.INDENT_OUTPUT);
 			marshaller.disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
 			marshaller.writeValue(outputStream, configObject);
@@ -106,20 +104,17 @@ public final class XmlConfigUtils {
 		}
 	}
 
-    private static void writeXmlConfig(XmlConfig configObject, Writer writer, boolean noEscape) throws UnifyException {
-        try {
-			if (configObject.includeXmlDeclaration()) {
-				writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-			}
-
-            XmlMapper marshaller = new XmlMapper();
+	private static void writeXmlConfig(XmlConfig configObject, Writer writer, boolean noEscape) throws UnifyException {
+		try {
+			XmlMapper marshaller = new XmlMapper();
+			marshaller.configure(ToXmlGenerator.Feature.WRITE_XML_DECLARATION, configObject.includeXmlDeclaration());
 			marshaller.enable(SerializationFeature.INDENT_OUTPUT);
 			marshaller.disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
 			marshaller.writeValue(writer, configObject);
-            writer.flush();
-        } catch (Exception e) {
-            throw new UnifyOperationException(e);
-        }
-    }
+			writer.flush();
+		} catch (Exception e) {
+			throw new UnifyOperationException(e);
+		}
+	}
 
 }
