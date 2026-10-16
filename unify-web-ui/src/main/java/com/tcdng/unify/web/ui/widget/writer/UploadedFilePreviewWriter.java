@@ -24,6 +24,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -46,6 +48,8 @@ import org.xml.sax.SAXException;
 import org.zwobble.mammoth.DocumentConverter;
 import org.zwobble.mammoth.Result;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.annotation.Configurable;
@@ -204,6 +208,8 @@ public class UploadedFilePreviewWriter extends AbstractWidgetWriter {
 				writeDocxHtml(writer, type, preview, uploadFile);
 			} else if (type.isText()) {
 				writeTextHtml(writer, type, preview, uploadFile);
+			} else if (type.isJson()) {
+				writeJsonHtml(writer, type, preview, uploadFile);
 			} else if (type.isXml()) {
 				writeXmlHtml(writer, type, preview, uploadFile);
 			}
@@ -389,6 +395,68 @@ public class UploadedFilePreviewWriter extends AbstractWidgetWriter {
 		writer.write("</pre>");
 	}
 
+	private void writeJsonHtml(ResponseWriter writer, FileAttachmentType type, UploadedFilePreview preview,
+			UploadedFile uploadFile) throws UnifyException {
+		writer.write("<div class=\"jsonbody\" style=\"max-width:100%;\">");
+		try {
+			JsonNode root = new ObjectMapper().readTree(uploadFile.getIn());
+			convertNode(null, root, writer, 0);
+		} catch (Exception e) {
+			throwOperationErrorException(e);
+		}
+		writer.write("</div>");
+	}
+	
+	private void convertNode(String key, JsonNode node, ResponseWriter writer, int depth) {
+		String pad = INDENT.repeat(depth);
+		String inner = pad + INDENT;
+		String label = (key == null) ? "" : "<span class=\"jsonkey\">\"" + key + "\"</span>: ";
+
+		writer.write(pad).write("<div class=\"jsonnode\">\n");
+
+		if (node.isObject() || node.isArray()) {
+			String open = node.isObject() ? "{" : "[";
+			String close = node.isObject() ? "}" : "]";
+
+			if (node.size() == 0) {
+				writer.write(inner).write(label).write("<span class=\"jsonbrace\">").write(open).write(close)
+						.write("</span>\n");
+			} else {
+				writer.write(inner).write(label).write("<span class=\"jsonbrace\">").write(open).write("</span>\n");
+
+				if (node.isObject()) {
+					Iterator<Map.Entry<String, JsonNode>> fields = node.fields();
+					while (fields.hasNext()) {
+						Map.Entry<String, JsonNode> entry = fields.next();
+						convertNode(entry.getKey(), entry.getValue(), writer, depth + 1);
+					}
+				} else {
+					for (JsonNode item : node) {
+						convertNode(null, item, writer, depth + 1);
+					}
+				}
+
+				writer.write(inner).write("<span class=\"jsonbrace\">").write(close).write("</span>\n");
+			}
+		} else {
+			writer.write(inner).write(label).write(renderValue(node)).write("\n");
+		}
+
+		writer.write(pad).write("</div>\n");
+	}
+    
+    private String renderValue(JsonNode node) {
+        if (node.isTextual()) {
+            return "<span class=\"jsonstr\">\"" + node.asText() + "\"</span>";
+        } else if (node.isNumber()) {
+            return "<span class=\"jsonnum\">" + node.asText() + "</span>";
+        } else if (node.isBoolean()) {
+            return "<span class=\"jsonbool\">" + node.asText() + "</span>";
+        } else {
+            return "<span class=\"jsonnull\">null</span>";
+        }
+    }
+     
 	private void writeXmlHtml(ResponseWriter writer, FileAttachmentType type, UploadedFilePreview preview,
 			UploadedFile uploadFile) throws UnifyException {
 		try (InputStream in = uploadFile.getIn();) {

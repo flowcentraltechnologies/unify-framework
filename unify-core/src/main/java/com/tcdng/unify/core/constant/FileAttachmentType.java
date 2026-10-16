@@ -71,6 +71,7 @@ public enum FileAttachmentType implements EnumConst {
 		map.put(".pdf", PDF);
 		map.put(".xml", XML);
 		map.put(".txt", TEXT);
+		map.put(".json", JSON);
 		map.put(".mp4", VIDEO);
 		map.put(".doc", WORD);
 		map.put(".docx", WORDX);
@@ -160,12 +161,16 @@ public enum FileAttachmentType implements EnumConst {
     	return TEXT.equals(this);
     }
 
+    public boolean isJson() {
+    	return JSON.equals(this);
+    }
+
     public boolean isXml() {
     	return XML.equals(this);
     }
 
 	public boolean isSrcDoc() {
-		return image || isFullDoc() || isXlsX() || isXls() || isDocX() || isCsv() || isText() || isXml();
+		return image || isFullDoc() || isXlsX() || isXls() || isDocX() || isCsv() || isText() || isJson() || isXml();
 	}
 
     public boolean isFullDoc() {
@@ -199,6 +204,8 @@ public enum FileAttachmentType implements EnumConst {
 				return filename + ".pdf";
 			case TEXT:
 				return filename + ".txt";
+			case JSON:
+				return filename + ".json";
 			case VIDEO:
 				return filename + ".mp4";
 			case WILDCARD:
