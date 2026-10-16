@@ -1074,6 +1074,18 @@ public final class DataUtils {
 	 * @param reader the JSON reader
 	 * @throws UnifyException if an error occurs
 	 */
+	public static <T> List<T> listFromJsonInputStream(JsonObjectComposition comp, Class<T> clazz,
+			InputStream inputStream) throws UnifyException {
+		return DataUtils.listFromJsonReader(comp, clazz, new InputStreamReader(inputStream));
+	}
+	
+	/**
+	 * Reads a JSON object as list
+	 * 
+	 * @param clazz  bean type
+	 * @param reader the JSON reader
+	 * @throws UnifyException if an error occurs
+	 */
 	public static <T> List<T> listFromJsonReader(JsonObjectComposition comp, Class<T> clazz, Reader reader)
 			throws UnifyException {
 		try {
