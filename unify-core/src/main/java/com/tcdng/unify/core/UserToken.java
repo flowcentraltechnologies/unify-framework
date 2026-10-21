@@ -63,7 +63,7 @@ public class UserToken {
 	private Long organizationId;
 
 	private int sessionInSecs;
-	
+
 	private boolean globalAccess;
 
 	private boolean reservedUser;
@@ -79,7 +79,7 @@ public class UserToken {
 	private Set<String> branches;
 
 	private Set<String> departments;
-	
+
 	public UserToken(Long tenantId) {
 		this.tenantId = tenantId;
 	}
@@ -180,7 +180,7 @@ public class UserToken {
 	public boolean isWithOrganization() {
 		return organizationId != null && organizationId > 0L;
 	}
-	
+
 	public String getIpAddress() {
 		return ipAddress;
 	}
@@ -269,8 +269,18 @@ public class UserToken {
 		this.departments = departments;
 	}
 
+	public boolean isWithAccessToBranch(String branchCode) {
+		return branchCode != null
+				&& (branchCode.equals(this.branchCode) || (branches != null && branches.contains(branchCode)));
+	}
+
 	public boolean isWithBranches() {
 		return !DataUtils.isBlank(branches);
+	}
+
+	public boolean isWithAccessToDepartment(String departmentCode) {
+		return departmentCode != null && (departmentCode.equals(this.departmentCode)
+				|| (departments != null && departments.contains(departmentCode)));
 	}
 
 	public boolean isWithDepartments() {
