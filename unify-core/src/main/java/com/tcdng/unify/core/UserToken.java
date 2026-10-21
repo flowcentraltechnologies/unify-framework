@@ -16,8 +16,10 @@
 package com.tcdng.unify.core;
 
 import java.util.List;
+import java.util.Set;
 
 import com.tcdng.unify.common.database.Entity;
+import com.tcdng.unify.core.util.DataUtils;
 import com.tcdng.unify.core.util.StringUtils;
 
 /**
@@ -73,6 +75,10 @@ public class UserToken {
 	private boolean authorized;
 
 	private List<RoleOption> roleOptions;
+
+	private Set<String> branches;
+
+	private Set<String> departments;
 	
 	public UserToken(Long tenantId) {
 		this.tenantId = tenantId;
@@ -245,6 +251,30 @@ public class UserToken {
 
 	public boolean isPrimaryTenant() {
 		return Entity.PRIMARY_TENANT_ID.equals(tenantId);
+	}
+
+	public Set<String> getBranches() {
+		return branches;
+	}
+
+	public void setBranches(Set<String> branches) {
+		this.branches = branches;
+	}
+
+	public Set<String> getDepartments() {
+		return departments;
+	}
+
+	public void setDepartments(Set<String> departments) {
+		this.departments = departments;
+	}
+
+	public boolean isWithBranches() {
+		return !DataUtils.isBlank(branches);
+	}
+
+	public boolean isWithDepartments() {
+		return !DataUtils.isBlank(departments);
 	}
 
 	public static Builder newBuilder() {
