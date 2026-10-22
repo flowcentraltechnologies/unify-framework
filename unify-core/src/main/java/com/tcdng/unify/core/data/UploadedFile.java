@@ -72,6 +72,10 @@ public class UploadedFile implements Upload {
 		return new UploadedFile(filename, null, in, false, false);
 	}
 
+	public static UploadedFile create() throws UnifyException {
+		return new UploadedFile(generateFileName(), null, null, true, false);
+	}
+
 	public static UploadedFile create(String filename) throws UnifyException {
 		return new UploadedFile(filename, null, null, true, false);
 	}
@@ -81,9 +85,7 @@ public class UploadedFile implements Upload {
 	}
 
 	public static UploadedFile createUsingTempFile(InputStream in) throws UnifyException {
-		final String filename = "uploaded-" + RandomUtils.generateRandomLetters(8) + "-" + System.currentTimeMillis()
-				+ ".tmp";
-		return new UploadedFile(filename, null, in, true, false);
+		return new UploadedFile(generateFileName() , null, in, true, false);
 	}
 
 	public static UploadedFile createUsingTempFile(String filename, InputStream in) throws UnifyException {
@@ -94,6 +96,11 @@ public class UploadedFile implements Upload {
 		return new UploadedFile(filename, null, in, true, true);
 	}
 
+	private static String generateFileName() {
+		return "uploaded-" + RandomUtils.generateRandomLetters(8) + "-" + System.currentTimeMillis()
+		+ ".tmp";
+	}
+	
 	private UploadedFile(String filename, byte[] bin, InputStream in,
 			boolean usesTempFile, boolean computeChecksum) throws UnifyException {
 		this.detect = new byte[4];
