@@ -72,16 +72,16 @@ public class UploadedFile implements Upload {
 		return new UploadedFile(filename, null, in, false, false);
 	}
 
-	public static UploadedFile create() throws UnifyException {
+	public static UploadedFile createWithChecksum(String filename) throws UnifyException {
+		return new UploadedFile(filename, null, null, true, true);
+	}
+
+	public static UploadedFile createUsingTempFile() throws UnifyException {
 		return new UploadedFile(generateFileName(), null, null, true, false);
 	}
 
-	public static UploadedFile create(String filename) throws UnifyException {
+	public static UploadedFile createUsingTempFile(String filename) throws UnifyException {
 		return new UploadedFile(filename, null, null, true, false);
-	}
-
-	public static UploadedFile createWithChecksum(String filename) throws UnifyException {
-		return new UploadedFile(filename, null, null, true, true);
 	}
 
 	public static UploadedFile createUsingTempFile(InputStream in) throws UnifyException {
