@@ -29,9 +29,9 @@ public class DownloadFile {
 
     private String filename;
 
-    byte[] data;
+    UploadedFile data;
 
-    public DownloadFile(MimeType mimeType, String filename, byte[] data) {
+    public DownloadFile(MimeType mimeType, String filename, UploadedFile data) {
         this.mimeType = mimeType;
         this.filename = filename;
         this.data = data;
@@ -45,7 +45,7 @@ public class DownloadFile {
         return filename;
     }
 
-    public byte[] getData() {
+    public UploadedFile getData() {
         return data;
     }
 

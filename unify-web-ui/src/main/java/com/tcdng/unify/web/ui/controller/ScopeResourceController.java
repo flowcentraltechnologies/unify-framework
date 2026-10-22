@@ -51,25 +51,31 @@ public class ScopeResourceController extends AbstractPageResourceController {
         super(Secured.FALSE);
     }
 
-    @Override
-    public void prepareExecution() throws UnifyException {
-        setContentDisposition(getResourceName());
-        if (isApplicationScope = Scope.APPLICATION.equals(Scope.fromCode(scope))) {
-            resource = getApplicationAttribute(getResourceName());
-        } else {
-            resource = getSessionContext().getAttribute(getResourceName());
-        }
+	@Override
+	public void prepareExecution() throws UnifyException {
+		setContentDisposition(getResourceName());
+		if (isApplicationScope = Scope.APPLICATION.equals(Scope.fromCode(scope))) {
+			resource = getApplicationAttribute(getResourceName());
+		} else {
+			resource = getSessionContext().getAttribute(getResourceName());
+		}
 
-        if (resource != null && resource instanceof byte[]) {
-            setContentLength(((byte[]) resource).length);
-        }
-    }
+		if (resource != null) {
+			if (resource instanceof UploadedFile) {
+				setContentLength(((UploadedFile) resource).getFileSize());
+			} if (resource instanceof byte[]) {
+				setContentLength(((byte[]) resource).length);
+			}
+		}
+	}
 
     @Override
     public String execute(OutputStream outputStream) throws UnifyException {
         InputStream inputStream = null;
         if (resource != null) {
-            if (resource instanceof byte[]) {
+        	if (resource instanceof UploadedFile) {
+                IOUtils.writeAll(outputStream, ((UploadedFile) resource).getIn());
+			} else if (resource instanceof byte[]) {
                 IOUtils.writeAll(outputStream, (byte[]) resource);
             } else if (resource instanceof InputStream) {
                 inputStream = (InputStream) resource;

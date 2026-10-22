@@ -172,7 +172,26 @@ public class IOUtils {
 		}
 		return null;
 	}
-
+	
+	/**
+	 * Opens a file resource input stream. Runs in the following sequence until it
+	 * finds resource to open.
+	 * 
+	 * <pre>
+	 *     1. Check for file with supplied resourceName.
+	 *     2. If real path is supplied, check for file with name Application RealPath + resourceName
+	 *     3. Check for file with name System User Directory + resourceName
+	 *     4. Open class loader resource inputStream with resourceName
+	 * </pre>
+	 * 
+	 * @param resourceName the resource name.
+	 * @return the file resource input stream
+	 * @throws UnifyException if resource is not found. If an error occurs
+	 */
+	public static InputStream openFileResourceInputStream(String resourceName) throws UnifyException {
+		return IOUtils.openFileResourceInputStream(resourceName, null);
+	}
+	
 	/**
 	 * Opens a file resource input stream. Runs in the following sequence until it
 	 * finds resource to open.

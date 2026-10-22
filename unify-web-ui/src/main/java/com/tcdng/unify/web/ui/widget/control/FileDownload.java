@@ -21,6 +21,7 @@ import com.tcdng.unify.core.annotation.UplAttribute;
 import com.tcdng.unify.core.annotation.UplAttributes;
 import com.tcdng.unify.core.constant.MimeType;
 import com.tcdng.unify.core.data.DownloadFile;
+import com.tcdng.unify.core.data.UploadedFile;
 import com.tcdng.unify.core.util.IOUtils;
 import com.tcdng.unify.core.util.StringUtils;
 import com.tcdng.unify.web.annotation.Action;
@@ -46,7 +47,7 @@ public class FileDownload extends Button {
         DownloadFile downloadFile = null;
         String fileSrc = getUplAttribute(String.class, "fileSrc");
         if (StringUtils.isNotBlank(fileSrc)) {
-            byte[] data = IOUtils.readFileResourceInputStream(fileSrc);
+        	UploadedFile data =  UploadedFile.createUsingTempFile(IOUtils.openFileResourceInputStream(fileSrc));
             String fileName = fileSrc;
             int index = fileName.lastIndexOf('/') + 1;
             if (index > 0) {
