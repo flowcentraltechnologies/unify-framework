@@ -604,7 +604,7 @@ class OracleUploadedFilePolicy extends UploadedFilePolicy {
 	@Override
 	public void executeSetPreparedStatement(Object pstmt, int index, Object data, long timeZoneRawOffset)
 			throws Exception {
-		if (data == null || ((byte[]) data).length == 0) {
+		if (data == null) {
 			((PreparedStatement) pstmt).setNull(index, Types.BLOB);
 		} else {
 			((PreparedStatement) pstmt).setBinaryStream(index, ((UploadedFile) data).getIn());
