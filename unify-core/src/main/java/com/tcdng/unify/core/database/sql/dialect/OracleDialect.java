@@ -33,6 +33,7 @@ import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.constant.PrintFormat;
 import com.tcdng.unify.core.constant.TimeSeriesType;
 import com.tcdng.unify.core.criterion.RestrictionType;
+import com.tcdng.unify.core.data.UploadedFile;
 import com.tcdng.unify.core.database.StaticReference;
 import com.tcdng.unify.core.database.sql.AbstractSqlDataSourceDialect;
 import com.tcdng.unify.core.database.sql.AbstractSqlDataSourceDialectPolicies;
@@ -55,6 +56,7 @@ import com.tcdng.unify.core.database.sql.data.policy.ShortPolicy;
 import com.tcdng.unify.core.database.sql.data.policy.StringPolicy;
 import com.tcdng.unify.core.database.sql.data.policy.TimestampPolicy;
 import com.tcdng.unify.core.database.sql.data.policy.TimestampUTCPolicy;
+import com.tcdng.unify.core.database.sql.data.policy.UploadedFilePolicy;
 import com.tcdng.unify.core.util.DataUtils;
 import com.tcdng.unify.core.util.StringUtils;
 
@@ -78,6 +80,7 @@ public class OracleDialect extends AbstractSqlDataSourceDialect {
 		tempMap1.put(ColumnType.DATE, new OracleDatePolicy());
 		tempMap1.put(ColumnType.TIMESTAMP, new OracleTimestampPolicy());
 		tempMap1.put(ColumnType.TIMESTAMP_UTC, new OracleTimestampUTCPolicy());
+		tempMap1.put(ColumnType.UPLOAD, new OracleUploadedFilePolicy());
 		tempMap1.put(ColumnType.BLOB, new OracleBlobPolicy());
 		tempMap1.put(ColumnType.CLOB, new OracleClobPolicy());
 		tempMap1.put(ColumnType.LONG, new OracleLongPolicy());
@@ -594,6 +597,20 @@ class OracleShortPolicy extends ShortPolicy {
 	public boolean isFixedLength() {
 		return false;
 	}
+}
+
+class OracleUploadedFilePolicy extends UploadedFilePolicy {
+
+	@Override
+	public void executeSetPreparedStatement(Object pstmt, int index, Object data, long timeZoneRawOffset)
+			throws Exception {
+		if (data == null || ((byte[]) data).length == 0) {
+			((PreparedStatement) pstmt).setNull(index, Types.BLOB);
+		} else {
+			((PreparedStatement) pstmt).setBinaryStream(index, ((UploadedFile) data).getIn());
+		}
+	}
+
 }
 
 class OracleBlobPolicy extends BlobPolicy {

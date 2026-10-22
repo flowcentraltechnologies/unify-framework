@@ -45,6 +45,7 @@ import com.tcdng.unify.core.database.sql.data.policy.ClobPolicy;
 import com.tcdng.unify.core.database.sql.data.policy.DatePolicy;
 import com.tcdng.unify.core.database.sql.data.policy.TimestampPolicy;
 import com.tcdng.unify.core.database.sql.data.policy.TimestampUTCPolicy;
+import com.tcdng.unify.core.database.sql.data.policy.UploadedFilePolicy;
 import com.tcdng.unify.core.util.DataUtils;
 import com.tcdng.unify.core.util.StringUtils;
 
@@ -65,6 +66,7 @@ public class MsSqlDialect extends AbstractSqlDataSourceDialect {
 		tempMap1.put(ColumnType.TIMESTAMP_UTC, new MsSqlTimestampUTCPolicy());
 		tempMap1.put(ColumnType.TIMESTAMP, new MsSqlTimestampPolicy());
 		tempMap1.put(ColumnType.DATE, new MsSqlDatePolicy());
+		tempMap1.put(ColumnType.UPLOAD, new MsSqlUploadedFilePolicy());
 		tempMap1.put(ColumnType.BLOB, new MsSqlBlobPolicy());
 		tempMap1.put(ColumnType.CLOB, new MsSqlClobPolicy());
 
@@ -545,6 +547,25 @@ class MsSqlDatePolicy extends DatePolicy {
 	@Override
 	public int getSqlType() {
 		return Types.TIMESTAMP;
+	}
+
+}
+
+class MsSqlUploadedFilePolicy extends UploadedFilePolicy {
+
+	@Override
+	public void appendTypeSql(StringBuilder sb, int length, int precision, int scale) {
+		sb.append(" VARBINARY(MAX)");
+	}
+
+	@Override
+	public String getTypeName() {
+		return "VARBINARY";
+	}
+
+	@Override
+	public int getSqlType() {
+		return Types.LONGVARBINARY;
 	}
 
 }

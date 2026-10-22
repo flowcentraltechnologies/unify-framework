@@ -24,11 +24,13 @@ import java.security.MessageDigest;
 
 import org.apache.commons.io.output.CountingOutputStream;
 
+import com.tcdng.unify.common.data.Upload;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.UnifyOperationException;
 import com.tcdng.unify.core.util.EncodingUtils;
 import com.tcdng.unify.core.util.FileUtils;
 import com.tcdng.unify.core.util.IOUtils;
+import com.tcdng.unify.core.util.RandomUtils;
 
 /**
  * Data object that represents an uploaded file.
@@ -36,7 +38,7 @@ import com.tcdng.unify.core.util.IOUtils;
  * @author The Code Department
  * @since 4.1
  */
-public class UploadedFile {
+public class UploadedFile implements Upload {
 
 	public static final UploadedFile BLANK = new UploadedFile();
 
@@ -76,6 +78,12 @@ public class UploadedFile {
 
 	public static UploadedFile createWithChecksum(String filename) throws UnifyException {
 		return new UploadedFile(filename, null, null, true, true);
+	}
+
+	public static UploadedFile createUsingTempFile(InputStream in) throws UnifyException {
+		final String filename = "uploaded-" + RandomUtils.generateRandomLetters(8) + "-" + System.currentTimeMillis()
+				+ ".tmp";
+		return new UploadedFile(filename, null, in, true, false);
 	}
 
 	public static UploadedFile createUsingTempFile(String filename, InputStream in) throws UnifyException {

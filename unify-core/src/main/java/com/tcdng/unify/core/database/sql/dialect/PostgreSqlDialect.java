@@ -32,6 +32,7 @@ import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.constant.PrintFormat;
 import com.tcdng.unify.core.constant.TimeSeriesType;
 import com.tcdng.unify.core.criterion.RestrictionType;
+import com.tcdng.unify.core.data.UploadedFile;
 import com.tcdng.unify.core.database.sql.AbstractSqlDataSourceDialect;
 import com.tcdng.unify.core.database.sql.AbstractSqlDataSourceDialectPolicies;
 import com.tcdng.unify.core.database.sql.SqlColumnAlterInfo;
@@ -54,6 +55,7 @@ import com.tcdng.unify.core.database.sql.data.policy.LongPolicy;
 import com.tcdng.unify.core.database.sql.data.policy.ShortPolicy;
 import com.tcdng.unify.core.database.sql.data.policy.TimestampPolicy;
 import com.tcdng.unify.core.database.sql.data.policy.TimestampUTCPolicy;
+import com.tcdng.unify.core.database.sql.data.policy.UploadedFilePolicy;
 import com.tcdng.unify.core.util.DataUtils;
 import com.tcdng.unify.core.util.StringUtils;
 
@@ -80,6 +82,7 @@ public class PostgreSqlDialect extends AbstractSqlDataSourceDialect {
 		tempMap1.put(ColumnType.DATE, new PostgreSqlDatePolicy());
 		tempMap1.put(ColumnType.TIMESTAMP, new PostgreSqlTimestampPolicy());
 		tempMap1.put(ColumnType.TIMESTAMP_UTC, new PostgreSqlTimestampUTCPolicy());
+		tempMap1.put(ColumnType.UPLOAD, new PostgreSqlUploadedFilePolicy());
 		tempMap1.put(ColumnType.BLOB, new PostgreSqlBlobPolicy());
 		tempMap1.put(ColumnType.CLOB, new PostgreSqlClobPolicy());
 
@@ -543,6 +546,43 @@ class PostgreSqlTimestampUTCPolicy extends TimestampUTCPolicy {
 		return "CURRENT_TIMESTAMP";
 	}
 
+}
+
+class PostgreSqlUploadedFilePolicy extends UploadedFilePolicy {
+
+	@Override
+	public void appendTypeSql(StringBuilder sb, int length, int precision, int scale) {
+		sb.append(" BYTEA");
+	}
+
+	@Override
+	public String getTypeName() {
+		return "BYTEA";
+	}
+
+	@Override
+	public int getSqlType() {
+		return Types.BINARY;
+	}
+
+	@Override
+	public void executeSetPreparedStatement(Object pstmt, int index, Object data, long utcOffset) throws Exception {
+		if (data == null) {
+			((PreparedStatement) pstmt).setNull(index, Types.BINARY);
+		} else {
+			((PreparedStatement) pstmt).setBinaryStream(index, ((UploadedFile) data).getIn());
+		}
+	}
+
+	@Override
+	public Object executeGetResult(Object rs, Class<?> type, String column, long utcOffset) throws Exception {
+		return  UploadedFile.createUsingTempFile(((ResultSet) rs).getBinaryStream(column));
+	}
+
+	@Override
+	public Object executeGetResult(Object rs, Class<?> type, int index, long utcOffset) throws Exception {
+		return UploadedFile.createUsingTempFile(((ResultSet) rs).getBinaryStream(index));
+	}
 }
 
 class PostgreSqlBlobPolicy extends BlobPolicy {

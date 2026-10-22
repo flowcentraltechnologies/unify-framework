@@ -51,7 +51,8 @@ public enum ColumnType implements EnumConst {
     STRING_ARRAY("STA", ConnectFieldDataType.STRING_ARRAY),
     TIMESTAMP_UTC("TSU", ConnectFieldDataType.TIMESTAMP_UTC),
     TIMESTAMP("TSP", ConnectFieldDataType.TIMESTAMP),
-    ENUMCONST("ECT", ConnectFieldDataType.ENUM);
+    ENUMCONST("ECT", ConnectFieldDataType.ENUM),
+    UPLOAD("UPD", ConnectFieldDataType.UPLOAD);
 
     private final String code;
 

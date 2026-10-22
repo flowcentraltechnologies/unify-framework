@@ -42,6 +42,7 @@ import com.tcdng.unify.core.database.sql.SqlIndexSchemaInfo;
 import com.tcdng.unify.core.database.sql.SqlUniqueConstraintSchemaInfo;
 import com.tcdng.unify.core.database.sql.data.policy.BlobPolicy;
 import com.tcdng.unify.core.database.sql.data.policy.ClobPolicy;
+import com.tcdng.unify.core.database.sql.data.policy.UploadedFilePolicy;
 import com.tcdng.unify.core.util.DataUtils;
 import com.tcdng.unify.core.util.StringUtils;
 
@@ -59,6 +60,7 @@ public class MySqlDialect extends AbstractSqlDataSourceDialect {
 	static {
 		Map<ColumnType, SqlDataTypePolicy> tempMap1 = new EnumMap<ColumnType, SqlDataTypePolicy>(ColumnType.class);
 		populateDefaultSqlDataTypePolicies(tempMap1);
+		tempMap1.put(ColumnType.UPLOAD, new MySqlUploadedFilePolicy());
 		tempMap1.put(ColumnType.BLOB, new MySqlBlobPolicy());
 		tempMap1.put(ColumnType.CLOB, new MySqlClobPolicy());
 
@@ -470,6 +472,19 @@ public class MySqlDialect extends AbstractSqlDataSourceDialect {
 			sb.append(")");
 			return sb.toString();
 		}
+	}
+}
+
+class MySqlUploadedFilePolicy extends UploadedFilePolicy {
+
+	@Override
+	public void appendTypeSql(StringBuilder sb, int length, int precision, int scale) {
+		sb.append(" MEDIUMBLOB");
+	}
+
+	@Override
+	public String getTypeName() {
+		return "MEDIUMBLOB";
 	}
 }
 

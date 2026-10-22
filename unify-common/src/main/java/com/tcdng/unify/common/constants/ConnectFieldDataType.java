@@ -18,6 +18,8 @@ package com.tcdng.unify.common.constants;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import com.tcdng.unify.common.data.Upload;
+
 /**
  * Interconnect field data type.
  * 
@@ -68,6 +70,8 @@ public enum ConnectFieldDataType {
             String.class, false),
     BLOB(
             byte[].class, false),
+    UPLOAD(
+    		Upload.class, false),
     STRING(
             String.class, false),
     STRING_ARRAY(

@@ -42,6 +42,7 @@ import com.tcdng.unify.core.database.sql.SqlIndexSchemaInfo;
 import com.tcdng.unify.core.database.sql.SqlUniqueConstraintSchemaInfo;
 import com.tcdng.unify.core.database.sql.data.policy.BlobPolicy;
 import com.tcdng.unify.core.database.sql.data.policy.ClobPolicy;
+import com.tcdng.unify.core.database.sql.data.policy.UploadedFilePolicy;
 import com.tcdng.unify.core.util.DataUtils;
 import com.tcdng.unify.core.util.StringUtils;
 
@@ -59,6 +60,7 @@ public class MariaDbDialect extends AbstractSqlDataSourceDialect {
 	static {
 		Map<ColumnType, SqlDataTypePolicy> tempMap1 = new EnumMap<ColumnType, SqlDataTypePolicy>(ColumnType.class);
 		populateDefaultSqlDataTypePolicies(tempMap1);
+		tempMap1.put(ColumnType.UPLOAD, new MariaDbUploadedFilePolicy());
 		tempMap1.put(ColumnType.BLOB, new MariaDbBlobPolicy());
 		tempMap1.put(ColumnType.CLOB, new MariaDbClobPolicy());
 
@@ -458,6 +460,19 @@ public class MariaDbDialect extends AbstractSqlDataSourceDialect {
 			sb.append(")");
 			return sb.toString();
 		}
+	}
+}
+
+class MariaDbUploadedFilePolicy extends UploadedFilePolicy {
+
+	@Override
+	public void appendTypeSql(StringBuilder sb, int length, int precision, int scale) {
+		sb.append(" LONGBLOB");
+	}
+
+	@Override
+	public String getTypeName() {
+		return "LONGBLOB";
 	}
 }
 
