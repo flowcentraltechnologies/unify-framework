@@ -25,6 +25,7 @@ import java.util.Set;
 import com.tcdng.unify.common.annotation.ColumnType;
 import com.tcdng.unify.common.annotation.StaticList;
 import com.tcdng.unify.common.constants.EnumConst;
+import com.tcdng.unify.core.data.UploadedFile;
 import com.tcdng.unify.core.util.EnumUtils;
 
 /**
@@ -48,7 +49,9 @@ public enum DataType implements EnumConst {
 	TIMESTAMP("TS", Date.class, ColumnType.TIMESTAMP, HAlignType.LEFT, DATE),
 	TIMESTAMP_UTC("TU", Date.class, ColumnType.TIMESTAMP_UTC, HAlignType.LEFT, DATE, TIMESTAMP),
 	CLOB("CT", String.class, ColumnType.CLOB, HAlignType.CENTER),
-	BLOB("BT", byte[].class, ColumnType.BLOB, HAlignType.CENTER), STRING("ST", String.class, ColumnType.STRING,
+	BLOB("BT", byte[].class, ColumnType.BLOB, HAlignType.CENTER),
+	UPLOAD("UP", UploadedFile.class, ColumnType.UPLOAD, HAlignType.CENTER),
+	STRING("ST", String.class, ColumnType.STRING,
 			HAlignType.LEFT, CHAR, BOOLEAN, DECIMAL, DOUBLE, FLOAT, LONG, INTEGER, SHORT, CLOB);
 
 	private final String code;

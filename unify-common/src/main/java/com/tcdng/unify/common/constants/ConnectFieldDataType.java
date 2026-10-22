@@ -143,7 +143,7 @@ public enum ConnectFieldDataType {
     }
 
     public boolean isLob() {
-        return BLOB.equals(this) || CLOB.equals(this);
+        return BLOB.equals(this) || CLOB.equals(this) || UPLOAD.equals(this);
     }
 
     public boolean isString() {

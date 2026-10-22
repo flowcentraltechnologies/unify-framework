@@ -172,6 +172,7 @@ public final class DataUtils {
 		map.put(short[].class, ColumnType.SHORT_ARRAY);
 		map.put(String.class, ColumnType.STRING);
 		map.put(String[].class, ColumnType.STRING_ARRAY);
+		map.put(UploadedFile.class, ColumnType.UPLOAD);
 		classToColumnMap = Collections.unmodifiableMap(map);
 	}
 

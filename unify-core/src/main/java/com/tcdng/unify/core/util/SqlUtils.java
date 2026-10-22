@@ -688,6 +688,7 @@ public final class SqlUtils {
 			}
 			break;
 		case AUTO:
+		case UPLOAD:
 		case BLOB:
 		case CLOB:
 		case DATE:

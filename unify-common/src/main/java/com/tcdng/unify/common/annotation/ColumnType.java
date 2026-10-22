@@ -90,7 +90,11 @@ public enum ColumnType implements EnumConst {
     }
 
     public boolean isLob() {
-    	return BLOB.equals(this) || CLOB.equals(this);
+    	return BLOB.equals(this) || CLOB.equals(this) || UPLOAD.equals(this);
+    }
+
+    public boolean isUploadedFile() {
+    	return UPLOAD.equals(this);
     }
 
     public boolean isBlob() {

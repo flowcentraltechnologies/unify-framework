@@ -114,6 +114,7 @@ import com.tcdng.unify.core.database.sql.data.policy.StringArrayPolicy;
 import com.tcdng.unify.core.database.sql.data.policy.StringPolicy;
 import com.tcdng.unify.core.database.sql.data.policy.TimestampPolicy;
 import com.tcdng.unify.core.database.sql.data.policy.TimestampUTCPolicy;
+import com.tcdng.unify.core.database.sql.data.policy.UploadedFilePolicy;
 import com.tcdng.unify.core.transform.Transformer;
 import com.tcdng.unify.core.util.DataUtils;
 import com.tcdng.unify.core.util.QueryUtils;
@@ -1755,6 +1756,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 		sqlDataTypePolicies.put(ColumnType.TIMESTAMP_UTC, new TimestampUTCPolicy());
 		sqlDataTypePolicies.put(ColumnType.TIMESTAMP, new TimestampPolicy());
 		sqlDataTypePolicies.put(ColumnType.ENUMCONST, new EnumConstPolicy());
+		sqlDataTypePolicies.put(ColumnType.UPLOAD, new UploadedFilePolicy());
 	}
 
 	protected static void populateDefaultSqlCriteriaPolicies(SqlDataSourceDialectPolicies rootPolicies,
