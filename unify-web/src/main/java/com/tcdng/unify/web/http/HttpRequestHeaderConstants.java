@@ -41,5 +41,7 @@ public interface HttpRequestHeaderConstants {
 	
 	String X_UNIFY_PID= "X-Unify-Pid";
 	
+	String X_UNIFY_TID= "X-Unify-Tid";
+	
 	String X_UNIFY_DISPOSITION = "X-Unify-Disposition";
 }

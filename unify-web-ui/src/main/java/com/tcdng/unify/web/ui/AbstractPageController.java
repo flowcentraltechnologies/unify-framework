@@ -108,6 +108,7 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 		this.pageBeanClass = pageBeanClass;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void ensureContextResources(ControllerPathParts controllerPathParts) throws UnifyException {
 		SessionContext sessionContext = getSessionContext();
@@ -131,6 +132,26 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 			initPage();
 
 			sessionContext.setAttribute(pageId, page);
+
+			final String tab = getRequestClientTabId();
+			if (tab != null) {
+				final String tabkey = "tabtrack-" + tab;
+				List<String> pathIds = (List<String>) sessionContext.getAttribute(tabkey);
+				if (pathIds == null) {
+					pathIds = new ArrayList<String>();
+					sessionContext.setAttribute(tabkey, pathIds);
+				}
+
+				pathIds.add(pageId);
+				
+				System.out.println("@prime: nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
+				System.out.println("@prime: tabkey = " + tabkey);
+				for (String _pathId: pathIds) {
+					System.out.println(sessionContext.isAttribute(pageId) + ": " + _pathId);
+				}
+				
+				System.out.println("@prime: nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
+			}
 		}
 	}
 

@@ -1216,6 +1216,26 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	}
 
 	/**
+	 * Sets request tab ID (tid)
+	 * 
+	 * @param tid the tab ID
+	 * @throws UnifyException if an error occurs
+	 */
+	protected void setRequestClientTabId(String tid) throws UnifyException {
+		unifyComponentContext.getRequestContext().setTid(tid);
+	}
+
+	/**
+	 * Gets request tab ID (tid)
+	 * 
+	 * @return the tab ID
+	 * @throws UnifyException if an error occurs
+	 */
+	protected String getRequestClientTabId() throws UnifyException {
+		return unifyComponentContext.getRequestContext().getTid();
+	}
+
+	/**
 	 * Gets client request target
 	 * 
 	 * @return the request target

@@ -15,6 +15,7 @@
  */
 package com.tcdng.unify.web.ui.widget;
 
+import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -314,9 +315,22 @@ public class PageManagerImpl extends AbstractUnifyComponent implements PageManag
 		return documentTagLines;
 	}
 
-	@Override
+	@Override 
 	public Page createPage(Locale locale, String name) throws UnifyException {
-		return (Page) createStandalonePanel(locale, name);
+		System.out.println("@prime: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+		System.out.println("@prime: createStandalonePanel()");
+		System.out.println("@prime: page name = " + name);
+		long tid = Thread.currentThread().getId();
+		long before = TMX.getThreadAllocatedBytes(tid);
+		final long start = System.currentTimeMillis();
+
+		try {
+			return (Page) createStandalonePanel(locale, name);
+		} finally {
+			System.out.println("@prime: total time in millisecs = " + (System.currentTimeMillis() - start));
+			System.out.println("@prime: Memory used= " + (TMX.getThreadAllocatedBytes(tid) - before));
+			System.out.println("@prime: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+		}
 	}
 
 	@Override
@@ -338,6 +352,9 @@ public class PageManagerImpl extends AbstractUnifyComponent implements PageManag
 		return createStandalonePanel(locale, name, null);
 	}
 	
+	private static final com.sun.management.ThreadMXBean TMX =
+	        (com.sun.management.ThreadMXBean) ManagementFactory.getThreadMXBean();
+
 	@Override
 	public StandalonePanel createStandalonePanel(Locale locale, String name, String binding) throws UnifyException {
 		UplDocumentAttributes uplDocumentAttributes = uplCompiler.compileComponentDocuments(locale, name);

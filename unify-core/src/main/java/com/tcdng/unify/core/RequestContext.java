@@ -39,6 +39,8 @@ public class RequestContext extends Context {
     private String requestTarget;
 
     private String pid;
+
+    private String tid;
     
     public RequestContext(String requestPath, String requestTarget, SessionContext sessionContext) {
         this.requestPath = requestPath;
@@ -92,6 +94,14 @@ public class RequestContext extends Context {
 
 	public void setPid(String pid) {
 		this.pid = pid;
+	}
+
+	public String getTid() {
+		return tid;
+	}
+
+	public void setTid(String tid) {
+		this.tid = tid;
 	}
 
 	public UnifyClientRequest getClientRequest() {
