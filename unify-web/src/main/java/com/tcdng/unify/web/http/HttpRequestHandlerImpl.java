@@ -191,12 +191,18 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 							: getApplicationLocale();
 			getSessionContext().setLocale(reqLocale);
 
+
 			setRequestClientPageId(httpRequest.getHeader(HttpRequestHeaderConstants.X_UNIFY_PID));
-			setRequestClientTabId(httpRequest.getHeader(HttpRequestHeaderConstants.X_UNIFY_TID));
 			setRequestAttribute(UnifyWebRequestAttributeConstants.HEADERS, httpRequest);
 			setRequestAttribute(UnifyWebRequestAttributeConstants.PARAMETERS, httpRequest);
 
 			final Map<String, Object> parameters = extractRequestParameters(httpRequest, charset);
+			String tid =  httpRequest.getHeader(HttpRequestHeaderConstants.X_UNIFY_TID);
+			if (StringUtils.isBlank(tid)) {
+				tid =  (String) parameters.get("tid");
+			}
+			
+			setRequestClientTabId(tid);
 			ClientRequest clientRequest = new HttpClientRequest(detectClientPlatform(httpRequest), methodType,
 					requestPathParts, charset, httpRequest, parameters,
 					extractCookies(httpRequest), (String) parameters.remove(BODY_TEXT),
