@@ -131,17 +131,6 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 			initPage();
 
 			sessionContext.setAttribute(pageId, page);
-
-			final String tab = getHttpRequestParameter("tid");
-			if (tab != null) {
-				final String tabkey = "tabtrack-" + tab;
-				String oldpathid = (String) sessionContext.getAttribute(tabkey);
-				if (oldpathid != null) {
-					sessionContext.removeAttribute(oldpathid);
-				}
-
-				sessionContext.setAttribute(tabkey, pageId);
-			}
 		}
 	}
 

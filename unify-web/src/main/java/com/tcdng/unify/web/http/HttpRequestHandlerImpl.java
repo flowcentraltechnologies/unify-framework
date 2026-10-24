@@ -191,18 +191,11 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 							: getApplicationLocale();
 			getSessionContext().setLocale(reqLocale);
 
-
 			setRequestClientPageId(httpRequest.getHeader(HttpRequestHeaderConstants.X_UNIFY_PID));
 			setRequestAttribute(UnifyWebRequestAttributeConstants.HEADERS, httpRequest);
 			setRequestAttribute(UnifyWebRequestAttributeConstants.PARAMETERS, httpRequest);
 
 			final Map<String, Object> parameters = extractRequestParameters(httpRequest, charset);
-			String tid =  httpRequest.getHeader(HttpRequestHeaderConstants.X_UNIFY_TID);
-			if (StringUtils.isBlank(tid)) {
-				tid =  (String) parameters.get("tid");
-			}
-			
-			setRequestClientTabId(tid);
 			ClientRequest clientRequest = new HttpClientRequest(detectClientPlatform(httpRequest), methodType,
 					requestPathParts, charset, httpRequest, parameters,
 					extractCookies(httpRequest), (String) parameters.remove(BODY_TEXT),
@@ -217,7 +210,7 @@ public class HttpRequestHandlerImpl extends AbstractUnifyComponent implements Ht
 				httpResponse.setHeader(HttpResponseHeaderConstants.ACCESS_CONTROL_ALLOW_METHODS,
 						"POST, GET, PUT, OPTIONS");
 				httpResponse.setHeader(HttpResponseHeaderConstants.ACCESS_CONTROL_ALLOW_HEADERS,
-						"Content-Type,X-Unify-Pid,X-Unify-Tid");
+						"Content-Type,X-Unify-Pid");
 				httpResponse.setHeader(HttpResponseHeaderConstants.ACCESS_CONTROL_MAX_AGE, "600");
 			}
 

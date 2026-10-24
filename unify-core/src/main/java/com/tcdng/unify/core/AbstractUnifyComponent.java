@@ -1216,44 +1216,6 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	}
 
 	/**
-	 * Sets request tab ID (tid)
-	 * 
-	 * @param tid the tab ID
-	 * @throws UnifyException if an error occurs
-	 */
-	protected void setRequestClientTabId(String tid) throws UnifyException {
-		unifyComponentContext.getRequestContext().setTid(tid);
-	}
-
-	/**
-	 * Gets request tab ID (tid)
-	 * 
-	 * @return the tab ID
-	 * @throws UnifyException if an error occurs
-	 */
-	protected String getRequestClientTabId() throws UnifyException {
-		return unifyComponentContext.getRequestContext().getTid();
-	}
-
-	/**
-	 * Gets supplied path with client tab ID included if available
-	 * 
-	 * @param path the path
-	 * @return the new path
-	 * @throws UnifyException if an error occurs
-	 */
-	protected String getPathWithClientTabId(String path) throws UnifyException {
-		if (path != null) {
-			final String tid = getRequestClientTabId();
-			if (!StringUtils.isBlank(tid)) {
-				return path.indexOf('?') > 0 ? path + "&tid=" + tid : path + "?tid=" + tid;
-			}
-		}
-
-		return path;
-	}
-	
-	/**
 	 * Gets client request target
 	 * 
 	 * @return the request target

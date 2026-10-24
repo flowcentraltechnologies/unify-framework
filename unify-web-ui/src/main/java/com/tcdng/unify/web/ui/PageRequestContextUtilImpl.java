@@ -169,7 +169,6 @@ public class PageRequestContextUtilImpl extends AbstractUnifyComponent implement
 		super.setRequestAttribute(name, value);
 	}
 
-	// Used only for testing
 	@Override
 	public void setRequestClientPageId(String pid) throws UnifyException {
 		getRequestContext().setPid(pid);

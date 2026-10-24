@@ -50,7 +50,7 @@ public class ForwardResponse extends AbstractJsonPageControllerResponse {
 		}
 
 		writer.write(",");
-		writer.writeJsonPathVariable("loadDocument", getPathWithClientTabId(path));
+		writer.writeJsonPathVariable("loadDocument", path);
 
 		setSessionAttribute(UnifyWebSessionAttributeConstants.FORWARD_HINTS, getRequestContextUtil().removeUserHints());
 	}

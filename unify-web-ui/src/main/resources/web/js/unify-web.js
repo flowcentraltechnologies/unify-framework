@@ -95,7 +95,6 @@ ux.remoteredirect = [];
 ux.hintTimeout=UNIFY_HIDE_USER_HINT_DISPLAY_PERIOD;
 
 ux.docPid = null;
-ux.docTid = null;
 
 ux.shortcuts = [];
 ux.pagenamealiases = [];
@@ -156,12 +155,6 @@ ux.setupDocument = function(docPath, docPopupBaseId, docPopupId, docSysInfoId, d
 	ux.busyIndicator = docLatencyId;
 	ux.docSessionId = docSessionId;
 	ux.docPid = docPid;
-
-	ux.docTid = sessionStorage.getItem("client-tab-id");
-	if (!ux.docTid) {
-		ux.docTid = docPid;
-		sessionStorage.setItem("client-tab-id", ux.docTid);
-	}
 }
 
 ux.wsPushUpdate = function(wsSyncPath) {
@@ -693,7 +686,6 @@ ux.ajaxCall = function(ajaxPrms) {
 		ux.saveContentScroll();
 		uAjaxReq.open("POST", url, true);
 		uAjaxReq.setRequestHeader("X-Unify-Pid", ux.docPid);
-		uAjaxReq.setRequestHeader("X-Unify-Tid", ux.docTid);
 		if (ajaxPrms.uEncoded) {
 			uAjaxReq.setRequestHeader("Content-Type",
 					"application/x-www-form-urlencoded");
