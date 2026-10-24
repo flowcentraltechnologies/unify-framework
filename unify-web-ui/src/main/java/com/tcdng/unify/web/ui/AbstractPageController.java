@@ -19,6 +19,8 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.tcdng.unify.common.database.Entity;
 import com.tcdng.unify.core.SessionContext;
@@ -84,6 +86,8 @@ import com.tcdng.unify.web.ui.widget.data.TaskMonitorInfo;
 public abstract class AbstractPageController<T extends PageBean> extends AbstractUIController
 		implements PageController<T> {
 
+	private static final String PAGE_TRACKING_KEY = "page::page-tracking-key";
+	
 	@Configurable
 	private TaskLauncher taskLauncher;
 
@@ -131,6 +135,14 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 			initPage();
 
 			sessionContext.setAttribute(pageId, page);
+			
+			PageTracking pageTracking = (PageTracking) sessionContext.getAttribute(PAGE_TRACKING_KEY);
+			if (pageTracking == null) {
+				pageTracking = new PageTracking();
+				sessionContext.setAttribute(PAGE_TRACKING_KEY, pageTracking);
+			}
+			
+			pageTracking.track(pageId);
 		}
 	}
 
@@ -239,6 +251,21 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 
 	@Action
 	public String content() throws UnifyException {
+		return ResultMappingConstants.NONE;
+	}
+	
+	@Action
+	public final String ejectPage() throws UnifyException {
+		SessionContext sessionContext = getSessionContext();
+		final PageTracking pageTracking = (PageTracking) sessionContext.getAttribute(PAGE_TRACKING_KEY);
+		if (pageTracking != null) {
+			final String pid = getRequestTarget(String.class);
+			final String pageId = pageTracking.eject(pid);
+			if (pageId != null) {
+				sessionContext.removeAttribute(pageId);
+			}
+		}
+
 		return ResultMappingConstants.NONE;
 	}
 
@@ -1229,5 +1256,25 @@ public abstract class AbstractPageController<T extends PageBean> extends Abstrac
 		}
 
 		return successful;
+	}
+	
+	private static class PageTracking {
+
+		private Map<String, String> pageIds;
+
+		public PageTracking() {
+			this.pageIds = new ConcurrentHashMap<String, String>();
+		}
+
+		public void track(String pageId) {
+			int index = pageId.lastIndexOf(':');
+			if (index > 0) {
+				this.pageIds.put(pageId.substring(index + 1), pageId);
+			}
+		}
+		
+		public String eject(String pid) {
+			return pid != null ? this.pageIds.remove(pid) : null;
+		}
 	}
 }

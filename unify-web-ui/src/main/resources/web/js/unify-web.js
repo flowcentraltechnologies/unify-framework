@@ -155,6 +155,12 @@ ux.setupDocument = function(docPath, docPopupBaseId, docPopupId, docSysInfoId, d
 	ux.busyIndicator = docLatencyId;
 	ux.docSessionId = docSessionId;
 	ux.docPid = docPid;
+	
+	const oldpid = sessionStorage.getItem("unify-oldpid");
+	sessionStorage.setItem("unify-oldpid", docPid);
+	if (oldpid && (docPid !== oldpid)) {
+		ux.postCommit({uURL:docPath + "/ejectPage", uSendTrg:oldpid});
+	}
 }
 
 ux.wsPushUpdate = function(wsSyncPath) {
