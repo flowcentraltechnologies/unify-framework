@@ -46,7 +46,15 @@ public class ForwardResponse extends AbstractJsonPageControllerResponse {
 		String path = getUplAttribute(String.class, "path");
 		if (StringUtils.isBlank(path)) {
 			String pathBinding = getUplAttribute(String.class, "pathBinding");
-			path = (String) ReflectUtils.getNestedBeanProperty(page.getPageBean(), pathBinding);
+			if (!StringUtils.isBlank(pathBinding)) {
+				path = getRequestAttribute(String.class, pathBinding);
+				if (path == null) {
+					path = getSessionAttribute(String.class, pathBinding);
+					if (path == null) {
+						path = (String) ReflectUtils.getNestedBeanProperty(page.getPageBean(), pathBinding);
+					}
+				}
+			}
 		}
 
 		writer.write(",");
