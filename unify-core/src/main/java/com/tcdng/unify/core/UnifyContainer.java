@@ -1036,8 +1036,8 @@ public class UnifyContainer {
 	 * @throws UnifyException If component an error occurs.
 	 */
 	public boolean isComponent(String name) throws UnifyException {
-		return internalResolutionMap.containsKey(name) || internalUnifyComponentInfos.containsKey(name)
-				|| aliases.containsKey(name);
+		return name != null && (internalResolutionMap.containsKey(name) || internalUnifyComponentInfos.containsKey(name)
+				|| aliases.containsKey(name));
 	}
 
 	/**
