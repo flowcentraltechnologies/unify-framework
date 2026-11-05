@@ -143,7 +143,7 @@ public final class EntityTypeUtils {
 		}
 
 		for (String jsonFieldName : object.names()) {
-			final String nrmFieldName = NameUtils.inflateAsName(jsonFieldName);
+			final String nrmFieldName = jsonFieldName;
 			final String columnName = SqlUtils.generateSchemaElementName(nrmFieldName);
 			final String longName = name + StringUtils.capitalizeFirstLetter(nrmFieldName);
 			JsonValue field = object.get(jsonFieldName);
