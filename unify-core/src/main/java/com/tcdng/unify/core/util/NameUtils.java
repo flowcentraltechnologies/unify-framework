@@ -71,20 +71,20 @@ public final class NameUtils {
 			if (text.isEmpty()) {
 				return text;
 			}
-			
+
 			StringBuilder sb = new StringBuilder();
 			final int len = text.length();
 			boolean caps = false;
-			for(int i = 0; i < len; i++) {
+			for (int i = 0; i < len; i++) {
 				char ch = text.charAt(i);
 				if (ch == '_' || ch == ' ') {
 					caps = true;
 				} else {
-					sb.append(caps ? Character.toUpperCase(ch) : ch);
+					sb.append(caps ? Character.toUpperCase(ch) : Character.toLowerCase(ch));
 					caps = false;
 				}
 			}
-			
+
 			return sb.toString();
 		}
 

@@ -33,7 +33,8 @@ public class NameUtilsTest {
         assertNull(NameUtils.inflateAsName(null));
         assertEquals("", NameUtils.inflateAsName(""));
         assertEquals("runOnTime", NameUtils.inflateAsName("run_on_time"));
-        assertEquals("TheSkyIsBlue", NameUtils.inflateAsName("The sky is blue"));
+        assertEquals("theSkyIsBlue", NameUtils.inflateAsName("The sky is blue"));
+        assertEquals("loanProductId", NameUtils.inflateAsName("LOAN_PRODUCT_ID"));
     }
 
     @Test
