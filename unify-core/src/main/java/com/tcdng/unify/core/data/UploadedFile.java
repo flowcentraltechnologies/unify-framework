@@ -15,6 +15,7 @@
  */
 package com.tcdng.unify.core.data;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -64,8 +65,8 @@ public class UploadedFile implements Upload {
 
 	private OutputStream out;
 
-	public static UploadedFile create(String filename, byte[] in) throws UnifyException {
-		return new UploadedFile(filename, in, null, false, false);
+	public static UploadedFile create(String filename, byte[] bin) throws UnifyException {
+		return new UploadedFile(filename, bin, null, false, false);
 	}
 
 	public static UploadedFile create(String filename, InputStream in) throws UnifyException {
@@ -319,6 +320,10 @@ public class UploadedFile implements Upload {
 	}
 
 	public InputStream getIn() throws UnifyException {
+		if (bin != null) {
+			return new ByteArrayInputStream(bin);
+		}
+		
 		if (in == null) {
 			if (usesTempFile && tempFileId != null) {
 				return FileUtils.openTemporaryFileForRead(tempFileId);
