@@ -19,8 +19,10 @@ import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Savepoint;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +40,7 @@ import com.tcdng.unify.core.constant.FetchChild;
 import com.tcdng.unify.core.constant.IncludeListOnly;
 import com.tcdng.unify.core.constant.MustMatch;
 import com.tcdng.unify.core.constant.QueryAgainst;
+import com.tcdng.unify.core.constant.RowLockType;
 import com.tcdng.unify.core.constant.UpdateChild;
 import com.tcdng.unify.core.criterion.AdditionExpression;
 import com.tcdng.unify.core.criterion.AggregateFunction;
@@ -285,6 +288,57 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 	public <T extends Entity> void findReadOnlyChildren(T record) throws UnifyException {
 		SqlEntityInfo sqlEntityInfo = resolveSqlEntityInfo(record.getClass());
 		fetchChildRecords(sqlEntityInfo, record, null, ChildFetch.READ_ONLY, IncludeListOnly.FALSE);
+	}
+
+	@Override
+	public <T, U extends Entity> List<T> tryLockRows(Class<T> idClass, Query<U> query) throws UnifyException {
+		SqlEntityInfo sqlEntityInfo = resolveSqlEntityInfo(query);
+		final Select select = query.getSelect();
+		try {
+			final SqlFieldInfo sqlFieldInfo = sqlEntityInfo.getIdFieldInfo();
+			query.setSelect(new Select(sqlFieldInfo.getName()));
+			return getSqlStatementExecutor().executeMultipleObjectListResultQuery(connection, idClass,
+					sqlDataSourceDialect.getSqlTypePolicy(sqlFieldInfo.getColumnType(), sqlFieldInfo.getLength()),
+					sqlDataSourceDialect.prepareRowLockStatement(query, RowLockType.NO_WAIT));
+		} finally {
+			query.setSelect(select);
+		}
+	}
+
+	@SuppressWarnings({ "unchecked" })
+	@Override
+	public <T, U extends Entity> List<T> claimRows(Class<T> idClass, Query<U> query, Update update)
+			throws UnifyException {
+		SqlEntityInfo sqlEntityInfo = resolveSqlEntityInfo(query);
+		List<T> list = Collections.emptyList();
+		final Select select = query.getSelect();
+		final int limit = query.getLimit();
+		try {
+			if (limit > 0 && sqlDataSourceDialect.isRowLockLimitManual()) {
+				query.setLimit(0);
+			}
+
+			final SqlFieldInfo sqlFieldInfo = sqlEntityInfo.getIdFieldInfo();
+			query.setSelect(new Select(sqlFieldInfo.getName()));
+			list = getSqlStatementExecutor().executeMultipleObjectListResultQuery(connection, idClass,
+					sqlDataSourceDialect.getSqlTypePolicy(sqlFieldInfo.getColumnType(), sqlFieldInfo.getLength()),
+					sqlDataSourceDialect.prepareRowLockStatement(query, RowLockType.SKIP));
+
+			if (!list.isEmpty()) {
+				if (limit > 0 && limit < list.size() && sqlDataSourceDialect.isRowLockLimitManual()) {
+					list = new ArrayList<T>(list.subList(0, limit));
+				}
+
+				Query<U> uquery = (Query<U>) Query.of(sqlEntityInfo.getEntityClass());
+				uquery.addAmongst(sqlFieldInfo.getName(), list);
+				updateAll(uquery, update);
+			}
+		} finally {
+			query.setSelect(select);
+			query.setLimit(limit);
+		}
+
+		return list;
 	}
 
 	@Override
@@ -687,13 +741,13 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		if (entityPolicy != null) {
 			entityPolicy.preUpdate(update, now);
 		}
-		
+
 		final int result = getSqlStatementExecutor().executeUpdate(connection,
 				sqlDataSourceDialect.prepareUpdateStatement(clazz, id, update));
 		if (entityPolicy != null) {
 			entityPolicy.postUpdate(update, now);
 		}
-		
+
 		return result;
 	}
 
@@ -734,7 +788,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 				return getSqlStatementExecutor().executeUpdate(connection,
 						sqlDataSourceDialect.prepareUpdateStatement(updateQuery, update));
 			}
-			
+
 			if (entityPolicy != null) {
 				entityPolicy.postUpdate(update, now);
 			}
@@ -764,7 +818,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 				if (entityPolicy.isSetNow()) {
 					now = getNow();
 				}
-				
+
 				entityPolicy.preDelete(record, now);
 			}
 
@@ -777,7 +831,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 				throw new UnifyException(UnifyCoreErrorConstants.RECORD_WITH_PK_NOT_FOUND, record.getClass(),
 						record.getId());
 			}
-			
+
 			if (entityPolicy != null) {
 				entityPolicy.postDelete(record, now);
 			}
@@ -819,7 +873,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 					if (entityPolicy.isSetNow()) {
 						now = getNow();
 					}
-					
+
 					entityPolicy.preDelete(record, now);
 				}
 
@@ -830,7 +884,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 					if (entityPolicy.isSetNow()) {
 						now = getNow();
 					}
-					
+
 					entityPolicy.preDelete(record, now);
 				}
 
@@ -846,7 +900,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 				throw new UnifyException(UnifyCoreErrorConstants.RECORD_WITH_PK_VERSION_NOT_FOUND, record.getClass(),
 						record.getId(), oldVersionNo);
 			}
-			
+
 			if (entityPolicy != null) {
 				entityPolicy.postDelete(record, now);
 			}
@@ -1011,7 +1065,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		return sqlDataSource.getNow();
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes"})
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public Aggregation aggregate(AggregateFunction aggregateFunction, Query<? extends Entity> query)
 			throws UnifyException {
@@ -1032,7 +1086,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		}
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes"})
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public List<Aggregation> aggregate(List<AggregateFunction> aggregateFunction, Query<? extends Entity> query)
 			throws UnifyException {
@@ -1083,7 +1137,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		}
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes"})
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public List<GroupingAggregation> aggregate(AggregateFunction aggregateFunction, Query<? extends Entity> query,
 			GroupingFunction groupingFunction) throws UnifyException {
@@ -1106,7 +1160,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		}
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes"})
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public List<GroupingAggregation> aggregate(List<AggregateFunction> aggregateFunction, Query<? extends Entity> query,
 			GroupingFunction groupingFunction) throws UnifyException {
@@ -1129,7 +1183,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		}
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes"})
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public List<GroupingAggregation> aggregate(AggregateFunction aggregateFunction, Query<? extends Entity> query,
 			List<GroupingFunction> groupingFunction) throws UnifyException {
@@ -1151,7 +1205,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		}
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes"})
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public List<GroupingAggregation> aggregate(List<AggregateFunction> aggregateFunction, Query<? extends Entity> query,
 			List<GroupingFunction> groupingFunction) throws UnifyException {
@@ -1532,7 +1586,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		}
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes"})
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private int updateById(Entity record, ChildFetch fetch, UpdateChild updateChild) throws UnifyException {
 		int result;
 		SqlStatement sqlStatement = null;
@@ -1549,7 +1603,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 				if (entityPolicy.isSetNow()) {
 					now = getNow();
 				}
-				
+
 				entityPolicy.preUpdate(record, now);
 			}
 
@@ -1582,7 +1636,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		return result;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes"})
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private int updateByIdVersion(Entity record, ChildFetch fetch, UpdateChild updateChild) throws UnifyException {
 		int result;
 		SqlStatement sqlStatement = null;
@@ -1602,8 +1656,8 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 					if (entityPolicy.isSetNow()) {
 						now = getNow();
 					}
-					
-					entityPolicy.preUpdate(record, now);					
+
+					entityPolicy.preUpdate(record, now);
 				}
 
 				ensureRecordTenantId(sqlEntityInfo, record);
@@ -1613,8 +1667,8 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 					if (entityPolicy.isSetNow()) {
 						now = getNow();
 					}
-					
-					entityPolicy.preUpdate(record, now);					
+
+					entityPolicy.preUpdate(record, now);
 				}
 
 				ensureRecordTenantId(sqlEntityInfo, record);

@@ -132,7 +132,7 @@ public class MsSqlDialect extends AbstractSqlDataSourceDialect {
 
 	@Override
 	protected void appendAutoIncrementPrimaryKey(StringBuilder sb) {
-		sb.append(" IDENTITY(1,1) PRIMARY KEY");
+		sb.append(" IDENTITY(1,1) PRIMARY KEY NOT NULL");
 	}
 
 	@Override

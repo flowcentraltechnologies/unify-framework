@@ -21,6 +21,7 @@ import com.tcdng.unify.common.annotation.ColumnType;
 import com.tcdng.unify.common.database.Entity;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.constant.QueryAgainst;
+import com.tcdng.unify.core.constant.RowLockType;
 import com.tcdng.unify.core.criterion.AggregateFunction;
 import com.tcdng.unify.core.criterion.GroupingFunction;
 import com.tcdng.unify.core.criterion.RestrictionType;
@@ -133,6 +134,14 @@ public interface SqlDataSourceDialect extends DataSourceDialect, SqlGenerator {
 	List<SqlEntityInfo> findAllChildSqlEntityInfos(Class<?> clazz) throws UnifyException;
 	
 	/**
+	 * Indicates row lock limit is done manually.
+	 * 
+	 * @return true if manual otherwise false
+	 * @throws UnifyException if an error occurs
+	 */
+	boolean isRowLockLimitManual() throws UnifyException;
+	
+	/**
 	 * Checks if dialect is with entity information.
 	 * 
 	 * @param clazz the entity type
@@ -216,6 +225,16 @@ public interface SqlDataSourceDialect extends DataSourceDialect, SqlGenerator {
 	 * @throws UnifyException if an error occurs
 	 */
 	SqlStatement prepareFindStatement(Query<? extends Entity> query, QueryAgainst queryAgainst) throws UnifyException;
+
+	/**
+	 * Prepares row lock statement.
+	 * 
+	 * @param query the query object
+	 * @param type  the row lock type
+	 * @return the row lock statement
+	 * @throws UnifyException if an error occurs
+	 */
+	SqlStatement prepareRowLockStatement(Query<? extends Entity> query, RowLockType type) throws UnifyException;
 
 	/**
 	 * Prepares list record by primary key statement.

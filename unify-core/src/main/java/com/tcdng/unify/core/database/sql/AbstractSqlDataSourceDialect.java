@@ -1716,6 +1716,11 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 	}
 
 	@Override
+	public boolean isRowLockLimitManual() throws UnifyException {
+		return false;
+	}
+
+	@Override
 	protected void onInitialize() throws UnifyException {
 		sqlEntityInfoFactory.setSqlDataSourceDialect(this);
 		sqlCallableStatementPools = new SqlCallableStatementPools(

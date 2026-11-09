@@ -358,6 +358,29 @@ public interface Database extends UnifyComponent {
      */
     <T extends Entity> void findReadOnlyChildren(T record) throws UnifyException;
 
+	/**
+	 * Tries to lock rows.(Does not block, locks no rows if at least one is already
+	 * locked)
+	 * 
+	 * @param idClass   the ID type
+	 * @param query the query
+	 * @return list of locked row IDs otherwise empty.
+	 * @throws UnifyException if an error occurs.
+	 */
+	<T, U extends Entity> List<T> tryLockRows(Class<T> idClass, Query<U> query) throws UnifyException;
+
+	/**
+	 * Claim unlocked rows in entity table.(Does not block, picks only unlocked
+	 * rows).
+	 * 
+	 * @param idClass the ID type
+	 * @param query   the row query
+	 * @param update  the rows update (claim)
+	 * @return list of row IDs (converted)
+	 * @throws UnifyException if an error occurs
+	 */
+	<T, U extends Entity> List<T> claimRows(Class<T> idClass, Query<U> query, Update update) throws UnifyException;
+	
     /**
      * Lists record of specified type by id. List-only properties of returned object
      * are populated. Child and child list properties are populated.

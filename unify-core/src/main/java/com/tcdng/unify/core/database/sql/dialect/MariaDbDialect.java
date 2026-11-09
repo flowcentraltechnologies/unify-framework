@@ -213,7 +213,7 @@ public class MariaDbDialect extends AbstractSqlDataSourceDialect {
 
 	@Override
 	protected void appendAutoIncrementPrimaryKey(StringBuilder sb) {
-		sb.append(" AUTO_INCREMENT PRIMARY KEY");
+		sb.append(" AUTO_INCREMENT PRIMARY KEY NOT NULL");
 	}
 
 	@Override

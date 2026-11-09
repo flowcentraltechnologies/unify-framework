@@ -144,6 +144,17 @@ public abstract class AbstractDatabase extends AbstractUnifyComponent implements
 	}
 
 	@Override
+	public <T, U extends Entity> List<T> tryLockRows(Class<T> idClass, Query<U> query) throws UnifyException {
+		return getDatabaseSession().tryLockRows(idClass, query);
+	}
+
+	@Override
+	public <T, U extends Entity> List<T> claimRows(Class<T> idClass, Query<U> criteria, Update update)
+			throws UnifyException {
+		return getDatabaseSession().claimRows(idClass, criteria, update);
+	}
+
+	@Override
     public <T extends Entity> T list(Class<T> clazz, Object pk) throws UnifyException {
         return getDatabaseSession().list(clazz, pk);
     }

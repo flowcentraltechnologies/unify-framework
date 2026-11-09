@@ -166,7 +166,7 @@ public class HSqlDbDialect extends AbstractSqlDataSourceDialect {
 
 	@Override
 	protected void appendAutoIncrementPrimaryKey(StringBuilder sb) {
-		sb.append(" GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1) PRIMARY KEY");
+		sb.append(" GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1) PRIMARY KEY NOT NULL");
 	}
 	
 	@Override

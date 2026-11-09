@@ -117,6 +117,11 @@ public class OracleDialect extends AbstractSqlDataSourceDialect {
 	}
 
 	@Override
+	public boolean isRowLockLimitManual() throws UnifyException {
+		return true;
+	}
+
+	@Override
 	public boolean matchColumnDefault(String nativeVal, String defaultVal) throws UnifyException {
 		if (super.matchColumnDefault(nativeVal, defaultVal)) {
 			return true;
@@ -199,7 +204,7 @@ public class OracleDialect extends AbstractSqlDataSourceDialect {
 
 	@Override
 	protected void appendAutoIncrementPrimaryKey(StringBuilder sb) {
-		sb.append(" GENERATED ALWAYS AS IDENTITY PRIMARY KEY");
+		sb.append(" GENERATED ALWAYS AS IDENTITY PRIMARY KEY NOT NULL");
 	}
 
 	@Override
