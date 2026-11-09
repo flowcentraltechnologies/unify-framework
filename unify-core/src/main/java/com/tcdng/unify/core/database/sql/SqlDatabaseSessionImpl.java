@@ -1681,6 +1681,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 				getSqlStatementExecutor().executeUpdate(connection, sqlStatement);
 			} else {
 				id = getSqlStatementExecutor().executeUpdateWithGetKeys(connection, sqlStatement);
+				DataUtils.setBeanProperty(record, sqlEntityInfo.getIdFieldInfo().getName(), id);
 			}
 
 			if (sqlEntityInfo.isChildList()) {

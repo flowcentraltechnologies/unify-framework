@@ -879,7 +879,7 @@ public class SqlStatementExecutorImpl extends AbstractUnifyComponent implements 
 		}
 
 		PreparedStatement pStmt = returnCol != null
-				? connection.prepareStatement(sqlStatement.getSql(), new String[] { returnCol })
+				? connection.prepareStatement(sqlStatement.getSql(), new String[] {returnCol})
 				: connection.prepareStatement(sqlStatement.getSql());
 		int index = 0;
 		for (SqlParameter sqlParameter : sqlStatement.getParameterInfoList()) {
