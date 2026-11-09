@@ -1652,9 +1652,10 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		return result;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes"})
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private Object create(SqlEntityInfo sqlEntityInfo, Entity record) throws UnifyException {
 		EntityPolicy entityPolicy = sqlEntityInfo.getEntityPolicy();
+		final boolean identityManaged = sqlEntityInfo.isIdentityManaged();
 		Object id = null;
 		Date now = null;
 		if (entityPolicy != null) {
@@ -1662,19 +1663,25 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 				now = getNow();
 			}
 
-			id = entityPolicy.preCreate(record, now);
+			if (identityManaged) {
+				id = entityPolicy.preCreate(record, now);
+			}
 		}
 
 		ensureRecordTenantId(sqlEntityInfo, record);
 		SqlStatement sqlStatement = null;
-		if (sqlEntityInfo.isIdentityManaged()) {
+		if (identityManaged) {
 			sqlStatement = sqlDataSourceDialect.prepareCreateStatement(record);
 		} else {
 			sqlStatement = sqlDataSourceDialect.prepareCreateStatementWithUnmanagedIdentity(record);
 		}
 
 		try {
-			getSqlStatementExecutor().executeUpdate(connection, sqlStatement);
+			if (identityManaged) {
+				getSqlStatementExecutor().executeUpdate(connection, sqlStatement);
+			} else {
+				id = getSqlStatementExecutor().executeUpdateWithGetKeys(connection, sqlStatement);
+			}
 
 			if (sqlEntityInfo.isChildList()) {
 				createChildRecords(sqlEntityInfo, record, id);

@@ -46,9 +46,21 @@ public interface SqlStatementExecutor extends UnifyComponent {
 	 * @param connection   the database connection
 	 * @param sqlStatement the update statement to execute
 	 * @return the number of record
-	 * @throws UnifyException
+	 * @throws UnifyException if an error occurs
 	 */
 	int executeUpdate(Connection connection, SqlStatement sqlStatement) throws UnifyException;
+
+	/**
+	 * Executes an update statement via supplied connection. Update statements here
+	 * refer to statements that modify the state of the database. Includes CREATE,
+	 * UPDATE AND DELETE statements.
+	 * 
+	 * @param connection   the database connection
+	 * @param sqlStatement the update statement to execute
+	 * @return the return key
+	 * @throws UnifyException if an error occurs
+	 */
+	Object executeUpdateWithGetKeys(Connection connection, SqlStatement sqlStatement) throws UnifyException;
 
 	/**
 	 * Executes a statement that returns a single value via supplied connection.

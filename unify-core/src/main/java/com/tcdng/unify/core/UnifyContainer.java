@@ -252,7 +252,7 @@ public class UnifyContainer {
 		staticSettings = ucc.getStaticSettings();
 		nodeId = ucc.getNodeId();
 		preferredPort = ucc.getPreferredPort();
-		runtimeId = RandomUtils.generateUUID();
+		runtimeId = RandomUtils.generateUUIDInBase64();
 
 		if (nodeId == null) {
 			throw new UnifyException(UnifyCoreErrorConstants.CONTAINER_NODEID_REQUIRED);

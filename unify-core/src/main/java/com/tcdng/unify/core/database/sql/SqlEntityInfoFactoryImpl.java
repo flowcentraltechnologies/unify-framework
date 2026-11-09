@@ -948,10 +948,10 @@ public class SqlEntityInfoFactoryImpl extends AbstractSqlEntityInfoFactory {
 							entityClass);
 				}
 
-				EntityPolicy entityPolicy = null;
+				EntityPolicy<?> entityPolicy = null;
 				Policy pa = entityClass.getAnnotation(Policy.class);
 				if (pa != null) {
-					entityPolicy = (EntityPolicy) getComponent(pa.value());
+					entityPolicy = (EntityPolicy<?>) getComponent(pa.value());
 				}
 
 				List<Class<?>> heirachyList = ReflectUtils.getClassHierachyList(entityClass);
