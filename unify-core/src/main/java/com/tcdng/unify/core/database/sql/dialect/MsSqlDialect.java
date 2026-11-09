@@ -27,6 +27,7 @@ import com.tcdng.unify.core.UnifyCoreErrorConstants;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.constant.PrintFormat;
+import com.tcdng.unify.core.constant.RowLockType;
 import com.tcdng.unify.core.constant.TimeSeriesType;
 import com.tcdng.unify.core.criterion.RestrictionType;
 import com.tcdng.unify.core.database.sql.AbstractSqlDataSourceDialect;
@@ -250,6 +251,25 @@ public class MsSqlDialect extends AbstractSqlDataSourceDialect {
 	protected boolean appendLimitOffsetSuffixClause(StringBuilder sql, int offset, int limit, boolean append)
 			throws UnifyException {
 		return false;
+	}
+
+	protected void appendRowLockInfix(StringBuilder lockRowSql, RowLockType type) throws UnifyException {
+		switch (type) {
+		case NO_WAIT:
+			lockRowSql.append(" WITH (UPDLOCK, ROWLOCK, NOWAIT) ");
+			break;
+		case SKIP:
+			lockRowSql.append(" WITH (UPDLOCK, READPAST, ROWLOCK) ");
+			break;
+		case WAIT:
+		default:
+			lockRowSql.append(" WITH (UPDLOCK, ROWLOCK) ");
+			break;
+		}
+	}
+
+	protected void appendRowLockSuffix(StringBuilder lockRowSql, RowLockType type) throws UnifyException {
+
 	}
 
 	@Override

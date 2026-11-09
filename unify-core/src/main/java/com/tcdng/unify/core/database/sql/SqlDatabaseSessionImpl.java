@@ -48,6 +48,7 @@ import com.tcdng.unify.core.criterion.Amongst;
 import com.tcdng.unify.core.criterion.DivisionExpression;
 import com.tcdng.unify.core.criterion.GroupingFunction;
 import com.tcdng.unify.core.criterion.MultiplicationExpression;
+import com.tcdng.unify.core.criterion.Order;
 import com.tcdng.unify.core.criterion.Select;
 import com.tcdng.unify.core.criterion.SubtractionExpression;
 import com.tcdng.unify.core.criterion.Update;
@@ -312,16 +313,18 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		SqlEntityInfo sqlEntityInfo = resolveSqlEntityInfo(query);
 		List<T> list = Collections.emptyList();
 		final Select select = query.getSelect();
+		final Order order = query.getOrder();
 		final int limit = query.getLimit();
 		try {
 			if (limit > 0 && sqlDataSourceDialect.isRowLockLimitManual()) {
 				query.setLimit(0);
 			}
 
-			final SqlFieldInfo sqlFieldInfo = sqlEntityInfo.getIdFieldInfo();
-			query.setSelect(new Select(sqlFieldInfo.getName()));
+			final SqlFieldInfo idFieldInfo = sqlEntityInfo.getIdFieldInfo();
+			query.setSelect(new Select(idFieldInfo.getName()));
+			query.setOrder(new Order().add(idFieldInfo.getName()));
 			list = getSqlStatementExecutor().executeMultipleObjectListResultQuery(connection, idClass,
-					sqlDataSourceDialect.getSqlTypePolicy(sqlFieldInfo.getColumnType(), sqlFieldInfo.getLength()),
+					sqlDataSourceDialect.getSqlTypePolicy(idFieldInfo.getColumnType(), idFieldInfo.getLength()),
 					sqlDataSourceDialect.prepareRowLockStatement(query, RowLockType.SKIP));
 
 			if (!list.isEmpty()) {
@@ -330,11 +333,12 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 				}
 
 				Query<U> uquery = (Query<U>) Query.of(sqlEntityInfo.getEntityClass());
-				uquery.addAmongst(sqlFieldInfo.getName(), list);
+				uquery.addAmongst(idFieldInfo.getName(), list);
 				updateAll(uquery, update);
 			}
 		} finally {
 			query.setSelect(select);
+			query.setOrder(order);
 			query.setLimit(limit);
 		}
 

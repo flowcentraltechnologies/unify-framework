@@ -44,6 +44,7 @@ import com.tcdng.unify.core.constant.ForeignConstraints;
 import com.tcdng.unify.core.constant.Indexes;
 import com.tcdng.unify.core.constant.PrintFormat;
 import com.tcdng.unify.core.constant.QueryAgainst;
+import com.tcdng.unify.core.constant.RowLockType;
 import com.tcdng.unify.core.constant.TimeSeriesType;
 import com.tcdng.unify.core.constant.UniqueConstraints;
 import com.tcdng.unify.core.constant.Views;
@@ -1373,6 +1374,37 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 	}
 
 	@Override
+	public SqlStatement prepareRowLockStatement(Query<? extends Entity> query, RowLockType type) throws UnifyException {
+		final SqlEntityInfo sqlEntityInfo = resolveSqlEntityInfo(query);
+		final List<SqlParameter> parameterInfoList = new ArrayList<SqlParameter>();
+		final List<SqlFieldInfo> returnFieldInfoList = new ArrayList<SqlFieldInfo>();
+		StringBuilder lockRowSql = new StringBuilder();
+		Select select = query.getSelect();
+		
+		lockRowSql.append("SELECT ");
+		
+		boolean appendSym = false;
+		for (String name : select.values()) {
+			if (!sqlEntityInfo.isChildFieldInfo(name)) {
+				SqlFieldInfo sqlFieldInfo = sqlEntityInfo.getFieldInfo(name);
+				appendSym = appendPreferredColumn(lockRowSql, sqlFieldInfo, appendSym);
+				returnFieldInfoList.add(sqlFieldInfo);
+			}
+		}
+		
+		lockRowSql.append(" FROM ").append(sqlEntityInfo.getSchemaTableName());
+		
+		appendRowLockInfix(lockRowSql, type);
+		
+		appendWhereClause(lockRowSql, parameterInfoList, sqlEntityInfo, query, SqlQueryType.SELECT);
+		
+		appendRowLockSuffix(lockRowSql, type);
+		
+		return new SqlStatement(sqlEntityInfo, SqlStatementType.FIND, lockRowSql.toString(), parameterInfoList,
+				getSqlResultList(returnFieldInfoList), query.isLenient());
+	}
+
+	@Override
 	public SqlStatement prepareListByPkStatement(Class<?> clazz, Object pk) throws UnifyException {
 		if (EnumConst.class.isAssignableFrom(clazz)) {
 			return sqlStatementPoolsFactory.get(clazz).getSqlStatement(SqlStatementType.LIST_BY_PK, pk);
@@ -1915,6 +1947,39 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 	protected final boolean appendWhereClause(StringBuilder sql, List<SqlParameter> parameterInfoList,
 			SqlEntityInfo sqlEntityInfo, Query<? extends Entity> query, SqlQueryType queryType) throws UnifyException {
 		return internalAppendWhereClause(sql, parameterInfoList, sqlEntityInfo, query, queryType, null);
+	}
+
+	/**
+	 * Appends row lock infix.
+	 * 
+	 * @param lockRowSql the SQL buffer
+	 * @param type       the row lock type
+	 * @throws UnifyException if an error occurs
+	 */
+	protected void appendRowLockInfix(StringBuilder lockRowSql, RowLockType type) throws UnifyException {
+		
+	}
+
+	/**
+	 * Appends row lock suffix.
+	 * 
+	 * @param lockRowSql the SQL buffer
+	 * @param type       the row lock type
+	 * @throws UnifyException if an error occurs
+	 */
+	protected void appendRowLockSuffix(StringBuilder lockRowSql, RowLockType type) throws UnifyException {
+		switch (type) {
+		case NO_WAIT:
+			lockRowSql.append(" FOR UPDATE NOWAIT ");
+			break;
+		case SKIP:
+			lockRowSql.append(" FOR UPDATE SKIP LOCKED ");
+			break;
+		case WAIT:
+		default:
+			lockRowSql.append(" FOR UPDATE ");
+			break;
+		}
 	}
 
 	/**

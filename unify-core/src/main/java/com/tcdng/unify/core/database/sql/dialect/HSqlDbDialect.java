@@ -29,6 +29,7 @@ import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.UnifyOperationException;
 import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.constant.PrintFormat;
+import com.tcdng.unify.core.constant.RowLockType;
 import com.tcdng.unify.core.constant.TimeSeriesType;
 import com.tcdng.unify.core.criterion.RestrictionType;
 import com.tcdng.unify.core.database.sql.AbstractSqlDataSourceDialect;
@@ -167,6 +168,14 @@ public class HSqlDbDialect extends AbstractSqlDataSourceDialect {
 	@Override
 	protected void appendAutoIncrementPrimaryKey(StringBuilder sb) {
 		sb.append(" GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1) PRIMARY KEY NOT NULL");
+	}
+
+	protected final void appendRowLockInfix(StringBuilder lockRowSql, RowLockType type) throws UnifyException {
+		throwUnsupportedOperationException();
+	}
+
+	protected final void appendRowLockSuffix(StringBuilder lockRowSql, RowLockType type) throws UnifyException {
+		throwUnsupportedOperationException();
 	}
 	
 	@Override
