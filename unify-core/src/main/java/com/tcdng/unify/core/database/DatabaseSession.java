@@ -301,8 +301,8 @@ public interface DatabaseSession {
 	 * Tries to lock rows.(Does not block, locks no rows if at least one is already
 	 * locked)
 	 * 
-	 * @param idClass   the ID type
-	 * @param query the query
+	 * @param idClass the ID type
+	 * @param query   the query
 	 * @return list of locked row IDs otherwise empty.
 	 * @throws UnifyException if an error occurs.
 	 */
@@ -312,9 +312,9 @@ public interface DatabaseSession {
 	 * Claim unlocked rows in entity table.(Does not block, picks only unlocked
 	 * rows).
 	 * 
-	 * @param idClass   the ID type
-	 * @param query the row query
-	 * @param update   the rows update (claim)
+	 * @param idClass the ID type
+	 * @param query   the row query
+	 * @param update  the rows update (claim)
 	 * @return list of row IDs (converted)
 	 * @throws UnifyException if an error occurs
 	 */
