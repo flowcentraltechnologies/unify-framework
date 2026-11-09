@@ -203,7 +203,7 @@ public class PostgreSqlDialect extends AbstractSqlDataSourceDialect {
 
 	@Override
 	protected void appendAutoIncrementPrimaryKey(StringBuilder sb) {
-		sb.append(" GENERATED ALWAYS AS IDENTITY PRIMARY KEY NOT NULL");
+		sb.append(" GENERATED ALWAYS AS IDENTITY PRIMARY KEY");
 	}
 
 	@Override

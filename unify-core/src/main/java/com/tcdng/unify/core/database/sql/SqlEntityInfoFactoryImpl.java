@@ -828,6 +828,7 @@ public class SqlEntityInfoFactoryImpl extends AbstractSqlEntityInfoFactory {
 
 							if (ia != null) {
 								idFieldInfo = sqlFieldInfo;
+								idFieldInfo.setAutoIncrement(ta != null && !ta.identityManaged());
 							}
 
 							if (va != null) {

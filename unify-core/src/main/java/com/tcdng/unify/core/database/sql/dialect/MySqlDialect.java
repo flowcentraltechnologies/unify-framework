@@ -225,7 +225,7 @@ public class MySqlDialect extends AbstractSqlDataSourceDialect {
 
 	@Override
 	protected void appendAutoIncrementPrimaryKey(StringBuilder sb) {
-		sb.append(" AUTO_INCREMENT PRIMARY KEY NOT NULL");
+		sb.append(" AUTO_INCREMENT PRIMARY KEY");
 	}
 
 	@Override
