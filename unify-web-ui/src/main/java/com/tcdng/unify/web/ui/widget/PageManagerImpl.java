@@ -34,7 +34,6 @@ import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.annotation.Configurable;
 import com.tcdng.unify.core.data.FactoryMap;
 import com.tcdng.unify.core.data.LocaleFactoryMaps;
-import com.tcdng.unify.core.system.SequenceNumberService;
 import com.tcdng.unify.core.upl.UplCompiler;
 import com.tcdng.unify.core.upl.UplComponent;
 import com.tcdng.unify.core.upl.UplDocumentAttributes;
@@ -63,9 +62,6 @@ public class PageManagerImpl extends AbstractUnifyComponent implements PageManag
 
 	@Configurable
 	private UplCompiler uplCompiler;
-
-	@Configurable
-	private SequenceNumberService sequenceNumberService;
 
 	private PageNameMap pageNameMap;
 
