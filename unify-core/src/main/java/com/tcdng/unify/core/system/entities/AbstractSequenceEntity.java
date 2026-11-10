@@ -26,9 +26,9 @@ import com.tcdng.unify.core.database.AbstractEntity;
  * @author The Code Department
  * @since 4.1
  */
-@Tooling(name = "plainSequenced", description = "Plain Sequenced")
-@Policy("sequencedentity-policy")
-public abstract class AbstractSequencedEntity extends AbstractEntity implements SequencedEntity {
+@Tooling(name = "plainSequence", description = "Plain Sequence")
+@Policy("sequenceentity-policy")
+public abstract class AbstractSequenceEntity extends AbstractEntity implements SequenceEntity {
 
     @Id
     private Long id;
@@ -46,11 +46,6 @@ public abstract class AbstractSequencedEntity extends AbstractEntity implements 
 	public void setPreferredId(Object id) {
         this.id = (Long) id;
 	}
-
-	@Override
-    public boolean isReserved() {
-        return id != null && id.compareTo(Long.valueOf(0L)) < 0;
-    }
 
     public boolean isIdBlank() {
         return id == null;

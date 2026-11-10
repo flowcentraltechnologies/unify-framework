@@ -27,7 +27,7 @@ import com.tcdng.unify.core.annotation.ForeignKey;
  * @since 4.1
  */
 @Table(name = "UNPARAMDEF", uniqueConstraints = { @UniqueConstraint({ "parametersDefId", "name" }) })
-public class ParameterDef extends AbstractSequencedEntity {
+public class ParameterDef extends AbstractSequenceEntity {
 
     @ForeignKey(ParametersDef.class)
     private Long parametersDefId;

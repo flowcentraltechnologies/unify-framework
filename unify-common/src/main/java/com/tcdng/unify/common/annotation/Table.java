@@ -109,9 +109,9 @@ public @interface Table {
     boolean adhoc() default false;
     
     /**
-     * Indicates identity column is managed. Defaults to true.
+     * Indicates identity column is generated. Defaults to true.
      */
-    boolean identityManaged() default true;
+    boolean autoIdentity() default true;
     
     /**
      * Allow alternate ID source

@@ -31,12 +31,12 @@ import com.tcdng.unify.core.UnifyCorePropertyConstants;
 import com.tcdng.unify.core.UnifyException;
 
 /**
- * Database table unmanaged identity entity CRUD tests.
+ * Database table managed identity entity CRUD tests.
  * 
  * @author The Code Department
  * @since 4.1
  */
-public class DatabaseTableEntityUnmanagedIdentityCRUDTest extends AbstractUnifyComponentTest {
+public class DatabaseTableEntityManagedIdentityCRUDTest extends AbstractUnifyComponentTest {
 
 	private DatabaseTransactionManager tm;
 
@@ -233,13 +233,13 @@ public class DatabaseTableEntityUnmanagedIdentityCRUDTest extends AbstractUnifyC
 	public void testCreateRecord() throws Exception {
 		tm.beginTransaction();
 		try {
-			Fish fruitToCreate = new Fish("apple", "red", 20.00);
-			Long id = (Long) db.create(fruitToCreate);
+			Fish fishToCreate = new Fish("apple", "red", 20.00);
+			Long id = (Long) db.create(fishToCreate);
 			assertNotNull(id);
-			assertEquals(id, fruitToCreate.getId());
+			assertEquals(id, fishToCreate.getId());
 
 			Fish createdFish = db.find(Fish.class, id);
-			assertEquals(fruitToCreate, createdFish);
+			assertEquals(fishToCreate, createdFish);
 			assertFalse(createdFish.equals(new Fish("banana", "yellow", 45.00)));
 		} catch (Exception e) {
 			tm.setRollback();
@@ -266,10 +266,10 @@ public class DatabaseTableEntityUnmanagedIdentityCRUDTest extends AbstractUnifyC
 
 		tm.beginTransaction();
 		try {
-			List<Fish> fruitList = db.findAll(new FishQuery().ignoreEmptyCriteria(true).addOrder("price"));
-			assertEquals(2, fruitList.size());
-			assertEquals(apple, fruitList.get(0));
-			assertEquals(banana, fruitList.get(1));
+			List<Fish> fishList = db.findAll(new FishQuery().ignoreEmptyCriteria(true).addOrder("price"));
+			assertEquals(2, fishList.size());
+			assertEquals(apple, fishList.get(0));
+			assertEquals(banana, fishList.get(1));
 		} catch (Exception e) {
 			tm.setRollback();
 			throw e;
@@ -333,9 +333,9 @@ public class DatabaseTableEntityUnmanagedIdentityCRUDTest extends AbstractUnifyC
 
 		tm.beginTransaction();
 		try {
-			List<Fish> fruitList = db.findAll(new FishQuery().ignoreEmptyCriteria(true));
-			assertEquals(1, fruitList.size());
-			assertEquals(apple, fruitList.get(0));
+			List<Fish> fishList = db.findAll(new FishQuery().ignoreEmptyCriteria(true));
+			assertEquals(1, fishList.size());
+			assertEquals(apple, fishList.get(0));
 		} finally {
 			tm.endTransaction();
 		}
@@ -376,24 +376,8 @@ public class DatabaseTableEntityUnmanagedIdentityCRUDTest extends AbstractUnifyC
 		tm.beginTransaction();
 		try {
 			Long id = (Long) db.create(new Fish("apple", "red", 20.00));
-			Fish fruitData = db.find(Fish.class, id);
-			db.deleteByIdVersion(fruitData);
-		} catch (Exception e) {
-			tm.setRollback();
-			throw e;
-		} finally {
-			tm.endTransaction();
-		}
-	}
-
-	@Test(expected = UnifyException.class)
-	public void testDeleteRecordByIdVersionWithWrongVersion() throws Exception {
-		tm.beginTransaction();
-		try {
-			Long id = (Long) db.create(new Fish("apple", "red", 20.00));
-			Fish fruitData = db.find(Fish.class, id);
-			fruitData.setVersion(20L);
-			db.deleteByIdVersion(fruitData);
+			Fish fishData = db.find(Fish.class, id);
+			db.deleteByIdVersion(fishData);
 		} catch (Exception e) {
 			tm.setRollback();
 			throw e;

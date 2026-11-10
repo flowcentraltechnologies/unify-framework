@@ -15,13 +15,15 @@
  */
 package com.tcdng.unify.core.database;
 
+import com.tcdng.unify.core.system.entities.ManagedSequenceEntityQuery;
+
 /**
  * Query object for test fish.
  * 
  * @author The Code Department
  * @since 4.1
  */
-public class FishQuery extends AbstractTestTableEntityQuery<Fish> {
+public class FishQuery extends ManagedSequenceEntityQuery<Fish> {
 
     public FishQuery() {
         super(Fish.class);

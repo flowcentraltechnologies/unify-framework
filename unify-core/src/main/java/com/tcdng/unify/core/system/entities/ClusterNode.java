@@ -29,7 +29,7 @@ import com.tcdng.unify.core.annotation.Id;
  * @author The Code Department
  * @since 4.1
  */
-@Table("UNCLUSTERNODE")
+@Table(name = "UNCLUSTERNODE", autoIdentity = false)
 public class ClusterNode extends AbstractSystemEntity implements Listable {
 
     @Id(length = 40)

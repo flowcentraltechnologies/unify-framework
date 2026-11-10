@@ -18,12 +18,12 @@ package com.tcdng.unify.core.system.entities;
 import com.tcdng.unify.common.database.Entity;
 
 /**
- * Sequenced entity.
+ * Sequence entity.
  * 
  * @author The Code Department
  * @since 4.1
  */
-public interface SequencedEntity extends Entity {
+public interface SequenceEntity extends Entity {
 
-    Long getId();
+    Long getId(); // ID is allocated in sequence
 }

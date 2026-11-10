@@ -18,6 +18,7 @@ package com.tcdng.unify.core.database;
 import com.tcdng.unify.common.annotation.Table;
 import com.tcdng.unify.common.annotation.UniqueConstraint;
 import com.tcdng.unify.core.annotation.Column;
+import com.tcdng.unify.core.system.entities.AbstractManagedSequenceEntity;
 
 /**
  * Test fish entity.
@@ -26,8 +27,9 @@ import com.tcdng.unify.core.annotation.Column;
  * @since 4.1
  */
 @Table(name = "FISH",
-	uniqueConstraints = { @UniqueConstraint({ "name" }) }, identityManaged = false)
-public class Fish extends AbstractTestVersionedTableEntity {
+	uniqueConstraints = { @UniqueConstraint({ "name" }) },
+	autoIdentity = false)
+public class Fish extends AbstractManagedSequenceEntity {
 
     @Column
     private String name;
@@ -59,7 +61,12 @@ public class Fish extends AbstractTestVersionedTableEntity {
 
     }
 
-    public String getName() {
+    @Override
+	public String getDescription() {
+		return name;
+	}
+
+	public String getName() {
         return name;
     }
 

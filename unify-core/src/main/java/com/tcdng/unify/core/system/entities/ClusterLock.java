@@ -28,7 +28,7 @@ import com.tcdng.unify.core.annotation.Id;
  * @author The Code Department
  * @since 4.1
  */
-@Table("UNCLUSTERLOCK")
+@Table(name = "UNCLUSTERLOCK", autoIdentity = false)
 public class ClusterLock extends AbstractSystemEntity {
 
     @Id(length = 128)

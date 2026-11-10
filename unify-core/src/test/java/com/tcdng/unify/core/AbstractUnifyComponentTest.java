@@ -28,7 +28,7 @@ import com.tcdng.unify.core.database.Database;
 import com.tcdng.unify.core.database.DatabaseTransactionManager;
 import com.tcdng.unify.core.database.Query;
 import com.tcdng.unify.core.database.TestSqlDataSource;
-import com.tcdng.unify.core.system.entities.AbstractSequencedEntity;
+import com.tcdng.unify.core.system.entities.AbstractSequenceEntity;
 import com.tcdng.unify.core.task.TaskMonitor;
 import com.tcdng.unify.core.util.ThreadUtils;
 import com.tcdng.unify.core.util.TypeUtils;
@@ -365,7 +365,7 @@ public abstract class AbstractUnifyComponentTest {
         tm.beginTransaction();
         try {
             for (Class<? extends Entity> type : typeList) {
-                if (AbstractSequencedEntity.class.isAssignableFrom(type)) {
+                if (AbstractSequenceEntity.class.isAssignableFrom(type)) {
                     db.deleteAll(Query.of(type).addGreaterThan("id", 0L).ignoreTenancy(true));
                 } else {
                     db.deleteAll(Query.of(type).ignoreEmptyCriteria(true).ignoreTenancy(true));

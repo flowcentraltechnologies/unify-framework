@@ -23,7 +23,7 @@ import java.util.Collection;
  * @author The Code Department
  * @since 4.1
  */
-public class ClusterCommandQuery extends SequencedEntityQuery<ClusterCommand> {
+public class ClusterCommandQuery extends SequenceEntityQuery<ClusterCommand> {
 
     public ClusterCommandQuery() {
         super(ClusterCommand.class);

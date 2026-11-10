@@ -25,7 +25,7 @@ import com.tcdng.unify.core.annotation.TenantId;
  * @author The Code Department
  * @since 4.1
  */
-public abstract class AbstractSingleVersionLobEntity extends AbstractSequencedEntity {
+public abstract class AbstractSingleVersionLobEntity extends AbstractSequenceEntity {
 
     @Column(name = "APPLICATION_NM", length = 128)
     private String applicationName;

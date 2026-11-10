@@ -30,7 +30,7 @@ import com.tcdng.unify.core.database.AbstractEntity;
  * @since 4.1
  */
 @Policy("booking-policy")
-@Table
+@Table(autoIdentity = false)
 public class Booking extends AbstractEntity {
 
     @Id(name = "ACCOUNT_NM")

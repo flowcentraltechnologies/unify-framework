@@ -48,11 +48,6 @@ public abstract class AbstractEntity implements Entity {
     }
 
     @Override
-    public boolean isReserved() {
-        return false;
-    }
-
-    @Override
     public boolean equals(Object object) {
         return ReflectUtils.beanEquals(this, object, ignore());
     }

@@ -21,7 +21,7 @@ package com.tcdng.unify.core.system.entities;
  * @author The Code Department
  * @since 4.1
  */
-public abstract class AbstractSystemSequencedEntity extends AbstractSequencedEntity {
+public abstract class AbstractSystemSequencedEntity extends AbstractSequenceEntity {
 
     @Override
     public String getDescription() {

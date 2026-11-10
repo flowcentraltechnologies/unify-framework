@@ -30,11 +30,6 @@ public abstract class AbstractDocument implements Document {
 	}
 
     @Override
-    public boolean isReserved() {
-        return false;
-    }
-
-    @Override
     public String getListKey() {
         return String.valueOf(getId());
     }

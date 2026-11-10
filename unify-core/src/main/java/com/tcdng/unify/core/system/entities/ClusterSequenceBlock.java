@@ -28,7 +28,7 @@ import com.tcdng.unify.core.annotation.Version;
  * @since 4.1
  */
 @Policy("sequenceblock-policy")
-@Table("UNCLUSTERSEQBLOCK")
+@Table(name = "UNCLUSTERSEQBLOCK", autoIdentity = false)
 public class ClusterSequenceBlock extends AbstractSystemEntity {
 
     @Id(name = "SEQUENCE_NM", length = 256)

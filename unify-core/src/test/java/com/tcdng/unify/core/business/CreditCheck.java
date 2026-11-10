@@ -30,7 +30,7 @@ import com.tcdng.unify.core.database.AbstractEntity;
  * @since 4.1
  */
 @Policy("creditcheck-policy")
-@Table(datasource = "thirdparty-datasource", name = "CREDIT_CHECK", adhoc =  true)
+@Table(datasource = "thirdparty-datasource", name = "CREDIT_CHECK", adhoc =  true, autoIdentity = false)
 public class CreditCheck extends AbstractEntity {
 
     @Id(name = "ACCOUNT_NM")

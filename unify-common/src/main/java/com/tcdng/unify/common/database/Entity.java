@@ -31,6 +31,5 @@ public interface Entity extends Listable, Describable {
     Object getId();
 	
     void setPreferredId(Object id);
-    
-    boolean isReserved();
+
 }

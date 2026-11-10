@@ -28,7 +28,7 @@ import com.tcdng.unify.core.UnifyOperationException;
 import com.tcdng.unify.core.annotation.DynamicEntityType;
 import com.tcdng.unify.core.annotation.DynamicFieldType;
 import com.tcdng.unify.core.constant.DataType;
-import com.tcdng.unify.core.system.entities.AbstractSequencedEntity;
+import com.tcdng.unify.core.system.entities.AbstractSequenceEntity;
 import com.tcdng.unify.core.util.DataUtils;
 import com.tcdng.unify.core.util.StringUtils;
 
@@ -288,7 +288,7 @@ public class DynamicEntityInfo {
 			this.className = className;
 			this.managed = managed;
 			this.schemaChanged = schemaChanged;
-			this.baseClassName = AbstractSequencedEntity.class.getCanonicalName();
+			this.baseClassName = AbstractSequenceEntity.class.getCanonicalName();
 			this.fkFields = new LinkedHashMap<String, DynamicForeignKeyFieldInfo>();
 			this.columnFields = new LinkedHashMap<String, DynamicColumnFieldInfo>();
 			this.listOnlyFields = new LinkedHashMap<String, DynamicListOnlyFieldInfo>();

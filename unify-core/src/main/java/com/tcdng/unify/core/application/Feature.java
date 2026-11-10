@@ -26,7 +26,7 @@ import com.tcdng.unify.core.database.AbstractEntity;
  * @author The Code Department
  * @since 4.1
  */
-@Table("UNFEATURE")
+@Table(name = "UNFEATURE", autoIdentity = false)
 public class Feature extends AbstractEntity {
 
     @Id(name = "FEATURE_CD", length = 40)

@@ -30,7 +30,7 @@ import com.tcdng.unify.core.annotation.Policy;
  * @since 4.1
  */
 @Policy("usersessiontracking-entitypolicy")
-@Table("UNUSERSESSION")
+@Table(name = "UNUSERSESSION", autoIdentity = false)
 public class UserSessionTracking extends AbstractSystemEntity {
 
     @Id(length = 64)

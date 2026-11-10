@@ -1723,6 +1723,8 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 
 			if (identityManaged) {
 				id = entityPolicy.preCreate(record, now);
+			} else {
+				entityPolicy.preCreate(record, now);
 			}
 		}
 

@@ -30,7 +30,7 @@ import com.tcdng.unify.core.database.AbstractEntity;
  * @since 4.1
  */
 @Policy("accountdetails-policy")
-@Table(name = "ACCOUNT_DETAILS", adhoc = true)
+@Table(name = "ACCOUNT_DETAILS", adhoc = true, autoIdentity = false)
 public class AccountDetails extends AbstractEntity {
 
     @Id(name = "ACCOUNT_NM")

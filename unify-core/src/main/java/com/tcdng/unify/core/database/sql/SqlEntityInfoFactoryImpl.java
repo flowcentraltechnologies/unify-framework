@@ -828,7 +828,7 @@ public class SqlEntityInfoFactoryImpl extends AbstractSqlEntityInfoFactory {
 
 							if (ia != null) {
 								idFieldInfo = sqlFieldInfo;
-								idFieldInfo.setAutoIncrement(ta != null && !ta.identityManaged());
+								idFieldInfo.setAutoIncrement(ta != null && ta.autoIdentity());
 							}
 
 							if (va != null) {
@@ -983,7 +983,7 @@ public class SqlEntityInfoFactoryImpl extends AbstractSqlEntityInfoFactory {
 						tenantIdFieldInfo, fosterParentTypeFieldInfo, fosterParentIdFieldInfo, categoryFieldInfo,
 						propertyInfoMap, defaultRestrictionList, childInfoList, childListInfoList, uniqueConstraintMap,
 						indexMap, null, null, null, sqlDataSourceDialect.isAllObjectsInLowerCase(),
-						ta != null ? ta.identityManaged() : true);
+						ta != null ? !ta.autoIdentity() : true);
 				return sqlEntityInfo;
 			}
 

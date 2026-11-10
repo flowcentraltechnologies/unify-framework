@@ -30,7 +30,7 @@ import com.tcdng.unify.core.database.AbstractEntity;
  * @since 4.1
  */
 @Policy("product-policy")
-@Table(name = "PRODUCT", datasource= "inventory")
+@Table(name = "PRODUCT", datasource= "inventory", autoIdentity = false)
 public class Product extends AbstractEntity {
 
     @Id(name = "PRODUCT_NM")
