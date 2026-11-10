@@ -53,7 +53,7 @@ import com.tcdng.unify.core.util.NetworkUtils;
 @Component(ApplicationComponents.APPLICATION_CLUSTERSERVICE)
 public class ClusterServiceImpl extends AbstractBusinessService implements ClusterService {
 
-	private final String CLUSTER_HOUSE_KEEPING_LOCK = "app:clusterhousekeeping-lock";
+	private final String NODE_HOUSE_KEEPING_LOCK = "app:clusternodehousekeeping-lock";
 	
 	@Configurable("1") // Node expiration in minutes
 	private int nodeExpirationPeriod;
@@ -117,7 +117,7 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 
 
 	@Periodic(PeriodicType.FAST)
-	public void performHeartBeat(TaskMonitor taskMonitor) throws UnifyException {
+	public void performNodeHeartBeat(TaskMonitor taskMonitor) throws UnifyException {
 		final String nodeId = getNodeId();
 		// Send a heart beat.
 		Date lastHeartBeat = db().getNow();
@@ -136,17 +136,13 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 	}
 
 	@Periodic(PeriodicType.SLOWER)
-	@Synchronized(lock = CLUSTER_HOUSE_KEEPING_LOCK, waitForLock = false)
-	public void performClusterHouseKeeping(TaskMonitor taskMonitor) throws UnifyException {
-		// Obliterate cluster nodes with stopped heart beats (Dead nodes).
+	@Synchronized(lock = NODE_HOUSE_KEEPING_LOCK, waitForLock = false)
+	public void performNodeHouseKeeping(TaskMonitor taskMonitor) throws UnifyException {
 		List<String> deadNodeIds = db().valueList(String.class, "nodeId", new ClusterNodeQuery()
 				.lastHeartBeatOlderThan(getNewNodeExpiryDate()).nodeNotEqual(getNodeId()));
 		if (!deadNodeIds.isEmpty()) {
-			// Delete node commands
 			db().deleteAll(new ClusterCommandParamQuery().nodeIdIn(deadNodeIds));
 			db().deleteAll(new ClusterCommandQuery().nodeIdIn(deadNodeIds));
-
-			// Delete nodes
 			db().deleteAll(new ClusterNodeQuery().nodeIdIn(deadNodeIds));
 		}
 	}
