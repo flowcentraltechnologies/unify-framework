@@ -170,6 +170,25 @@ public class HSqlDbDialect extends AbstractSqlDataSourceDialect {
 		sb.append(" GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1) PRIMARY KEY NOT NULL");
 	}
 
+	@Override
+	protected void appendNowOffsetSQL(StringBuilder sb, int seconds, boolean neg) throws UnifyException {
+		sb.append("CURRENT_TIMESTAMP ");
+		sb.append(neg ? '-' : '+');
+		sb.append(" INTERVAL '");
+		sb.append(seconds);
+		sb.append("' SECOND");
+	}
+
+	@Override
+	protected void appendTimestampOffsetSQL(StringBuilder sb, String preferredColumnName, int seconds, boolean neg)
+			throws UnifyException {
+		sb.append(preferredColumnName).append(" ");
+		sb.append(neg ? '-' : '+');
+		sb.append(" INTERVAL '");
+		sb.append(seconds);
+		sb.append("' SECOND");
+	}
+
 	protected final void appendRowLockInfix(StringBuilder lockRowSql, RowLockType type) throws UnifyException {
 		throwUnsupportedOperationException();
 	}

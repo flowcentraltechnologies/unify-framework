@@ -13,24 +13,23 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.tcdng.unify.core.criterion;
+package com.tcdng.unify.core.expression;
 
 /**
- * Convenient abstract base class for simple arithmetic update expressions.
+ * Multiplication update expression.
  * 
  * @author The Code Department
  * @since 4.1
  */
-public abstract class AbstractSimpleArithmeticUpdateExpression extends AbstractUpdateExpression {
+public class MultiplicationExpression extends AbstractSimpleArithmeticUpdateExpression {
 
-	public AbstractSimpleArithmeticUpdateExpression(Object val) {
+	public MultiplicationExpression(Number val) {
 		super(val);
 	}
 
 	@Override
-	public void appendSQLSetExpression(StringBuilder sb, String columnName) {
-		sb.append(columnName).append(" = ").append(columnName).append(getOperator()).append("?");
+	protected String getOperator() {
+		return " * ";
 	}
 
-	protected abstract String getOperator();
 }

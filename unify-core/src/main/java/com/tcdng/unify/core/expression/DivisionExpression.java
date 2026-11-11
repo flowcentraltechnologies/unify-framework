@@ -13,23 +13,23 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.tcdng.unify.core.criterion;
+package com.tcdng.unify.core.expression;
 
 /**
- * Subtraction update expression.
+ * Division update expression.
  * 
  * @author The Code Department
  * @since 4.1
  */
-public class SubtractionExpression extends AbstractSimpleArithmeticUpdateExpression {
+public class DivisionExpression extends AbstractSimpleArithmeticUpdateExpression {
 
-	public SubtractionExpression(Number val) {
+	public DivisionExpression(Number val) {
 		super(val);
 	}
 
 	@Override
 	protected String getOperator() {
-		return " - ";
+		return " / ";
 	}
 
 }

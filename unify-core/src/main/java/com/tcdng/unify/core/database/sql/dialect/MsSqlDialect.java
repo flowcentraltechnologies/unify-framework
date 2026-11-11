@@ -132,8 +132,37 @@ public class MsSqlDialect extends AbstractSqlDataSourceDialect {
 	}
 
 	@Override
+	protected String getNowSQL() {
+		return "CURRENT_TIMESTAMP";
+	}
+
+	@Override
+	protected String getTodaySQL() {
+		return "CAST(GETDATE() AS date)";
+	}
+
+	@Override
 	protected void appendAutoIncrementPrimaryKey(StringBuilder sb) {
 		sb.append(" IDENTITY(1,1) PRIMARY KEY NOT NULL");
+	}
+
+	@Override
+	protected void appendNowOffsetSQL(StringBuilder sb, int seconds, boolean neg) throws UnifyException {
+		sb.append("DATEADD(SECOND, ");
+		sb.append(neg ? '-' : '+');
+		sb.append(seconds);
+		sb.append(", SYSDATETIME())");
+	}
+
+	@Override
+	protected void appendTimestampOffsetSQL(StringBuilder sb, String preferredColumnName, int seconds, boolean neg)
+			throws UnifyException {
+		sb.append("DATEADD(SECOND, ");
+		sb.append(neg ? '-' : '+');
+		sb.append(seconds);
+		sb.append(", ");
+		sb.append(preferredColumnName);
+		sb.append(")");
 	}
 
 	@Override

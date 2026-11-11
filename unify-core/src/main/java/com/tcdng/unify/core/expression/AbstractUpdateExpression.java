@@ -13,23 +13,25 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.tcdng.unify.core.criterion;
+package com.tcdng.unify.core.expression;
 
 /**
- * Addition update expression.
+ * Convenient abstract base class for update expressions.
  * 
  * @author The Code Department
  * @since 4.1
  */
-public class AdditionExpression extends AbstractSimpleArithmeticUpdateExpression {
+public abstract class AbstractUpdateExpression implements UpdateExpression {
 
-	public AdditionExpression(Number val) {
-		super(val);
+	private final Object val;
+	
+	public AbstractUpdateExpression(Object val) {
+		this.val = val;
 	}
 
 	@Override
-	protected String getOperator() {
-		return " + ";
+	public Object getValue() {
+		return val;
 	}
 
 }
