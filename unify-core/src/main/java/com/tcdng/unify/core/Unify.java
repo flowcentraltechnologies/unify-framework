@@ -16,8 +16,8 @@
 package com.tcdng.unify.core;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -266,11 +266,11 @@ public class Unify {
 			if (base != null) {
 				for (String[] parts : partList) {
 					if (parts.length == 3) {
-						baseUrls.add(new URL(base + "!/" + parts[1]));
+						baseUrls.add(new URI(base + "!/" + parts[1]).toURL());
 					}
 				}
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			UnifyConfigUtils.log("Error resolving packaged JARs.", e);
 		}
 
@@ -288,10 +288,10 @@ public class Unify {
 						: url.lastIndexOf("META-INF/MANIFEST.MF");
 				if (index > 0) {
 					url = url.substring(0, index);
-					baseUrls.add(new URL(url));
+					baseUrls.add(new URI(url).toURL());
 				}
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			UnifyConfigUtils.log("Error resolving packaged JARs.", e);
 		}
 
