@@ -56,10 +56,6 @@ import com.tcdng.unify.core.database.GroupingAggregation;
 import com.tcdng.unify.core.database.MappedEntityRepository;
 import com.tcdng.unify.core.database.NativeUpdate;
 import com.tcdng.unify.core.database.Query;
-import com.tcdng.unify.core.expression.AdditionExpression;
-import com.tcdng.unify.core.expression.DivisionExpression;
-import com.tcdng.unify.core.expression.MultiplicationExpression;
-import com.tcdng.unify.core.expression.SubtractionExpression;
 import com.tcdng.unify.core.util.DataUtils;
 import com.tcdng.unify.core.util.ReflectUtils;
 import com.tcdng.unify.core.util.SqlUtils;
@@ -91,6 +87,11 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		sqlDataSourceDialect = (SqlDataSourceDialect) sqlDataSource.getDialect();
 		connection = (Connection) sqlDataSource.getConnection();
 		savepointStack = new Stack<Savepoint>();
+	}
+
+	@Override
+	public boolean isSupportsRowLocking() throws UnifyException {
+		return sqlDataSource.isSupportsRowLocking();
 	}
 
 	@Override

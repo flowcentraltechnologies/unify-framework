@@ -43,7 +43,7 @@ public interface HeartbeatManager extends BusinessService {
 	 * @return the heartbeat ID
 	 * @throws UnifyException if an error occurs
 	 */
-	String startHeartbeat(Query<? extends Entity> query, String expiryFieldName, long lifeExtensionInMinutes)
+	String startHeartbeat(Query<? extends Entity> query, String expiryFieldName, int lifeExtensionInMinutes)
 			throws UnifyException;
 
 	/**

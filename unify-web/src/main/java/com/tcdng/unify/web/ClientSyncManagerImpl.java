@@ -27,7 +27,6 @@ import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.annotation.Configurable;
 import com.tcdng.unify.core.annotation.Periodic;
 import com.tcdng.unify.core.annotation.PeriodicType;
-import com.tcdng.unify.core.annotation.Synchronized;
 import com.tcdng.unify.core.annotation.Transactional;
 import com.tcdng.unify.core.business.AbstractBusinessService;
 import com.tcdng.unify.core.constant.ClientSyncCommandConstants;
@@ -100,17 +99,21 @@ public class ClientSyncManagerImpl extends AbstractBusinessService implements Cl
 	}
 
 	@Periodic(PeriodicType.NORMAL)
-	@Synchronized(EXPIRATION_HOUSEKEEP_LOCK)
 	public void performExpirationHouseKeeping(TaskMonitor taskMonitor) throws UnifyException {
-		final Date now = db().getNow();
-		final Date expiryTime = CalendarUtils.getDateWithOffset(now, -expirationInMilliSeconds);
-		for (String sessionId : new ArrayList<String>(sessions.keySet())) {
-			ClientSyncSession session = sessions.get(sessionId);
-			if (session.isInvalidated() || expiryTime.after(session.lastClientCallOn())) {
-				sessions.remove(sessionId);
-				pageEventBroadcaster.processClientEvent(
-						new ClientEventMsg(session.getClientId(), ClientSyncCommandConstants.EXPIRE, null));
-				pageEventBroadcaster.unregisterClient(session.getClientId());
+		if (tryGrabLock(EXPIRATION_HOUSEKEEP_LOCK)) {
+			try {
+				final Date expiryTime = CalendarUtils.getDateWithOffset(db().getNow(), -expirationInMilliSeconds);
+				for (String sessionId : new ArrayList<String>(sessions.keySet())) {
+					ClientSyncSession session = sessions.get(sessionId);
+					if (session.isInvalidated() || expiryTime.after(session.lastClientCallOn())) {
+						sessions.remove(sessionId);
+						pageEventBroadcaster.processClientEvent(
+								new ClientEventMsg(session.getClientId(), ClientSyncCommandConstants.EXPIRE, null));
+						pageEventBroadcaster.unregisterClient(session.getClientId());
+					}
+				}
+			} finally {
+				releaseLock(EXPIRATION_HOUSEKEEP_LOCK);
 			}
 		}
 	}

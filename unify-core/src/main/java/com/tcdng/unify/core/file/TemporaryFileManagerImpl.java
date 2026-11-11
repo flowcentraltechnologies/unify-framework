@@ -33,7 +33,6 @@ import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.annotation.Configurable;
 import com.tcdng.unify.core.annotation.Periodic;
 import com.tcdng.unify.core.annotation.PeriodicType;
-import com.tcdng.unify.core.annotation.Synchronized;
 import com.tcdng.unify.core.annotation.Transactional;
 import com.tcdng.unify.core.business.AbstractBusinessService;
 import com.tcdng.unify.core.constant.FrequencyUnit;
@@ -53,6 +52,8 @@ import com.tcdng.unify.core.util.RandomUtils;
 @Transactional
 @Component(ApplicationComponents.APPLICATION_TEMPORARY_FILE_MANAGER)
 public class TemporaryFileManagerImpl extends AbstractBusinessService implements TemporaryFileManager {
+
+	private static final String TEMPFILE_HOUSEKEEPING_LOCK = "lock::tempfilemanager-housekeeping";
 
 	private static final String TEMP_SUBFOLDER = "unifytmp";
 
@@ -204,33 +205,38 @@ public class TemporaryFileManagerImpl extends AbstractBusinessService implements
 	}
 
 	@Periodic(PeriodicType.ERA)
-	@Synchronized("tempfilemanager-housekeeping")
 	public void clearExpiredTemporaryFiles(TaskMonitor taskMonitor) throws UnifyException {
-		final Date expiryDate = CalendarUtils.getDateWithFrequencyOffset(getNow(), FrequencyUnit.MINUTE,
-				-minutesToExpire);
-		// Clear cache
-		for (TempFile tempFile : new ArrayList<TempFile>(tempfiles.values())) {
-			if (tempFile.isExpired(expiryDate)) {
-				deleteTemporaryFile(tempFile.getTempFileId());
-			}
-		}
+		if (tryGrabLock(TEMPFILE_HOUSEKEEPING_LOCK)) {
+			try {
+				final Date expiryDate = CalendarUtils.getDateWithFrequencyOffset(getNow(), FrequencyUnit.MINUTE,
+						-minutesToExpire);
+				// Clear cache
+				for (TempFile tempFile : new ArrayList<TempFile>(tempfiles.values())) {
+					if (tempFile.isExpired(expiryDate)) {
+						deleteTemporaryFile(tempFile.getTempFileId());
+					}
+				}
 
-		// Clear files
-		final long expiryTime = expiryDate.getTime();
-		try (Stream<Path> paths = Files.list(workingTempFolder)) {
-			Iterator<Path> it = paths.iterator();
-			while (it.hasNext()) {
-				Path tempFile = it.next();
-				try {
-					if (Files.getLastModifiedTime(tempFile).toMillis() < expiryTime) {
-						Files.deleteIfExists(tempFile);
+				// Clear files
+				final long expiryTime = expiryDate.getTime();
+				try (Stream<Path> paths = Files.list(workingTempFolder)) {
+					Iterator<Path> it = paths.iterator();
+					while (it.hasNext()) {
+						Path tempFile = it.next();
+						try {
+							if (Files.getLastModifiedTime(tempFile).toMillis() < expiryTime) {
+								Files.deleteIfExists(tempFile);
+							}
+						} catch (IOException e) {
+							logDebug(e);
+						}
 					}
 				} catch (IOException e) {
-					logDebug(e);
+					throwOperationErrorException(e);
 				}
+			} finally {
+				releaseLock(TEMPFILE_HOUSEKEEPING_LOCK);
 			}
-		} catch (IOException e) {
-			throwOperationErrorException(e);
 		}
 	}
 

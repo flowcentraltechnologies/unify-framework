@@ -52,6 +52,14 @@ public interface DatabaseSession {
      *             if an error occurs
 	 */
 	boolean isManaged() throws UnifyException;
+    
+	/**
+	 * Checks if session supports row locking.
+	 * 
+	 * @return true if supports row locking otherwise false.
+	 * @throws UnifyException if an error occurs
+	 */
+	boolean isSupportsRowLocking() throws UnifyException;
 
     /**
      * Creates an record in the database.

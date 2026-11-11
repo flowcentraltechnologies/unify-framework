@@ -43,12 +43,20 @@ public interface DataSourceDialect extends UnifyComponent {
     String getDataSourceName();
     
 	/**
+	 * Checks if dialect supports row locking.
+	 * 
+	 * @return true if supports row locking otherwise false.
+	 * @throws UnifyException if an error occurs
+	 */
+	boolean isSupportsRowLocking() throws UnifyException;
+   
+	/**
 	 * Checks if unify views are supported.
 	 * 
 	 * @return true if support unify views.
 	 * @throws UnifyException if an error occurs
 	 */
-	boolean isSupportUnifyViews() throws UnifyException;
+	boolean isSupportsUnifyViews() throws UnifyException;
 
 	/**
 	 * Set support unify views flag.

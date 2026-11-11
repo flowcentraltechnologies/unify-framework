@@ -194,6 +194,11 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 	}
 
 	@Override
+	public boolean isSupportsRowLocking() throws UnifyException {
+		return true;
+	}
+
+	@Override
 	public boolean isSchemaDatabase() {
 		return false;
 	}
@@ -1726,7 +1731,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 	}
 
 	@Override
-	public final boolean isSupportUnifyViews() {
+	public final boolean isSupportsUnifyViews() {
 		return supportUnifyViews;
 	}
 

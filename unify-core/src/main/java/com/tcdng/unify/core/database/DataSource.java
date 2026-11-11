@@ -28,6 +28,14 @@ import com.tcdng.unify.core.UnifyException;
 public interface DataSource extends UnifyComponent {
 
 	String ENTITYLIST_PROPERTY = "entityList";
+    
+	/**
+	 * Checks if datasource supports row locking.
+	 * 
+	 * @return true if supports row locking otherwise false.
+	 * @throws UnifyException if an error occurs
+	 */
+	boolean isSupportsRowLocking() throws UnifyException;
 	
 	/**
 	 * Checks if datasource is read-only

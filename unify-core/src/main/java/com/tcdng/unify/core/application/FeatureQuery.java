@@ -32,4 +32,9 @@ public class FeatureQuery extends Query<Feature> {
     public FeatureQuery code(String code) {
         return (FeatureQuery) addEquals("code", code);
     }
+
+    public FeatureQuery rowLockKey() {
+        return (FeatureQuery) addEquals("code", "row-lock-supported");
+    }
+    
 }

@@ -35,6 +35,14 @@ import com.tcdng.unify.core.criterion.Update;
  * @since 4.1
  */
 public interface Database extends UnifyComponent {
+    
+	/**
+	 * Checks if database supports row locking.
+	 * 
+	 * @return true if supports row locking otherwise false.
+	 * @throws UnifyException if an error occurs
+	 */
+	boolean isSupportsRowLocking() throws UnifyException;
 	
 	/**
 	 * Checks if database is read-only

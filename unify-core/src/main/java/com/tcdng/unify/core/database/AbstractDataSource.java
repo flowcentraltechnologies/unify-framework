@@ -68,6 +68,11 @@ public abstract class AbstractDataSource extends AbstractUnifyComponent implemen
 	}
 
 	@Override
+	public boolean isSupportsRowLocking() throws UnifyException {
+		return dialect != null ? dialect.isSupportsRowLocking() : false;
+	}
+
+	@Override
 	public boolean isManaged() throws UnifyException {
 		return managed;
 	}

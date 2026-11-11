@@ -108,6 +108,11 @@ public class HSqlDbDialect extends AbstractSqlDataSourceDialect {
 	}
 
 	@Override
+	public final boolean isSupportsRowLocking() throws UnifyException {
+		return false;
+	}
+
+	@Override
 	public boolean matchColumnDefault(String nativeVal, String defaultVal) throws UnifyException {
 		if (super.matchColumnDefault(nativeVal, defaultVal)) {
 			return true;

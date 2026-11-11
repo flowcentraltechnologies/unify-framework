@@ -45,6 +45,21 @@ public abstract class AbstractDatabase extends AbstractUnifyComponent implements
     public void joinTransaction() throws UnifyException {
         databaseTransactionManager.joinTransaction(this);
     }
+    
+    @Override
+	public boolean isSupportsRowLocking() throws UnifyException {
+		return getDatabaseSession().isSupportsRowLocking();
+	}
+
+	@Override
+	public boolean isReadOnly() throws UnifyException {
+		return getDatabaseSession().isReadOnly();
+	}
+
+	@Override
+	public boolean isManaged() throws UnifyException {
+		return getDatabaseSession().isManaged();
+	}
 
     @Override
 	public <T extends Entity> boolean isOfThisDatabase(Class<T> clazz) throws UnifyException {

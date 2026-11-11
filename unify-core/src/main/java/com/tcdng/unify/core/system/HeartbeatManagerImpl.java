@@ -15,7 +15,6 @@
  */
 package com.tcdng.unify.core.system;
 
-import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -29,11 +28,9 @@ import com.tcdng.unify.core.annotation.Transactional;
 import com.tcdng.unify.core.business.AbstractBusinessService;
 import com.tcdng.unify.core.business.AbstractQueuedExec;
 import com.tcdng.unify.core.business.QueuedExec;
-import com.tcdng.unify.core.constant.FrequencyUnit;
 import com.tcdng.unify.core.criterion.Update;
 import com.tcdng.unify.core.database.Query;
 import com.tcdng.unify.core.task.TaskMonitor;
-import com.tcdng.unify.core.util.CalendarUtils;
 import com.tcdng.unify.core.util.RandomUtils;
 
 /**
@@ -73,10 +70,10 @@ public class HeartbeatManagerImpl extends AbstractBusinessService implements Hea
 	}
 
 	@Override
-	public String startHeartbeat(Query<? extends Entity> query, String expiryFieldName, long lifeExtensionInMinutes)
+	public String startHeartbeat(Query<? extends Entity> query, String expiryFieldName, int lifeExtensionInMinutes)
 			throws UnifyException {
 		final String id = RandomUtils.generateUUID();
-		final long _lifeExtensionInMinutes = lifeExtensionInMinutes <= 0 ? 1 : lifeExtensionInMinutes;
+		final int _lifeExtensionInMinutes = lifeExtensionInMinutes <= 0 ? 1 : lifeExtensionInMinutes;
 		HeartbeatConfig heartbeatConfig = new HeartbeatConfig(id, query.copy(), expiryFieldName,
 				_lifeExtensionInMinutes);
 		performHeartbeat(heartbeatConfig);
@@ -89,7 +86,7 @@ public class HeartbeatManagerImpl extends AbstractBusinessService implements Hea
 		configs.remove(heartbeatId);
 	}
 
-	@Periodic(PeriodicType.SLOWEST)
+	@Periodic(PeriodicType.SLOW)
 	public void sustainHeartbeats(TaskMonitor taskMonitor) throws UnifyException {
 		if (tryGrabLock(HEARTBEAT_PERFORM)) {
 			try {
@@ -106,10 +103,8 @@ public class HeartbeatManagerImpl extends AbstractBusinessService implements Hea
 	}
 
 	public void performHeartbeat(HeartbeatConfig heartbeatConfig) throws UnifyException {
-		final Date newExpiryDate = CalendarUtils.getDateWithFrequencyOffset(getNow(), FrequencyUnit.MINUTE,
-				heartbeatConfig.getLifeExtensionInMinutes());
-		if (db().updateAll(heartbeatConfig.getQuery(),
-				new Update().add(heartbeatConfig.getExpiryFieldName(), newExpiryDate)) == 0) {
+		if (db().updateAll(heartbeatConfig.getQuery(), new Update().addAssignNowWithOffset(
+				heartbeatConfig.getExpiryFieldName(), heartbeatConfig.getLifeExtensionInMinutes() * 60)) == 0) {
 			stopHeartbeat(heartbeatConfig.getId());
 		}
 	}
@@ -122,12 +117,12 @@ public class HeartbeatManagerImpl extends AbstractBusinessService implements Hea
 
 		private final String expiryFieldName;
 
-		private final long lifeExtensionInMinutes;
+		private final int lifeExtensionInMinutes;
 
 		private boolean processing;
 
 		public HeartbeatConfig(String id, Query<? extends Entity> query, String expiryFieldName,
-				long lifeExtensionInMinutes) {
+				int lifeExtensionInMinutes) {
 			this.id = id;
 			this.query = query;
 			this.expiryFieldName = expiryFieldName;
@@ -146,7 +141,7 @@ public class HeartbeatManagerImpl extends AbstractBusinessService implements Hea
 			return expiryFieldName;
 		}
 
-		public long getLifeExtensionInMinutes() {
+		public int getLifeExtensionInMinutes() {
 			return lifeExtensionInMinutes;
 		}
 

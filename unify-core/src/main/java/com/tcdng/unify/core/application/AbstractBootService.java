@@ -171,6 +171,9 @@ public abstract class AbstractBootService<T extends FeatureDefinition> extends A
 			}
 		}
 
+		// Ensure row locking feature
+		getFeature("row-lock-supported", String.valueOf(db().isSupportsRowLocking()));
+
 		// Do installation only if deployment version is new
 		if (isDeployNewVersion || isDeployNewAuxVersion) {
 			if (isDeployNewVersion) {
@@ -192,7 +195,7 @@ public abstract class AbstractBootService<T extends FeatureDefinition> extends A
 				}
 			}
 
-			if (isDeployNewVersion) {
+			if (isDeployNewVersion) {				
 				// Update last deployment feature
 				Feature lastDeploymentFeature = getFeature("lastDeploymentVersion", "0.0");
 				lastDeploymentFeature.setValue(lastDeploymentVersion);

@@ -29,7 +29,6 @@ import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.annotation.Configurable;
 import com.tcdng.unify.core.annotation.Periodic;
 import com.tcdng.unify.core.annotation.PeriodicType;
-import com.tcdng.unify.core.annotation.Synchronized;
 import com.tcdng.unify.core.annotation.Transactional;
 import com.tcdng.unify.core.business.AbstractBusinessService;
 import com.tcdng.unify.core.criterion.Update;
@@ -53,7 +52,7 @@ import com.tcdng.unify.core.util.NetworkUtils;
 @Component(ApplicationComponents.APPLICATION_CLUSTERSERVICE)
 public class ClusterServiceImpl extends AbstractBusinessService implements ClusterService {
 
-	private final String NODE_HOUSE_KEEPING_LOCK = "app:clusternodehousekeeping-lock";
+	private final String CLUSTER_NODE_HOUSEKEEP_LOCK = "lock:clusternodehousekeep";
 	
 	@Configurable("1") // Node expiration in minutes
 	private int nodeExpirationPeriod;
@@ -115,18 +114,16 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 		return resultList;
 	}
 
-
-	@Periodic(PeriodicType.FAST)
+	@Periodic(PeriodicType.SLOW)
 	public void performNodeHeartBeat(TaskMonitor taskMonitor) throws UnifyException {
 		final String nodeId = getNodeId();
 		// Send a heart beat.
-		Date lastHeartBeat = db().getNow();
 		if (db().updateAll(new ClusterNodeQuery().nodeId(nodeId),
-				new Update().add("lastHeartBeat", lastHeartBeat)) == 0) {
+				new Update().addAssignNow("lastHeartBeat")) == 0) {
 			// Register node
 			ClusterNode clusterNode = new ClusterNode();
 			clusterNode.setNodeId(nodeId);
-			clusterNode.setLastHeartBeat(lastHeartBeat);
+			clusterNode.setLastHeartBeat(db().getNow());
 			clusterNode.setIpAddress(NetworkUtils.getLocalHostIpAddress());
 			UnifyContainerInterface unifyContainerInterface = (UnifyContainerInterface) this
 					.getComponent("unify-commandinterface");
@@ -136,14 +133,19 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 	}
 
 	@Periodic(PeriodicType.SLOWER)
-	@Synchronized(lock = NODE_HOUSE_KEEPING_LOCK, waitForLock = false)
 	public void performNodeHouseKeeping(TaskMonitor taskMonitor) throws UnifyException {
-		List<String> deadNodeIds = db().valueList(String.class, "nodeId", new ClusterNodeQuery()
-				.lastHeartBeatOlderThan(getNewNodeExpiryDate()).nodeNotEqual(getNodeId()));
-		if (!deadNodeIds.isEmpty()) {
-			db().deleteAll(new ClusterCommandParamQuery().nodeIdIn(deadNodeIds));
-			db().deleteAll(new ClusterCommandQuery().nodeIdIn(deadNodeIds));
-			db().deleteAll(new ClusterNodeQuery().nodeIdIn(deadNodeIds));
+		if (tryGrabLock(CLUSTER_NODE_HOUSEKEEP_LOCK)) {
+			try {
+				List<String> deadNodeIds = db().valueList(String.class, "nodeId", new ClusterNodeQuery()
+						.lastHeartBeatOlderThan(getNewNodeExpiryDate()).nodeNotEqual(getNodeId()));
+				if (!deadNodeIds.isEmpty()) {
+					db().deleteAll(new ClusterCommandParamQuery().nodeIdIn(deadNodeIds));
+					db().deleteAll(new ClusterCommandQuery().nodeIdIn(deadNodeIds));
+					db().deleteAll(new ClusterNodeQuery().nodeIdIn(deadNodeIds));
+				}
+			} finally {
+				releaseLock(CLUSTER_NODE_HOUSEKEEP_LOCK);
+			}
 		}
 	}
 
@@ -156,7 +158,7 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 	protected void onTerminate() throws UnifyException {
 
 	}
-
+	
 	private Date getNewNodeExpiryDate() throws UnifyException {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTimeInMillis(db().getNow().getTime() - (nodeExpirationPeriod * 60000));
