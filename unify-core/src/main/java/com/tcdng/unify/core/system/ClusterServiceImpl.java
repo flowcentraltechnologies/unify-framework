@@ -29,16 +29,21 @@ import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.annotation.Configurable;
 import com.tcdng.unify.core.annotation.Periodic;
 import com.tcdng.unify.core.annotation.PeriodicType;
+import com.tcdng.unify.core.annotation.TransactionAttribute;
 import com.tcdng.unify.core.annotation.Transactional;
 import com.tcdng.unify.core.business.AbstractBusinessService;
+import com.tcdng.unify.core.constant.JobStatus;
 import com.tcdng.unify.core.criterion.Update;
+import com.tcdng.unify.core.data.Job;
 import com.tcdng.unify.core.system.entities.ClusterCommand;
 import com.tcdng.unify.core.system.entities.ClusterCommandParam;
 import com.tcdng.unify.core.system.entities.ClusterCommandParamQuery;
 import com.tcdng.unify.core.system.entities.ClusterCommandQuery;
+import com.tcdng.unify.core.system.entities.ClusterJob;
 import com.tcdng.unify.core.system.entities.ClusterNode;
 import com.tcdng.unify.core.system.entities.ClusterNodeQuery;
 import com.tcdng.unify.core.task.TaskMonitor;
+import com.tcdng.unify.core.util.DataUtils;
 import com.tcdng.unify.core.util.NetworkUtils;
 
 /**
@@ -53,10 +58,14 @@ import com.tcdng.unify.core.util.NetworkUtils;
 public class ClusterServiceImpl extends AbstractBusinessService implements ClusterService {
 
 	private final String CLUSTER_NODE_HOUSEKEEP_LOCK = "lock:clusternodehousekeep";
+
+	private final String CLUSTER_NEW_JOB_LOCK = "lock:clustenewjobs";
 	
 	@Configurable("1") // Node expiration in minutes
 	private int nodeExpirationPeriod;
 
+	private List<ClusterJobHandler> jobHandlers;
+	
 	@Override
 	public List<ClusterNode> findClusterNodes(ClusterNodeQuery query) throws UnifyException {
 		return db().findAll(query);
@@ -149,6 +158,45 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 		}
 	}
 
+	@Periodic(PeriodicType.NORMAL)
+	public void loadNewJobs(TaskMonitor taskMonitor) throws UnifyException {
+		if (tryGrabLock(CLUSTER_NEW_JOB_LOCK)) {
+			try {
+				if (jobHandlers == null) {
+					jobHandlers = getComponents(ClusterJobHandler.class);
+				}
+
+				for (ClusterJobHandler handler: jobHandlers) {
+					loadNewJob(handler);
+				}
+			} finally {
+				releaseLock(CLUSTER_NEW_JOB_LOCK);
+			}
+		}
+	}
+
+	@Transactional(TransactionAttribute.REQUIRES_NEW)
+	public void loadNewJob(ClusterJobHandler handler) throws UnifyException {
+		try {
+			final List<Job> newjobs = handler.getNewJobs();
+			if (!DataUtils.isBlank(newjobs)) {
+				final String handlerName = handler.getName();
+				for (Job job : newjobs) {
+					ClusterJob clusterJob = new ClusterJob();
+					clusterJob.setHandler(handlerName);
+					clusterJob.setTitle(job.getTitle());
+					clusterJob.setPayloadId(job.getWorkItemId());
+					clusterJob.setMaxAttempts(job.getMaxAttempts());
+					clusterJob.setAttempts(0);
+					clusterJob.setStatus(JobStatus.PENDING);
+					db().create(clusterJob);
+				}
+			}
+		} catch (Exception e) {
+			logSevere(e);
+		}
+	}
+	
 	@Override
 	protected void onInitialize() throws UnifyException {
 

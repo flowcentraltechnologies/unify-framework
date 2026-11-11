@@ -18,6 +18,7 @@ package com.tcdng.unify.core.system.entities;
 import java.util.Date;
 
 import com.tcdng.unify.common.annotation.ColumnType;
+import com.tcdng.unify.common.annotation.Index;
 import com.tcdng.unify.common.annotation.Table;
 import com.tcdng.unify.core.annotation.Column;
 import com.tcdng.unify.core.annotation.ForeignKey;
@@ -29,7 +30,7 @@ import com.tcdng.unify.core.constant.JobStatus;
  * @author The Code Department
  * @since 4.1
  */
-@Table(name = "UNCLUSTERJOB")
+@Table(name = "UNCLUSTERJOB", indexes = {@Index({"status"})})
 public class ClusterJob extends AbstractSequenceEntity {
 
     @ForeignKey(name = "REC_ST")

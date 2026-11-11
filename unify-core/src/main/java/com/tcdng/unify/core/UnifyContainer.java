@@ -1710,8 +1710,7 @@ public class UnifyContainer {
 				if (names.size() == 1) { // Check perfect suggestion
 					value = names.get(0);
 				} else if (names.size() > 1) {
-					throw new RuntimeException(
-							"Can not resolve component to inject. More than one component of the same type. " + names);
+					// TODO throw exception to many possible types to inject
 				}
 			}
 		}
