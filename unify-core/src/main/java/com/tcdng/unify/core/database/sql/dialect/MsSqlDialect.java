@@ -147,6 +147,25 @@ public class MsSqlDialect extends AbstractSqlDataSourceDialect {
 	}
 
 	@Override
+	protected void appendNowOffsetSQL(StringBuilder sb, int seconds, boolean neg) throws UnifyException {
+		sb.append("DATEADD(SECOND, ");
+		sb.append(neg ? '-' : '+');
+		sb.append(seconds);
+		sb.append(", SYSDATETIME())");
+	}
+
+	@Override
+	protected void appendTimestampOffsetSQL(StringBuilder sb, String preferredColumnName, int seconds, boolean neg)
+			throws UnifyException {
+		sb.append("DATEADD(SECOND, ");
+		sb.append(neg ? '-' : '+');
+		sb.append(seconds);
+		sb.append(", ");
+		sb.append(preferredColumnName);
+		sb.append(")");
+	}
+
+	@Override
 	protected void appendTimestampTruncation(StringBuilder sql, SqlFieldInfo sqlFieldInfo,
 			TimeSeriesType timeSeriesType) throws UnifyException {
 		if (timeSeriesType.numericMerged()) {

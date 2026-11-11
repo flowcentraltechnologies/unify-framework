@@ -208,6 +208,25 @@ public class OracleDialect extends AbstractSqlDataSourceDialect {
 	}
 
 	@Override
+	protected void appendNowOffsetSQL(StringBuilder sb, int seconds, boolean neg) throws UnifyException {
+		sb.append("SYSTIMESTAMP  ");
+		sb.append(neg ? '-' : '+');
+		sb.append(" INTERVAL '");
+		sb.append(seconds);
+		sb.append("' SECOND");
+	}
+
+	@Override
+	protected void appendTimestampOffsetSQL(StringBuilder sb, String preferredColumnName, int seconds, boolean neg)
+			throws UnifyException {
+		sb.append(preferredColumnName).append(" ");
+		sb.append(neg ? '-' : '+');
+		sb.append(" INTERVAL '");
+		sb.append(seconds);
+		sb.append("' SECOND");
+	}
+
+	@Override
 	protected List<String> doGenerateAlterColumn(SqlEntitySchemaInfo sqlEntitySchemaInfo,
 			SqlFieldSchemaInfo sqlFieldSchemaInfo, SqlColumnAlterInfo sqlColumnAlterInfo, PrintFormat format)
 			throws UnifyException {

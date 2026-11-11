@@ -3329,6 +3329,33 @@ public class DatabaseTableEntityCRUDTest extends AbstractUnifyComponentTest {
 	}
 
 	@Test
+	public void testCustomUpdateByCriteria() throws Exception {
+		tm.beginTransaction();
+		try {
+			db.create(new Fruit("apple", "red", 20.00));
+			db.create(new Fruit("pineapple", "cyan", 60.00));
+			db.create(new Fruit("banana", "yellow", 45.00));
+			db.create(new Fruit("orange", "orange", 15.00));
+			int updated = db.updateAll(new FruitQuery().addLike("name", "apple"),
+					new Update().addAssignCustom("price", "2 * {{price}} + 0.25"));
+			assertEquals(2, updated);
+
+			List<Fruit> fruitList = db.findAll(new FruitQuery().addOrder("id").ignoreEmptyCriteria(true));
+			assertNotNull(fruitList);
+			assertEquals(4, fruitList.size());
+			assertEquals(Double.valueOf(40.25), fruitList.get(0).getPrice());
+			assertEquals(Double.valueOf(120.25), fruitList.get(1).getPrice());
+			assertEquals(Double.valueOf(45.00), fruitList.get(2).getPrice());
+			assertEquals(Double.valueOf(15.00), fruitList.get(3).getPrice());
+		} catch (Exception e) {
+			tm.setRollback();
+			throw e;
+		} finally {
+			tm.endTransaction();
+		}
+	}
+
+	@Test
 	public void testCreateRecordWithOnewayTransformation() throws Exception {
 		tm.beginTransaction();
 		try {

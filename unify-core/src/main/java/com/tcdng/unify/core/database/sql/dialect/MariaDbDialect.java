@@ -217,6 +217,25 @@ public class MariaDbDialect extends AbstractSqlDataSourceDialect {
 	}
 
 	@Override
+	protected void appendNowOffsetSQL(StringBuilder sb, int seconds, boolean neg) throws UnifyException {
+		sb.append("NOW() ");
+		sb.append(neg ? '-' : '+');
+		sb.append(" INTERVAL ");
+		sb.append(seconds);
+		sb.append(" SECOND");
+	}
+
+	@Override
+	protected void appendTimestampOffsetSQL(StringBuilder sb, String preferredColumnName, int seconds, boolean neg)
+			throws UnifyException {
+		sb.append(preferredColumnName).append(" ");
+		sb.append(neg ? '-' : '+');
+		sb.append(" INTERVAL ");
+		sb.append(seconds);
+		sb.append(" SECOND");
+	}
+
+	@Override
 	protected void appendTimestampTruncation(StringBuilder sql, SqlFieldInfo sqlFieldInfo,
 			TimeSeriesType timeSeriesType) throws UnifyException {
 		final String columnName = sqlFieldInfo.getPreferredColumnName();

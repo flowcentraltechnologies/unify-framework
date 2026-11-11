@@ -205,6 +205,25 @@ public class PostgreSqlDialect extends AbstractSqlDataSourceDialect {
 	protected void appendAutoIncrementPrimaryKey(StringBuilder sb) {
 		sb.append(" GENERATED ALWAYS AS IDENTITY PRIMARY KEY NOT NULL");
 	}
+	
+	@Override
+	protected void appendNowOffsetSQL(StringBuilder sb, int seconds, boolean neg) throws UnifyException {
+		sb.append("now() ");
+		sb.append(neg ? '-' : '+');
+		sb.append(" INTERVAL '");
+		sb.append(seconds);
+		sb.append(" seconds'");
+	}
+
+	@Override
+	protected void appendTimestampOffsetSQL(StringBuilder sb, String preferredColumnName, int seconds, boolean neg)
+			throws UnifyException {
+		sb.append(preferredColumnName).append(" ");
+		sb.append(neg ? '-' : '+');
+		sb.append(" INTERVAL '");
+		sb.append(seconds);
+		sb.append(" seconds'");
+	}
 
 	@Override
 	protected void appendTimestampTruncation(StringBuilder sql, SqlFieldInfo sqlFieldInfo,

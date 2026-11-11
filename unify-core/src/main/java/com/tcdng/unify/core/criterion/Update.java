@@ -32,51 +32,65 @@ import com.tcdng.unify.core.expression.SubtractionExpression;
  */
 public class Update extends FluentMap<String, Object> {
 
-    public Update() {
+	public Update() {
 
-    }
+	}
 
-    public Update(Update update) {
-        super(update);
-    }
+	public Update(Update update) {
+		super(update);
+	}
 
-    @Override
-    public Update add(String field, Object value) {
-        return (Update) super.add(field, value);
-    }
+	@Override
+	public Update add(String field, Object value) {
+		return (Update) super.add(field, value);
+	}
 
-    @Override
-    public Update addAll(Map<? extends String, ? extends Object> map) {
-        return (Update) super.addAll(map);
-    }
+	@Override
+	public Update addAll(Map<? extends String, ? extends Object> map) {
+		return (Update) super.addAll(map);
+	}
 
-    @Override
-    public Update remove(String key) {
-        return (Update) super.remove(key);
-    }
+	@Override
+	public Update remove(String key) {
+		return (Update) super.remove(key);
+	}
 
-    @Override
-    public Update clear() {
-        return (Update) super.clear();
-    }
-    
-    public Update assignAddition(String field, Number value) {
-    	return (Update) super.add(field, new AdditionExpression(value));
-    }
-    
-    public Update assignSubtraction(String field, Number value) {
-    	return (Update) super.add(field, new SubtractionExpression(value));
-    }
-    
-    public Update assignMultiplication(String field, Number value) {
-    	return (Update) super.add(field, new MultiplicationExpression(value));
-    }
-    
-    public Update assignDivision(String field, Number value) {
-    	return (Update) super.add(field, new DivisionExpression(value));
-    }
-    
-    public Update assignCustom(String field, String expression) {
-    	return (Update) super.add(field, new CustomUpdateExpression(expression));
-    }
+	@Override
+	public Update clear() {
+		return (Update) super.clear();
+	}
+
+	public Update addAssignAddition(String field, Number value) {
+		return (Update) super.add(field, new AdditionExpression(value));
+	}
+
+	public Update addAssignSubtraction(String field, Number value) {
+		return (Update) super.add(field, new SubtractionExpression(value));
+	}
+
+	public Update addAssignMultiplication(String field, Number value) {
+		return (Update) super.add(field, new MultiplicationExpression(value));
+	}
+
+	public Update addAssignDivision(String field, Number value) {
+		return (Update) super.add(field, new DivisionExpression(value));
+	}
+
+	public Update addAssignCustom(String field, String expression) {
+		return (Update) super.add(field, new CustomUpdateExpression(expression));
+	}
+
+	public Update addAssignNow(String field) {
+		return (Update) super.add(field, new CustomUpdateExpression("{{g:now}}"));
+	}
+
+	public Update addAssignNowWithOffset(String field, int seconds) {
+		return (Update) super.add(field, new CustomUpdateExpression(
+				seconds >= 0 ? "{{g:nowaddsec_" + seconds + "}}" : "{{g:nowsubsec_" + -seconds + "}}"));
+	}
+
+	public Update addAssignTimestampWithOffset(String field, int seconds) {
+		return (Update) super.add(field, new CustomUpdateExpression(
+				seconds >= 0 ? "{{g:fldaddsec_" + seconds + "}}" : "{{g:fldsubsec_" + -seconds + "}}"));
+	}
 }

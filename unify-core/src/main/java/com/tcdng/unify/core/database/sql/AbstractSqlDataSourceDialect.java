@@ -2229,7 +2229,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 	protected String getTodaySQL() {
 		return "CURRENT_DATE";
 	}
-	
+
 	/**
 	 * Returns criteria result rows limit..
 	 * 
@@ -2801,7 +2801,8 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 				UpdateExpression expression = (UpdateExpression) value;
 				if (expression.isCustom()) {
 					usb.append(sqlFieldInfo.getPreferredColumnName()).append(" = ");
-					List<StringToken> tokens = StringUtils.breakdownParameterizedString((String) expression.getValue());
+					final List<StringToken> tokens = StringUtils
+							.breakdownParameterizedString((String) expression.getValue());
 					if (!tokens.isEmpty()) {
 						for (StringToken token : tokens) {
 							if (token.isText()) {
@@ -2811,11 +2812,45 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 										.getFieldInfo(((ParamToken) token).getParam());
 								usb.append(_sqlFieldInfo.getPreferredColumnName());
 							} else if (token.isGeneratorParam()) {
-								final String func = ((ParamToken) token).getParam().toLowerCase();
+								String func = ((ParamToken) token).getParam().toLowerCase();
+								String prm = null;
+								int pIndex = func.indexOf('_');
+								if (pIndex > 0) {
+									prm = func.substring(pIndex + 1);
+									func = func.substring(0, pIndex);
+								}
+
 								usb.append(' ');
 								switch (func) {
 								case "now":
 									usb.append(getNowSQL());
+									break;
+								case "nowaddsec":
+								case "nowsubsec": {
+									if (prm == null) {
+										throwIllegalArgumentException(
+												"Illegal expression parameter required for [" + func + "].");
+									}
+
+									final int seconds = Integer.parseInt(prm);
+									usb.append('(');
+									appendNowOffsetSQL(usb, seconds, func.equals("nowsubsec"));
+									usb.append(')');
+								}
+									break;
+								case "fldaddsec":
+								case "fldsubsec": {
+									if (prm == null) {
+										throwIllegalArgumentException(
+												"Illegal expression parameter required for [" + func + "].");
+									}
+
+									final int seconds = Integer.parseInt(prm);
+									usb.append('(');
+									appendTimestampOffsetSQL(usb, sqlFieldInfo.getPreferredColumnName(),
+											seconds, func.equals("fldsubsec"));
+									usb.append(')');
+								}
 									break;
 								case "today":
 									usb.append(getTodaySQL());
@@ -2861,6 +2896,11 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 
 		return usb.toString();
 	}
+
+	protected abstract void appendNowOffsetSQL(StringBuilder sb, int seconds, boolean neg) throws UnifyException;
+
+	protected abstract void appendTimestampOffsetSQL(StringBuilder sb, String preferredColumnName, int seconds,
+			boolean neg) throws UnifyException;
 
 	private void translateCriteria(StringBuilder sql, SqlEntityInfo sqlEntityInfo, Restriction restriction)
 			throws UnifyException {
