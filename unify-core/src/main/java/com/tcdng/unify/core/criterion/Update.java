@@ -80,6 +80,10 @@ public class Update extends FluentMap<String, Object> {
 		return (Update) super.add(field, new CustomUpdateExpression(expression));
 	}
 
+	public Update addAssignField(String tofield, String fromfield) {
+		return (Update) super.add(tofield, new CustomUpdateExpression("{{" + fromfield + "}}"));
+	}
+
 	public Update addAssignNow(String field) {
 		return (Update) super.add(field, new CustomUpdateExpression("{{g:now}}"));
 	}

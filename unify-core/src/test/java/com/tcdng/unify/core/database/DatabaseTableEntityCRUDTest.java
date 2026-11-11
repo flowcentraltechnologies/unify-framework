@@ -3356,6 +3356,67 @@ public class DatabaseTableEntityCRUDTest extends AbstractUnifyComponentTest {
 	}
 
 	@Test
+	public void testCustomTimestampUpdateByCriteria() throws Exception {
+		tm.beginTransaction();
+		try {
+			final Date expiry = new Date();
+			db.create(new Fruit("apple", "red", 20.00, expiry));
+			db.create(new Fruit("pineapple", "cyan", 60.00, expiry));
+			int updated = db.updateAll(new FruitQuery().addEquals("name", "apple"),
+					new Update().addAssignTimestampWithOffset("expiry", 45));
+			assertEquals(1, updated);
+			updated = db.updateAll(new FruitQuery().addEquals("name", "pineapple"),
+					new Update().addAssignTimestampWithOffset("expiry", -120));
+			assertEquals(1, updated);
+
+			List<Fruit> fruitList = db.findAll(new FruitQuery().addOrder("id").ignoreEmptyCriteria(true));
+			assertNotNull(fruitList);
+			assertEquals(2, fruitList.size());
+			assertEquals(Double.valueOf(20.00), fruitList.get(0).getPrice());
+			assertEquals(Double.valueOf(60.00), fruitList.get(1).getPrice());
+			
+			Date newexpiry = fruitList.get(0).getExpiry();
+			long differenceInSeconds = (newexpiry.getTime() - expiry.getTime()) / 1000;
+			assertEquals(45, differenceInSeconds);
+			
+			newexpiry = fruitList.get(1).getExpiry();
+			differenceInSeconds = (newexpiry.getTime() - expiry.getTime()) / 1000;
+			assertEquals(-120, differenceInSeconds);
+			
+		} catch (Exception e) {
+			tm.setRollback();
+			throw e;
+		} finally {
+			tm.endTransaction();
+		}
+	}
+
+	@Test
+	public void testCustomFielUpdateByCriteria() throws Exception {
+		tm.beginTransaction();
+		try {
+			db.create(new Fruit("apple", "red", 20.00));
+			db.create(new Fruit("pineapple", "cyan", 60.00));
+			int updated = db.updateAll(new FruitQuery().addEquals("name", "apple"),
+					new Update().addAssignField("oldPrice", "price"));
+			assertEquals(1, updated);
+
+			List<Fruit> fruitList = db.findAll(new FruitQuery().addOrder("id").ignoreEmptyCriteria(true));
+			assertNotNull(fruitList);
+			assertEquals(2, fruitList.size());
+			assertEquals(Double.valueOf(20.00), fruitList.get(0).getPrice());
+			assertEquals(Double.valueOf(20.00), fruitList.get(0).getOldPrice());
+			assertEquals(Double.valueOf(60.00), fruitList.get(1).getPrice());
+			assertNull(fruitList.get(1).getOldPrice());
+		} catch (Exception e) {
+			tm.setRollback();
+			throw e;
+		} finally {
+			tm.endTransaction();
+		}
+	}
+
+	@Test
 	public void testCreateRecordWithOnewayTransformation() throws Exception {
 		tm.beginTransaction();
 		try {

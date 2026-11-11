@@ -15,6 +15,9 @@
  */
 package com.tcdng.unify.core.database;
 
+import java.util.Date;
+
+import com.tcdng.unify.common.annotation.ColumnType;
 import com.tcdng.unify.common.annotation.Table;
 import com.tcdng.unify.common.annotation.UniqueConstraint;
 import com.tcdng.unify.core.annotation.Column;
@@ -38,13 +41,27 @@ public class Fruit extends AbstractTestVersionedTableEntity {
     private Double price;
 
     @Column(nullable = true)
+    private Double oldPrice;
+
+    @Column(nullable = true)
     private Integer quantity;
 
+    @Column(type = ColumnType.TIMESTAMP, nullable = true)
+    private Date expiry;
+    
     public Fruit(String name, String color, Double price) {
         this.name = name;
         this.color = color;
         this.price = price;
         this.quantity = Integer.valueOf(0);
+    }
+    
+    public Fruit(String name, String color, Double price, Date expiry) {
+        this.name = name;
+        this.color = color;
+        this.price = price;
+        this.quantity = Integer.valueOf(0);
+        this.expiry = expiry;
     }
 
     public Fruit(String name, String color, Double price, Integer quantity) {
@@ -82,11 +99,27 @@ public class Fruit extends AbstractTestVersionedTableEntity {
         this.price = price;
     }
 
-    public Integer getQuantity() {
+    public Double getOldPrice() {
+		return oldPrice;
+	}
+
+	public void setOldPrice(Double oldPrice) {
+		this.oldPrice = oldPrice;
+	}
+
+	public Integer getQuantity() {
         return quantity;
     }
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
+
+	public Date getExpiry() {
+		return expiry;
+	}
+
+	public void setExpiry(Date expiry) {
+		this.expiry = expiry;
+	}
 }
