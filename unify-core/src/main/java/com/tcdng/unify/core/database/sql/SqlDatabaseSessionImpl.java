@@ -42,15 +42,11 @@ import com.tcdng.unify.core.constant.MustMatch;
 import com.tcdng.unify.core.constant.QueryAgainst;
 import com.tcdng.unify.core.constant.RowLockType;
 import com.tcdng.unify.core.constant.UpdateChild;
-import com.tcdng.unify.core.criterion.AdditionExpression;
 import com.tcdng.unify.core.criterion.AggregateFunction;
 import com.tcdng.unify.core.criterion.Amongst;
-import com.tcdng.unify.core.criterion.DivisionExpression;
 import com.tcdng.unify.core.criterion.GroupingFunction;
-import com.tcdng.unify.core.criterion.MultiplicationExpression;
 import com.tcdng.unify.core.criterion.Order;
 import com.tcdng.unify.core.criterion.Select;
-import com.tcdng.unify.core.criterion.SubtractionExpression;
 import com.tcdng.unify.core.criterion.Update;
 import com.tcdng.unify.core.database.Aggregation;
 import com.tcdng.unify.core.database.CallableProc;
@@ -60,6 +56,10 @@ import com.tcdng.unify.core.database.GroupingAggregation;
 import com.tcdng.unify.core.database.MappedEntityRepository;
 import com.tcdng.unify.core.database.NativeUpdate;
 import com.tcdng.unify.core.database.Query;
+import com.tcdng.unify.core.expression.AdditionExpression;
+import com.tcdng.unify.core.expression.DivisionExpression;
+import com.tcdng.unify.core.expression.MultiplicationExpression;
+import com.tcdng.unify.core.expression.SubtractionExpression;
 import com.tcdng.unify.core.util.DataUtils;
 import com.tcdng.unify.core.util.ReflectUtils;
 import com.tcdng.unify.core.util.SqlUtils;
@@ -625,25 +625,25 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 	@Override
 	public <T extends Number, U extends Entity> int add(Class<T> fieldClass, String fieldName, T val, Query<U> query)
 			throws UnifyException {
-		return updateAll(query, new Update().add(fieldName, new AdditionExpression(val)));
+		return updateAll(query, new Update().assignAddition(fieldName, val));
 	}
 
 	@Override
 	public <T extends Number, U extends Entity> int subtract(Class<T> fieldClass, String fieldName, T val,
 			Query<U> query) throws UnifyException {
-		return updateAll(query, new Update().add(fieldName, new SubtractionExpression(val)));
+		return updateAll(query, new Update().assignSubtraction(fieldName, val));
 	}
 
 	@Override
 	public <T extends Number, U extends Entity> int multiply(Class<T> fieldClass, String fieldName, T val,
 			Query<U> query) throws UnifyException {
-		return updateAll(query, new Update().add(fieldName, new MultiplicationExpression(val)));
+		return updateAll(query, new Update().assignMultiplication(fieldName, val));
 	}
 
 	@Override
 	public <T extends Number, U extends Entity> int divide(Class<T> fieldClass, String fieldName, T val, Query<U> query)
 			throws UnifyException {
-		return updateAll(query, new Update().add(fieldName, new DivisionExpression(val)));
+		return updateAll(query, new Update().assignDivision(fieldName, val));
 	}
 
 	@Override

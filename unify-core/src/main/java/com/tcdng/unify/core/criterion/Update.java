@@ -18,6 +18,11 @@ package com.tcdng.unify.core.criterion;
 import java.util.Map;
 
 import com.tcdng.unify.core.data.FluentMap;
+import com.tcdng.unify.core.expression.AdditionExpression;
+import com.tcdng.unify.core.expression.CustomUpdateExpression;
+import com.tcdng.unify.core.expression.DivisionExpression;
+import com.tcdng.unify.core.expression.MultiplicationExpression;
+import com.tcdng.unify.core.expression.SubtractionExpression;
 
 /**
  * Used to specify fields to update with values.
@@ -53,5 +58,25 @@ public class Update extends FluentMap<String, Object> {
     @Override
     public Update clear() {
         return (Update) super.clear();
+    }
+    
+    public Update assignAddition(String field, Number value) {
+    	return (Update) super.add(field, new AdditionExpression(value));
+    }
+    
+    public Update assignSubtraction(String field, Number value) {
+    	return (Update) super.add(field, new SubtractionExpression(value));
+    }
+    
+    public Update assignMultiplication(String field, Number value) {
+    	return (Update) super.add(field, new MultiplicationExpression(value));
+    }
+    
+    public Update assignDivision(String field, Number value) {
+    	return (Update) super.add(field, new DivisionExpression(value));
+    }
+    
+    public Update assignCustom(String field, String expression) {
+    	return (Update) super.add(field, new CustomUpdateExpression(expression));
     }
 }

@@ -31,6 +31,8 @@ import java.util.Set;
 import com.tcdng.unify.common.annotation.ColumnType;
 import com.tcdng.unify.common.constants.EnumConst;
 import com.tcdng.unify.common.database.Entity;
+import com.tcdng.unify.common.util.ParamToken;
+import com.tcdng.unify.common.util.StringToken;
 import com.tcdng.unify.convert.util.ConverterUtils;
 import com.tcdng.unify.core.AbstractUnifyComponent;
 import com.tcdng.unify.core.UnifyCoreConstants;
@@ -58,7 +60,6 @@ import com.tcdng.unify.core.criterion.Restriction;
 import com.tcdng.unify.core.criterion.RestrictionType;
 import com.tcdng.unify.core.criterion.Select;
 import com.tcdng.unify.core.criterion.Update;
-import com.tcdng.unify.core.criterion.UpdateExpression;
 import com.tcdng.unify.core.data.FactoryMap;
 import com.tcdng.unify.core.database.CallableProc;
 import com.tcdng.unify.core.database.NativeParam;
@@ -116,10 +117,12 @@ import com.tcdng.unify.core.database.sql.data.policy.StringPolicy;
 import com.tcdng.unify.core.database.sql.data.policy.TimestampPolicy;
 import com.tcdng.unify.core.database.sql.data.policy.TimestampUTCPolicy;
 import com.tcdng.unify.core.database.sql.data.policy.UploadedFilePolicy;
+import com.tcdng.unify.core.expression.UpdateExpression;
 import com.tcdng.unify.core.transform.Transformer;
 import com.tcdng.unify.core.util.DataUtils;
 import com.tcdng.unify.core.util.QueryUtils;
 import com.tcdng.unify.core.util.SqlUtils;
+import com.tcdng.unify.core.util.StringUtils;
 
 /**
  * Abstract SQL dialect implementation.
@@ -143,7 +146,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 	private int maxStatementInfo;
 
 	private NativeTranslator translator;
-	
+
 	private final Set<String> reservedWords;
 
 	private SqlCacheFactory sqlCacheFactory;
@@ -161,7 +164,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 	private String dataSourceName;
 
 	private boolean supportUnifyViews;
-	
+
 	private boolean allObjectsInLowerCase;
 
 	private boolean useCallableFunctionMode;
@@ -177,7 +180,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 	public AbstractSqlDataSourceDialect(Collection<String> reservedWords, boolean useCallableFunctionMode,
 			boolean appendNullOnTblCreate) {
 		Set<String> _reservedWords = new HashSet<String>();
-		for (String word: reservedWords) {
+		for (String word : reservedWords) {
 			_reservedWords.add(word.toUpperCase());
 		}
 
@@ -1380,9 +1383,9 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 		final List<SqlFieldInfo> returnFieldInfoList = new ArrayList<SqlFieldInfo>();
 		StringBuilder lockRowSql = new StringBuilder();
 		Select select = query.getSelect();
-		
+
 		lockRowSql.append("SELECT ");
-		
+
 		boolean appendSym = false;
 		for (String name : select.values()) {
 			if (!sqlEntityInfo.isChildFieldInfo(name)) {
@@ -1391,15 +1394,15 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 				returnFieldInfoList.add(sqlFieldInfo);
 			}
 		}
-		
+
 		lockRowSql.append(" FROM ").append(sqlEntityInfo.getSchemaTableName());
-		
+
 		appendRowLockInfix(lockRowSql, type);
-		
+
 		appendWhereClause(lockRowSql, parameterInfoList, sqlEntityInfo, query, SqlQueryType.SELECT);
-		
+
 		appendRowLockSuffix(lockRowSql, type);
-		
+
 		return new SqlStatement(sqlEntityInfo, SqlStatementType.FIND, lockRowSql.toString(), parameterInfoList,
 				getSqlResultList(returnFieldInfoList), query.isLenient());
 	}
@@ -1586,8 +1589,8 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 		if (query.isRootFilter()) {
 			sql.append(" WHERE ");
 			NativeQuery.Filter rootFilter = query.getRootFilter();
-			getSqlDataSourceDialectPolicies().getSqlCriteriaPolicy(rootFilter.getOp()).translate(translator, sql, null, null,
-					aliasGenerator, rootFilter.getSubFilterList());
+			getSqlDataSourceDialectPolicies().getSqlCriteriaPolicy(rootFilter.getOp()).translate(translator, sql, null,
+					null, aliasGenerator, rootFilter.getSubFilterList());
 		}
 
 		if (query.isOrderBy()) {
@@ -1957,7 +1960,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 	 * @throws UnifyException if an error occurs
 	 */
 	protected void appendRowLockInfix(StringBuilder lockRowSql, RowLockType type) throws UnifyException {
-		
+
 	}
 
 	/**
@@ -2123,7 +2126,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 				sqlFieldSchemaInfo.getScale());
 
 		if (sqlFieldSchemaInfo.isPrimaryKey()) {
-			if(sqlFieldSchemaInfo.isAutoIncrement()) {
+			if (sqlFieldSchemaInfo.isAutoIncrement()) {
 				appendAutoIncrementPrimaryKey(sb);
 			} else {
 				sb.append(" PRIMARY KEY NOT NULL");
@@ -2145,7 +2148,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 			}
 		}
 	}
-	
+
 	protected final void appendColumnAndTypeSql(StringBuilder sb, SqlFieldSchemaInfo sqlFieldSchemaInfo,
 			SqlColumnAlterInfo sqlColumnAlterInfo) throws UnifyException {
 		SqlDataTypePolicy sqlDataTypePolicy = getSqlTypePolicy(sqlFieldSchemaInfo.getColumnType(),
@@ -2155,7 +2158,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 				sqlFieldSchemaInfo.getScale());
 
 		if (sqlFieldSchemaInfo.isPrimaryKey()) {
-			if(sqlFieldSchemaInfo.isAutoIncrement()) {
+			if (sqlFieldSchemaInfo.isAutoIncrement()) {
 				appendAutoIncrementPrimaryKey(sb);
 			}
 		} else {
@@ -2177,7 +2180,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 	}
 
 	protected abstract void appendAutoIncrementPrimaryKey(StringBuilder sb);
-	
+
 	protected void appendTypeSql(StringBuilder sb, SqlColumnInfo sqlColumnInfo) {
 		String typeName = sqlColumnInfo.getTypeName().toUpperCase();
 		sb.append(' ').append(typeName);
@@ -2219,6 +2222,14 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 		this.newLineSql = newLineSql;
 	}
 
+	protected String getNowSQL() {
+		return "CURRENT_TIMESTAMP";
+	}
+
+	protected String getTodaySQL() {
+		return "CURRENT_DATE";
+	}
+	
 	/**
 	 * Returns criteria result rows limit..
 	 * 
@@ -2271,8 +2282,8 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 		internalAppendWhereClause(aggregateSql, parameterInfoList, sqlEntityInfo, query, SqlQueryType.SELECT,
 				groupingFunction);
 
-		return new SqlStatement(sqlEntityInfo, SqlStatementType.FIND, aggregateSql.toString(),
-				parameterInfoList, getSqlResultList(returnFieldInfoList), query.isLenient());
+		return new SqlStatement(sqlEntityInfo, SqlStatementType.FIND, aggregateSql.toString(), parameterInfoList,
+				getSqlResultList(returnFieldInfoList), query.isLenient());
 	}
 
 	private SqlStatement internalPrepareAggregateStatement(List<AggregateFunction> aggregateFunctionList,
@@ -2311,8 +2322,8 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 		internalAppendWhereClause(aggregateSql, parameterInfoList, sqlEntityInfo, query, SqlQueryType.SELECT,
 				groupingFunction);
 
-		return new SqlStatement(sqlEntityInfo, SqlStatementType.FIND, aggregateSql.toString(),
-				parameterInfoList, getSqlResultList(returnFieldInfoList), query.isLenient());
+		return new SqlStatement(sqlEntityInfo, SqlStatementType.FIND, aggregateSql.toString(), parameterInfoList,
+				getSqlResultList(returnFieldInfoList), query.isLenient());
 	}
 
 	private void addGroupingSelect(SqlEntityInfo sqlEntityInfo, List<GroupingFunction> groupingFunction,
@@ -2470,7 +2481,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 				if (!isOrderAppend && (query.isOffset() || limit > 0)) {
 					isAppend |= appendPseudoOrderClause(sql);
 				}
-				
+
 				isAppend |= appendLimitOffsetSuffixClause(sql, query.getOffset(), limit, isAppend);
 			}
 
@@ -2716,8 +2727,9 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 				}
 
 				getSqlDataSourceDialectPolicies().getSqlCriteriaPolicy(sqlViewRestrictionInfo.getRestrictionType())
-						.translate(translator, sb, sqlViewRestrictionInfo.getTableAlias(), sqlViewRestrictionInfo.getColumnName(),
-								sqlViewRestrictionInfo.getParam1(), sqlViewRestrictionInfo.getParam2());
+						.translate(translator, sb, sqlViewRestrictionInfo.getTableAlias(),
+								sqlViewRestrictionInfo.getColumnName(), sqlViewRestrictionInfo.getParam1(),
+								sqlViewRestrictionInfo.getParam2());
 			}
 		}
 
@@ -2767,28 +2779,69 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 			throw new UnifyException(UnifyCoreErrorConstants.RECORD_UPDATE_FIELD_REQ_FOR_STATEMENT);
 		}
 
-		StringBuilder updateParams = new StringBuilder();
+		StringBuilder usb = new StringBuilder();
 		for (Map.Entry<String, Object> entry : update.entrySet()) {
-			SqlFieldInfo sqlFieldInfo = sqlEntityInfo.getFieldInfo(entry.getKey());
+			final SqlFieldInfo sqlFieldInfo = sqlEntityInfo.getFieldInfo(entry.getKey());
 			if (sqlFieldInfo.isPrimaryKey()) {
 				throw new UnifyException(UnifyCoreErrorConstants.RECORD_CANT_UPDATE_PRIMARYKEY,
 						sqlEntityInfo.getEntityClass(), entry.getKey());
 			}
+
 			if (sqlFieldInfo.isListOnly()) {
 				throw new UnifyException(UnifyCoreErrorConstants.RECORD_CANT_UPDATE_LISTONLY_FIELD,
 						sqlEntityInfo.getEntityClass(), entry.getKey());
 			}
-			if (updateParams.length() > 0) {
-				updateParams.append(',');
+
+			if (usb.length() > 0) {
+				usb.append(',');
 			}
 
 			Object value = entry.getValue();
 			if (value instanceof UpdateExpression) {
 				UpdateExpression expression = (UpdateExpression) value;
-				expression.appendSQLSetExpression(updateParams, sqlFieldInfo.getPreferredColumnName());
-				value = expression.getValue();
+				if (expression.isCustom()) {
+					usb.append(sqlFieldInfo.getPreferredColumnName()).append(" = ");
+					List<StringToken> tokens = StringUtils.breakdownParameterizedString((String) expression.getValue());
+					if (!tokens.isEmpty()) {
+						for (StringToken token : tokens) {
+							if (token.isText()) {
+								usb.append(token.getToken());
+							} else if (token.isFieldParam()) {
+								final SqlFieldInfo _sqlFieldInfo = sqlEntityInfo
+										.getFieldInfo(((ParamToken) token).getParam());
+								usb.append(_sqlFieldInfo.getPreferredColumnName());
+							} else if (token.isGeneratorParam()) {
+								final String func = ((ParamToken) token).getParam().toLowerCase();
+								usb.append(' ');
+								switch (func) {
+								case "now":
+									usb.append(getNowSQL());
+									break;
+								case "today":
+									usb.append(getTodaySQL());
+									break;
+								default:
+									throwIllegalArgumentException(
+											"Illegal expression token type [" + token.getToken() + "].");
+									break;
+								}
+								usb.append(' ');
+							} else {
+								throwIllegalArgumentException(
+										"Illegal expression token type [" + token.getToken() + "].");
+							}
+						}
+					} else {
+						usb.append(sqlFieldInfo.getPreferredColumnName());
+					}
+
+					continue;
+				} else {
+					expression.appendSQLSetExpression(usb, sqlFieldInfo.getPreferredColumnName());
+					value = expression.getValue();
+				}
 			} else {
-				updateParams.append(sqlFieldInfo.getPreferredColumnName()).append(" = ?");
+				usb.append(sqlFieldInfo.getPreferredColumnName()).append(" = ?");
 			}
 
 			if (sqlFieldInfo.isTransformed()) {
@@ -2806,13 +2859,13 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 					.getSqlTypePolicy(sqlFieldInfo.getColumnType(), sqlFieldInfo.getLength()), value));
 		}
 
-		return updateParams.toString();
+		return usb.toString();
 	}
 
 	private void translateCriteria(StringBuilder sql, SqlEntityInfo sqlEntityInfo, Restriction restriction)
 			throws UnifyException {
 		getSqlDataSourceDialectPolicies().getSqlCriteriaPolicy(restriction.getConditionType().restrictionType())
-				.translate(translator,  sql, sqlEntityInfo, restriction);
+				.translate(translator, sql, sqlEntityInfo, restriction);
 	}
 
 	private void appendCreateViewSQLElements(SqlEntitySchemaInfo sqlEntitySchemaInfo, SqlFieldSchemaInfo sqlFieldInfo,

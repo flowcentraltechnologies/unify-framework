@@ -132,6 +132,16 @@ public class MsSqlDialect extends AbstractSqlDataSourceDialect {
 	}
 
 	@Override
+	protected String getNowSQL() {
+		return "CURRENT_TIMESTAMP";
+	}
+
+	@Override
+	protected String getTodaySQL() {
+		return "CAST(GETDATE() AS date)";
+	}
+
+	@Override
 	protected void appendAutoIncrementPrimaryKey(StringBuilder sb) {
 		sb.append(" IDENTITY(1,1) PRIMARY KEY NOT NULL");
 	}

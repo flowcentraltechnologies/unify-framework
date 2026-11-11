@@ -13,28 +13,31 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.tcdng.unify.core.criterion;
+package com.tcdng.unify.core.expression;
+
+import com.tcdng.unify.core.UnifyException;
 
 /**
- * Used to specify fields to update with values.
+ * Convenient abstract base class for simple arithmetic update expressions.
  * 
  * @author The Code Department
  * @since 4.1
  */
-public interface UpdateExpression {
+public abstract class AbstractSimpleArithmeticUpdateExpression extends AbstractUpdateExpression {
 
-	/**
-	 * Appends SQL SET expression to supplied string builder.
-	 * 
-	 * @param sb         the string builder
-	 * @param columnName the column name
-	 */
-	void appendSQLSetExpression(StringBuilder sb, String columnName);
+	public AbstractSimpleArithmeticUpdateExpression(Object val) {
+		super(val);
+	}
 
-	/**
-	 * Gets the expression value.
-	 * 
-	 * @return the value
-	 */
-	Object getValue();
+	@Override
+	public void appendSQLSetExpression(StringBuilder sb, String columnName) throws UnifyException {
+		sb.append(columnName).append(" = ").append(columnName).append(getOperator()).append("?");
+	}
+
+	@Override
+	public boolean isCustom() {
+		return false;
+	}
+
+	protected abstract String getOperator();
 }

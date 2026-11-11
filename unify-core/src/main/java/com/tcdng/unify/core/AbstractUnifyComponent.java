@@ -1958,8 +1958,16 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	 * @throws UnifyException always thrown
 	 */
 	protected void throwUnsupportedOperationException() throws UnifyException {
-		Exception e = new UnsupportedOperationException();
-		throw new UnifyOperationException(e);
+		throw new UnifyOperationException(new UnsupportedOperationException());
+	}
+
+	/**
+	 * Throws a component illegal argument exception.
+	 * 
+	 * @throws UnifyException always thrown
+	 */
+	protected void throwIllegalArgumentException(String msg) throws UnifyException {
+		throw new UnifyOperationException(new IllegalArgumentException(msg));
 	}
 
 	protected Long getUserTenantId() throws UnifyException {
