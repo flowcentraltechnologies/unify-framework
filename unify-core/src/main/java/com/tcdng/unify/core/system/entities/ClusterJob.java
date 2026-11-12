@@ -43,7 +43,10 @@ public class ClusterJob extends AbstractSequenceEntity {
     private String handler;
 
     @Column(length = 32, nullable = true)
-    private String workerId;
+    private String lockedBy;
+
+    @Column(type = ColumnType.TIMESTAMP, nullable = true)
+    private Date lockedAt;
 
     @Column(length = 2048, nullable = true)
     private String error;
@@ -56,9 +59,6 @@ public class ClusterJob extends AbstractSequenceEntity {
 
     @Column
     private int maxAttempts;
-
-    @Column(type = ColumnType.TIMESTAMP)
-    private Date lastHeartBeat;
 
     @Override
 	public String getDescription() {
@@ -89,12 +89,20 @@ public class ClusterJob extends AbstractSequenceEntity {
 		this.handler = handler;
 	}
 
-	public String getWorkerId() {
-		return workerId;
+	public String getLockedBy() {
+		return lockedBy;
 	}
 
-	public void setWorkerId(String workerId) {
-		this.workerId = workerId;
+	public void setLockedBy(String lockedBy) {
+		this.lockedBy = lockedBy;
+	}
+
+	public Date getLockedAt() {
+		return lockedAt;
+	}
+
+	public void setLockedAt(Date lockedAt) {
+		this.lockedAt = lockedAt;
 	}
 
 	public String getError() {
@@ -127,14 +135,6 @@ public class ClusterJob extends AbstractSequenceEntity {
 
 	public void setMaxAttempts(int maxAttempts) {
 		this.maxAttempts = maxAttempts;
-	}
-
-	public Date getLastHeartBeat() {
-		return lastHeartBeat;
-	}
-
-	public void setLastHeartBeat(Date lastHeartBeat) {
-		this.lastHeartBeat = lastHeartBeat;
 	}
 
 }

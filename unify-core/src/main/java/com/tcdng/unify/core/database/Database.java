@@ -387,7 +387,8 @@ public interface Database extends UnifyComponent {
 	 * @return list of row IDs (converted)
 	 * @throws UnifyException if an error occurs
 	 */
-	<T, U extends Entity> List<T> claimRows(Class<T> idClass, Query<U> query, Update update) throws UnifyException;
+	<T, U extends Entity> List<T> claimUnlockedRows(Class<T> idClass, Query<U> query, Update update)
+			throws UnifyException;
 	
     /**
      * Lists record of specified type by id. List-only properties of returned object

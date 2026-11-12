@@ -15,7 +15,9 @@
  */
 package com.tcdng.unify.core.business;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import com.tcdng.unify.common.database.Entity;
@@ -26,14 +28,17 @@ import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.annotation.Configurable;
 import com.tcdng.unify.core.annotation.Transactional;
 import com.tcdng.unify.core.constant.TopicEventType;
+import com.tcdng.unify.core.criterion.Update;
 import com.tcdng.unify.core.database.Database;
 import com.tcdng.unify.core.database.DatabaseTransactionManager;
+import com.tcdng.unify.core.database.Query;
 import com.tcdng.unify.core.database.dynamic.sql.DynamicSqlDatabaseManager;
 import com.tcdng.unify.core.database.sql.SqlDataSourceManager;
 import com.tcdng.unify.core.task.TaskLauncher;
 import com.tcdng.unify.core.task.TaskMonitor;
 import com.tcdng.unify.core.task.TaskSetup;
 import com.tcdng.unify.core.util.CalendarUtils;
+import com.tcdng.unify.core.util.DataUtils;
 
 /**
  * An abstract base class that implements the basic requirements of a business
@@ -204,6 +209,36 @@ public abstract class AbstractBusinessService extends AbstractUnifyComponent imp
 	 */
 	protected void rollbackToSavePoint() throws UnifyException {
 		databaseTransactionManager.rollbackToSavePoint();
+	}
+	
+	/**
+	 * Claims unlocked rows.
+	 * 
+	 * @param query   the query object
+	 * @param update  the claim update
+	 * @param altLock the alternative lock. Used if row locking is no supported.
+	 * @return the claimed row IDs
+	 * @throws UnifyException if an error occurs
+	 */
+	protected List<Long> claimUnlockedRows(Query<?> query, Update update, String altLock) throws UnifyException {
+		if (db.isSupportsRowLocking()) {
+			return db.claimUnlockedRows(Long.class, query, update);
+		}
+
+		if (tryGrabLock(altLock)) {
+			try {
+				List<Long> ids = db.valueList(Long.class, "id", query);
+				if (!DataUtils.isBlank(ids)) {
+					db.updateAll(Query.of(query.getEntityClass()).addAmongst("id", ids), update);
+				}
+
+				return ids;
+			} finally {
+				releaseLock(altLock);
+			}
+		}
+
+		return Collections.emptyList();
 	}
 	
 	/**

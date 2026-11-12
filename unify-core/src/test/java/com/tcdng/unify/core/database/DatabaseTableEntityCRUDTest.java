@@ -3337,7 +3337,7 @@ public class DatabaseTableEntityCRUDTest extends AbstractUnifyComponentTest {
 			db.create(new Fruit("banana", "yellow", 45.00));
 			db.create(new Fruit("orange", "orange", 15.00));
 			int updated = db.updateAll(new FruitQuery().addLike("name", "apple"),
-					new Update().addSelfCustom("price", "2 * {{price}} + 0.25"));
+					new Update().addSetToCustom("price", "2 * {{price}} + 0.25"));
 			assertEquals(2, updated);
 
 			List<Fruit> fruitList = db.findAll(new FruitQuery().addOrder("id").ignoreEmptyCriteria(true));
@@ -3363,10 +3363,10 @@ public class DatabaseTableEntityCRUDTest extends AbstractUnifyComponentTest {
 			db.create(new Fruit("apple", "red", 20.00, expiry));
 			db.create(new Fruit("pineapple", "cyan", 60.00, expiry));
 			int updated = db.updateAll(new FruitQuery().addEquals("name", "apple"),
-					new Update().addSelfWithOffset("expiry", 45));
+					new Update().addSetToSelfWithOffset("expiry", 45));
 			assertEquals(1, updated);
 			updated = db.updateAll(new FruitQuery().addEquals("name", "pineapple"),
-					new Update().addSelfWithOffset("expiry", -120));
+					new Update().addSetToSelfWithOffset("expiry", -120));
 			assertEquals(1, updated);
 
 			List<Fruit> fruitList = db.findAll(new FruitQuery().addOrder("id").ignoreEmptyCriteria(true));
@@ -3398,7 +3398,7 @@ public class DatabaseTableEntityCRUDTest extends AbstractUnifyComponentTest {
 			db.create(new Fruit("apple", "red", 20.00));
 			db.create(new Fruit("pineapple", "cyan", 60.00));
 			int updated = db.updateAll(new FruitQuery().addEquals("name", "apple"),
-					new Update().addSelfToOther("oldPrice", "price"));
+					new Update().addSetToOther("oldPrice", "price"));
 			assertEquals(1, updated);
 
 			List<Fruit> fruitList = db.findAll(new FruitQuery().addOrder("id").ignoreEmptyCriteria(true));

@@ -164,9 +164,9 @@ public abstract class AbstractDatabase extends AbstractUnifyComponent implements
 	}
 
 	@Override
-	public <T, U extends Entity> List<T> claimRows(Class<T> idClass, Query<U> criteria, Update update)
+	public <T, U extends Entity> List<T> claimUnlockedRows(Class<T> idClass, Query<U> criteria, Update update)
 			throws UnifyException {
-		return getDatabaseSession().claimRows(idClass, criteria, update);
+		return getDatabaseSession().claimUnlockedRows(idClass, criteria, update);
 	}
 
 	@Override

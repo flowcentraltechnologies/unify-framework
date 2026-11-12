@@ -309,7 +309,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 
 	@SuppressWarnings({ "unchecked" })
 	@Override
-	public <T, U extends Entity> List<T> claimRows(Class<T> idClass, Query<U> query, Update update)
+	public <T, U extends Entity> List<T> claimUnlockedRows(Class<T> idClass, Query<U> query, Update update)
 			throws UnifyException {
 		SqlEntityInfo sqlEntityInfo = resolveSqlEntityInfo(query);
 		List<T> list = Collections.emptyList();
@@ -626,25 +626,25 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 	@Override
 	public <T extends Number, U extends Entity> int add(Class<T> fieldClass, String fieldName, T val, Query<U> query)
 			throws UnifyException {
-		return updateAll(query, new Update().addSelfAddition(fieldName, val));
+		return updateAll(query, new Update().addSetToSelfAddition(fieldName, val));
 	}
 
 	@Override
 	public <T extends Number, U extends Entity> int subtract(Class<T> fieldClass, String fieldName, T val,
 			Query<U> query) throws UnifyException {
-		return updateAll(query, new Update().addSelfSubtraction(fieldName, val));
+		return updateAll(query, new Update().addSetToSelfSubtraction(fieldName, val));
 	}
 
 	@Override
 	public <T extends Number, U extends Entity> int multiply(Class<T> fieldClass, String fieldName, T val,
 			Query<U> query) throws UnifyException {
-		return updateAll(query, new Update().addSelfMultiplication(fieldName, val));
+		return updateAll(query, new Update().addSetToSelfMultiplication(fieldName, val));
 	}
 
 	@Override
 	public <T extends Number, U extends Entity> int divide(Class<T> fieldClass, String fieldName, T val, Query<U> query)
 			throws UnifyException {
-		return updateAll(query, new Update().addSelfDivision(fieldName, val));
+		return updateAll(query, new Update().addSetToSelfDivision(fieldName, val));
 	}
 
 	@Override

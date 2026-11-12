@@ -59,46 +59,50 @@ public class Update extends FluentMap<String, Object> {
 	public Update clear() {
 		return (Update) super.clear();
 	}
+	
+	public Update addSetTo(String field, Object value) {
+		return (Update) super.add(field, value);
+	}
 
-	public Update addSelfAddition(String lfield, Number value) {
+	public Update addSetToSelfAddition(String lfield, Number value) {
 		return (Update) super.add(lfield, new AdditionExpression(value));
 	}
 
-	public Update addSelfSubtraction(String lfield, Number value) {
+	public Update addSetToSelfSubtraction(String lfield, Number value) {
 		return (Update) super.add(lfield, new SubtractionExpression(value));
 	}
 
-	public Update addSelfMultiplication(String lfield, Number value) {
+	public Update addSetToSelfMultiplication(String lfield, Number value) {
 		return (Update) super.add(lfield, new MultiplicationExpression(value));
 	}
 
-	public Update addSelfDivision(String lfield, Number value) {
+	public Update addSetToSelfDivision(String lfield, Number value) {
 		return (Update) super.add(lfield, new DivisionExpression(value));
 	}
 
-	public Update addSelfCustom(String lfield, String expression) {
+	public Update addSetToCustom(String lfield, String expression) {
 		return (Update) super.add(lfield, new CustomUpdateExpression(expression));
 	}
 
-	public Update addSelfToOther(String lfield, String rfield) {
+	public Update addSetToOther(String lfield, String rfield) {
 		return (Update) super.add(lfield, new CustomUpdateExpression("{{" + rfield + "}}"));
 	}
 
-	public Update addSelfToNow(String lfield) {
+	public Update addSetToNow(String lfield) {
 		return (Update) super.add(lfield, new CustomUpdateExpression("{{g:now}}"));
 	}
 
-	public Update addSelfToNowWithOffset(String lfield, int seconds) {
+	public Update addSetToNowWithOffset(String lfield, int seconds) {
 		return (Update) super.add(lfield, new CustomUpdateExpression(
 				seconds >= 0 ? "{{g:nowaddsec_" + seconds + "}}" : "{{g:nowsubsec_" + -seconds + "}}"));
 	}
 
-	public Update addSelfWithOffset(String lfield, int seconds) {
+	public Update addSetToSelfWithOffset(String lfield, int seconds) {
 		return (Update) super.add(lfield, new CustomUpdateExpression(
 				seconds >= 0 ? "{{g:fldaddsec_" + seconds + "}}" : "{{g:fldsubsec_" + -seconds + "}}"));
 	}
 
-	public Update addSelfToOtherWithOffset(String lfield, String rfield, int seconds) {
+	public Update addSetToOtherWithOffset(String lfield, String rfield, int seconds) {
 		return (Update) super.add(lfield, new CustomUpdateExpression(
 				seconds >= 0 ? "{{g:fldaddsec_" + seconds + "_" + rfield + "}}"
 						: "{{g:fldsubsec_" + -seconds + "_" + rfield + "}}"));

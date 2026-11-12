@@ -33,13 +33,19 @@ import com.tcdng.unify.core.annotation.TransactionAttribute;
 import com.tcdng.unify.core.annotation.Transactional;
 import com.tcdng.unify.core.business.AbstractBusinessService;
 import com.tcdng.unify.core.constant.JobStatus;
+import com.tcdng.unify.core.criterion.And;
+import com.tcdng.unify.core.criterion.Equals;
+import com.tcdng.unify.core.criterion.Less;
+import com.tcdng.unify.core.criterion.Or;
 import com.tcdng.unify.core.criterion.Update;
 import com.tcdng.unify.core.data.Job;
+import com.tcdng.unify.core.database.Query;
 import com.tcdng.unify.core.system.entities.ClusterCommand;
 import com.tcdng.unify.core.system.entities.ClusterCommandParam;
 import com.tcdng.unify.core.system.entities.ClusterCommandParamQuery;
 import com.tcdng.unify.core.system.entities.ClusterCommandQuery;
 import com.tcdng.unify.core.system.entities.ClusterJob;
+import com.tcdng.unify.core.system.entities.ClusterJobQuery;
 import com.tcdng.unify.core.system.entities.ClusterNode;
 import com.tcdng.unify.core.system.entities.ClusterNodeQuery;
 import com.tcdng.unify.core.task.TaskMonitor;
@@ -57,12 +63,19 @@ import com.tcdng.unify.core.util.NetworkUtils;
 @Component(ApplicationComponents.APPLICATION_CLUSTERSERVICE)
 public class ClusterServiceImpl extends AbstractBusinessService implements ClusterService {
 
-	private final String CLUSTER_NODE_HOUSEKEEP_LOCK = "lock:clusternodehousekeep";
+	private static final String CLUSTER_NODE_HOUSEKEEP_LOCK = "lock:clusternodehousekeep";
 
-	private final String CLUSTER_NEW_JOB_LOCK = "lock:clustenewjobs";
+	private static final String CLUSTER_NEW_JOB_LOCK = "lock:clustenewjobs";
+
+	private static final String CLUSTER_PROCESS_JOB_LOCK = "lock:clusteprocessjobs";
 	
-	@Configurable("1") // Node expiration in minutes
-	private int nodeExpirationPeriod;
+	private static final int JOB_PROCESSING_BATCH_SIZE = 32;
+	
+	@Configurable("5")
+	private int jobExpirationMinutes;
+	
+	@Configurable("1")
+	private int nodeExpirationMinutes;
 
 	private List<ClusterJobHandler> jobHandlers;
 	
@@ -128,7 +141,7 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 		final String nodeId = getNodeId();
 		// Send a heart beat.
 		if (db().updateAll(new ClusterNodeQuery().nodeId(nodeId),
-				new Update().addSelfToNow("lastHeartBeat")) == 0) {
+				new Update().addSetToNow("lastHeartBeat")) == 0) {
 			// Register node
 			ClusterNode clusterNode = new ClusterNode();
 			clusterNode.setNodeId(nodeId);
@@ -196,6 +209,25 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 			logSevere(e);
 		}
 	}
+
+	@Periodic(PeriodicType.NORMAL)
+	public void processJobs(TaskMonitor taskMonitor) throws UnifyException {
+		final List<Long> clusterJobIds = claimUnlockedRows(
+				new ClusterJobQuery()
+				.addLessThanField("attempts", "maxAttempts")
+				.addRestriction(new Or()
+						.add(new Equals("status", JobStatus.PENDING))
+						.add(new And()
+								.add(new Equals("status", JobStatus.RUNNING))
+								.add(new Less("lockedAt", Query.expOfNowWithOffset(-jobExpirationMinutes * 60)))))
+				.setLimit(JOB_PROCESSING_BATCH_SIZE),
+				new Update()
+					.addSetTo("status", JobStatus.RUNNING)
+					.addSetToNow("lockedAt")
+					.addSetTo("lockedBy", getNodeId())
+					.addSetToSelfAddition("attempts", 1), CLUSTER_PROCESS_JOB_LOCK);
+		
+	}
 	
 	@Override
 	protected void onInitialize() throws UnifyException {
@@ -209,7 +241,7 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 	
 	private Date getNewNodeExpiryDate() throws UnifyException {
 		Calendar calendar = Calendar.getInstance();
-		calendar.setTimeInMillis(db().getNow().getTime() - (nodeExpirationPeriod * 60000));
+		calendar.setTimeInMillis(db().getNow().getTime() - (nodeExpirationMinutes * 60000));
 		return calendar.getTime();
 	}
 }
