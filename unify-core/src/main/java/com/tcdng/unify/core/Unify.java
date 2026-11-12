@@ -266,7 +266,7 @@ public class Unify {
 			if (base != null) {
 				for (String[] parts : partList) {
 					if (parts.length == 3) {
-						baseUrls.add(new URI(base + "!/" + parts[1]).toURL());
+						baseUrls.add(new URL(base + "!/" + parts[1]));
 					}
 				}
 			}
@@ -288,7 +288,7 @@ public class Unify {
 						: url.lastIndexOf("META-INF/MANIFEST.MF");
 				if (index > 0) {
 					url = url.substring(0, index);
-					baseUrls.add(new URI(url).toURL());
+					baseUrls.add(new URL(url));
 				}
 			}
 		} catch (Exception e) {
