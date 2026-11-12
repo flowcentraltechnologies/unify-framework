@@ -75,7 +75,7 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 	
 	private static final int JOB_PROCESSING_BATCH_SIZE = 32;
 	
-	private static final int MAX_JOB_PROCESSING_THREADS = 16;
+	private static final int MAX_JOB_PROCESSING_THREADS = 64;
 
     private final QueuedExec<JobExecInfo> clusterJobQueuedExec;
 	
@@ -271,7 +271,7 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 		}
 	}
 
-	@Periodic(PeriodicType.NORMAL)
+	@Periodic(PeriodicType.FAST)
 	public void processJobs(TaskMonitor taskMonitor) throws UnifyException {
 		final List<Long> clusterJobIds = claimUnlockedRows(
 				new ClusterJobQuery()

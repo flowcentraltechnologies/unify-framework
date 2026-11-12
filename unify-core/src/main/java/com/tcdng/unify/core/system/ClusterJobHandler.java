@@ -17,8 +17,8 @@ package com.tcdng.unify.core.system;
 
 import java.util.List;
 
-import com.tcdng.unify.core.UnifyComponent;
 import com.tcdng.unify.core.UnifyException;
+import com.tcdng.unify.core.business.BusinessService;
 import com.tcdng.unify.core.data.Job;
 
 /**
@@ -27,7 +27,7 @@ import com.tcdng.unify.core.data.Job;
  * @author The Code Department
  * @since 4.1
  */
-public interface ClusterJobHandler extends UnifyComponent {
+public interface ClusterJobHandler extends BusinessService {
 
 	/**
 	 * Gets a list of new jobs.

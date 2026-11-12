@@ -15,8 +15,15 @@
  */
 package com.tcdng.unify.core.system;
 
-import com.tcdng.unify.core.AbstractUnifyComponent;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import com.tcdng.unify.core.UnifyException;
+import com.tcdng.unify.core.business.AbstractBusinessService;
+import com.tcdng.unify.core.data.Job;
+import com.tcdng.unify.core.data.JobFetchInfo;
+import com.tcdng.unify.core.util.DataUtils;
 
 /**
  * Abstract base class for cluster job handlers.
@@ -24,7 +31,25 @@ import com.tcdng.unify.core.UnifyException;
  * @author The Code Department
  * @since 4.1
  */
-public abstract class AbstractClusterJobHandler extends AbstractUnifyComponent implements ClusterJobHandler {
+public abstract class AbstractClusterJobHandler extends AbstractBusinessService implements ClusterJobHandler {
+
+	@Override
+	public List<Job> getNewJobs() throws UnifyException {
+		final JobFetchInfo jobFetchInfo = getJobFetchInfo();
+		final List<Long> workItemIds = claimUnlockedRows(
+				jobFetchInfo.getClaimQuery().limit(jobFetchInfo.getFetchBatchSize()), jobFetchInfo.getClaimUpdate(),
+				"jobhdl::" + getName());
+		if (!DataUtils.isBlank(workItemIds)) {
+			final List<Job> jobs = new ArrayList<Job>();
+			for (Long workItemId : workItemIds) {
+				jobs.add(new Job(workItemId, jobFetchInfo.getTitle(), jobFetchInfo.getJobMaxAttempts()));
+			}
+
+			return jobs;
+		}
+
+		return Collections.emptyList();
+	}
 
 	@Override
 	protected void onInitialize() throws UnifyException {
@@ -36,4 +61,6 @@ public abstract class AbstractClusterJobHandler extends AbstractUnifyComponent i
 
 	}
 
+	protected abstract JobFetchInfo getJobFetchInfo() throws UnifyException;
+	
 }
