@@ -20,6 +20,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.tcdng.unify.core.ApplicationComponents;
 import com.tcdng.unify.core.UnifyContainerInterface;
@@ -86,11 +87,16 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 
 	private List<ClusterJobHandler> jobHandlers;
 	
+	private List<Long> runningClusterJobIds;
+	
 	public ClusterServiceImpl() {
+		this.runningClusterJobIds = new CopyOnWriteArrayList<Long>();
         this.clusterJobQueuedExec = new AbstractQueuedExec<JobExecInfo>(MAX_JOB_PROCESSING_THREADS)
             {
                 @Override
                 protected void doExecute(JobExecInfo jobExecInfo) {
+                	runningClusterJobIds.add(jobExecInfo.getClusterJobId());
+                	
                     try {
                         performWork(jobExecInfo);
                     } catch (Exception e) {
@@ -98,8 +104,10 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
                         
                         try {
 							failWork(jobExecInfo, e.getMessage());
-						} catch (UnifyException e1) {
+						} catch (Exception e1) {
 						}
+                    } finally {
+                    	runningClusterJobIds.remove(jobExecInfo.getClusterJobId());
                     }
                 }
 
@@ -116,7 +124,7 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 		if (isClusterMode()
 				&& !Boolean.TRUE.equals(getRequestAttribute(UnifyCoreRequestAttributeConstants.SUPPRESS_BROADCAST))) {
 			List<String> nodeIdList = db().valueList(String.class, "nodeId",
-					new ClusterNodeQuery().nodeNotEqual(getNodeId()));
+					new ClusterNodeQuery().nodeNotEqual(getRuntimeId()));
 			if (!nodeIdList.isEmpty()) {
 				ClusterCommand clusterCommandData = new ClusterCommand();
 				clusterCommandData.setCommandCode(command);
@@ -145,7 +153,7 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 	@Override
 	public List<Command> getClusterCommands() throws UnifyException {
 		List<Command> resultList = Collections.emptyList();
-		List<ClusterCommand> clusterCommandList = db().findAll(new ClusterCommandQuery().nodeId(getNodeId()));
+		List<ClusterCommand> clusterCommandList = db().findAll(new ClusterCommandQuery().nodeId(getRuntimeId()));
 
 		if (!clusterCommandList.isEmpty()) {
 			List<Long> clusterCommandIdList = new ArrayList<Long>();
@@ -160,25 +168,8 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 			db().deleteAll(new ClusterCommandParamQuery().clusterCommandIdIn(clusterCommandIdList));
 			db().deleteAll(new ClusterCommandQuery().idIn(clusterCommandIdList));
 		}
-		return resultList;
-	}
 
-	@Periodic(PeriodicType.SLOW)
-	public void performNodeHeartBeat(TaskMonitor taskMonitor) throws UnifyException {
-		final String nodeId = getNodeId();
-		// Send a heart beat.
-		if (db().updateAll(new ClusterNodeQuery().nodeId(nodeId),
-				new Update().addSetToNow("lastHeartBeat")) == 0) {
-			// Register node
-			ClusterNode clusterNode = new ClusterNode();
-			clusterNode.setNodeId(nodeId);
-			clusterNode.setLastHeartBeat(db().getNow());
-			clusterNode.setIpAddress(NetworkUtils.getLocalHostIpAddress());
-			UnifyContainerInterface unifyContainerInterface = (UnifyContainerInterface) this
-					.getComponent("unify-commandinterface");
-			clusterNode.setCommandPort(Integer.valueOf(unifyContainerInterface.getPort()));
-			db().create(clusterNode);
-		}
+		return resultList;
 	}
 
 	@Periodic(PeriodicType.SLOWER)
@@ -186,7 +177,7 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 		if (tryGrabLock(CLUSTER_NODE_HOUSEKEEP_LOCK)) {
 			try {
 				List<String> deadNodeIds = db().valueList(String.class, "nodeId", new ClusterNodeQuery()
-						.lastHeartBeatOlderThan(getNewNodeExpiryDate()).nodeNotEqual(getNodeId()));
+						.lastHeartBeatOlderThan(getNewNodeExpiryDate()).nodeNotEqual(getRuntimeId()));
 				if (!deadNodeIds.isEmpty()) {
 					db().deleteAll(new ClusterCommandParamQuery().nodeIdIn(deadNodeIds));
 					db().deleteAll(new ClusterCommandQuery().nodeIdIn(deadNodeIds));
@@ -213,6 +204,49 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 				releaseLock(CLUSTER_NEW_JOB_LOCK);
 			}
 		}
+	}
+
+	@Periodic(PeriodicType.SLOW)
+	public void performHeartBeat(TaskMonitor taskMonitor) throws UnifyException {
+		final String runtimeId = getRuntimeId();
+		// Node
+		if (db().updateAll(new ClusterNodeQuery().nodeId(runtimeId),
+				new Update().addSetToNow("lastHeartBeat")) == 0) {
+			// Register node
+			ClusterNode clusterNode = new ClusterNode();
+			clusterNode.setNodeId(runtimeId);
+			clusterNode.setLastHeartBeat(db().getNow());
+			clusterNode.setIpAddress(NetworkUtils.getLocalHostIpAddress());
+			UnifyContainerInterface unifyContainerInterface = (UnifyContainerInterface) this
+					.getComponent("unify-commandinterface");
+			clusterNode.setCommandPort(Integer.valueOf(unifyContainerInterface.getPort()));
+			db().create(clusterNode);
+		}
+		
+		commitTransactions();
+		
+		//Long jobs
+		List<Long> running = new ArrayList<Long>(runningClusterJobIds);
+		if (!running.isEmpty()) {
+			db().updateAll(
+					new ClusterJobQuery()
+						.addAmongst("id", running)
+						.addEquals("lockedBy", getRuntimeId())
+						.addEquals("status", JobStatus.RUNNING),
+					new Update()
+						.addSetToNow("lockedAt"));
+		}
+		
+		commitTransactions();
+
+		// Dead jobs
+		db().updateAll(
+				new ClusterJobQuery()
+					.addEquals("status", JobStatus.RUNNING)
+					.addGreaterThanEqualField("attempts ", "maxAttempts")
+					.addLessThan("lockedAt", Query.expOfNowWithOffset(-jobExpirationMinutes * 60)),
+				new Update()
+					.addSetTo("status", JobStatus.DEAD));
 	}
 
 	@Transactional(TransactionAttribute.REQUIRES_NEW)
@@ -251,7 +285,7 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 				new Update()
 					.addSetTo("status", JobStatus.RUNNING)
 					.addSetToNow("lockedAt")
-					.addSetTo("lockedBy", getNodeId())
+					.addSetTo("lockedBy", getRuntimeId())
 					.addSetToSelfAddition("attempts", 1),
 				CLUSTER_PROCESS_JOB_LOCK);
 		if (!DataUtils.isBlank(clusterJobIds)) {
@@ -268,7 +302,7 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 			handler.performWork(jobExecInfo.getPayloadId());
 			db().updateAll(new ClusterJobQuery()
 						.addEquals("id", jobExecInfo.getClusterJobId())
-						.addEquals("lockedBy", getNodeId())
+						.addEquals("lockedBy", getRuntimeId())
 						.addEquals("status", JobStatus.RUNNING)
 					, new Update()
 						.addSetTo("status", JobStatus.COMPLETED)
@@ -283,7 +317,7 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 	public void failWork(JobExecInfo jobExecInfo, String message) throws UnifyException{
 		db().updateAll(new ClusterJobQuery()
 				.addEquals("id", jobExecInfo.getClusterJobId())
-				.addEquals("lockedBy", getNodeId())
+				.addEquals("lockedBy", getRuntimeId())
 				.addEquals("status", JobStatus.RUNNING)
 			, new Update()
 				.addSetTo("status", JobStatus.ERROR)
@@ -302,8 +336,8 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 	}
 	
 	private Date getNewNodeExpiryDate() throws UnifyException {
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTimeInMillis(db().getNow().getTime() - (nodeExpirationMinutes * 60000));
-		return calendar.getTime();
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(db().getNow().getTime() - (nodeExpirationMinutes * 60000));
+		return cal.getTime();
 	}
 }
