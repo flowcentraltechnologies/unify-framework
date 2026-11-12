@@ -18,9 +18,11 @@ package com.tcdng.unify.core.database.sql.criterion.policy;
 import java.util.List;
 
 import com.tcdng.unify.core.UnifyException;
+import com.tcdng.unify.core.criterion.ExpressionField;
 import com.tcdng.unify.core.criterion.Restriction;
 import com.tcdng.unify.core.criterion.RestrictionField;
 import com.tcdng.unify.core.criterion.SingleParamRestriction;
+import com.tcdng.unify.core.database.CustomTranslator;
 import com.tcdng.unify.core.database.NativeTranslator;
 import com.tcdng.unify.core.database.sql.AbstractSqlCriteriaPolicy;
 import com.tcdng.unify.core.database.sql.SqlDataSourceDialectPolicies;
@@ -49,16 +51,27 @@ public abstract class SingleParameterPolicy extends AbstractSqlCriteriaPolicy {
 	}
 
 	@Override
-	public void translate(NativeTranslator translator, StringBuilder sql, SqlEntityInfo sqlEntityInfo,
+	public void translate(CustomTranslator translator, StringBuilder sql, SqlEntityInfo sqlEntityInfo,
 			Restriction restriction) throws UnifyException {
 		SingleParamRestriction svc = (SingleParamRestriction) restriction;
+		final Object val = svc.getParam();
+		if (val instanceof ExpressionField) {
+			if (translator == null) {
+				throw new IllegalArgumentException("Custom translator is required for expression parameters.");
+			}
+
+			SqlFieldInfo toSqlFieldInfo = sqlEntityInfo.getListFieldInfo(svc.getFieldName());
+			translator.translateExpression(sql, sqlEntityInfo, toSqlFieldInfo, opSql,
+					((ExpressionField) val).getExpression());
+			return;
+		}
+
 		String columnName = svc.getFieldName();
 		if (sqlEntityInfo != null) {
 			columnName = sqlEntityInfo.getListFieldInfo(svc.getFieldName()).getPreferredColumnName();
 		}
 
 		final String tableName = sqlEntityInfo.getTableAlias();
-		final Object val = svc.getParam();
 		if (val instanceof RestrictionField) {
 			if (caseInsensitive) {
 				Object param = resolveParam(tableName,
@@ -74,16 +87,28 @@ public abstract class SingleParameterPolicy extends AbstractSqlCriteriaPolicy {
 			return;
 		}
 
-		translate(translator, sql, tableName, columnName, val, null);
+		translate(translator != null ? translator.getNativeTranslator() : null, sql, tableName, columnName, val, null);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void generatePreparedStatementCriteria(StringBuilder sql, List<SqlParameter> parameterInfoList,
-			SqlEntityInfo sqlEntityInfo, Restriction restriction) throws UnifyException {
+	public void generatePreparedStatementCriteria(CustomTranslator translator, StringBuilder sql,
+			List<SqlParameter> parameterInfoList, SqlEntityInfo sqlEntityInfo, Restriction restriction)
+			throws UnifyException {
 		SingleParamRestriction svc = (SingleParamRestriction) restriction;
 		SqlFieldInfo sqlFieldInfo = sqlEntityInfo.getListFieldInfo(svc.getFieldName());
 		Object val = svc.getParam();
+		if (val instanceof ExpressionField) {
+			if (translator == null) {
+				throw new IllegalArgumentException("Custom translator is required for expression parameters.");
+			}
+
+			SqlFieldInfo toSqlFieldInfo = sqlEntityInfo.getListFieldInfo(svc.getFieldName());
+			translator.translateExpression(sql, sqlEntityInfo, toSqlFieldInfo, opSql,
+					((ExpressionField) val).getExpression());
+			return;
+		}
+
 		if (val instanceof RestrictionField) {
 			if (caseInsensitive) {
 				Object param = resolveParam(null, sqlEntityInfo.getListFieldInfo(((RestrictionField) val).getName()));

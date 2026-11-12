@@ -46,6 +46,9 @@ public class Fruit extends AbstractTestVersionedTableEntity {
     @Column(nullable = true)
     private Integer quantity;
 
+    @Column(nullable = true)
+    private Integer threshold;
+
     @Column(type = ColumnType.TIMESTAMP, nullable = true)
     private Date expiry;
     
@@ -69,6 +72,14 @@ public class Fruit extends AbstractTestVersionedTableEntity {
         this.color = color;
         this.price = price;
         this.quantity = quantity;
+    }
+
+    public Fruit(String name, String color, Double price, Integer quantity, Integer threshold) {
+        this.name = name;
+        this.color = color;
+        this.price = price;
+        this.quantity = quantity;
+        this.threshold = threshold;
     }
 
     public Fruit() {
@@ -114,6 +125,14 @@ public class Fruit extends AbstractTestVersionedTableEntity {
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
+
+	public Integer getThreshold() {
+		return threshold;
+	}
+
+	public void setThreshold(Integer threshold) {
+		this.threshold = threshold;
+	}
 
 	public Date getExpiry() {
 		return expiry;

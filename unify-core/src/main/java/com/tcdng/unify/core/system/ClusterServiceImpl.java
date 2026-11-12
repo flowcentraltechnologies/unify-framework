@@ -128,7 +128,7 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 		final String nodeId = getNodeId();
 		// Send a heart beat.
 		if (db().updateAll(new ClusterNodeQuery().nodeId(nodeId),
-				new Update().addAssignNow("lastHeartBeat")) == 0) {
+				new Update().addSelfToNow("lastHeartBeat")) == 0) {
 			// Register node
 			ClusterNode clusterNode = new ClusterNode();
 			clusterNode.setNodeId(nodeId);

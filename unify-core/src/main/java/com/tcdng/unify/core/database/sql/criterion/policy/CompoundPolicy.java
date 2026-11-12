@@ -20,6 +20,7 @@ import java.util.List;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.criterion.CompoundRestriction;
 import com.tcdng.unify.core.criterion.Restriction;
+import com.tcdng.unify.core.database.CustomTranslator;
 import com.tcdng.unify.core.database.NativeQuery;
 import com.tcdng.unify.core.database.NativeTranslator;
 import com.tcdng.unify.core.database.sql.AbstractSqlCriteriaPolicy;
@@ -42,7 +43,7 @@ public abstract class CompoundPolicy extends AbstractSqlCriteriaPolicy {
 	}
 
 	@Override
-	public void translate(NativeTranslator translator, StringBuilder sql, SqlEntityInfo sqlEntityInfo,
+	public void translate(CustomTranslator translator, StringBuilder sql, SqlEntityInfo sqlEntityInfo,
 			Restriction restriction) throws UnifyException {
 		CompoundRestriction cc = (CompoundRestriction) restriction;
 		List<Restriction> restrictionList = cc.getRestrictionList();
@@ -71,8 +72,9 @@ public abstract class CompoundPolicy extends AbstractSqlCriteriaPolicy {
 	}
 
 	@Override
-	public void generatePreparedStatementCriteria(StringBuilder sql, List<SqlParameter> parameterInfoList,
-			SqlEntityInfo sqlEntityInfo, Restriction restriction) throws UnifyException {
+	public void generatePreparedStatementCriteria(CustomTranslator translator, StringBuilder sql,
+			List<SqlParameter> parameterInfoList, SqlEntityInfo sqlEntityInfo, Restriction restriction)
+			throws UnifyException {
 		CompoundRestriction cc = (CompoundRestriction) restriction;
 		List<Restriction> restrictionList = cc.getRestrictionList();
 		if (restrictionList != null && !restrictionList.isEmpty()) {
@@ -85,12 +87,13 @@ public abstract class CompoundPolicy extends AbstractSqlCriteriaPolicy {
 			int i = 0;
 			Restriction subRestriction = restrictionList.get(i++);
 			SqlCriteriaPolicy sqlCriteriaPolicy = getOperatorPolicy(subRestriction);
-			sqlCriteriaPolicy.generatePreparedStatementCriteria(sql, parameterInfoList, sqlEntityInfo, subRestriction);
+			sqlCriteriaPolicy.generatePreparedStatementCriteria(translator, sql, parameterInfoList, sqlEntityInfo,
+					subRestriction);
 			while (i < size) {
 				sql.append(opSql);
 				subRestriction = restrictionList.get(i++);
 				sqlCriteriaPolicy = getOperatorPolicy(subRestriction);
-				sqlCriteriaPolicy.generatePreparedStatementCriteria(sql, parameterInfoList, sqlEntityInfo,
+				sqlCriteriaPolicy.generatePreparedStatementCriteria(translator, sql, parameterInfoList, sqlEntityInfo,
 						subRestriction);
 			}
 

@@ -40,12 +40,12 @@ public abstract class AbstractSqlCriteriaPolicy implements SqlCriteriaPolicy {
         this.opSql = opSql;
     }
 
-    @Override
-    public void translate(NativeTranslator translator, StringBuilder sql, String tableName, String columnName, Object param1, Object param2)
-            throws UnifyException {
-        doTranslate(translator, sql, tableName, columnName, param1 != null ? resolveParam(tableName, param1) : null,
-                param2 != null ? resolveParam(tableName, param2) : null);
-    }
+	@Override
+	public void translate(NativeTranslator translator, StringBuilder sql, String tableName, String columnName,
+			Object param1, Object param2) throws UnifyException {
+		doTranslate(translator, sql, tableName, columnName, param1 != null ? resolveParam(tableName, param1) : null,
+				param2 != null ? resolveParam(tableName, param2) : null);
+	}
 
     /**
      * Returns the SQL restriction policy for supplied restriction.

@@ -626,25 +626,25 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 	@Override
 	public <T extends Number, U extends Entity> int add(Class<T> fieldClass, String fieldName, T val, Query<U> query)
 			throws UnifyException {
-		return updateAll(query, new Update().addAssignAddition(fieldName, val));
+		return updateAll(query, new Update().addSelfAddition(fieldName, val));
 	}
 
 	@Override
 	public <T extends Number, U extends Entity> int subtract(Class<T> fieldClass, String fieldName, T val,
 			Query<U> query) throws UnifyException {
-		return updateAll(query, new Update().addAssignSubtraction(fieldName, val));
+		return updateAll(query, new Update().addSelfSubtraction(fieldName, val));
 	}
 
 	@Override
 	public <T extends Number, U extends Entity> int multiply(Class<T> fieldClass, String fieldName, T val,
 			Query<U> query) throws UnifyException {
-		return updateAll(query, new Update().addAssignMultiplication(fieldName, val));
+		return updateAll(query, new Update().addSelfMultiplication(fieldName, val));
 	}
 
 	@Override
 	public <T extends Number, U extends Entity> int divide(Class<T> fieldClass, String fieldName, T val, Query<U> query)
 			throws UnifyException {
-		return updateAll(query, new Update().addAssignDivision(fieldName, val));
+		return updateAll(query, new Update().addSelfDivision(fieldName, val));
 	}
 
 	@Override

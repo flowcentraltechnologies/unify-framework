@@ -21,6 +21,7 @@ import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.criterion.DoubleParamRestriction;
 import com.tcdng.unify.core.criterion.Restriction;
 import com.tcdng.unify.core.criterion.RestrictionField;
+import com.tcdng.unify.core.database.CustomTranslator;
 import com.tcdng.unify.core.database.NativeTranslator;
 import com.tcdng.unify.core.database.sql.AbstractSqlCriteriaPolicy;
 import com.tcdng.unify.core.database.sql.SqlDataSourceDialectPolicies;
@@ -42,7 +43,7 @@ public abstract class DoubleParameterPolicy extends AbstractSqlCriteriaPolicy {
 	}
 
 	@Override
-	public void translate(NativeTranslator translator, StringBuilder sql, SqlEntityInfo sqlEntityInfo,
+	public void translate(CustomTranslator translator, StringBuilder sql, SqlEntityInfo sqlEntityInfo,
 			Restriction restriction) throws UnifyException {
 		DoubleParamRestriction dvc = (DoubleParamRestriction) restriction;
 		String columnName = dvc.getFieldName();
@@ -62,7 +63,8 @@ public abstract class DoubleParameterPolicy extends AbstractSqlCriteriaPolicy {
 				sql.append(tableName).append('.').append(
 						sqlEntityInfo.getListFieldInfo(((RestrictionField) val1).getName()).getPreferredColumnName());
 			} else {
-				sql.append(getNativeSqlParam(translator, resolveParam(null, val1)));
+				sql.append(getNativeSqlParam(translator != null ? translator.getNativeTranslator() : null,
+						resolveParam(null, val1)));
 			}
 
 			sql.append(" AND ");
@@ -70,20 +72,22 @@ public abstract class DoubleParameterPolicy extends AbstractSqlCriteriaPolicy {
 				sql.append(tableName).append('.').append(
 						sqlEntityInfo.getListFieldInfo(((RestrictionField) val2).getName()).getPreferredColumnName());
 			} else {
-				sql.append(getNativeSqlParam(translator, resolveParam(null, val2)));
+				sql.append(getNativeSqlParam(translator != null ? translator.getNativeTranslator() : null,
+						resolveParam(null, val2)));
 			}
 
 			sql.append(")");
 			return;
 		}
 
-		translate(translator, sql, tableName, columnName, val1, val2);
+		translate(translator != null ? translator.getNativeTranslator() : null, sql, tableName, columnName, val1, val2);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void generatePreparedStatementCriteria(StringBuilder sql, List<SqlParameter> parameterInfoList,
-			SqlEntityInfo sqlEntityInfo, Restriction restriction) throws UnifyException {
+	public void generatePreparedStatementCriteria(CustomTranslator translator, StringBuilder sql,
+			List<SqlParameter> parameterInfoList, SqlEntityInfo sqlEntityInfo, Restriction restriction)
+			throws UnifyException {
 		DoubleParamRestriction dvc = (DoubleParamRestriction) restriction;
 		final Object val1 = dvc.getFirstParam();
 		final Object val2 = dvc.getSecondParam();

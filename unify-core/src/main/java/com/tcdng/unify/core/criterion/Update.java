@@ -60,41 +60,47 @@ public class Update extends FluentMap<String, Object> {
 		return (Update) super.clear();
 	}
 
-	public Update addAssignAddition(String field, Number value) {
-		return (Update) super.add(field, new AdditionExpression(value));
+	public Update addSelfAddition(String lfield, Number value) {
+		return (Update) super.add(lfield, new AdditionExpression(value));
 	}
 
-	public Update addAssignSubtraction(String field, Number value) {
-		return (Update) super.add(field, new SubtractionExpression(value));
+	public Update addSelfSubtraction(String lfield, Number value) {
+		return (Update) super.add(lfield, new SubtractionExpression(value));
 	}
 
-	public Update addAssignMultiplication(String field, Number value) {
-		return (Update) super.add(field, new MultiplicationExpression(value));
+	public Update addSelfMultiplication(String lfield, Number value) {
+		return (Update) super.add(lfield, new MultiplicationExpression(value));
 	}
 
-	public Update addAssignDivision(String field, Number value) {
-		return (Update) super.add(field, new DivisionExpression(value));
+	public Update addSelfDivision(String lfield, Number value) {
+		return (Update) super.add(lfield, new DivisionExpression(value));
 	}
 
-	public Update addAssignCustom(String field, String expression) {
-		return (Update) super.add(field, new CustomUpdateExpression(expression));
+	public Update addSelfCustom(String lfield, String expression) {
+		return (Update) super.add(lfield, new CustomUpdateExpression(expression));
 	}
 
-	public Update addAssignField(String tofield, String fromfield) {
-		return (Update) super.add(tofield, new CustomUpdateExpression("{{" + fromfield + "}}"));
+	public Update addSelfToOther(String lfield, String rfield) {
+		return (Update) super.add(lfield, new CustomUpdateExpression("{{" + rfield + "}}"));
 	}
 
-	public Update addAssignNow(String field) {
-		return (Update) super.add(field, new CustomUpdateExpression("{{g:now}}"));
+	public Update addSelfToNow(String lfield) {
+		return (Update) super.add(lfield, new CustomUpdateExpression("{{g:now}}"));
 	}
 
-	public Update addAssignNowWithOffset(String field, int seconds) {
-		return (Update) super.add(field, new CustomUpdateExpression(
+	public Update addSelfToNowWithOffset(String lfield, int seconds) {
+		return (Update) super.add(lfield, new CustomUpdateExpression(
 				seconds >= 0 ? "{{g:nowaddsec_" + seconds + "}}" : "{{g:nowsubsec_" + -seconds + "}}"));
 	}
 
-	public Update addAssignTimestampWithOffset(String field, int seconds) {
-		return (Update) super.add(field, new CustomUpdateExpression(
+	public Update addSelfWithOffset(String lfield, int seconds) {
+		return (Update) super.add(lfield, new CustomUpdateExpression(
 				seconds >= 0 ? "{{g:fldaddsec_" + seconds + "}}" : "{{g:fldsubsec_" + -seconds + "}}"));
+	}
+
+	public Update addSelfToOtherWithOffset(String lfield, String rfield, int seconds) {
+		return (Update) super.add(lfield, new CustomUpdateExpression(
+				seconds >= 0 ? "{{g:fldaddsec_" + seconds + "_" + rfield + "}}"
+						: "{{g:fldsubsec_" + -seconds + "_" + rfield + "}}"));
 	}
 }

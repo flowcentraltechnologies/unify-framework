@@ -62,6 +62,7 @@ import com.tcdng.unify.core.criterion.Select;
 import com.tcdng.unify.core.criterion.Update;
 import com.tcdng.unify.core.data.FactoryMap;
 import com.tcdng.unify.core.database.CallableProc;
+import com.tcdng.unify.core.database.CustomTranslator;
 import com.tcdng.unify.core.database.NativeParam;
 import com.tcdng.unify.core.database.NativeQuery;
 import com.tcdng.unify.core.database.NativeTranslator;
@@ -131,7 +132,8 @@ import com.tcdng.unify.core.util.StringUtils;
  * @since 4.1
  */
 @Singleton(false)
-public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponent implements SqlDataSourceDialect {
+public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponent
+		implements SqlDataSourceDialect, CustomTranslator {
 
 	@Configurable
 	private SqlEntityInfoFactory sqlEntityInfoFactory;
@@ -1761,6 +1763,89 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 	}
 
 	@Override
+	public NativeTranslator getNativeTranslator() throws UnifyException {
+		return translator;
+	}
+
+	@Override
+	public void translateExpression(StringBuilder sb, SqlEntityInfo sqlEntityInfo, SqlFieldInfo toSqlFieldInfo,
+			String opSql, String expression) throws UnifyException {
+		sb.append(toSqlFieldInfo.getPreferredColumnName()).append(opSql);
+		final List<StringToken> tokens = StringUtils.breakdownParameterizedString((String) expression);
+		if (!tokens.isEmpty()) {
+			for (StringToken token : tokens) {
+				if (token.isText()) {
+					sb.append(token.getToken());
+				} else if (token.isFieldParam()) {
+					final SqlFieldInfo prmSqlFieldInfo = sqlEntityInfo.getFieldInfo(((ParamToken) token).getParam());
+					sb.append(prmSqlFieldInfo.getPreferredColumnName());
+				} else if (token.isGeneratorParam()) {
+					String func = ((ParamToken) token).getParam().toLowerCase();
+					String prm = null;
+					int pIndex = func.indexOf('_');
+					if (pIndex > 0) {
+						prm = func.substring(pIndex + 1);
+						func = func.substring(0, pIndex);
+					}
+
+					sb.append(' ');
+					switch (func) {
+					case "now":
+						sb.append(getNowSQL());
+						break;
+					case "nowaddsec":
+					case "nowsubsec": {
+						if (prm == null) {
+							throwIllegalArgumentException("Illegal expression parameter required for [" + func + "].");
+						}
+
+						final int seconds = Integer.parseInt(prm);
+						sb.append('(');
+						appendNowOffsetSQL(sb, seconds, func.equals("nowsubsec"));
+						sb.append(')');
+					}
+						break;
+					case "fldaddsec":
+					case "fldsubsec": {
+						if (prm == null) {
+							throwIllegalArgumentException("Expression parameter required for [" + func + "].");
+						}
+
+						int fIndex = prm.indexOf('_');
+						if (fIndex > 0) {
+							final int seconds = Integer.parseInt(prm.substring(0, fIndex));
+							final SqlFieldInfo prmSqlFieldInfo = sqlEntityInfo.getFieldInfo(prm.substring(fIndex + 1));
+							sb.append('(');
+							appendTimestampOffsetSQL(sb, prmSqlFieldInfo.getPreferredColumnName(), seconds,
+									func.equals("fldsubsec"));
+							sb.append(')');
+						} else {
+							final int seconds = Integer.parseInt(prm);
+							sb.append('(');
+							appendTimestampOffsetSQL(sb, toSqlFieldInfo.getPreferredColumnName(), seconds,
+									func.equals("fldsubsec"));
+							sb.append(')');
+						}
+					}
+						break;
+					case "today":
+						sb.append(getTodaySQL());
+						break;
+					default:
+						throwIllegalArgumentException("Illegal expression token type [" + token.getToken() + "].");
+						break;
+					}
+					sb.append(' ');
+				} else {
+					throwIllegalArgumentException("Illegal expression token type [" + token.getToken() + "].");
+				}
+			}
+		} else {
+			sb.append(toSqlFieldInfo.getPreferredColumnName());
+		}
+	}
+
+	@Override
 	protected void onInitialize() throws UnifyException {
 		sqlEntityInfoFactory.setSqlDataSourceDialect(this);
 		sqlCallableStatementPools = new SqlCallableStatementPools(
@@ -1909,7 +1994,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 				translateCriteria(critSql, sqlEntityInfo, restriction);
 				appendMinMax(sql, sqlEntityInfo, query, critSql);
 			}
-			
+
 			isAppend = true;
 		} else {
 			if (query.isMinMax()) {
@@ -2369,7 +2454,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 			SqlCriteriaPolicy sqlCriteriaPolicy = getSqlCriteriaPolicy(
 					restriction.getConditionType().restrictionType());
 			aggregateSql.append(" WHEN ");
-			sqlCriteriaPolicy.generatePreparedStatementCriteria(aggregateSql, parameterInfoList, sqlEntityInfo,
+			sqlCriteriaPolicy.generatePreparedStatementCriteria(this, aggregateSql, parameterInfoList, sqlEntityInfo,
 					restriction);
 			return true;
 		}
@@ -2395,13 +2480,14 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 			SqlCriteriaPolicy sqlCriteriaPolicy = getSqlCriteriaPolicy(
 					restriction.getConditionType().restrictionType());
 			StringBuilder critSql = new StringBuilder();
-			sqlCriteriaPolicy.generatePreparedStatementCriteria(critSql, parameterInfoList, sqlEntityInfo, restriction);
+			sqlCriteriaPolicy.generatePreparedStatementCriteria(this, critSql, parameterInfoList, sqlEntityInfo,
+					restriction);
 			sql.append(" WHERE ");
 			sql.append(critSql);
 			if (query.isMinMax()) {
 				sql.append(" AND ");
 				critSql = new StringBuilder();
-				sqlCriteriaPolicy.generatePreparedStatementCriteria(critSql, parameterInfoList, sqlEntityInfo,
+				sqlCriteriaPolicy.generatePreparedStatementCriteria(this, critSql, parameterInfoList, sqlEntityInfo,
 						restriction);
 				appendMinMax(sql, sqlEntityInfo, query, critSql);
 			}
@@ -2842,76 +2928,9 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 	private void translateCriteria(StringBuilder sql, SqlEntityInfo sqlEntityInfo, Restriction restriction)
 			throws UnifyException {
 		getSqlDataSourceDialectPolicies().getSqlCriteriaPolicy(restriction.getConditionType().restrictionType())
-				.translate(translator, sql, sqlEntityInfo, restriction);
+				.translate(this, sql, sqlEntityInfo, restriction);
 	}
 
-	private void translateExpression(final StringBuilder sb, final SqlEntityInfo sqlEntityInfo,
-			final SqlFieldInfo toSqlFieldInfo, final String gapOp, final String expression) throws UnifyException {
-		sb.append(toSqlFieldInfo.getPreferredColumnName()).append(gapOp);
-		final List<StringToken> tokens = StringUtils.breakdownParameterizedString((String) expression);
-		if (!tokens.isEmpty()) {
-			for (StringToken token : tokens) {
-				if (token.isText()) {
-					sb.append(token.getToken());
-				} else if (token.isFieldParam()) {
-					final SqlFieldInfo prmSqlFieldInfo = sqlEntityInfo.getFieldInfo(((ParamToken) token).getParam());
-					sb.append(prmSqlFieldInfo.getPreferredColumnName());
-				} else if (token.isGeneratorParam()) {
-					String func = ((ParamToken) token).getParam().toLowerCase();
-					String prm = null;
-					int pIndex = func.indexOf('_');
-					if (pIndex > 0) {
-						prm = func.substring(pIndex + 1);
-						func = func.substring(0, pIndex);
-					}
-
-					sb.append(' ');
-					switch (func) {
-					case "now":
-						sb.append(getNowSQL());
-						break;
-					case "nowaddsec":
-					case "nowsubsec": {
-						if (prm == null) {
-							throwIllegalArgumentException("Illegal expression parameter required for [" + func + "].");
-						}
-
-						final int seconds = Integer.parseInt(prm);
-						sb.append('(');
-						appendNowOffsetSQL(sb, seconds, func.equals("nowsubsec"));
-						sb.append(')');
-					}
-						break;
-					case "fldaddsec":
-					case "fldsubsec": {
-						if (prm == null) {
-							throwIllegalArgumentException("Illegal expression parameter required for [" + func + "].");
-						}
-
-						final int seconds = Integer.parseInt(prm);
-						sb.append('(');
-						appendTimestampOffsetSQL(sb, toSqlFieldInfo.getPreferredColumnName(), seconds,
-								func.equals("fldsubsec"));
-						sb.append(')');
-					}
-						break;
-					case "today":
-						sb.append(getTodaySQL());
-						break;
-					default:
-						throwIllegalArgumentException("Illegal expression token type [" + token.getToken() + "].");
-						break;
-					}
-					sb.append(' ');
-				} else {
-					throwIllegalArgumentException("Illegal expression token type [" + token.getToken() + "].");
-				}
-			}
-		} else {
-			sb.append(toSqlFieldInfo.getPreferredColumnName());
-		}
-	}
-	
 	private void appendCreateViewSQLElements(SqlEntitySchemaInfo sqlEntitySchemaInfo, SqlFieldSchemaInfo sqlFieldInfo,
 			ViewAliasInfo viewAliasInfo, Set<SqlFieldSchemaInfo> referenceFieldSet,
 			LinkedHashMap<String, SqlJoinInfo> sqlJoinInfos) {

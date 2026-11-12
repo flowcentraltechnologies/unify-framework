@@ -35,6 +35,7 @@ import com.tcdng.unify.core.criterion.EndsWith;
 import com.tcdng.unify.core.criterion.EndsWithField;
 import com.tcdng.unify.core.criterion.Equals;
 import com.tcdng.unify.core.criterion.EqualsField;
+import com.tcdng.unify.core.criterion.ExpressionField;
 import com.tcdng.unify.core.criterion.Greater;
 import com.tcdng.unify.core.criterion.GreaterField;
 import com.tcdng.unify.core.criterion.GreaterOrEqual;
@@ -160,6 +161,33 @@ public class Query<T extends Entity> implements Cloneable {
         return new Query<U>(entityClass, restrictions, applyAppQueryLimit);
     }
 
+	public static ExpressionField expOf(String expression) {
+		return new ExpressionField(expression);
+	}
+
+	public static ExpressionField expOfOther(String rfield) {
+		return new ExpressionField("{{" + rfield + "}}");
+	}
+
+	public static ExpressionField expOfNow() {
+		return new ExpressionField("{{g:now}}");
+	}
+
+	public static ExpressionField expOfNowWithOffset(int seconds) {
+		return new ExpressionField(
+				seconds >= 0 ? "{{g:nowaddsec_" + seconds + "}}" : "{{g:nowsubsec_" + -seconds + "}}");
+	}
+
+	public static ExpressionField expOfSelfWithOffset(int seconds) {
+		return new ExpressionField(
+				seconds >= 0 ? "{{g:fldaddsec_" + seconds + "}}" : "{{g:fldsubsec_" + -seconds + "}}");
+	}
+
+	public static ExpressionField expOfOtherWithOffset(String rfield, int seconds) {
+		return new ExpressionField(seconds >= 0 ? "{{g:fldaddsec_" + seconds + "_" + rfield + "}}"
+				: "{{g:fldsubsec_" + -seconds + "_" + rfield + "}}");
+	}
+    
     public Class<T> getEntityClass() {
         return entityClass;
     }

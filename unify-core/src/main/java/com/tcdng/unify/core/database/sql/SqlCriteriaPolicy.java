@@ -19,6 +19,7 @@ import java.util.List;
 
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.criterion.Restriction;
+import com.tcdng.unify.core.database.CustomTranslator;
 import com.tcdng.unify.core.database.NativeTranslator;
 
 /**
@@ -28,60 +29,45 @@ import com.tcdng.unify.core.database.NativeTranslator;
  * @since 4.1
  */
 public interface SqlCriteriaPolicy {
-    /**
-     * Generates a native prepared statement SQL with parameter information based on
-     * supplied restriction.
-     * 
-     * @param sql
-     *            generated native SQL are appended to this buffer
-     * @param parameterInfoList
-     *            parameter information is added to this list
-     * @param sqlEntityInfo
-     *            the record type information object
-     * @param restriction
-     *            the restriction object
-     * @throws UnifyException
-     *             if an error occurs
-     */
-    void generatePreparedStatementCriteria(StringBuilder sql, List<SqlParameter> parameterInfoList,
-            SqlEntityInfo sqlEntityInfo, Restriction restriction) throws UnifyException;
-
-    /**
-     * Translates a restriction object to native SQL and appends to supplied string
-     * buffer.
-     * 
-     * @param translator
-     *            the native translator (optional)
-     * @param sql
-     *            the buffer to write to
-     * @param sqlEntityInfo
-     *            the record info
-     * @param restriction
-     *            the restriction
-     * @throws UnifyException
-     *             if an error occurs
-     */
-	void translate(NativeTranslator translator, StringBuilder sql, SqlEntityInfo sqlEntityInfo, Restriction restriction)
+	/**
+	 * Generates a native prepared statement SQL with parameter information based on
+	 * supplied restriction.
+	 * 
+	 * @param translator        the custom translator
+	 * @param sql               generated native SQL are appended to this buffer
+	 * @param parameterInfoList parameter information is added to this list
+	 * @param sqlEntityInfo     the record type information object
+	 * @param restriction       the restriction object
+	 * @throws UnifyException if an error occurs
+	 */
+	void generatePreparedStatementCriteria(CustomTranslator translator, StringBuilder sql,
+			List<SqlParameter> parameterInfoList, SqlEntityInfo sqlEntityInfo, Restriction restriction)
 			throws UnifyException;
 
-    /**
-     * Translates a criteria to native SQL and appends to supplied string buffer..
-     * 
-     * @param translator
-     *            the native translator (optional)
-     * @param sql
-     *            the buffer to write to
-     * @param tableName
-     *            the table name
-     * @param columnName
-     *            the column name
-     * @param param1
-     *            the first parameter
-     * @param param2
-     *            the second parameter
-     * @throws UnifyException
-     *             if an error occurs
-     */
-    void translate(NativeTranslator translator, StringBuilder sql, String tableName, String columnName, Object param1, Object param2)
-            throws UnifyException;
+	/**
+	 * Translates a restriction object to native SQL and appends to supplied string
+	 * buffer.
+	 * 
+	 * @param translator    the custom translator
+	 * @param sql           the buffer to write to
+	 * @param sqlEntityInfo the record info
+	 * @param restriction   the restriction
+	 * @throws UnifyException if an error occurs
+	 */
+	void translate(CustomTranslator translator, StringBuilder sql, SqlEntityInfo sqlEntityInfo, Restriction restriction)
+			throws UnifyException;
+
+	/**
+	 * Translates a criteria to native SQL and appends to supplied string buffer..
+	 * 
+	 * @param translator the native translator (optional)
+	 * @param sql        the buffer to write to
+	 * @param tableName  the table name
+	 * @param columnName the column name
+	 * @param param1     the first parameter
+	 * @param param2     the second parameter
+	 * @throws UnifyException if an error occurs
+	 */
+	void translate(NativeTranslator translator, StringBuilder sql, String tableName, String columnName, Object param1,
+			Object param2) throws UnifyException;
 }

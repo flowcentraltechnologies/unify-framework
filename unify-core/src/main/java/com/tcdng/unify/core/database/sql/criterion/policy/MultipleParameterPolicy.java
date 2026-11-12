@@ -23,6 +23,7 @@ import com.tcdng.unify.core.UnifyCoreErrorConstants;
 import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.criterion.MultipleParamRestriction;
 import com.tcdng.unify.core.criterion.Restriction;
+import com.tcdng.unify.core.database.CustomTranslator;
 import com.tcdng.unify.core.database.NativeTranslator;
 import com.tcdng.unify.core.database.sql.AbstractSqlCriteriaPolicy;
 import com.tcdng.unify.core.database.sql.SqlDataSourceDialectPolicies;
@@ -49,19 +50,22 @@ public abstract class MultipleParameterPolicy extends AbstractSqlCriteriaPolicy 
 	}
 
 	@Override
-	public void translate(NativeTranslator translator, StringBuilder sql, SqlEntityInfo sqlEntityInfo,
+	public void translate(CustomTranslator translator, StringBuilder sql, SqlEntityInfo sqlEntityInfo,
 			Restriction restriction) throws UnifyException {
 		MultipleParamRestriction mvc = (MultipleParamRestriction) restriction;
 		String columnName = mvc.getFieldName();
 		if (sqlEntityInfo != null) {
 			columnName = sqlEntityInfo.getListFieldInfo(mvc.getFieldName()).getPreferredColumnName();
 		}
-		translate(translator, sql, sqlEntityInfo.getTableAlias(), columnName, mvc.getParams(), null);
+		
+		translate(translator != null ? translator.getNativeTranslator() : null, sql, sqlEntityInfo.getTableAlias(),
+				columnName, mvc.getParams(), null);
 	}
 
 	@Override
-	public void generatePreparedStatementCriteria(StringBuilder sql, List<SqlParameter> parameterInfoList,
-			SqlEntityInfo sqlEntityInfo, Restriction restriction) throws UnifyException {
+	public void generatePreparedStatementCriteria(CustomTranslator translator, StringBuilder sql,
+			List<SqlParameter> parameterInfoList, SqlEntityInfo sqlEntityInfo, Restriction restriction)
+			throws UnifyException {
 		MultipleParamRestriction mvc = (MultipleParamRestriction) restriction;
 		SqlFieldInfo sqlFieldInfo = sqlEntityInfo.getListFieldInfo((String) mvc.getFieldName());
 		Collection<Object> values = (Collection<Object>) mvc.getParams();

@@ -3337,7 +3337,7 @@ public class DatabaseTableEntityCRUDTest extends AbstractUnifyComponentTest {
 			db.create(new Fruit("banana", "yellow", 45.00));
 			db.create(new Fruit("orange", "orange", 15.00));
 			int updated = db.updateAll(new FruitQuery().addLike("name", "apple"),
-					new Update().addAssignCustom("price", "2 * {{price}} + 0.25"));
+					new Update().addSelfCustom("price", "2 * {{price}} + 0.25"));
 			assertEquals(2, updated);
 
 			List<Fruit> fruitList = db.findAll(new FruitQuery().addOrder("id").ignoreEmptyCriteria(true));
@@ -3363,10 +3363,10 @@ public class DatabaseTableEntityCRUDTest extends AbstractUnifyComponentTest {
 			db.create(new Fruit("apple", "red", 20.00, expiry));
 			db.create(new Fruit("pineapple", "cyan", 60.00, expiry));
 			int updated = db.updateAll(new FruitQuery().addEquals("name", "apple"),
-					new Update().addAssignTimestampWithOffset("expiry", 45));
+					new Update().addSelfWithOffset("expiry", 45));
 			assertEquals(1, updated);
 			updated = db.updateAll(new FruitQuery().addEquals("name", "pineapple"),
-					new Update().addAssignTimestampWithOffset("expiry", -120));
+					new Update().addSelfWithOffset("expiry", -120));
 			assertEquals(1, updated);
 
 			List<Fruit> fruitList = db.findAll(new FruitQuery().addOrder("id").ignoreEmptyCriteria(true));
@@ -3398,7 +3398,7 @@ public class DatabaseTableEntityCRUDTest extends AbstractUnifyComponentTest {
 			db.create(new Fruit("apple", "red", 20.00));
 			db.create(new Fruit("pineapple", "cyan", 60.00));
 			int updated = db.updateAll(new FruitQuery().addEquals("name", "apple"),
-					new Update().addAssignField("oldPrice", "price"));
+					new Update().addSelfToOther("oldPrice", "price"));
 			assertEquals(1, updated);
 
 			List<Fruit> fruitList = db.findAll(new FruitQuery().addOrder("id").ignoreEmptyCriteria(true));
@@ -3408,6 +3408,36 @@ public class DatabaseTableEntityCRUDTest extends AbstractUnifyComponentTest {
 			assertEquals(Double.valueOf(20.00), fruitList.get(0).getOldPrice());
 			assertEquals(Double.valueOf(60.00), fruitList.get(1).getPrice());
 			assertNull(fruitList.get(1).getOldPrice());
+		} catch (Exception e) {
+			tm.setRollback();
+			throw e;
+		} finally {
+			tm.endTransaction();
+		}
+	}
+
+	@Test
+	public void testCustomCriteria() throws Exception {
+		tm.beginTransaction();
+		try {
+			db.create(new Fruit("apple", "red", 20.00, 25, 100));
+			db.create(new Fruit("pineapple", "cyan", 60.00, 30, 90));
+			db.create(new Fruit("banana", "yellow", 45.00, 20, 40));
+			db.create(new Fruit("orange", "orange", 15.00, 20, 10));
+
+			List<Fruit> fruitList = db.findAll(new FruitQuery().addLessThan("quantity", Query.expOfOther("threshold")));
+			assertNotNull(fruitList);
+			assertEquals(3, fruitList.size());
+			assertEquals(Double.valueOf(20.00), fruitList.get(0).getPrice());
+			assertEquals(Double.valueOf(60.00), fruitList.get(1).getPrice());
+			assertEquals(Double.valueOf(45.00), fruitList.get(2).getPrice());
+			
+
+			fruitList = db.findAll(new FruitQuery().addGreaterThanEqual("threshold", Query.expOf("{{quantity}} * 3")));
+			assertNotNull(fruitList);
+			assertEquals(2, fruitList.size());
+			assertEquals(Double.valueOf(20.00), fruitList.get(0).getPrice());
+			assertEquals(Double.valueOf(60.00), fruitList.get(1).getPrice());
 		} catch (Exception e) {
 			tm.setRollback();
 			throw e;
