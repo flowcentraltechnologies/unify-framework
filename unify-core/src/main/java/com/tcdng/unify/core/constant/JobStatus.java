@@ -31,6 +31,7 @@ public enum JobStatus implements EnumConst {
     PENDING("PND"),
     RUNNING("RNG"),
     COMPLETED("CMP"),
+    ERROR("ERR"),
     DEAD("DED");
 
     private final String code;

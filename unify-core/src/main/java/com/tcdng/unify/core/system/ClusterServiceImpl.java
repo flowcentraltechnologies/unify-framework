@@ -95,6 +95,11 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
                         performWork(jobExecInfo);
                     } catch (Exception e) {
                         logError(e);
+                        
+                        try {
+							failWork(jobExecInfo, e.getMessage());
+						} catch (UnifyException e1) {
+						}
                     }
                 }
 
@@ -234,7 +239,6 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 
 	@Periodic(PeriodicType.NORMAL)
 	public void processJobs(TaskMonitor taskMonitor) throws UnifyException {
-		// Load
 		final List<Long> clusterJobIds = claimUnlockedRows(
 				new ClusterJobQuery()
 					.addLessThanField("attempts", "maxAttempts")
@@ -262,8 +266,6 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 		try {
 			final ClusterJobHandler handler = getComponent(ClusterJobHandler.class, jobExecInfo.getHandler());
 			handler.performWork(jobExecInfo.getPayloadId());
-			
-			// Finish
 			db().updateAll(new ClusterJobQuery()
 						.addEquals("id", jobExecInfo.getClusterJobId())
 						.addEquals("lockedBy", getNodeId())
@@ -276,6 +278,17 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 		} catch (Exception e) {
 			throwOperationErrorException(e);
 		}
+	}
+
+	public void failWork(JobExecInfo jobExecInfo, String message) throws UnifyException{
+		db().updateAll(new ClusterJobQuery()
+				.addEquals("id", jobExecInfo.getClusterJobId())
+				.addEquals("lockedBy", getNodeId())
+				.addEquals("status", JobStatus.RUNNING)
+			, new Update()
+				.addSetTo("status", JobStatus.ERROR)
+				.addSetTo("error", message)
+				.addSetToNull("lockedAt"));			
 	}
 	
 	@Override
