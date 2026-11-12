@@ -50,7 +50,7 @@ public class TestEntityPolicy<T extends Entity> extends AbstractEntityPolicy<T> 
     @Override
     public void preQuery(Query<T> query) throws UnifyException {
         if (restriction != null) {
-            query.addRestriction(restriction);
+            query.restriction(restriction);
         }
     }
 

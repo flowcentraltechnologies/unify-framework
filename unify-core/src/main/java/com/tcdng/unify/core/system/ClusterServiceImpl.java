@@ -211,7 +211,7 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 		final String runtimeId = getRuntimeId();
 		// Node
 		if (db().updateAll(new ClusterNodeQuery().nodeId(runtimeId),
-				new Update().addSetToNow("lastHeartBeat")) == 0) {
+				new Update().setNow("lastHeartBeat")) == 0) {
 			// Register node
 			ClusterNode clusterNode = new ClusterNode();
 			clusterNode.setNodeId(runtimeId);
@@ -230,11 +230,11 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 		if (!running.isEmpty()) {
 			db().updateAll(
 					new ClusterJobQuery()
-						.addAmongst("id", running)
-						.addEquals("lockedBy", getRuntimeId())
-						.addEquals("status", JobStatus.RUNNING),
+						.amongst("id", running)
+						.equals("lockedBy", getRuntimeId())
+						.equals("status", JobStatus.RUNNING),
 					new Update()
-						.addSetToNow("lockedAt"));
+						.setNow("lockedAt"));
 		}
 		
 		commitTransactions();
@@ -242,11 +242,11 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 		// Dead jobs
 		db().updateAll(
 				new ClusterJobQuery()
-					.addEquals("status", JobStatus.RUNNING)
-					.addGreaterThanEqualField("attempts ", "maxAttempts")
-					.addLessThan("lockedAt", Query.expOfNowWithOffset(-jobExpirationMinutes * 60)),
+					.equals("status", JobStatus.RUNNING)
+					.greatereqf("attempts ", "maxAttempts")
+					.less("lockedAt", Query.expOfNowWithOffset(-jobExpirationMinutes * 60)),
 				new Update()
-					.addSetTo("status", JobStatus.DEAD));
+					.set("status", JobStatus.DEAD));
 	}
 
 	@Transactional(TransactionAttribute.REQUIRES_NEW)
@@ -275,18 +275,18 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 	public void processJobs(TaskMonitor taskMonitor) throws UnifyException {
 		final List<Long> clusterJobIds = claimUnlockedRows(
 				new ClusterJobQuery()
-					.addLessThanField("attempts", "maxAttempts")
-					.addRestriction(new Or()
+					.lessf("attempts", "maxAttempts")
+					.restriction(new Or()
 								.add(new Equals("status", JobStatus.PENDING))
 								.add(new And()
 										.add(new Equals("status", JobStatus.RUNNING))
 										.add(new Less("lockedAt", Query.expOfNowWithOffset(-jobExpirationMinutes * 60)))))
-						.setLimit(JOB_PROCESSING_BATCH_SIZE),
+						.limit(JOB_PROCESSING_BATCH_SIZE),
 				new Update()
-					.addSetTo("status", JobStatus.RUNNING)
-					.addSetToNow("lockedAt")
-					.addSetTo("lockedBy", getRuntimeId())
-					.addSetToSelfAddition("attempts", 1),
+					.set("status", JobStatus.RUNNING)
+					.setNow("lockedAt")
+					.set("lockedBy", getRuntimeId())
+					.setAddition("attempts", 1),
 				CLUSTER_PROCESS_JOB_LOCK);
 		if (!DataUtils.isBlank(clusterJobIds)) {
 			for (ClusterJob clusterJob : db().findAll(new ClusterJobQuery().idIn(clusterJobIds))) {
@@ -301,12 +301,12 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 			final ClusterJobHandler handler = getComponent(ClusterJobHandler.class, jobExecInfo.getHandler());
 			handler.performWork(jobExecInfo.getPayloadId());
 			db().updateAll(new ClusterJobQuery()
-						.addEquals("id", jobExecInfo.getClusterJobId())
-						.addEquals("lockedBy", getRuntimeId())
-						.addEquals("status", JobStatus.RUNNING)
+						.equals("id", jobExecInfo.getClusterJobId())
+						.equals("lockedBy", getRuntimeId())
+						.equals("status", JobStatus.RUNNING)
 					, new Update()
-						.addSetTo("status", JobStatus.COMPLETED)
-						.addSetToNull("lockedAt"));			
+						.set("status", JobStatus.COMPLETED)
+						.setNull("lockedAt"));			
 		} catch (UnifyException e) {
 			throw e;
 		} catch (Exception e) {
@@ -316,13 +316,13 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 
 	public void failWork(JobExecInfo jobExecInfo, String message) throws UnifyException{
 		db().updateAll(new ClusterJobQuery()
-				.addEquals("id", jobExecInfo.getClusterJobId())
-				.addEquals("lockedBy", getRuntimeId())
-				.addEquals("status", JobStatus.RUNNING)
+				.equals("id", jobExecInfo.getClusterJobId())
+				.equals("lockedBy", getRuntimeId())
+				.equals("status", JobStatus.RUNNING)
 			, new Update()
-				.addSetTo("status", JobStatus.ERROR)
-				.addSetTo("error", message)
-				.addSetToNull("lockedAt"));			
+				.set("status", JobStatus.ERROR)
+				.set("error", message)
+				.setNull("lockedAt"));			
 	}
 	
 	@Override

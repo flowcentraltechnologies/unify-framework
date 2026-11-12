@@ -229,7 +229,7 @@ public abstract class AbstractBusinessService extends AbstractUnifyComponent imp
 			try {
 				List<Long> ids = db.valueList(Long.class, "id", query);
 				if (!DataUtils.isBlank(ids)) {
-					db.updateAll(Query.of(query.getEntityClass()).addAmongst("id", ids), update);
+					db.updateAll(Query.of(query.getEntityClass()).amongst("id", ids), update);
 				}
 
 				return ids;

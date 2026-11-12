@@ -1074,7 +1074,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 	@Override
 	public SqlStatement prepareExistStatement(Query<? extends Entity> query, QueryAgainst queryAgainst)
 			throws UnifyException {
-		final int oldLimit = query.getLimit();
+		final int oldLimit = query.limit();
 		try {
 			SqlEntityInfo sqlEntityInfo = resolveSqlEntityInfo(query);
 			List<SqlParameter> parameterInfoList = new ArrayList<SqlParameter>();
@@ -1085,11 +1085,11 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 				existSql.append(sqlCacheFactory.get(query.getEntityClass()).getExistSql());
 			}
 
-			query.setLimit(1);
+			query.limit(1);
 			appendWhereClause(existSql, parameterInfoList, sqlEntityInfo, query, SqlQueryType.SELECT);
 			return new SqlStatement(sqlEntityInfo, SqlStatementType.COUNT, existSql.toString(), parameterInfoList);
 		} finally {
-			query.setLimit(oldLimit);
+			query.limit(oldLimit);
 		}
 	}
 
@@ -1380,7 +1380,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 
 		appendWhereClause(findSql, parameterInfoList, sqlEntityInfo, query, SqlQueryType.SELECT);
 		return new SqlStatement(sqlEntityInfo, SqlStatementType.FIND, findSql.toString(), parameterInfoList,
-				getSqlResultList(returnFieldInfoList), query.isLenient());
+				getSqlResultList(returnFieldInfoList), query.lenient());
 	}
 
 	@Override
@@ -1411,7 +1411,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 		appendRowLockSuffix(lockRowSql, type);
 
 		return new SqlStatement(sqlEntityInfo, SqlStatementType.FIND, lockRowSql.toString(), parameterInfoList,
-				getSqlResultList(returnFieldInfoList), query.isLenient());
+				getSqlResultList(returnFieldInfoList), query.lenient());
 	}
 
 	@Override
@@ -1505,7 +1505,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 
 		appendWhereClause(listSql, parameterInfoList, sqlEntityInfo, query, SqlQueryType.SELECT);
 		return new SqlStatement(sqlEntityInfo, SqlStatementType.LIST, listSql.toString(), parameterInfoList,
-				getSqlResultList(returnFieldInfoList), query.isLenient());
+				getSqlResultList(returnFieldInfoList), query.lenient());
 	}
 
 	@Override
@@ -2008,7 +2008,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 		}
 
 		if (queryType.includeLimit()) {
-			isAppend |= appendWhereLimitOffsetSuffixClause(sql, query.getOffset(), getQueryLimit(query), isAppend);
+			isAppend |= appendWhereLimitOffsetSuffixClause(sql, query.offset(), getQueryLimit(query), isAppend);
 		}
 
 		boolean orderAppended = false;
@@ -2021,7 +2021,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 				isAppend |= appendPseudoOrderClause(sql);
 			}
 
-			isAppend |= appendLimitOffsetSuffixClause(sql, query.getOffset(), getQueryLimit(query), isAppend);
+			isAppend |= appendLimitOffsetSuffixClause(sql, query.offset(), getQueryLimit(query), isAppend);
 		}
 
 		return isAppend;
@@ -2333,7 +2333,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 	 */
 	protected int getQueryLimit(Query<? extends Entity> query) throws UnifyException {
 		if (query.isLimit()) {
-			return query.getLimit();
+			return query.limit();
 		}
 
 		if (query.isApplyAppQueryLimit()) {
@@ -2363,7 +2363,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 		}
 
 		appendAggregateFunctionSql(aggregateSql, aggregateFunction.getType(), sqlFieldInfo.getPreferredColumnName(),
-				query.isDistinct());
+				query.distinct());
 		returnFieldInfoList.add(sqlFieldInfo);
 
 		addGroupingSelect(sqlEntityInfo, groupingFunction, aggregateSql, returnFieldInfoList);
@@ -2374,7 +2374,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 				groupingFunction);
 
 		return new SqlStatement(sqlEntityInfo, SqlStatementType.FIND, aggregateSql.toString(), parameterInfoList,
-				getSqlResultList(returnFieldInfoList), query.isLenient());
+				getSqlResultList(returnFieldInfoList), query.lenient());
 	}
 
 	private SqlStatement internalPrepareAggregateStatement(List<AggregateFunction> aggregateFunctionList,
@@ -2383,7 +2383,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 		List<SqlParameter> parameterInfoList = new ArrayList<SqlParameter>();
 		List<SqlFieldInfo> returnFieldInfoList = null;
 
-		final boolean distinct = query.isDistinct();
+		final boolean distinct = query.distinct();
 		returnFieldInfoList = new ArrayList<SqlFieldInfo>();
 		StringBuilder aggregateSql = new StringBuilder();
 		aggregateSql.append("SELECT ");
@@ -2414,7 +2414,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 				groupingFunction);
 
 		return new SqlStatement(sqlEntityInfo, SqlStatementType.FIND, aggregateSql.toString(), parameterInfoList,
-				getSqlResultList(returnFieldInfoList), query.isLenient());
+				getSqlResultList(returnFieldInfoList), query.lenient());
 	}
 
 	private void addGroupingSelect(SqlEntityInfo sqlEntityInfo, List<GroupingFunction> groupingFunction,
@@ -2558,7 +2558,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 			}
 
 			if (queryType.includeLimit()) {
-				isAppend |= appendWhereLimitOffsetSuffixClause(sql, query.getOffset(), limit, isAppend);
+				isAppend |= appendWhereLimitOffsetSuffixClause(sql, query.offset(), limit, isAppend);
 			}
 
 			boolean isOrderAppend = false;
@@ -2574,7 +2574,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 					isAppend |= appendPseudoOrderClause(sql);
 				}
 
-				isAppend |= appendLimitOffsetSuffixClause(sql, query.getOffset(), limit, isAppend);
+				isAppend |= appendLimitOffsetSuffixClause(sql, query.offset(), limit, isAppend);
 			}
 
 			if (isCritLimOffset) {
@@ -2623,10 +2623,10 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 			StringBuilder critSql) throws UnifyException {
 		sql.append('(');
 		if (query.isMin()) {
-			String minColumn = sqlEntityInfo.getListFieldInfo(query.getMinProperty()).getPreferredColumnName();
+			String minColumn = sqlEntityInfo.getListFieldInfo(query.min()).getPreferredColumnName();
 			sql.append(minColumn).append(" = (SELECT MIN(").append(minColumn);
 		} else {
-			String maxColumn = sqlEntityInfo.getListFieldInfo(query.getMaxProperty()).getPreferredColumnName();
+			String maxColumn = sqlEntityInfo.getListFieldInfo(query.max()).getPreferredColumnName();
 			sql.append(maxColumn).append(" = (SELECT MAX(").append(maxColumn);
 		}
 
@@ -2853,7 +2853,7 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 
 	private boolean appendLimitOffsetInfixClause(StringBuilder sql, Query<? extends Entity> query)
 			throws UnifyException {
-		return appendLimitOffsetInfixClause(sql, query.getOffset(), getQueryLimit(query));
+		return appendLimitOffsetInfixClause(sql, query.offset(), getQueryLimit(query));
 	}
 
 	private String getTableName(NativeQuery query, String tableName) {

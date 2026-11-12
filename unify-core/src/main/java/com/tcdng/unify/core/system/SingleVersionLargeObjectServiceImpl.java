@@ -54,7 +54,7 @@ public class SingleVersionLargeObjectServiceImpl extends AbstractBusinessService
 
 		SingleVersionBlob singleVersionBlob = db().find(new SingleVersionBlobQuery()
 				.applicationName(applicationName).categoryName(categoryName).objectName(objectName)
-				.addSelect("id", "applicationName", "categoryName", "objectName", "version"));
+				.select("id", "applicationName", "categoryName", "objectName", "version"));
 		if (singleVersionBlob == null) {
 			singleVersionBlob = new SingleVersionBlob();
 			singleVersionBlob.setApplicationName(applicationName);
@@ -79,7 +79,7 @@ public class SingleVersionLargeObjectServiceImpl extends AbstractBusinessService
 	@Override
 	public byte[] retrieveBlob(String applicationName, String categoryName, String objectName) throws UnifyException {
 		SingleVersionBlob singleVersionBlob = db().find(new SingleVersionBlobQuery().applicationName(applicationName)
-				.categoryName(categoryName).objectName(objectName).addSelect("largeObject"));
+				.categoryName(categoryName).objectName(objectName).select("largeObject"));
 		if (singleVersionBlob != null) {
 			return singleVersionBlob.getLargeObject();
 		}
@@ -96,7 +96,7 @@ public class SingleVersionLargeObjectServiceImpl extends AbstractBusinessService
 	@Override
 	public long getBlobVersion(String applicationName, String categoryName, String objectName) throws UnifyException {
 		SingleVersionBlob singleVersionBlob = db().find(new SingleVersionBlobQuery().applicationName(applicationName)
-				.categoryName(categoryName).objectName(objectName).addSelect("version"));
+				.categoryName(categoryName).objectName(objectName).select("version"));
 		if (singleVersionBlob != null) {
 			return singleVersionBlob.getVersion();
 		}
@@ -115,7 +115,7 @@ public class SingleVersionLargeObjectServiceImpl extends AbstractBusinessService
 
 		SingleVersionClob singleVersionClob = db().find(new SingleVersionClobQuery()
 				.applicationName(applicationName).categoryName(categoryName).objectName(objectName)
-				.addSelect("id", "applicationName", "categoryName", "objectName", "version"));
+				.select("id", "applicationName", "categoryName", "objectName", "version"));
 		if (singleVersionClob == null) {
 			singleVersionClob = new SingleVersionClob();
 			singleVersionClob.setApplicationName(applicationName);
@@ -140,7 +140,7 @@ public class SingleVersionLargeObjectServiceImpl extends AbstractBusinessService
 	@Override
 	public String retrieveClob(String applicationName, String categoryName, String objectName) throws UnifyException {
 		SingleVersionClob singleVersionClob = db().find(new SingleVersionClobQuery().applicationName(applicationName)
-				.categoryName(categoryName).objectName(objectName).addSelect("largeObject"));
+				.categoryName(categoryName).objectName(objectName).select("largeObject"));
 		if (singleVersionClob != null) {
 			return singleVersionClob.getLargeObject();
 		}
@@ -157,7 +157,7 @@ public class SingleVersionLargeObjectServiceImpl extends AbstractBusinessService
 	@Override
 	public long getClobVersion(String applicationName, String categoryName, String objectName) throws UnifyException {
 		SingleVersionClob singleVersionClob = db().find(new SingleVersionClobQuery().applicationName(applicationName)
-				.categoryName(categoryName).objectName(objectName).addSelect("version"));
+				.categoryName(categoryName).objectName(objectName).select("version"));
 		if (singleVersionClob != null) {
 			return singleVersionClob.getVersion();
 		}

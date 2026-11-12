@@ -394,7 +394,7 @@ public class DatabaseChildCategoryCRUDTest extends AbstractUnifyComponentTest {
             report.setReportForm(new LoanReportParameter("beanEditor"));
             Long id = (Long) db.create(report);
 
-            LoanReport foundReport = db.findLean(new LoanReportQuery().addEquals("id", id));
+            LoanReport foundReport = db.findLean(new LoanReportQuery().equals("id", id));
             assertNotNull(foundReport);
             assertEquals("weeklyReport", foundReport.getName());
             assertEquals("Weekly LoanReport", foundReport.getDescription());
@@ -414,7 +414,7 @@ public class DatabaseChildCategoryCRUDTest extends AbstractUnifyComponentTest {
                     .addParameter(new LoanReportParameter("endDate", BooleanType.TRUE));
             Long id = (Long) db.create(report);
 
-            LoanReport foundReport = db.findLean(new LoanReportQuery().addEquals("id", id));
+            LoanReport foundReport = db.findLean(new LoanReportQuery().equals("id", id));
             assertNotNull(foundReport);
             assertEquals("weeklyReport", foundReport.getName());
             assertEquals("Weekly LoanReport", foundReport.getDescription());
@@ -433,7 +433,7 @@ public class DatabaseChildCategoryCRUDTest extends AbstractUnifyComponentTest {
             report.setReportForm(new LoanReportParameter("beanEditor"));
             Long id = (Long) db.create(report);
 
-            LoanReport foundReport = db.find(new LoanReportQuery().addEquals("id", id));
+            LoanReport foundReport = db.find(new LoanReportQuery().equals("id", id));
             assertNotNull(foundReport);
             assertEquals("weeklyReport", foundReport.getName());
             assertEquals("Weekly LoanReport", foundReport.getDescription());
@@ -455,7 +455,7 @@ public class DatabaseChildCategoryCRUDTest extends AbstractUnifyComponentTest {
                     .addParameter(new LoanReportParameter("endDate", BooleanType.TRUE));
             Long id = (Long) db.create(report);
 
-            LoanReport foundReport = db.find(new LoanReportQuery().addEquals("id", id));
+            LoanReport foundReport = db.find(new LoanReportQuery().equals("id", id));
             assertNotNull(foundReport);
             assertEquals("weeklyReport", foundReport.getName());
             assertEquals("Weekly LoanReport", foundReport.getDescription());
@@ -489,7 +489,7 @@ public class DatabaseChildCategoryCRUDTest extends AbstractUnifyComponentTest {
             report.setReportForm(new LoanReportParameter("beanEditor"));
             Long id = (Long) db.create(report);
 
-            LoanReport foundReport = db.find(new LoanReportQuery().addEquals("id", id).addSelect("name", "reportForm"));
+            LoanReport foundReport = db.find(new LoanReportQuery().equals("id", id).select("name", "reportForm"));
             assertNotNull(foundReport);
             assertEquals("weeklyReport", foundReport.getName());
             assertNull(foundReport.getDescription());
@@ -511,7 +511,7 @@ public class DatabaseChildCategoryCRUDTest extends AbstractUnifyComponentTest {
                     .addParameter(new LoanReportParameter("endDate", BooleanType.TRUE));
             Long id = (Long) db.create(report);
 
-            LoanReport foundReport = db.find(new LoanReportQuery().addEquals("id", id).addSelect("name", "parameters"));
+            LoanReport foundReport = db.find(new LoanReportQuery().equals("id", id).select("name", "parameters"));
             assertNotNull(foundReport);
             assertEquals("weeklyReport", foundReport.getName());
             assertNull(foundReport.getDescription());
@@ -606,7 +606,7 @@ public class DatabaseChildCategoryCRUDTest extends AbstractUnifyComponentTest {
             db.create(report);
 
             List<LoanReport> list = db.findAllWithChildren(
-                    new LoanReportQuery().addSelect("name", "description").ignoreEmptyCriteria(true));
+                    new LoanReportQuery().select("name", "description").ignoreEmptyCriteria(true));
             assertNotNull(list);
             assertEquals(1, list.size());
             assertEquals("weeklyReport", list.get(0).getName());
@@ -660,7 +660,7 @@ public class DatabaseChildCategoryCRUDTest extends AbstractUnifyComponentTest {
             db.create(report);
 
             List<LoanReport> list = db.findAllWithChildren(
-                    new LoanReportQuery().addSelect("name", "description").ignoreEmptyCriteria(true));
+                    new LoanReportQuery().select("name", "description").ignoreEmptyCriteria(true));
             assertNotNull(list);
             assertEquals("weeklyReport", list.get(0).getName());
             assertEquals("Weekly LoanReport", list.get(0).getDescription());
@@ -682,7 +682,7 @@ public class DatabaseChildCategoryCRUDTest extends AbstractUnifyComponentTest {
                     .addParameter(new LoanReportParameter("endDate", BooleanType.TRUE));
             Long id = (Long) db.create(report);
 
-            LoanReport foundReport = db.find(new LoanReportQuery().addEquals("id", id));
+            LoanReport foundReport = db.find(new LoanReportQuery().equals("id", id));
             assertNotNull(foundReport);
             assertEquals("weeklyReport", foundReport.getName());
             assertEquals("Weekly LoanReport", foundReport.getDescription());
@@ -764,7 +764,7 @@ public class DatabaseChildCategoryCRUDTest extends AbstractUnifyComponentTest {
                     .addParameter(new LoanReportParameter("endDate", BooleanType.TRUE));
             Long id = (Long) db.create(report);
 
-            LoanReport foundReport = db.findLean(new LoanReportQuery().addEquals("id", id));
+            LoanReport foundReport = db.findLean(new LoanReportQuery().equals("id", id));
             assertNotNull(foundReport);
             assertEquals("weeklyReport", foundReport.getName());
             assertEquals("Weekly LoanReport", foundReport.getDescription());
@@ -809,7 +809,7 @@ public class DatabaseChildCategoryCRUDTest extends AbstractUnifyComponentTest {
                     .addParameter(new LoanReportParameter("endDate", BooleanType.TRUE));
             Long id = (Long) db.create(report);
 
-            LoanReport foundReport = db.findLean(new LoanReportQuery().addEquals("id", id));
+            LoanReport foundReport = db.findLean(new LoanReportQuery().equals("id", id));
             assertNotNull(foundReport);
             assertEquals("weeklyReport", foundReport.getName());
             assertEquals("Weekly LoanReport", foundReport.getDescription());
@@ -840,7 +840,7 @@ public class DatabaseChildCategoryCRUDTest extends AbstractUnifyComponentTest {
                     .addParameter(new LoanReportParameter("endDate", BooleanType.TRUE));
             Long id = (Long) db.create(report);
 
-            LoanReport foundReport = db.findLean(new LoanReportQuery().addEquals("id", id));
+            LoanReport foundReport = db.findLean(new LoanReportQuery().equals("id", id));
             assertNotNull(foundReport);
             assertEquals("weeklyReport", foundReport.getName());
             assertEquals("Weekly LoanReport", foundReport.getDescription());
@@ -962,7 +962,7 @@ public class DatabaseChildCategoryCRUDTest extends AbstractUnifyComponentTest {
             report.setReportForm(new LoanReportParameter("grayEditor"));
             Long id = (Long) db.create(report);
 
-            LoanReport foundReport = db.listLean(new LoanReportQuery().addEquals("id", id));
+            LoanReport foundReport = db.listLean(new LoanReportQuery().equals("id", id));
             assertNotNull(foundReport);
             assertEquals("weeklyReport", foundReport.getName());
             assertEquals("Weekly LoanReport", foundReport.getDescription());
@@ -981,7 +981,7 @@ public class DatabaseChildCategoryCRUDTest extends AbstractUnifyComponentTest {
             report.addParameter(new LoanReportParameter("startDate")).addParameter(new LoanReportParameter("endDate"));
             Long id = (Long) db.create(report);
 
-            LoanReport foundReport = db.listLean(new LoanReportQuery().addEquals("id", id));
+            LoanReport foundReport = db.listLean(new LoanReportQuery().equals("id", id));
             assertNotNull(foundReport);
             assertEquals("weeklyReport", foundReport.getName());
             assertEquals("Weekly LoanReport", foundReport.getDescription());
@@ -1000,7 +1000,7 @@ public class DatabaseChildCategoryCRUDTest extends AbstractUnifyComponentTest {
             report.setReportForm(new LoanReportParameter("grayEditor"));
             Long id = (Long) db.create(report);
 
-            LoanReport foundReport = db.list(new LoanReportQuery().addEquals("id", id));
+            LoanReport foundReport = db.list(new LoanReportQuery().equals("id", id));
             assertNotNull(foundReport);
             assertEquals("weeklyReport", foundReport.getName());
             assertEquals("Weekly LoanReport", foundReport.getDescription());
@@ -1021,7 +1021,7 @@ public class DatabaseChildCategoryCRUDTest extends AbstractUnifyComponentTest {
             report.addParameter(new LoanReportParameter("startDate")).addParameter(new LoanReportParameter("endDate"));
             Long id = (Long) db.create(report);
 
-            LoanReport foundReport = db.list(new LoanReportQuery().addEquals("id", id));
+            LoanReport foundReport = db.list(new LoanReportQuery().equals("id", id));
             assertNotNull(foundReport);
             assertEquals("weeklyReport", foundReport.getName());
             assertEquals("Weekly LoanReport", foundReport.getDescription());
@@ -1044,7 +1044,7 @@ public class DatabaseChildCategoryCRUDTest extends AbstractUnifyComponentTest {
             Long id = (Long) db.create(report);
 
             LoanReport foundReport = db
-                    .list(new LoanReportQuery().addEquals("id", id).addSelect("description", "reportForm"));
+                    .list(new LoanReportQuery().equals("id", id).select("description", "reportForm"));
             assertNotNull(foundReport);
             assertNull(foundReport.getName());
             assertEquals("Weekly LoanReport", foundReport.getDescription());
@@ -1065,7 +1065,7 @@ public class DatabaseChildCategoryCRUDTest extends AbstractUnifyComponentTest {
             report.addParameter(new LoanReportParameter("startDate")).addParameter(new LoanReportParameter("endDate"));
             Long id = (Long) db.create(report);
 
-            LoanReport foundReport = db.list(new LoanReportQuery().addEquals("id", id).addSelect("parameters"));
+            LoanReport foundReport = db.list(new LoanReportQuery().equals("id", id).select("parameters"));
             assertNotNull(foundReport);
             assertNull(foundReport.getName());
             assertNull(foundReport.getDescription());
@@ -1149,7 +1149,7 @@ public class DatabaseChildCategoryCRUDTest extends AbstractUnifyComponentTest {
             db.create(report);
 
             List<LoanReport> list = db.listAllWithChildren(
-                    new LoanReportQuery().addSelect("name", "description").ignoreEmptyCriteria(true));
+                    new LoanReportQuery().select("name", "description").ignoreEmptyCriteria(true));
             assertNotNull(list);
             assertEquals(1, list.size());
             assertEquals("weeklyReport", list.get(0).getName());
@@ -1203,7 +1203,7 @@ public class DatabaseChildCategoryCRUDTest extends AbstractUnifyComponentTest {
             db.create(report);
 
             List<LoanReport> list = db.listAllWithChildren(
-                    new LoanReportQuery().addSelect("name", "description").ignoreEmptyCriteria(true));
+                    new LoanReportQuery().select("name", "description").ignoreEmptyCriteria(true));
             assertNotNull(list);
             assertEquals("weeklyReport", list.get(0).getName());
             assertEquals("Weekly LoanReport", list.get(0).getDescription());
@@ -1225,7 +1225,7 @@ public class DatabaseChildCategoryCRUDTest extends AbstractUnifyComponentTest {
                     .addParameter(new LoanReportParameter("endDate", BooleanType.TRUE));
             Long id = (Long) db.create(report);
 
-            LoanReport foundReport = db.findLean(new LoanReportQuery().addEquals("id", id));
+            LoanReport foundReport = db.findLean(new LoanReportQuery().equals("id", id));
             assertNotNull(foundReport);
             assertEquals("weeklyReport", foundReport.getName());
             assertEquals("Weekly LoanReport", foundReport.getDescription());
@@ -1270,7 +1270,7 @@ public class DatabaseChildCategoryCRUDTest extends AbstractUnifyComponentTest {
                     .addParameter(new LoanReportParameter("endDate", BooleanType.TRUE));
             Long id = (Long) db.create(report);
 
-            LoanReport foundReport = db.findLean(new LoanReportQuery().addEquals("id", id));
+            LoanReport foundReport = db.findLean(new LoanReportQuery().equals("id", id));
             assertNotNull(foundReport);
             assertEquals("weeklyReport", foundReport.getName());
             assertEquals("Weekly LoanReport", foundReport.getDescription());
@@ -1300,7 +1300,7 @@ public class DatabaseChildCategoryCRUDTest extends AbstractUnifyComponentTest {
                     .addParameter(new LoanReportParameter("endDate", BooleanType.TRUE));
             Long id = (Long) db.create(report);
 
-            LoanReport foundReport = db.findLean(new LoanReportQuery().addEquals("id", id));
+            LoanReport foundReport = db.findLean(new LoanReportQuery().equals("id", id));
             assertNotNull(foundReport);
             assertEquals("weeklyReport", foundReport.getName());
             assertEquals("Weekly LoanReport", foundReport.getDescription());
@@ -1343,7 +1343,7 @@ public class DatabaseChildCategoryCRUDTest extends AbstractUnifyComponentTest {
             report.setParameters(new ArrayList<LoanReportParameter>());
             Long id = (Long) db.create(report);
             db.delete(LoanReport.class, id);
-            assertEquals(0, db.countAll(new LoanReportQuery().addEquals("id", id)));
+            assertEquals(0, db.countAll(new LoanReportQuery().equals("id", id)));
         } finally {
             tm.endTransaction();
         }
@@ -1357,7 +1357,7 @@ public class DatabaseChildCategoryCRUDTest extends AbstractUnifyComponentTest {
             report.setParameters(null);
             Long id = (Long) db.create(report);
             db.delete(LoanReport.class, id);
-            assertEquals(0, db.countAll(new LoanReportQuery().addEquals("id", id)));
+            assertEquals(0, db.countAll(new LoanReportQuery().equals("id", id)));
         } finally {
             tm.endTransaction();
         }
@@ -1371,7 +1371,7 @@ public class DatabaseChildCategoryCRUDTest extends AbstractUnifyComponentTest {
             report.setReportForm(new LoanReportParameter("sampleEditor"));
             Long id = (Long) db.create(report);
             db.delete(LoanReport.class, id);
-            assertEquals(0, db.countAll(new LoanReportQuery().addEquals("id", id)));
+            assertEquals(0, db.countAll(new LoanReportQuery().equals("id", id)));
             assertEquals(0, db.countAll(new ReportFormQuery().ignoreEmptyCriteria(true)));
         } finally {
             tm.endTransaction();
@@ -1386,7 +1386,7 @@ public class DatabaseChildCategoryCRUDTest extends AbstractUnifyComponentTest {
             report.addParameter(new LoanReportParameter("startDate")).addParameter(new LoanReportParameter("endDate"));
             Long id = (Long) db.create(report);
             db.delete(LoanReport.class, id);
-            assertEquals(0, db.countAll(new LoanReportQuery().addEquals("id", id)));
+            assertEquals(0, db.countAll(new LoanReportQuery().equals("id", id)));
             assertEquals(0, db.countAll(new LoanReportParameterQuery().ignoreEmptyCriteria(true)));
         } finally {
             tm.endTransaction();
@@ -1402,7 +1402,7 @@ public class DatabaseChildCategoryCRUDTest extends AbstractUnifyComponentTest {
             Long id = (Long) db.create(report);
             report = db.find(LoanReport.class, id);
             db.deleteByIdVersion(report);
-            assertEquals(0, db.countAll(new LoanReportQuery().addEquals("id", id)));
+            assertEquals(0, db.countAll(new LoanReportQuery().equals("id", id)));
             assertEquals(0, db.countAll(new ReportFormQuery().ignoreEmptyCriteria(true)));
         } finally {
             tm.endTransaction();
@@ -1419,7 +1419,7 @@ public class DatabaseChildCategoryCRUDTest extends AbstractUnifyComponentTest {
             Long id = (Long) db.create(report);
             report = db.find(LoanReport.class, id);
             db.deleteByIdVersion(report);
-            assertEquals(0, db.countAll(new LoanReportQuery().addEquals("id", id)));
+            assertEquals(0, db.countAll(new LoanReportQuery().equals("id", id)));
             assertEquals(0, db.countAll(new LoanReportParameterQuery().ignoreEmptyCriteria(true)));
         } finally {
             tm.endTransaction();
@@ -1478,7 +1478,7 @@ public class DatabaseChildCategoryCRUDTest extends AbstractUnifyComponentTest {
             report.setReportForm(new LoanReportParameter("editor2"));
             Long id2 = (Long) db.create(report);
 
-            db.deleteAll(new LoanReportQuery().addEquals("id", id1));
+            db.deleteAll(new LoanReportQuery().equals("id", id1));
 
             int count = db.countAll(new LoanReportQuery().ignoreEmptyCriteria(true));
             assertEquals(1, count);
@@ -1508,7 +1508,7 @@ public class DatabaseChildCategoryCRUDTest extends AbstractUnifyComponentTest {
             report.addParameter(new LoanReportParameter("staffNo"));
             Long id2 = (Long) db.create(report);
 
-            db.deleteAll(new LoanReportQuery().addEquals("id", id1));
+            db.deleteAll(new LoanReportQuery().equals("id", id1));
 
             int count = db.countAll(new LoanReportQuery().ignoreEmptyCriteria(true));
             assertEquals(1, count);

@@ -30,19 +30,19 @@ public class ClusterJobQuery extends SequenceEntityQuery<ClusterJob> {
 	}
 
 	public ClusterJobQuery workerId(String workerId) {
-		return (ClusterJobQuery) addEquals("workerId", workerId);
+		return (ClusterJobQuery) equals("workerId", workerId);
 	}
 
 	public ClusterJobQuery status(JobStatus status) {
-		return (ClusterJobQuery) addEquals("status", status);
+		return (ClusterJobQuery) equals("status", status);
 	}
 
 	public ClusterJobQuery error() {
-		return (ClusterJobQuery) addIsNotNull("error");
+		return (ClusterJobQuery) notnull("error");
 	}
 
 	public ClusterJobQuery notError() {
-		return (ClusterJobQuery) addIsNull("error");
+		return (ClusterJobQuery) isnull("error");
 	}
 
 }

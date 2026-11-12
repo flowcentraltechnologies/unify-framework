@@ -205,7 +205,7 @@ public class DynamicSqlEntityLoaderTest extends AbstractUnifyComponentTest {
 			Entity fInst = db.find(inst.getClass(), id);
 			assertNotNull(fInst);
 			db.delete(inst.getClass(), id);
-			assertEquals(0, db.countAll(Query.of(inst.getClass()).addEquals("name", "20dPrinter")));
+			assertEquals(0, db.countAll(Query.of(inst.getClass()).equals("name", "20dPrinter")));
 		} catch (Exception e) {
 			tm.setRollback();
 			throw e;
@@ -331,7 +331,7 @@ public class DynamicSqlEntityLoaderTest extends AbstractUnifyComponentTest {
 			Entity fInst = db.find(inst.getClass(), id);
 			assertNotNull(fInst);
 			db.delete(inst.getClass(), id);
-			assertEquals(0, db.countAll(Query.of(inst.getClass()).addEquals("name", "20dPrinter")));
+			assertEquals(0, db.countAll(Query.of(inst.getClass()).equals("name", "20dPrinter")));
 		} catch (Exception e) {
 			tm.setRollback();
 			throw e;
@@ -441,12 +441,12 @@ public class DynamicSqlEntityLoaderTest extends AbstractUnifyComponentTest {
 			ReflectUtils.setBeanProperty(authorInst, "bookList", Arrays.asList(book1Inst, book2Inst));
 			Long id = (Long) db.create(authorInst);
 
-			int bookCount = db.countAll(Query.of(book1Inst.getClass()).addEquals("authorId", id));
+			int bookCount = db.countAll(Query.of(book1Inst.getClass()).equals("authorId", id));
 			assertEquals(2, bookCount);
 
 			db.delete(authorInst.getClass(), id);
 
-			bookCount = db.countAll(Query.of(book1Inst.getClass()).addEquals("authorId", id));
+			bookCount = db.countAll(Query.of(book1Inst.getClass()).equals("authorId", id));
 			assertEquals(0, bookCount);
 		} catch (Exception e) {
 			tm.setRollback();

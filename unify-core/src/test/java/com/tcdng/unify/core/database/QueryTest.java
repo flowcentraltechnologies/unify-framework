@@ -36,7 +36,7 @@ public class QueryTest {
         Query<Fruit> query = Query.of(Fruit.class);
         assertFalse(query.isRestrictedField("name"));
 
-        query.addEquals("name", "tangerine");
+        query.equals("name", "tangerine");
         assertTrue(query.isRestrictedField("name"));
         assertFalse(query.isRestrictedField("price"));
     }
@@ -47,8 +47,8 @@ public class QueryTest {
         assertFalse(query.isRestrictedField("name"));
         assertFalse(query.isRestrictedField("price"));
 
-        query.addEquals("name", "tangerine");
-        query.addRestriction(new OrBuilder().equals("price", 45.0).equals("price", 60.0).build());
+        query.equals("name", "tangerine");
+        query.restriction(new OrBuilder().equals("price", 45.0).equals("price", 60.0).build());
         assertTrue(query.isRestrictedField("name"));
         assertTrue(query.isRestrictedField("price"));
     }

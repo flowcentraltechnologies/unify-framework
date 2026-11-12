@@ -103,7 +103,7 @@ public class HeartbeatManagerImpl extends AbstractBusinessService implements Hea
 	}
 
 	public void performHeartbeat(HeartbeatConfig heartbeatConfig) throws UnifyException {
-		if (db().updateAll(heartbeatConfig.getQuery(), new Update().addSetToNowWithOffset(
+		if (db().updateAll(heartbeatConfig.getQuery(), new Update().setNowWithOffset(
 				heartbeatConfig.getExpiryFieldName(), heartbeatConfig.getLifeExtensionInMinutes() * 60)) == 0) {
 			stopHeartbeat(heartbeatConfig.getId());
 		}

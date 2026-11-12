@@ -30,18 +30,18 @@ public class AbstractSingleVersionLobEntityQuery<T extends AbstractSingleVersion
     }
 
     public AbstractSingleVersionLobEntityQuery<T> applicationName(String applicationName) {
-        return (AbstractSingleVersionLobEntityQuery<T>) addEquals("applicationName", applicationName);
+        return (AbstractSingleVersionLobEntityQuery<T>) equals("applicationName", applicationName);
     }
 
     public AbstractSingleVersionLobEntityQuery<T> categoryName(String categoryName) {
-        return (AbstractSingleVersionLobEntityQuery<T>) addEquals("categoryName", categoryName);
+        return (AbstractSingleVersionLobEntityQuery<T>) equals("categoryName", categoryName);
     }
 
     public AbstractSingleVersionLobEntityQuery<T> objectName(String objectName) {
-        return (AbstractSingleVersionLobEntityQuery<T>) addEquals("objectName", objectName);
+        return (AbstractSingleVersionLobEntityQuery<T>) equals("objectName", objectName);
     }
 
     public AbstractSingleVersionLobEntityQuery<T> isOlderVersion(long version) {
-        return (AbstractSingleVersionLobEntityQuery<T>) addLessThan("version", version);
+        return (AbstractSingleVersionLobEntityQuery<T>) less("version", version);
     }
 }

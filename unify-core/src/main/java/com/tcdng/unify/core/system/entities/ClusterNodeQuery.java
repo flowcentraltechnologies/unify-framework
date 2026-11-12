@@ -33,18 +33,18 @@ public class ClusterNodeQuery extends Query<ClusterNode> {
     }
 
     public ClusterNodeQuery nodeId(String nodeId) {
-        return (ClusterNodeQuery) addEquals("nodeId", nodeId);
+        return (ClusterNodeQuery) equals("nodeId", nodeId);
     }
 
     public ClusterNodeQuery nodeIdIn(Collection<String> nodeId) {
-        return (ClusterNodeQuery) addAmongst("nodeId", nodeId);
+        return (ClusterNodeQuery) amongst("nodeId", nodeId);
     }
 
     public ClusterNodeQuery nodeNotEqual(String nodeId) {
-        return (ClusterNodeQuery) addNotEquals("nodeId", nodeId);
+        return (ClusterNodeQuery) notequals("nodeId", nodeId);
     }
 
     public ClusterNodeQuery lastHeartBeatOlderThan(Date expiryDt) {
-        return (ClusterNodeQuery) addLessThan("lastHeartBeat", expiryDt);
+        return (ClusterNodeQuery) less("lastHeartBeat", expiryDt);
     }
 }

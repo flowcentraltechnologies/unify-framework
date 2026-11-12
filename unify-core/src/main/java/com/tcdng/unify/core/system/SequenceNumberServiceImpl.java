@@ -85,13 +85,13 @@ public class SequenceNumberServiceImpl extends AbstractBusinessService implement
 					for (String _fieldName : fieldNames) {
 						Object val = DataUtils.getBeanProperty(inst, _fieldName);
 						if (val != null) {
-							query.addEquals(_fieldName, val);
+							query.equals(_fieldName, val);
 						}
 					}
 
 					final Long id = DataUtils.getBeanProperty(Long.class, inst, "id");
 					if (QueryUtils.isValidLongCriteria(id)) {
-						query.addNotEquals("id", id);
+						query.notequals("id", id);
 					}
 
 					if (!query.isEmptyCriteria() && db(entityClass).exists(query)) {
@@ -113,13 +113,13 @@ public class SequenceNumberServiceImpl extends AbstractBusinessService implement
 				for (String fieldName : fieldNames) {
 					Object val = DataUtils.getBeanProperty(inst, fieldName);
 					if (val != null) {
-						query.addEquals(fieldName, val);
+						query.equals(fieldName, val);
 					}
 				}
 
 				final Long id = DataUtils.getBeanProperty(Long.class, inst, "id");
 				if (QueryUtils.isValidLongCriteria(id)) {
-					query.addNotEquals("id", id);
+					query.notequals("id", id);
 				}
 
 				if (db(entityClass).exists(query)) {

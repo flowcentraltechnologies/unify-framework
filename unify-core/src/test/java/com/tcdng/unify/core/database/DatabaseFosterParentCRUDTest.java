@@ -373,7 +373,7 @@ public class DatabaseFosterParentCRUDTest extends AbstractUnifyComponentTest {
                     .addAttachment(new FileAttachment("tinCert", "TIN Certificate"));
             Long id = (Long) db.create(loanApplication);
 
-            LoanApplication foundLoanApplication = db.findLean(new LoanApplicationQuery().addEquals("id", id));
+            LoanApplication foundLoanApplication = db.findLean(new LoanApplicationQuery().equals("id", id));
             assertNotNull(foundLoanApplication);
             assertEquals("weeklyLoanApplication", foundLoanApplication.getApplicationName());
             assertEquals(BigDecimal.valueOf(25.5).setScale(2), foundLoanApplication.getAmount());
@@ -393,7 +393,7 @@ public class DatabaseFosterParentCRUDTest extends AbstractUnifyComponentTest {
                     .addAttachment(new FileAttachment("tinCert", "TIN Certificate"));
             Long id = (Long) db.create(loanApplication);
 
-            LoanApplication foundLoanApplication = db.find(new LoanApplicationQuery().addEquals("id", id));
+            LoanApplication foundLoanApplication = db.find(new LoanApplicationQuery().equals("id", id));
             assertNotNull(foundLoanApplication);
             assertEquals("weeklyLoanApplication", foundLoanApplication.getApplicationName());
             assertEquals(BigDecimal.valueOf(25.5).setScale(2), foundLoanApplication.getAmount());
@@ -423,7 +423,7 @@ public class DatabaseFosterParentCRUDTest extends AbstractUnifyComponentTest {
             Long id = (Long) db.create(loanApplication);
 
             LoanApplication foundLoanApplication = db
-                    .find(new LoanApplicationQuery().addEquals("id", id).addSelect("applicationName", "fileList"));
+                    .find(new LoanApplicationQuery().equals("id", id).select("applicationName", "fileList"));
             assertNotNull(foundLoanApplication);
             assertEquals("weeklyLoanApplication", foundLoanApplication.getApplicationName());
             assertNull(foundLoanApplication.getAmount());
@@ -503,7 +503,7 @@ public class DatabaseFosterParentCRUDTest extends AbstractUnifyComponentTest {
                     .addAttachment(new FileAttachment("tinCert", "TIN Certificate"));
             Long id = (Long) db.create(loanApplication);
 
-            LoanApplication foundLoanApplication = db.findLean(new LoanApplicationQuery().addEquals("id", id));
+            LoanApplication foundLoanApplication = db.findLean(new LoanApplicationQuery().equals("id", id));
             assertNotNull(foundLoanApplication);
             assertEquals("weeklyLoanApplication", foundLoanApplication.getApplicationName());
             assertEquals(BigDecimal.valueOf(25.5).setScale(2), foundLoanApplication.getAmount());
@@ -586,7 +586,7 @@ public class DatabaseFosterParentCRUDTest extends AbstractUnifyComponentTest {
                     .addAttachment(new FileAttachment("tinCert", "TIN Certificate"));
             Long id = (Long) db.create(loanApplication);
 
-            LoanApplication foundLoanApplication = db.listLean(new LoanApplicationQuery().addEquals("id", id));
+            LoanApplication foundLoanApplication = db.listLean(new LoanApplicationQuery().equals("id", id));
             assertNotNull(foundLoanApplication);
             assertEquals("weeklyLoanApplication", foundLoanApplication.getApplicationName());
             assertEquals(BigDecimal.valueOf(25.5).setScale(2), foundLoanApplication.getAmount());
@@ -606,7 +606,7 @@ public class DatabaseFosterParentCRUDTest extends AbstractUnifyComponentTest {
                     .addAttachment(new FileAttachment("tinCert", "TIN Certificate"));
             Long id = (Long) db.create(loanApplication);
 
-            LoanApplication foundLoanApplication = db.list(new LoanApplicationQuery().addEquals("id", id));
+            LoanApplication foundLoanApplication = db.list(new LoanApplicationQuery().equals("id", id));
             assertNotNull(foundLoanApplication);
             assertEquals("weeklyLoanApplication", foundLoanApplication.getApplicationName());
             assertEquals(BigDecimal.valueOf(25.5).setScale(2), foundLoanApplication.getAmount());
@@ -636,7 +636,7 @@ public class DatabaseFosterParentCRUDTest extends AbstractUnifyComponentTest {
             Long id = (Long) db.create(loanApplication);
 
             LoanApplication foundLoanApplication = db
-                    .list(new LoanApplicationQuery().addEquals("id", id).addSelect("fileList"));
+                    .list(new LoanApplicationQuery().equals("id", id).select("fileList"));
             assertNotNull(foundLoanApplication);
             assertNull(foundLoanApplication.getApplicationName());
             assertNull(foundLoanApplication.getAmount());
@@ -716,7 +716,7 @@ public class DatabaseFosterParentCRUDTest extends AbstractUnifyComponentTest {
                     .addAttachment(new FileAttachment("tinCert", "TIN Certificate"));
             Long id = (Long) db.create(loanApplication);
 
-            LoanApplication foundLoanApplication = db.findLean(new LoanApplicationQuery().addEquals("id", id));
+            LoanApplication foundLoanApplication = db.findLean(new LoanApplicationQuery().equals("id", id));
             assertNotNull(foundLoanApplication);
             assertEquals("weeklyLoanApplication", foundLoanApplication.getApplicationName());
             assertEquals(BigDecimal.valueOf(25.5).setScale(2), foundLoanApplication.getAmount());
@@ -749,7 +749,7 @@ public class DatabaseFosterParentCRUDTest extends AbstractUnifyComponentTest {
             loanApplication.setFileList(new ArrayList<FileAttachment>());
             Long id = (Long) db.create(loanApplication);
             db.delete(LoanApplication.class, id);
-            assertEquals(0, db.countAll(new LoanApplicationQuery().addEquals("id", id)));
+            assertEquals(0, db.countAll(new LoanApplicationQuery().equals("id", id)));
         } finally {
             tm.endTransaction();
         }
@@ -763,7 +763,7 @@ public class DatabaseFosterParentCRUDTest extends AbstractUnifyComponentTest {
             loanApplication.setFileList(null);
             Long id = (Long) db.create(loanApplication);
             db.delete(LoanApplication.class, id);
-            assertEquals(0, db.countAll(new LoanApplicationQuery().addEquals("id", id)));
+            assertEquals(0, db.countAll(new LoanApplicationQuery().equals("id", id)));
         } finally {
             tm.endTransaction();
         }
@@ -778,7 +778,7 @@ public class DatabaseFosterParentCRUDTest extends AbstractUnifyComponentTest {
                     .addAttachment(new FileAttachment("tinCert", "TIN Certificate"));
             Long id = (Long) db.create(loanApplication);
             db.delete(LoanApplication.class, id);
-            assertEquals(0, db.countAll(new LoanApplicationQuery().addEquals("id", id)));
+            assertEquals(0, db.countAll(new LoanApplicationQuery().equals("id", id)));
             assertEquals(0, db.countAll(new FileAttachmentQuery().ignoreEmptyCriteria(true)));
         } finally {
             tm.endTransaction();
@@ -795,7 +795,7 @@ public class DatabaseFosterParentCRUDTest extends AbstractUnifyComponentTest {
             Long id = (Long) db.create(loanApplication);
             loanApplication = db.find(LoanApplication.class, id);
             db.deleteByIdVersion(loanApplication);
-            assertEquals(0, db.countAll(new LoanApplicationQuery().addEquals("id", id)));
+            assertEquals(0, db.countAll(new LoanApplicationQuery().equals("id", id)));
             assertEquals(0, db.countAll(new FileAttachmentQuery().ignoreEmptyCriteria(true)));
         } finally {
             tm.endTransaction();
@@ -835,7 +835,7 @@ public class DatabaseFosterParentCRUDTest extends AbstractUnifyComponentTest {
             loanApplication.addAttachment(new FileAttachment("birthCert", "Birth Certificate"));
             Long id2 = (Long) db.create(loanApplication);
 
-            db.deleteAll(new LoanApplicationQuery().addEquals("id", id1));
+            db.deleteAll(new LoanApplicationQuery().equals("id", id1));
 
             int count = db.countAll(new LoanApplicationQuery().ignoreEmptyCriteria(true));
             assertEquals(1, count);

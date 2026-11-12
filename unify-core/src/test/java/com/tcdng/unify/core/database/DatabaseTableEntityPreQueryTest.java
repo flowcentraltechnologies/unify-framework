@@ -204,7 +204,7 @@ public class DatabaseTableEntityPreQueryTest extends AbstractUnifyComponentTest 
 
             // Order should be ignored
             testEntityPolicy.clearRestriction();
-            List<Fruit> testFruitList = db.findAll(new FruitQuery().addOrder("color").ignoreEmptyCriteria(true));
+            List<Fruit> testFruitList = db.findAll(new FruitQuery().order("color").ignoreEmptyCriteria(true));
             assertEquals(1, testFruitList.size());
             assertEquals(pineapple, testFruitList.get(0));
         } catch (Exception e) {
@@ -273,7 +273,7 @@ public class DatabaseTableEntityPreQueryTest extends AbstractUnifyComponentTest 
             db.create(new Fruit("banana", "yellow", 45.00));
 
             testEntityPolicy.setRestriction(new Like("name", "app"));
-            Fruit foundFruit = db.find(new FruitQuery().setMin("price"));
+            Fruit foundFruit = db.find(new FruitQuery().min("price"));
             assertEquals(apple, foundFruit);
         } catch (Exception e) {
             tm.setRollback();
@@ -293,7 +293,7 @@ public class DatabaseTableEntityPreQueryTest extends AbstractUnifyComponentTest 
             db.create(new Fruit("banana", "yellow", 45.00));
 
             testEntityPolicy.setRestriction(new Like("name", "app"));
-            Fruit foundFruit = db.find(new FruitQuery().setMin("price"));
+            Fruit foundFruit = db.find(new FruitQuery().min("price"));
             assertEquals(apple, foundFruit);
         } catch (Exception e) {
             tm.setRollback();
@@ -313,7 +313,7 @@ public class DatabaseTableEntityPreQueryTest extends AbstractUnifyComponentTest 
             db.create(new Fruit("banana", "yellow", 45.00));
 
             testEntityPolicy.setRestriction(new Like("name", "app"));
-            Fruit foundFruit = db.find(new FruitQuery().setMax("price"));
+            Fruit foundFruit = db.find(new FruitQuery().max("price"));
             assertEquals(pineapple, foundFruit);
         } catch (Exception e) {
             tm.setRollback();
@@ -333,7 +333,7 @@ public class DatabaseTableEntityPreQueryTest extends AbstractUnifyComponentTest 
             db.create(new Fruit("banana", "yellow", 45.00));
 
             testEntityPolicy.setRestriction(new Like("name", "app"));
-            Fruit foundFruit = db.find(new FruitQuery().setMax("price"));
+            Fruit foundFruit = db.find(new FruitQuery().max("price"));
             assertEquals(pineapple, foundFruit);
         } catch (Exception e) {
             tm.setRollback();
@@ -352,7 +352,7 @@ public class DatabaseTableEntityPreQueryTest extends AbstractUnifyComponentTest 
             db.create(new Fruit("banana", "yellow", 45.00));
 
             testEntityPolicy.setRestriction(new Equals("color", "cyan"));
-            Fruit foundFruit = db.find(new FruitQuery().addSelect("name", "price"));
+            Fruit foundFruit = db.find(new FruitQuery().select("name", "price"));
             assertNotNull(foundFruit);
             assertEquals("pineapple", foundFruit.getName());
             assertNull(foundFruit.getColor());
@@ -411,7 +411,7 @@ public class DatabaseTableEntityPreQueryTest extends AbstractUnifyComponentTest 
             db.create(orange);
 
             testEntityPolicy.setRestriction(new LessOrEqual("price", 20.00));
-            List<Fruit> testFruitList = db.findAll(new FruitQuery().addOrder("price"));
+            List<Fruit> testFruitList = db.findAll(new FruitQuery().order("price"));
             assertEquals(2, testFruitList.size());
             assertEquals(orange, testFruitList.get(0));
             assertEquals(apple, testFruitList.get(1));
@@ -432,7 +432,7 @@ public class DatabaseTableEntityPreQueryTest extends AbstractUnifyComponentTest 
             db.create(orange);
 
             testEntityPolicy.setRestriction(new LessOrEqual("price", 20.00));
-            List<Fruit> testFruitList = db.findAll(new FruitQuery().addOrder(OrderType.DESCENDING, "price"));
+            List<Fruit> testFruitList = db.findAll(new FruitQuery().order(OrderType.DESCENDING, "price"));
             assertEquals(2, testFruitList.size());
             assertEquals(apple, testFruitList.get(0));
             assertEquals(orange, testFruitList.get(1));
@@ -453,7 +453,7 @@ public class DatabaseTableEntityPreQueryTest extends AbstractUnifyComponentTest 
             db.create(orange);
 
             testEntityPolicy.setRestriction(new LessOrEqual("price", 20.00));
-            List<Fruit> testFruitList = db.findAll(new FruitQuery().addOrder("price").addSelect("name", "quantity"));
+            List<Fruit> testFruitList = db.findAll(new FruitQuery().order("price").select("name", "quantity"));
             assertEquals(2, testFruitList.size());
 
             Fruit foundFruit = testFruitList.get(0);
@@ -486,7 +486,7 @@ public class DatabaseTableEntityPreQueryTest extends AbstractUnifyComponentTest 
             db.create(orange);
 
             testEntityPolicy.setRestriction(new LessOrEqual("price", 20.00));
-            Map<String, Fruit> testFruitMap = db.findAllMap(String.class, "name", new FruitQuery().addOrder("price"));
+            Map<String, Fruit> testFruitMap = db.findAllMap(String.class, "name", new FruitQuery().order("price"));
             assertEquals(2, testFruitMap.size());
             assertEquals(orange, testFruitMap.get("orange"));
             assertEquals(apple, testFruitMap.get("apple"));
@@ -527,7 +527,7 @@ public class DatabaseTableEntityPreQueryTest extends AbstractUnifyComponentTest 
             db.create(orange);
 
             testEntityPolicy.setRestriction(new Amongst("name", Arrays.asList("apple", "orange")));
-            List<Fruit> testFruitList = db.findAll(new FruitQuery().addOrder("price"));
+            List<Fruit> testFruitList = db.findAll(new FruitQuery().order("price"));
             assertEquals(2, testFruitList.size());
             assertEquals(orange, testFruitList.get(0));
             assertEquals(apple, testFruitList.get(1));
@@ -567,7 +567,7 @@ public class DatabaseTableEntityPreQueryTest extends AbstractUnifyComponentTest 
             db.create(new Fruit("pineapple", "green", 63.00));
             db.create(new Fruit("peach", "peach", 11.50));
             List<Fruit> testFruitList =
-                    db.findAll(new FruitQuery().ignoreEmptyCriteria(true).addOrder("id").setLimit(4));
+                    db.findAll(new FruitQuery().ignoreEmptyCriteria(true).order("id").limit(4));
             assertEquals(4, testFruitList.size());
             assertEquals("apple", testFruitList.get(0).getName());
             assertEquals("banana", testFruitList.get(1).getName());
@@ -575,7 +575,7 @@ public class DatabaseTableEntityPreQueryTest extends AbstractUnifyComponentTest 
             assertEquals("mango", testFruitList.get(3).getName());
 
             testEntityPolicy.setRestriction(new Greater("price", 20.0));
-            testFruitList = db.findAll(new FruitQuery().addOrder("id").setLimit(2));
+            testFruitList = db.findAll(new FruitQuery().order("id").limit(2));
             assertEquals(2, testFruitList.size());
             assertEquals("banana", testFruitList.get(0).getName());
             assertEquals("orange", testFruitList.get(1).getName());
@@ -604,7 +604,7 @@ public class DatabaseTableEntityPreQueryTest extends AbstractUnifyComponentTest 
             Restriction restriction = query.getRestrictions();
 
             testEntityPolicy.setRestriction(new Like("name", "apple"));
-            Query<Fruit> copyQuery = query.copyNoCriteria().addRestriction(restriction).addOrder("name");
+            Query<Fruit> copyQuery = query.copyNoCriteria().restriction(restriction).order("name");
 
             List<Fruit> testFruitList = db.findAll(copyQuery);
 
@@ -649,7 +649,7 @@ public class DatabaseTableEntityPreQueryTest extends AbstractUnifyComponentTest 
 
             testEntityPolicy.setRestriction(new Equals("age", 45));
             Author foundAuthor =
-                    db.list(new AuthorQuery().addSelect("name", "gender", "retiredDesc", "officeId", "officeAddress"));
+                    db.list(new AuthorQuery().select("name", "gender", "retiredDesc", "officeId", "officeAddress"));
             assertEquals("Susan Bramer", foundAuthor.getName());
             assertEquals(Gender.FEMALE, foundAuthor.getGender());
             assertNull(foundAuthor.getRetired());
@@ -732,7 +732,7 @@ public class DatabaseTableEntityPreQueryTest extends AbstractUnifyComponentTest 
 
             // Pick authors with age less or equals 50 and order by name
             testEntityPolicy.setRestriction(new LessOrEqual("age", 50));
-            List<Author> testAuthorList = db.listAll(new AuthorQuery().addOrder("name"));
+            List<Author> testAuthorList = db.listAll(new AuthorQuery().order("name"));
             assertEquals(2, testAuthorList.size());
 
             // Should pick the Bramers with different offices
@@ -773,7 +773,7 @@ public class DatabaseTableEntityPreQueryTest extends AbstractUnifyComponentTest 
 
             // Pick authors with age less or equals 50 and order by name
             testEntityPolicy.setRestriction(new LessOrEqual("age", 50));
-            List<Author> testAuthorList = db.listAll(new AuthorQuery().addOrder(OrderType.DESCENDING, "name"));
+            List<Author> testAuthorList = db.listAll(new AuthorQuery().order(OrderType.DESCENDING, "name"));
             assertEquals(2, testAuthorList.size());
 
             // Should pick the Bramers with different offices
@@ -815,7 +815,7 @@ public class DatabaseTableEntityPreQueryTest extends AbstractUnifyComponentTest 
             // Pick authors with age less or equals 50 and order by name
             testEntityPolicy.setRestriction(new LessOrEqual("age", 50));
             List<Author> testAuthorList = db.listAll(
-                    new AuthorQuery().addOrder("name").addSelect("age", "retired", "gender", "officeTelephone"));
+                    new AuthorQuery().order("name").select("age", "retired", "gender", "officeTelephone"));
             assertEquals(2, testAuthorList.size());
 
             // Should pick the Bramers with different offices
@@ -854,7 +854,7 @@ public class DatabaseTableEntityPreQueryTest extends AbstractUnifyComponentTest 
 
             // Pick authors with age less or equals 50 and order by name
             testEntityPolicy.setRestriction(new LessOrEqual("age", 50));
-            Map<String, Author> testAuthorMap = db.listAllMap(String.class, "name", new AuthorQuery().addOrder("name"));
+            Map<String, Author> testAuthorMap = db.listAllMap(String.class, "name", new AuthorQuery().order("name"));
             assertNotNull(testAuthorMap);
             assertEquals(2, testAuthorMap.size());
 
@@ -894,7 +894,7 @@ public class DatabaseTableEntityPreQueryTest extends AbstractUnifyComponentTest 
             db.create(new Fruit("pineapple", "green", 63.00));
             db.create(new Fruit("peach", "peach", 11.50));
             List<Fruit> testFruitList =
-                    db.listAll(new FruitQuery().ignoreEmptyCriteria(true).addOrder("id").setLimit(4));
+                    db.listAll(new FruitQuery().ignoreEmptyCriteria(true).order("id").limit(4));
             assertEquals(4, testFruitList.size());
             assertEquals("apple", testFruitList.get(0).getName());
             assertEquals("banana", testFruitList.get(1).getName());
@@ -902,7 +902,7 @@ public class DatabaseTableEntityPreQueryTest extends AbstractUnifyComponentTest 
             assertEquals("mango", testFruitList.get(3).getName());
 
             testEntityPolicy.setRestriction(new Greater("price", 20.0));
-            testFruitList = db.findAll(new FruitQuery().addOrder("id").setLimit(2));
+            testFruitList = db.findAll(new FruitQuery().order("id").limit(2));
             assertEquals(2, testFruitList.size());
             assertEquals("banana", testFruitList.get(0).getName());
             assertEquals("orange", testFruitList.get(1).getName());
@@ -926,7 +926,7 @@ public class DatabaseTableEntityPreQueryTest extends AbstractUnifyComponentTest 
             // Pick authors with parklane telephone (view-only) and order by
             // name
             testEntityPolicy.setRestriction(new Equals("officeTelephone", "+2348888888"));
-            List<Author> testAuthorList = db.listAll(new AuthorQuery().addOrder("name"));
+            List<Author> testAuthorList = db.listAll(new AuthorQuery().order("name"));
             assertEquals(2, testAuthorList.size());
 
             // Should pick the Brian and Winfield with different offices
@@ -967,7 +967,7 @@ public class DatabaseTableEntityPreQueryTest extends AbstractUnifyComponentTest 
             assertEquals(3, db.updateAll(new FruitQuery(), new Update().add("price", 30.00)));
 
             testEntityPolicy.clearRestriction();
-            List<Fruit> testFruitList = db.findAll(new FruitQuery().ignoreEmptyCriteria(true).addOrder("name"));
+            List<Fruit> testFruitList = db.findAll(new FruitQuery().ignoreEmptyCriteria(true).order("name"));
             assertEquals(4, testFruitList.size());
 
             assertEquals("apple", testFruitList.get(0).getName());
@@ -993,11 +993,11 @@ public class DatabaseTableEntityPreQueryTest extends AbstractUnifyComponentTest 
             db.create(new Fruit("orange", "orange", 15.00));
 
             testEntityPolicy.setRestriction(new LessOrEqual("price", 45.00));
-            assertEquals(3, db.updateAll(new FruitQuery().addLessThanEqual("price", 45.00).addOrder("id"),
+            assertEquals(3, db.updateAll(new FruitQuery().lesseq("price", 45.00).order("id"),
                     new Update().add("price", 30.00)));
 
             testEntityPolicy.clearRestriction();
-            List<Fruit> testFruitList = db.findAll(new FruitQuery().ignoreEmptyCriteria(true).addOrder("name"));
+            List<Fruit> testFruitList = db.findAll(new FruitQuery().ignoreEmptyCriteria(true).order("name"));
             assertEquals(4, testFruitList.size());
 
             assertEquals("apple", testFruitList.get(0).getName());
@@ -1031,7 +1031,7 @@ public class DatabaseTableEntityPreQueryTest extends AbstractUnifyComponentTest 
 
             testEntityPolicy.clearRestriction();
             List<Author> testAuthorList =
-                    db.findAll(new AuthorQuery().ignoreEmptyCriteria(true).addOrder("age", "name"));
+                    db.findAll(new AuthorQuery().ignoreEmptyCriteria(true).order("age", "name"));
             assertEquals(3, testAuthorList.size());
 
             // Susan's age should be first and remain same at 45
@@ -1282,7 +1282,7 @@ public class DatabaseTableEntityPreQueryTest extends AbstractUnifyComponentTest 
             Long id = (Long) db.create(report);
 
             testEntityPolicy.setRestriction(new Equals("id", id));
-            Report foundReport = db.find(new ReportQuery().addSelect("name", "reportForm"));
+            Report foundReport = db.find(new ReportQuery().select("name", "reportForm"));
             assertNotNull(foundReport);
             assertEquals("weeklyReport", foundReport.getName());
             assertNull(foundReport.getDescription());
@@ -1304,7 +1304,7 @@ public class DatabaseTableEntityPreQueryTest extends AbstractUnifyComponentTest 
             Long id = (Long) db.create(report);
 
             testEntityPolicy.setRestriction(new Equals("id", id));
-            Report foundReport = db.find(new ReportQuery().addSelect("name", "parameters"));
+            Report foundReport = db.find(new ReportQuery().select("name", "parameters"));
             assertNotNull(foundReport);
             assertEquals("weeklyReport", foundReport.getName());
             assertNull(foundReport.getDescription());
@@ -1477,7 +1477,7 @@ public class DatabaseTableEntityPreQueryTest extends AbstractUnifyComponentTest 
             Long id = (Long) db.create(report);
 
             testEntityPolicy.setRestriction(new Equals("id", id));
-            Report foundReport = db.list(new ReportQuery().addSelect("description", "reportForm"));
+            Report foundReport = db.list(new ReportQuery().select("description", "reportForm"));
             assertNotNull(foundReport);
             assertNull(foundReport.getName());
             assertEquals("Weekly Report", foundReport.getDescription());
@@ -1498,7 +1498,7 @@ public class DatabaseTableEntityPreQueryTest extends AbstractUnifyComponentTest 
             Long id = (Long) db.create(report);
 
             testEntityPolicy.setRestriction(new Equals("id", id));
-            Report foundReport = db.list(new ReportQuery().addSelect("parameters"));
+            Report foundReport = db.list(new ReportQuery().select("parameters"));
             assertNotNull(foundReport);
             assertNull(foundReport.getName());
             assertNull(foundReport.getDescription());
@@ -1731,7 +1731,7 @@ public class DatabaseTableEntityPreQueryTest extends AbstractUnifyComponentTest 
             db.create(starApple);
 
             testEntityPolicy.setRestriction(new Like("name", "apple"));
-            List<Fruit> testFruitList = db.findAll(new FruitQuery().setMin("price").addOrder("name"));
+            List<Fruit> testFruitList = db.findAll(new FruitQuery().min("price").order("name"));
             assertEquals(2, testFruitList.size());
             assertEquals(apple, testFruitList.get(0));
             assertEquals(starApple, testFruitList.get(1));
@@ -1753,7 +1753,7 @@ public class DatabaseTableEntityPreQueryTest extends AbstractUnifyComponentTest 
 
             // Pick authors with age less or equals 50 and order by name
             testEntityPolicy.setRestriction(new LessOrEqual("age", 50));
-            List<Author> testAuthorList = db.listAll(new AuthorQuery().setMin("officeSize").addOrder("name"));
+            List<Author> testAuthorList = db.listAll(new AuthorQuery().min("officeSize").order("name"));
             assertEquals(1, testAuthorList.size());
 
             // Should pick the Brian Brammer because office has smaller size
@@ -1784,7 +1784,7 @@ public class DatabaseTableEntityPreQueryTest extends AbstractUnifyComponentTest 
             db.create(starApple);
 
             testEntityPolicy.setRestriction(new Like("name", "apple"));
-            List<Fruit> testFruitList = db.findAll(new FruitQuery().setMax("price").addOrder("name"));
+            List<Fruit> testFruitList = db.findAll(new FruitQuery().max("price").order("name"));
             assertEquals(1, testFruitList.size());
             assertEquals(apple, testFruitList.get(0));
         } finally {
@@ -1805,7 +1805,7 @@ public class DatabaseTableEntityPreQueryTest extends AbstractUnifyComponentTest 
 
             // Pick authors with age less or equals 50 and order by name
             testEntityPolicy.setRestriction(new Equals("gender", Gender.MALE));
-            List<Author> testAuthorList = db.listAll(new AuthorQuery().setMax("age").addOrder("name"));
+            List<Author> testAuthorList = db.listAll(new AuthorQuery().max("age").order("name"));
             assertEquals(1, testAuthorList.size());
 
             // Should pick the Winfield Hill because is male with max age

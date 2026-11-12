@@ -33,34 +33,34 @@ public class UserSessionTrackingQuery extends Query<UserSessionTracking> {
     }
 
     public UserSessionTrackingQuery id(String id) {
-        return (UserSessionTrackingQuery) addEquals("sessionId", id);
+        return (UserSessionTrackingQuery) equals("sessionId", id);
     }
 
     public UserSessionTrackingQuery idNot(String id) {
-        return (UserSessionTrackingQuery) addNotEquals("sessionId", id);
+        return (UserSessionTrackingQuery) notequals("sessionId", id);
     }
 
     public UserSessionTrackingQuery idAmongst(Collection<String> ids) {
-        return (UserSessionTrackingQuery) addAmongst("sessionId", ids);
+        return (UserSessionTrackingQuery) amongst("sessionId", ids);
     }
 
     public UserSessionTrackingQuery userLoginId(String userLoginId) {
-        return (UserSessionTrackingQuery) addEquals("userLoginId", userLoginId);
+        return (UserSessionTrackingQuery) equals("userLoginId", userLoginId);
     }
 
     public UserSessionTrackingQuery node(String node) {
-        return (UserSessionTrackingQuery) addEquals("node", node);
+        return (UserSessionTrackingQuery) equals("node", node);
     }
 
     public UserSessionTrackingQuery loggedIn() {
-        return (UserSessionTrackingQuery) addIsNotNull("userLoginId");
+        return (UserSessionTrackingQuery) notnull("userLoginId");
     }
 
     public UserSessionTrackingQuery notLoggedIn() {
-        return (UserSessionTrackingQuery) addIsNull("userLoginId");
+        return (UserSessionTrackingQuery) isnull("userLoginId");
     }
 
     public UserSessionTrackingQuery expired(Date expirationDt) {
-        return (UserSessionTrackingQuery) addLessThan("lastAccessTime", expirationDt);
+        return (UserSessionTrackingQuery) less("lastAccessTime", expirationDt);
     }
 }

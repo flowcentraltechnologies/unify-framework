@@ -61,7 +61,7 @@ public class DBBatchItemFileReadProcessorTest extends AbstractUnifyComponentTest
         tm.beginTransaction();
         try {
             batchItemList = db.findAll(
-                    Query.of(TestBatchItemRecordA.class).addAmongst("id", result).addOrder("id"));
+                    Query.of(TestBatchItemRecordA.class).amongst("id", result).order("id"));
         } finally {
             tm.endTransaction();
         }
@@ -100,7 +100,7 @@ public class DBBatchItemFileReadProcessorTest extends AbstractUnifyComponentTest
         tm.beginTransaction();
         try {
             batchItemList = db.findAll(
-                    Query.of(TestBatchItemRecordA.class).addAmongst("id", result).addOrder("id"));
+                    Query.of(TestBatchItemRecordA.class).amongst("id", result).order("id"));
         } finally {
             tm.endTransaction();
         }
@@ -139,7 +139,7 @@ public class DBBatchItemFileReadProcessorTest extends AbstractUnifyComponentTest
         tm.beginTransaction();
         try {
             batchItemList = db.findAll(
-                    Query.of(TestBatchItemRecordA.class).addAmongst("id", result).addOrder("id"));
+                    Query.of(TestBatchItemRecordA.class).amongst("id", result).order("id"));
         } finally {
             tm.endTransaction();
         }

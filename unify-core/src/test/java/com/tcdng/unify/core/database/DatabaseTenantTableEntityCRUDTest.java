@@ -214,7 +214,7 @@ public class DatabaseTenantTableEntityCRUDTest extends AbstractUnifyComponentTes
 
 			setSessionUserTokenTenantId(2L);
 			List<CompanyAccount> list = db.findAll(
-					new CompanyAccountQuery().accountNo("0193884111").ignoreTenancy(true).addOrder("companyId"));
+					new CompanyAccountQuery().accountNo("0193884111").ignoreTenancy(true).order("companyId"));
 			assertEquals(3, list.size());
 			CompanyAccount foundCompanyAccount = list.get(0);
 			assertNotNull(foundCompanyAccount);

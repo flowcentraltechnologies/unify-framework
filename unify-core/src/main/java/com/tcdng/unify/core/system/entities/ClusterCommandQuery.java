@@ -30,10 +30,10 @@ public class ClusterCommandQuery extends SequenceEntityQuery<ClusterCommand> {
     }
 
     public ClusterCommandQuery nodeId(String nodeId) {
-        return (ClusterCommandQuery) addEquals("nodeId", nodeId);
+        return (ClusterCommandQuery) equals("nodeId", nodeId);
     }
 
     public ClusterCommandQuery nodeIdIn(Collection<String> nodeId) {
-        return (ClusterCommandQuery) addAmongst("nodeId", nodeId);
+        return (ClusterCommandQuery) amongst("nodeId", nodeId);
     }
 }

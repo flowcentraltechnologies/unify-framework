@@ -52,8 +52,8 @@ public class DatabaseTableEntityManagedIdentityCRUDTest extends AbstractUnifyCom
 			db.create(new Fish("banana", "yellow", 45.00));
 			db.create(new Fish("orange", "orange", 15.00));
 			assertEquals(4, db.countAll(new FishQuery().ignoreEmptyCriteria(true)));
-			assertEquals(2, db.countAll(new FishQuery().addLessThanEqual("price", 20.00)));
-			assertEquals(1, db.countAll(new FishQuery().addBeginsWith("name", "ban")));
+			assertEquals(2, db.countAll(new FishQuery().lesseq("price", 20.00)));
+			assertEquals(1, db.countAll(new FishQuery().begins("name", "ban")));
 		} catch (Exception e) {
 			tm.setRollback();
 			throw e;
@@ -67,7 +67,7 @@ public class DatabaseTableEntityManagedIdentityCRUDTest extends AbstractUnifyCom
 		tm.beginTransaction();
 		try {
 			assertFalse(db.exists(new FishQuery().ignoreEmptyCriteria(true)));
-			assertFalse(db.exists(new FishQuery().addLessThanEqual("price", 20.00)));
+			assertFalse(db.exists(new FishQuery().lesseq("price", 20.00)));
 			
 			db.create(new Fish("apple", "red", 20.00));
 			db.create(new Fish("pineapple", "cyan", 60.00));
@@ -75,11 +75,11 @@ public class DatabaseTableEntityManagedIdentityCRUDTest extends AbstractUnifyCom
 			db.create(new Fish("orange", "orange", 15.00));
 			
 			assertTrue(db.exists(new FishQuery().ignoreEmptyCriteria(true)));
-			assertTrue(db.exists(new FishQuery().addLessThanEqual("price", 20.00)));
-			assertTrue(db.exists(new FishQuery().addBeginsWith("name", "ban")));
+			assertTrue(db.exists(new FishQuery().lesseq("price", 20.00)));
+			assertTrue(db.exists(new FishQuery().begins("name", "ban")));
 			
-			assertFalse(db.exists(new FishQuery().addGreaterThanEqual("price", 65.00)));
-			assertFalse(db.exists(new FishQuery().addBeginsWith("name", "tan")));
+			assertFalse(db.exists(new FishQuery().greatereq("price", 65.00)));
+			assertFalse(db.exists(new FishQuery().begins("name", "tan")));
 		} catch (Exception e) {
 			tm.setRollback();
 			throw e;
@@ -114,7 +114,7 @@ public class DatabaseTableEntityManagedIdentityCRUDTest extends AbstractUnifyCom
 			db.create(new Fish("pineapple", "cyan", 60.00));
 			db.create(new Fish("banana", "yellow", 45.00));
 			db.create(new Fish("orange", "orange", 15.00));
-			assertEquals(Double.valueOf(20.00), db.min(Double.class, "price", new FishQuery().addLike("name", "app")));
+			assertEquals(Double.valueOf(20.00), db.min(Double.class, "price", new FishQuery().like("name", "app")));
 		} catch (Exception e) {
 			tm.setRollback();
 			throw e;
@@ -132,7 +132,7 @@ public class DatabaseTableEntityManagedIdentityCRUDTest extends AbstractUnifyCom
 			db.create(new Fish("banana", "yellow", 45.00));
 			db.create(new Fish("orange", "orange", 15.00));
 			assertEquals(Double.valueOf(20.00),
-					db.min(Double.class, "price", new FishQuery().addILike("name", "APP")));
+					db.min(Double.class, "price", new FishQuery().ilike("name", "APP")));
 		} catch (Exception e) {
 			tm.setRollback();
 			throw e;
@@ -149,7 +149,7 @@ public class DatabaseTableEntityManagedIdentityCRUDTest extends AbstractUnifyCom
 			db.create(new Fish("pineapple", "cyan", 60.00));
 			db.create(new Fish("banana", "yellow", 45.00));
 			db.create(new Fish("orange", "orange", 15.00));
-			assertNull(db.min(Double.class, "price", new FishQuery().addEquals("name", "tangerine")));
+			assertNull(db.min(Double.class, "price", new FishQuery().equals("name", "tangerine")));
 		} catch (Exception e) {
 			tm.setRollback();
 			throw e;
@@ -185,7 +185,7 @@ public class DatabaseTableEntityManagedIdentityCRUDTest extends AbstractUnifyCom
 			db.create(new Fish("banana", "yellow", 45.00));
 			db.create(new Fish("orange", "orange", 15.00));
 			assertEquals(Double.valueOf(45.00),
-					db.max(Double.class, "price", new FishQuery().addNotLike("name", "app")));
+					db.max(Double.class, "price", new FishQuery().notlike("name", "app")));
 		} catch (Exception e) {
 			tm.setRollback();
 			throw e;
@@ -202,7 +202,7 @@ public class DatabaseTableEntityManagedIdentityCRUDTest extends AbstractUnifyCom
 			db.create(new Fish("pineapple", "cyan", 60.00));
 			db.create(new Fish("banana", "yellow", 45.00));
 			db.create(new Fish("orange", "orange", 15.00));
-			Long maxId = db.max(Long.class, "id", new FishQuery().addLessThan("id", 0L));
+			Long maxId = db.max(Long.class, "id", new FishQuery().less("id", 0L));
 			assertNull(maxId);
 		} catch (Exception e) {
 			tm.setRollback();
@@ -220,7 +220,7 @@ public class DatabaseTableEntityManagedIdentityCRUDTest extends AbstractUnifyCom
 			db.create(new Fish("pineapple", "cyan", 60.00));
 			db.create(new Fish("banana", "yellow", 45.00));
 			db.create(new Fish("orange", "orange", 15.00));
-			assertNull(db.max(Double.class, "price", new FishQuery().addEquals("name", "tangerine")));
+			assertNull(db.max(Double.class, "price", new FishQuery().equals("name", "tangerine")));
 		} catch (Exception e) {
 			tm.setRollback();
 			throw e;
@@ -266,7 +266,7 @@ public class DatabaseTableEntityManagedIdentityCRUDTest extends AbstractUnifyCom
 
 		tm.beginTransaction();
 		try {
-			List<Fish> fishList = db.findAll(new FishQuery().ignoreEmptyCriteria(true).addOrder("price"));
+			List<Fish> fishList = db.findAll(new FishQuery().ignoreEmptyCriteria(true).order("price"));
 			assertEquals(2, fishList.size());
 			assertEquals(apple, fishList.get(0));
 			assertEquals(banana, fishList.get(1));
@@ -346,9 +346,9 @@ public class DatabaseTableEntityManagedIdentityCRUDTest extends AbstractUnifyCom
 		tm.beginTransaction();
 		try {
 			Long id = (Long) db.create(new Fish("apple", "red", 20.00));
-			assertEquals(1, db.countAll(new FishQuery().addEquals("id", id)));
+			assertEquals(1, db.countAll(new FishQuery().equals("id", id)));
 			db.delete(Fish.class, id);
-			assertEquals(0, db.countAll(new FishQuery().addEquals("id", id)));
+			assertEquals(0, db.countAll(new FishQuery().equals("id", id)));
 		} catch (Exception e) {
 			tm.setRollback();
 			throw e;
@@ -395,7 +395,7 @@ public class DatabaseTableEntityManagedIdentityCRUDTest extends AbstractUnifyCom
 			db.create(pineapple);
 			db.create(new Fish("banana", "yellow", 45.00));
 			db.create(new Fish("orange", "orange", 15.00));
-			assertEquals(3, db.deleteAll(new FishQuery().addNotEquals("color", "cyan")));
+			assertEquals(3, db.deleteAll(new FishQuery().notequals("color", "cyan")));
 			List<Fish> testFishList = db.findAll(new FishQuery().ignoreEmptyCriteria(true));
 			assertEquals(1, testFishList.size());
 			assertEquals(pineapple, testFishList.get(0));
@@ -416,9 +416,9 @@ public class DatabaseTableEntityManagedIdentityCRUDTest extends AbstractUnifyCom
 			db.create(pineapple);
 			db.create(new Fish("banana", "yellow", 45.00));
 			db.create(new Fish("orange", "orange", 15.00));
-			assertEquals(3, db.deleteAll(new FishQuery().addNotEquals("color", "cyan")));
+			assertEquals(3, db.deleteAll(new FishQuery().notequals("color", "cyan")));
 			// Order should be ignored
-			List<Fish> testFishList = db.findAll(new FishQuery().addOrder("color").ignoreEmptyCriteria(true));
+			List<Fish> testFishList = db.findAll(new FishQuery().order("color").ignoreEmptyCriteria(true));
 			assertEquals(1, testFishList.size());
 			assertEquals(pineapple, testFishList.get(0));
 		} catch (Exception e) {

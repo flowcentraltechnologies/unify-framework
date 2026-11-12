@@ -68,7 +68,7 @@ public class DBBatchFileReadProcessorTest extends AbstractUnifyComponentTest {
         TestBatchRecordB qryBatchRecord = null;
         tm.beginTransaction();
         try {
-            qryBatchRecord = db.find(Query.of(TestBatchRecordB.class).addEquals("currency", "NGN"));
+            qryBatchRecord = db.find(Query.of(TestBatchRecordB.class).equals("currency", "NGN"));
         } finally {
             tm.endTransaction();
         }
@@ -84,7 +84,7 @@ public class DBBatchFileReadProcessorTest extends AbstractUnifyComponentTest {
         tm.beginTransaction();
         try {
             batchItemList = db.findAll(
-                    Query.of(TestBatchItemRecordB.class).addEquals("batchId", batchId).addOrder("id"));
+                    Query.of(TestBatchItemRecordB.class).equals("batchId", batchId).order("id"));
         } finally {
             tm.endTransaction();
         }
@@ -138,8 +138,8 @@ public class DBBatchFileReadProcessorTest extends AbstractUnifyComponentTest {
         TestBatchRecordB usdBatchRecord = null;
         tm.beginTransaction();
         try {
-            ngnBatchRecord = db.find(Query.of(TestBatchRecordB.class).addEquals("currency", "NGN"));
-            usdBatchRecord = db.find(Query.of(TestBatchRecordB.class).addEquals("currency", "USD"));
+            ngnBatchRecord = db.find(Query.of(TestBatchRecordB.class).equals("currency", "NGN"));
+            usdBatchRecord = db.find(Query.of(TestBatchRecordB.class).equals("currency", "USD"));
         } finally {
             tm.endTransaction();
         }
@@ -163,9 +163,9 @@ public class DBBatchFileReadProcessorTest extends AbstractUnifyComponentTest {
         tm.beginTransaction();
         try {
             ngnBatchItemList = db.findAll(Query.of(TestBatchItemRecordB.class)
-                    .addEquals("batchId", ngnBatchId).addOrder("id"));
+                    .equals("batchId", ngnBatchId).order("id"));
             usdBatchItemList = db.findAll(Query.of(TestBatchItemRecordB.class)
-                    .addEquals("batchId", usdBatchId).addOrder("id"));
+                    .equals("batchId", usdBatchId).order("id"));
         } finally {
             tm.endTransaction();
         }

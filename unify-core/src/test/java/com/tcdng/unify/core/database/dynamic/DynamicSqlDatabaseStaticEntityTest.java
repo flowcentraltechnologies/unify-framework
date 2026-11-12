@@ -136,9 +136,9 @@ public class DynamicSqlDatabaseStaticEntityTest extends AbstractUnifyComponentTe
         tm.beginTransaction();
         try {
             String id = (String) db.create(new AccountDetails("Bill Ray", "9200567689", BigDecimal.valueOf(5200.00)));
-            assertEquals(1, db.countAll(new AccountDetailsQuery().addEquals("accountName", id)));
+            assertEquals(1, db.countAll(new AccountDetailsQuery().equals("accountName", id)));
             db.delete(AccountDetails.class, id);
-            assertEquals(0, db.countAll(new AccountDetailsQuery().addEquals("accountName", id)));
+            assertEquals(0, db.countAll(new AccountDetailsQuery().equals("accountName", id)));
         } finally {
             tm.endTransaction();
         }
@@ -209,9 +209,9 @@ public class DynamicSqlDatabaseStaticEntityTest extends AbstractUnifyComponentTe
         tm.beginTransaction();
         try {
             String id = (String) db.create(new Product("Compact Disc", 82, BigDecimal.valueOf(0.72)));
-            assertEquals(1, db.countAll(new ProductQuery().addEquals("name", id)));
+            assertEquals(1, db.countAll(new ProductQuery().equals("name", id)));
             db.delete(Product.class, id);
-            assertEquals(0, db.countAll(new ProductQuery().addEquals("name", id)));
+            assertEquals(0, db.countAll(new ProductQuery().equals("name", id)));
         } finally {
             tm.endTransaction();
         }

@@ -28,6 +28,6 @@ public class LoanReportParameterQuery extends AbstractTestTableEntityQuery<LoanR
     }
 
     public LoanReportParameterQuery reportId(Long reportId) {
-        return (LoanReportParameterQuery) addEquals("reportId", reportId);
+        return (LoanReportParameterQuery) equals("reportId", reportId);
     }
 }

@@ -48,7 +48,7 @@ public class DatabaseTableEntityFirstLastTest extends AbstractUnifyComponentTest
             db.create(new Fruit("apple", "red", 20.00));
             db.create(new Fruit("banana", "yellow", 45.00));
             db.create(new Fruit("pineapple", "cyan", 60.00));
-            Fruit foundFruit = db.findFirst(new FruitQuery().addLike("name", "orange"));
+            Fruit foundFruit = db.findFirst(new FruitQuery().like("name", "orange"));
             assertNull(foundFruit);
         } catch (Exception e) {
             tm.setRollback();
@@ -65,7 +65,7 @@ public class DatabaseTableEntityFirstLastTest extends AbstractUnifyComponentTest
             db.create(new Fruit("apple", "red", 20.00));
             db.create(new Fruit("banana", "yellow", 45.00));
             db.create(new Fruit("pineapple", "cyan", 60.00));
-            Fruit foundFruit = db.findFirst(new FruitQuery().addLike("name", "apple"));
+            Fruit foundFruit = db.findFirst(new FruitQuery().like("name", "apple"));
             assertNotNull(foundFruit);
             assertEquals("apple", foundFruit.getName());
         } catch (Exception e) {
@@ -83,7 +83,7 @@ public class DatabaseTableEntityFirstLastTest extends AbstractUnifyComponentTest
             db.create(new Fruit("apple", "red", 20.00));
             db.create(new Fruit("banana", "yellow", 45.00));
             db.create(new Fruit("pineapple", "cyan", 60.00));
-            Fruit foundFruit = db.findLast(new FruitQuery().addLike("name", "orange"));
+            Fruit foundFruit = db.findLast(new FruitQuery().like("name", "orange"));
             assertNull(foundFruit);
         } catch (Exception e) {
             tm.setRollback();
@@ -100,7 +100,7 @@ public class DatabaseTableEntityFirstLastTest extends AbstractUnifyComponentTest
             db.create(new Fruit("apple", "red", 20.00));
             db.create(new Fruit("banana", "yellow", 45.00));
             db.create(new Fruit("pineapple", "cyan", 60.00));
-            Fruit foundFruit = db.findLast(new FruitQuery().addLike("name", "apple"));
+            Fruit foundFruit = db.findLast(new FruitQuery().like("name", "apple"));
             assertNotNull(foundFruit);
             assertEquals("pineapple", foundFruit.getName());
         } catch (Exception e) {
@@ -120,7 +120,7 @@ public class DatabaseTableEntityFirstLastTest extends AbstractUnifyComponentTest
             db.create(new Author("Susan Bramer", 45, Gender.FEMALE, BooleanType.TRUE, testOfficeId));
             db.create(new Author("Tom Hanks", 45, Gender.MALE, BooleanType.TRUE, testOfficeId));
 
-            Author foundAuthor = db.listFirst(new AuthorQuery().addEquals("age", 102));
+            Author foundAuthor = db.listFirst(new AuthorQuery().equals("age", 102));
             assertNull(foundAuthor);
         } finally {
             tm.endTransaction();
@@ -136,7 +136,7 @@ public class DatabaseTableEntityFirstLastTest extends AbstractUnifyComponentTest
             db.create(new Author("Susan Bramer", 45, Gender.FEMALE, BooleanType.TRUE, testOfficeId));
             db.create(new Author("Tom Hanks", 45, Gender.MALE, BooleanType.TRUE, testOfficeId));
 
-            Author foundAuthor = db.listFirst(new AuthorQuery().addEquals("age", 45));
+            Author foundAuthor = db.listFirst(new AuthorQuery().equals("age", 45));
             assertNotNull(foundAuthor);
             assertEquals("Susan Bramer", foundAuthor.getName());
             assertEquals(Integer.valueOf(45), foundAuthor.getAge());
@@ -160,7 +160,7 @@ public class DatabaseTableEntityFirstLastTest extends AbstractUnifyComponentTest
             db.create(new Author("Susan Bramer", 45, Gender.FEMALE, BooleanType.TRUE, testOfficeId));
             db.create(new Author("Tom Hanks", 45, Gender.MALE, BooleanType.TRUE, testOfficeId));
 
-            Author foundAuthor = db.listLast(new AuthorQuery().addEquals("age", 450));
+            Author foundAuthor = db.listLast(new AuthorQuery().equals("age", 450));
             assertNull(foundAuthor);
         } finally {
             tm.endTransaction();
@@ -176,7 +176,7 @@ public class DatabaseTableEntityFirstLastTest extends AbstractUnifyComponentTest
             db.create(new Author("Susan Bramer", 45, Gender.FEMALE, BooleanType.TRUE, testOfficeId));
             db.create(new Author("Tom Hanks", 45, Gender.MALE, BooleanType.TRUE, testOfficeId));
 
-            Author foundAuthor = db.listLast(new AuthorQuery().addEquals("age", 45));
+            Author foundAuthor = db.listLast(new AuthorQuery().equals("age", 45));
             assertNotNull(foundAuthor);
             assertEquals("Tom Hanks", foundAuthor.getName());
             assertEquals(Integer.valueOf(45), foundAuthor.getAge());
@@ -200,7 +200,7 @@ public class DatabaseTableEntityFirstLastTest extends AbstractUnifyComponentTest
             db.create(new Report("weeklyReportA11", "Weekly Report", new ReportForm("beanEditor")));
             db.create(new Report("weeklyReportB11", "Weekly Report", new ReportForm("beanEditor")));
 
-            Report foundReport = db.findLeanFirst(new ReportQuery().addLike("name", "A1"));
+            Report foundReport = db.findLeanFirst(new ReportQuery().like("name", "A1"));
             assertNotNull(foundReport);
             assertEquals("weeklyReportA10", foundReport.getName());
             assertEquals("Weekly Report", foundReport.getDescription());
@@ -219,7 +219,7 @@ public class DatabaseTableEntityFirstLastTest extends AbstractUnifyComponentTest
             db.create(new Report("weeklyReportA11", "Weekly Report", new ReportForm("beanEditor")));
             db.create(new Report("weeklyReportB11", "Weekly Report", new ReportForm("beanEditor")));
 
-            Report foundReport = db.findLeanLast(new ReportQuery().addLike("name", "A1"));
+            Report foundReport = db.findLeanLast(new ReportQuery().like("name", "A1"));
             assertNotNull(foundReport);
             assertEquals("weeklyReportA11", foundReport.getName());
             assertEquals("Weekly Report", foundReport.getDescription());
@@ -239,7 +239,7 @@ public class DatabaseTableEntityFirstLastTest extends AbstractUnifyComponentTest
             db.create(new Report("weeklyReportA11", "Weekly Report", new ReportForm("beanEditor")));
             db.create(new Report("weeklyReportB11", "Weekly Report", new ReportForm("beanEditor")));
 
-            Report foundReport = db.listLeanFirst(new ReportQuery().addLike("name", "A1"));
+            Report foundReport = db.listLeanFirst(new ReportQuery().like("name", "A1"));
             assertNotNull(foundReport);
             assertEquals("weeklyReportA10", foundReport.getName());
             assertEquals("Weekly Report", foundReport.getDescription());
@@ -258,7 +258,7 @@ public class DatabaseTableEntityFirstLastTest extends AbstractUnifyComponentTest
             db.create(new Report("weeklyReportA11", "Weekly Report", new ReportForm("beanEditor")));
             db.create(new Report("weeklyReportB11", "Weekly Report", new ReportForm("beanEditor")));
 
-            Report foundReport = db.listLeanLast(new ReportQuery().addLike("name", "A1"));
+            Report foundReport = db.listLeanLast(new ReportQuery().like("name", "A1"));
             assertNotNull(foundReport);
             assertEquals("weeklyReportA11", foundReport.getName());
             assertEquals("Weekly Report", foundReport.getDescription());

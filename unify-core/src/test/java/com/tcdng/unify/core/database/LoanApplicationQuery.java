@@ -28,6 +28,6 @@ public class LoanApplicationQuery extends AbstractTestTableEntityQuery<LoanAppli
     }
     
     public LoanApplicationQuery applicationName(String applicationName) {
-        return (LoanApplicationQuery) addEquals("applicationName", applicationName);
+        return (LoanApplicationQuery) equals("applicationName", applicationName);
     }
 }

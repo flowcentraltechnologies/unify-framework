@@ -30,15 +30,15 @@ public class ParameterValuesQuery extends Query<ParameterValues> {
     }
 
     public ParameterValuesQuery typeName(String typeName) {
-        return (ParameterValuesQuery) addEquals("typeName", typeName);
+        return (ParameterValuesQuery) equals("typeName", typeName);
     }
 
     public ParameterValuesQuery instTypeName(String instTypeName) {
-        return (ParameterValuesQuery) addEquals("instTypeName", instTypeName);
+        return (ParameterValuesQuery) equals("instTypeName", instTypeName);
     }
 
     public ParameterValuesQuery instId(Long instId) {
-        return (ParameterValuesQuery) addEquals("instId", instId);
+        return (ParameterValuesQuery) equals("instId", instId);
     }
 
 }

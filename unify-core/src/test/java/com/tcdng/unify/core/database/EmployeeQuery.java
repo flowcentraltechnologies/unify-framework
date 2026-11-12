@@ -28,18 +28,18 @@ public class EmployeeQuery extends AbstractTestTableEntityQuery<Employee> {
     }
 
     public EmployeeQuery id(Long id) {
-        return (EmployeeQuery) addEquals("id", id);
+        return (EmployeeQuery) equals("id", id);
     }
 
     public EmployeeQuery managerId(Long managerId) {
-        return (EmployeeQuery) addEquals("managerId", managerId);
+        return (EmployeeQuery) equals("managerId", managerId);
     }
 
     public EmployeeQuery managerIdIsNull() {
-        return (EmployeeQuery) addIsNull("managerId");
+        return (EmployeeQuery) isnull("managerId");
     }
 
     public EmployeeQuery managerFullNameLike(String managerFullName) {
-        return (EmployeeQuery) addLike("managerFullName", managerFullName);
+        return (EmployeeQuery) like("managerFullName", managerFullName);
     }
 }

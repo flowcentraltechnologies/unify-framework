@@ -46,7 +46,7 @@ public class DatabaseQueryByFieldTest extends AbstractUnifyComponentTest {
             db.create(new Product("specs", "Blue Spectacles", 45.00, 45.00));
             db.create(new Product("pants", "Wonder pants", 15.00, 17.45));
 
-            List<Product> prodList = db.findAll(Query.of(Product.class).addEqualsField("name", "description"));
+            List<Product> prodList = db.findAll(Query.of(Product.class).equalsf("name", "description"));
             assertNotNull(prodList);
             assertEquals(1, prodList.size());
 
@@ -57,7 +57,7 @@ public class DatabaseQueryByFieldTest extends AbstractUnifyComponentTest {
             assertEquals(Double.valueOf(25.25), product.getSalesPrice());
 
             prodList =
-                    db.findAll(Query.of(Product.class).addEqualsField("costPrice", "salesPrice").addOrder("costPrice"));
+                    db.findAll(Query.of(Product.class).equalsf("costPrice", "salesPrice").order("costPrice"));
             assertNotNull(prodList);
             assertEquals(2, prodList.size());
 
@@ -90,7 +90,7 @@ public class DatabaseQueryByFieldTest extends AbstractUnifyComponentTest {
             db.create(new Product("pants", "Wonder pants", 15.00, 17.45));
 
             List<Product> prodList =
-                    db.findAll(Query.of(Product.class).addNotEqualsField("name", "description").addOrder("id"));
+                    db.findAll(Query.of(Product.class).notequalsf("name", "description").order("id"));
             assertNotNull(prodList);
             assertEquals(3, prodList.size());
 
@@ -113,7 +113,7 @@ public class DatabaseQueryByFieldTest extends AbstractUnifyComponentTest {
             assertEquals(Double.valueOf(17.45), product.getSalesPrice());
 
             prodList = db.findAll(
-                    Query.of(Product.class).addNotEqualsField("costPrice", "salesPrice").addOrder("costPrice"));
+                    Query.of(Product.class).notequalsf("costPrice", "salesPrice").order("costPrice"));
             assertNotNull(prodList);
             assertEquals(2, prodList.size());
 
@@ -146,7 +146,7 @@ public class DatabaseQueryByFieldTest extends AbstractUnifyComponentTest {
             db.create(new Product("pants", "Wonder pants", 15.00, 17.45));
 
             List<Product> prodList =
-                    db.findAll(Query.of(Product.class).addGreaterThanField("salesPrice", "costPrice").addOrder("id"));
+                    db.findAll(Query.of(Product.class).greaterf("salesPrice", "costPrice").order("id"));
             assertNotNull(prodList);
             assertEquals(2, prodList.size());
 
@@ -179,7 +179,7 @@ public class DatabaseQueryByFieldTest extends AbstractUnifyComponentTest {
             db.create(new Product("pants", "Wonder pants", 15.00, 17.45));
 
             List<Product> prodList =
-                    db.findAll(Query.of(Product.class).addGreaterThanEqualField("salesPrice", "costPrice").addOrder("id"));
+                    db.findAll(Query.of(Product.class).greatereqf("salesPrice", "costPrice").order("id"));
             assertNotNull(prodList);
             assertEquals(2, prodList.size());
 
@@ -212,7 +212,7 @@ public class DatabaseQueryByFieldTest extends AbstractUnifyComponentTest {
             db.create(new Product("pants", "Wonder pants", 15.00, 17.45));
 
             List<Product> prodList =
-                    db.findAll(Query.of(Product.class).addLessThanField("salesPrice", "costPrice").addOrder("id"));
+                    db.findAll(Query.of(Product.class).lessf("salesPrice", "costPrice").order("id"));
             assertNotNull(prodList);
             assertEquals(1, prodList.size());
 
@@ -239,7 +239,7 @@ public class DatabaseQueryByFieldTest extends AbstractUnifyComponentTest {
             db.create(new Product("pants", "Wonder pants", 15.00, 17.45));
 
             List<Product> prodList =
-                    db.findAll(Query.of(Product.class).addLessThanEqualField("salesPrice", "costPrice").addOrder("id"));
+                    db.findAll(Query.of(Product.class).lesseqf("salesPrice", "costPrice").order("id"));
             assertNotNull(prodList);
             assertEquals(3, prodList.size());
 
@@ -278,7 +278,7 @@ public class DatabaseQueryByFieldTest extends AbstractUnifyComponentTest {
             db.create(new Product("pants", "Wonder pants", 15.00, 17.45));
 
             List<Product> prodList =
-                    db.findAll(Query.of(Product.class).addLikeField("description", "name").addOrder("id"));
+                    db.findAll(Query.of(Product.class).likef("description", "name").order("id"));
             assertNotNull(prodList);
             assertEquals(2, prodList.size());
 
@@ -311,7 +311,7 @@ public class DatabaseQueryByFieldTest extends AbstractUnifyComponentTest {
             db.create(new Product("pants", "Wonder pants", 15.00, 17.45));
 
             List<Product> prodList =
-                    db.findAll(Query.of(Product.class).addNotLikeField("description", "name").addOrder("id"));
+                    db.findAll(Query.of(Product.class).notlikef("description", "name").order("id"));
             assertNotNull(prodList);
             assertEquals(2, prodList.size());
 
@@ -344,7 +344,7 @@ public class DatabaseQueryByFieldTest extends AbstractUnifyComponentTest {
             db.create(new Product("pants", "Wonder pants", 15.00, 17.45));
 
             List<Product> prodList =
-                    db.findAll(Query.of(Product.class).addBeginsWithField("description", "name").addOrder("id"));
+                    db.findAll(Query.of(Product.class).beginsf("description", "name").order("id"));
             assertNotNull(prodList);
             assertEquals(2, prodList.size());
 
@@ -377,7 +377,7 @@ public class DatabaseQueryByFieldTest extends AbstractUnifyComponentTest {
             db.create(new Product("pants", "Wonder pants", 15.00, 17.45));
 
             List<Product> prodList =
-                    db.findAll(Query.of(Product.class).addNotBeginWithField("description", "name").addOrder("id"));
+                    db.findAll(Query.of(Product.class).notbeginsf("description", "name").order("id"));
             assertNotNull(prodList);
             assertEquals(2, prodList.size());
 
@@ -410,7 +410,7 @@ public class DatabaseQueryByFieldTest extends AbstractUnifyComponentTest {
             db.create(new Product("pants", "Wonder pants", 15.00, 17.45));
 
             List<Product> prodList =
-                    db.findAll(Query.of(Product.class).addEndsWithField("description", "name").addOrder("id"));
+                    db.findAll(Query.of(Product.class).endsf("description", "name").order("id"));
             assertNotNull(prodList);
             assertEquals(2, prodList.size());
 
@@ -443,7 +443,7 @@ public class DatabaseQueryByFieldTest extends AbstractUnifyComponentTest {
             db.create(new Product("pants", "Wonder pants", 15.00, 17.45));
 
             List<Product> prodList =
-                    db.findAll(Query.of(Product.class).addNotEndWithField("description", "name").addOrder("id"));
+                    db.findAll(Query.of(Product.class).notendsf("description", "name").order("id"));
             assertNotNull(prodList);
             assertEquals(2, prodList.size());
 

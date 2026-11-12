@@ -32,10 +32,10 @@ public class AuthorQuery extends AbstractTestTableEntityQuery<Author> {
     }
     
     public AuthorQuery gender(Gender gender) {
-        return (AuthorQuery) addEquals("gender", gender);
+        return (AuthorQuery) equals("gender", gender);
     }
     
     public AuthorQuery genderIn(Collection<Gender> gender) {
-        return (AuthorQuery) addAmongst("gender", gender);
+        return (AuthorQuery) amongst("gender", gender);
     }
 }

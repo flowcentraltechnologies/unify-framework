@@ -28,14 +28,14 @@ public class FileAttachmentQuery extends AbstractTestTableEntityQuery<FileAttach
     }
     
     public FileAttachmentQuery ownerId(Long ownerId) {
-        return (FileAttachmentQuery) addEquals("ownerId", ownerId);
+        return (FileAttachmentQuery) equals("ownerId", ownerId);
     }
     
     public FileAttachmentQuery ownerType(String ownerType) {
-        return (FileAttachmentQuery) addEquals("ownerType", ownerType);
+        return (FileAttachmentQuery) equals("ownerType", ownerType);
     }
     
     public FileAttachmentQuery code(String code) {
-        return (FileAttachmentQuery) addEquals("code", code);
+        return (FileAttachmentQuery) equals("code", code);
     }
 }

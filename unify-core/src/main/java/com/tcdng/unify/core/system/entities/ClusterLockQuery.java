@@ -36,30 +36,30 @@ public class ClusterLockQuery extends Query<ClusterLock> {
     }
 
     public ClusterLockQuery lockName(String lockName) {
-        return (ClusterLockQuery) addEquals("lockName", lockName);
+        return (ClusterLockQuery) equals("lockName", lockName);
     }
 
     public ClusterLockQuery lockNameIn(Collection<String> lockNameList) {
-        return (ClusterLockQuery) addAmongst("lockName", lockNameList);
+        return (ClusterLockQuery) amongst("lockName", lockNameList);
     }
 
     public ClusterLockQuery currentOwner(String currentOwner) {
-        return (ClusterLockQuery) addEquals("currentOwner", currentOwner);
+        return (ClusterLockQuery) equals("currentOwner", currentOwner);
     }
 
     public ClusterLockQuery currentOwnerIsNull() {
-        return (ClusterLockQuery) addIsNull("currentOwner");
+        return (ClusterLockQuery) isnull("currentOwner");
     }
 
     public ClusterLockQuery expiryTime(Date date) {
-        return (ClusterLockQuery) addEquals("expiryTime", date);
+        return (ClusterLockQuery) equals("expiryTime", date);
     }
 
     public ClusterLockQuery expiryTimeBefore(Date date) {
-        return (ClusterLockQuery) addLessThan("expiryTime", date);
+        return (ClusterLockQuery) less("expiryTime", date);
     }
 
     public ClusterLockQuery expiredOrFree(Date date) {
-        return (ClusterLockQuery) addRestriction(new Or().add(new Less("expiryTime", date)).add(new IsNull("currentOwner")));
+        return (ClusterLockQuery) restriction(new Or().add(new Less("expiryTime", date)).add(new IsNull("currentOwner")));
     }
 }

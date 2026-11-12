@@ -41,8 +41,8 @@ public class Update extends FluentMap<String, Object> {
 	}
 
 	@Override
-	public Update add(String field, Object value) {
-		return (Update) super.add(field, value);
+	public Update add(String field, Object val) {
+		return (Update) super.add(field, val);
 	}
 
 	@Override
@@ -60,53 +60,69 @@ public class Update extends FluentMap<String, Object> {
 		return (Update) super.clear();
 	}
 	
-	public Update addSetTo(String field, Object value) {
-		return (Update) super.add(field, value);
+	public Update set(String field, Object val) {
+		return (Update) super.add(field, val);
 	}
 	
-	public Update addSetToNull(String field) {
+	public Update setNull(String field) {
 		return (Update) super.add(field, null);
 	}
 
-	public Update addSetToSelfAddition(String lfield, Number value) {
-		return (Update) super.add(lfield, new AdditionExpression(value));
+	public Update setAddition(String lfield, Number val) {
+		return (Update) super.add(lfield, new AdditionExpression(val));
 	}
 
-	public Update addSetToSelfSubtraction(String lfield, Number value) {
-		return (Update) super.add(lfield, new SubtractionExpression(value));
+	public Update setAddition(String lfield, String rfield, Number val) {
+		return (Update) super.add(lfield, new CustomUpdateExpression("{{" + rfield + "}} + " + val));
 	}
 
-	public Update addSetToSelfMultiplication(String lfield, Number value) {
-		return (Update) super.add(lfield, new MultiplicationExpression(value));
+	public Update setSubtraction(String lfield, Number val) {
+		return (Update) super.add(lfield, new SubtractionExpression(val));
 	}
 
-	public Update addSetToSelfDivision(String lfield, Number value) {
-		return (Update) super.add(lfield, new DivisionExpression(value));
+	public Update setSubtraction(String lfield, String rfield, Number val) {
+		return (Update) super.add(lfield, new CustomUpdateExpression("{{" + rfield + "}} - " + val));
 	}
 
-	public Update addSetToCustom(String lfield, String expression) {
+	public Update setMultiplication(String lfield, Number val) {
+		return (Update) super.add(lfield, new MultiplicationExpression(val));
+	}
+
+	public Update setMultiplication(String lfield, String rfield, Number val) {
+		return (Update) super.add(lfield, new CustomUpdateExpression("{{" + rfield + "}} * " + val));
+	}
+
+	public Update setDivision(String lfield, Number val) {
+		return (Update) super.add(lfield, new DivisionExpression(val));
+	}
+
+	public Update setDivision(String lfield, String rfield, Number val) {
+		return (Update) super.add(lfield, new CustomUpdateExpression("{{" + rfield + "}} / " + val));
+	}
+
+	public Update setCustom(String lfield, String expression) {
 		return (Update) super.add(lfield, new CustomUpdateExpression(expression));
 	}
 
-	public Update addSetToOther(String lfield, String rfield) {
+	public Update setOther(String lfield, String rfield) {
 		return (Update) super.add(lfield, new CustomUpdateExpression("{{" + rfield + "}}"));
 	}
 
-	public Update addSetToNow(String lfield) {
+	public Update setNow(String lfield) {
 		return (Update) super.add(lfield, new CustomUpdateExpression("{{g:now}}"));
 	}
 
-	public Update addSetToNowWithOffset(String lfield, int seconds) {
+	public Update setNowWithOffset(String lfield, int seconds) {
 		return (Update) super.add(lfield, new CustomUpdateExpression(
 				seconds >= 0 ? "{{g:nowaddsec_" + seconds + "}}" : "{{g:nowsubsec_" + -seconds + "}}"));
 	}
 
-	public Update addSetToSelfWithOffset(String lfield, int seconds) {
+	public Update setWithOffset(String lfield, int seconds) {
 		return (Update) super.add(lfield, new CustomUpdateExpression(
 				seconds >= 0 ? "{{g:fldaddsec_" + seconds + "}}" : "{{g:fldsubsec_" + -seconds + "}}"));
 	}
 
-	public Update addSetToOtherWithOffset(String lfield, String rfield, int seconds) {
+	public Update setWithOffset(String lfield, String rfield, int seconds) {
 		return (Update) super.add(lfield, new CustomUpdateExpression(
 				seconds >= 0 ? "{{g:fldaddsec_" + seconds + "_" + rfield + "}}"
 						: "{{g:fldsubsec_" + -seconds + "_" + rfield + "}}"));

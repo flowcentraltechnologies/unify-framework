@@ -189,12 +189,12 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 			for (SqlUniqueConstraintInfo suci : sqlEntityInfo.getUniqueConstraintList().values()) {
 				query.clear();
 				for (String fieldName : suci.getFieldNameList()) {
-					query.addEquals(fieldName, ReflectUtils.getBeanProperty(record, fieldName));
+					query.equals(fieldName, ReflectUtils.getBeanProperty(record, fieldName));
 				}
 
 				if (suci.isWithConditionList()) {
 					for (SqlQueryRestrictionInfo sqlQueryRestrictionInfo : suci.getConditionList()) {
-						query.addRestriction(sqlQueryRestrictionInfo.getRestriction());
+						query.restriction(sqlQueryRestrictionInfo.getRestriction());
 					}
 				}
 
@@ -315,10 +315,10 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		List<T> list = Collections.emptyList();
 		final Select select = query.getSelect();
 		final Order order = query.getOrder();
-		final int limit = query.getLimit();
+		final int limit = query.limit();
 		try {
 			if (limit > 0 && sqlDataSourceDialect.isRowLockLimitManual()) {
-				query.setLimit(0);
+				query.limit(0);
 			}
 
 			final SqlFieldInfo idFieldInfo = sqlEntityInfo.getIdFieldInfo();
@@ -334,13 +334,13 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 				}
 
 				Query<U> uquery = (Query<U>) Query.of(sqlEntityInfo.getEntityClass());
-				uquery.addAmongst(idFieldInfo.getName(), list);
+				uquery.amongst(idFieldInfo.getName(), list);
 				updateAll(uquery, update);
 			}
 		} finally {
 			query.setSelect(select);
 			query.setOrder(order);
-			query.setLimit(limit);
+			query.limit(limit);
 		}
 
 		return list;
@@ -481,7 +481,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		final Select select = query.getSelect();
 		try {
 			SqlFieldInfo sqlFieldInfo = sqlEntityInfo.getListFieldInfo(fieldName);
-			query.setSelect(new Select(fieldName).setDistinct(query.isDistinct()));
+			query.setSelect(new Select(fieldName).setDistinct(query.distinct()));
 			return getSqlStatementExecutor().executeMultipleObjectListResultQuery(connection, fieldClass,
 					sqlDataSourceDialect.getSqlTypePolicy(sqlFieldInfo.getColumnType(), sqlFieldInfo.getLength()),
 					sqlDataSourceDialect.prepareListStatement(query));
@@ -502,7 +502,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		final Select select = query.getSelect();
 		try {
 			SqlFieldInfo sqlFieldInfo = sqlEntityInfo.getListFieldInfo(fieldName);
-			query.setSelect(new Select(fieldName).setDistinct(query.isDistinct()));
+			query.setSelect(new Select(fieldName).setDistinct(query.distinct()));
 			return getSqlStatementExecutor().executeMultipleObjectSetResultQuery(connection, fieldClass,
 					sqlDataSourceDialect.getSqlTypePolicy(sqlFieldInfo.getColumnType(), sqlFieldInfo.getLength()),
 					sqlDataSourceDialect.prepareListStatement(query));
@@ -541,7 +541,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 
 		final Select select = query.getSelect();
 		try {
-			query.setSelect(new Select(keyName, valueName).setDistinct(query.isDistinct()));
+			query.setSelect(new Select(keyName, valueName).setDistinct(query.distinct()));
 			return getSqlStatementExecutor().executeMultipleObjectListMapResultQuery(connection, keyClass, keyName,
 					valueClass, valueName, sqlDataSourceDialect.prepareListStatement(query));
 		} finally {
@@ -560,7 +560,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		final Select select = query.getSelect();
 		try {
 			SqlFieldInfo sqlFieldInfo = sqlEntityInfo.getListFieldInfo(fieldName);
-			query.setSelect(new Select(fieldName).setDistinct(query.isDistinct()));
+			query.setSelect(new Select(fieldName).setDistinct(query.distinct()));
 			return getSqlStatementExecutor().executeSingleObjectResultQuery(connection, fieldClass,
 					sqlDataSourceDialect.getSqlTypePolicy(sqlFieldInfo.getColumnType(), sqlFieldInfo.getLength()),
 					sqlDataSourceDialect.prepareListStatement(query), MustMatch.fromBoolean(query.isMustMatch()));
@@ -581,7 +581,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 		final Select select = query.getSelect();
 		try {
 			SqlFieldInfo sqlFieldInfo = sqlEntityInfo.getListFieldInfo(fieldName);
-			query.setSelect(new Select(fieldName).setDistinct(query.isDistinct()));
+			query.setSelect(new Select(fieldName).setDistinct(query.distinct()));
 			T val = getSqlStatementExecutor().executeSingleObjectResultQuery(connection, fieldClass,
 					sqlDataSourceDialect.getSqlTypePolicy(sqlFieldInfo.getColumnType(), sqlFieldInfo.getLength()),
 					sqlDataSourceDialect.prepareListStatement(query), MustMatch.FALSE);
@@ -626,25 +626,25 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 	@Override
 	public <T extends Number, U extends Entity> int add(Class<T> fieldClass, String fieldName, T val, Query<U> query)
 			throws UnifyException {
-		return updateAll(query, new Update().addSetToSelfAddition(fieldName, val));
+		return updateAll(query, new Update().setAddition(fieldName, val));
 	}
 
 	@Override
 	public <T extends Number, U extends Entity> int subtract(Class<T> fieldClass, String fieldName, T val,
 			Query<U> query) throws UnifyException {
-		return updateAll(query, new Update().addSetToSelfSubtraction(fieldName, val));
+		return updateAll(query, new Update().setSubtraction(fieldName, val));
 	}
 
 	@Override
 	public <T extends Number, U extends Entity> int multiply(Class<T> fieldClass, String fieldName, T val,
 			Query<U> query) throws UnifyException {
-		return updateAll(query, new Update().addSetToSelfMultiplication(fieldName, val));
+		return updateAll(query, new Update().setMultiplication(fieldName, val));
 	}
 
 	@Override
 	public <T extends Number, U extends Entity> int divide(Class<T> fieldClass, String fieldName, T val, Query<U> query)
 			throws UnifyException {
-		return updateAll(query, new Update().addSetToSelfDivision(fieldName, val));
+		return updateAll(query, new Update().setDivision(fieldName, val));
 	}
 
 	@Override
@@ -789,7 +789,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 			List<?> idList = valueList(idFieldInfo.getFieldType(), idFieldInfo.getName(), query);
 			if (!idList.isEmpty()) {
 				Query<? extends Entity> updateQuery = query.copyNoAll();
-				updateQuery.addRestriction(new Amongst(idFieldInfo.getName(), idList));
+				updateQuery.restriction(new Amongst(idFieldInfo.getName(), idList));
 				return getSqlStatementExecutor().executeUpdate(connection,
 						sqlDataSourceDialect.prepareUpdateStatement(updateQuery, update));
 			}
@@ -987,20 +987,20 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 					for (OnDeleteCascadeInfo odci : sqlEntityInfo.getOnDeleteCascadeInfoList()) {
 						Query<? extends Entity> attrQuery = Query.of(odci.getChildEntityClass());
 						if (odci.isWithChildFkType()) {
-							attrQuery.addEquals(odci.getChildFkTypeField().getName(), tableName);
+							attrQuery.equals(odci.getChildFkTypeField().getName(), tableName);
 						}
 
 						if (odci.isWithChildCat()) {
-							attrQuery.addEquals(odci.getChildCatField().getName(), odci.getCategory());
+							attrQuery.equals(odci.getChildCatField().getName(), odci.getCategory());
 						}
 
-						attrQuery.addAmongst(odci.getChildFkIdField().getName(), idList);
+						attrQuery.amongst(odci.getChildFkIdField().getName(), idList);
 						deleteAll(attrQuery);
 					}
 				}
 
 				Query<? extends Entity> deleteQuery = Query.of(sqlEntityInfo.getEntityClass());
-				deleteQuery.addAmongst(idFieldInfo.getName(), idList);
+				deleteQuery.amongst(idFieldInfo.getName(), idList);
 				return getSqlStatementExecutor().executeUpdate(connection,
 						sqlDataSourceDialect.prepareDeleteStatement(deleteQuery));
 			}
@@ -1340,13 +1340,13 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 
 	private <T extends Entity> T _find(Long id, Query<T> query) throws UnifyException {
 		return id != null ? (query.isSelect()
-				? find(Query.of(query.getEntityClass()).addEquals("id", id).addSelect(query.getSelect()))
+				? find(Query.of(query.getEntityClass()).equals("id", id).select(query.getSelect()))
 				: find(query.getEntityClass(), id)) : null;
 	}
 
 	private <T extends Entity> T _findLean(Long id, Query<T> query) throws UnifyException {
 		return id != null ? (query.isSelect()
-				? findLean(Query.of(query.getEntityClass()).addEquals("id", id).addSelect(query.getSelect()))
+				? findLean(Query.of(query.getEntityClass()).equals("id", id).select(query.getSelect()))
 				: findLean(query.getEntityClass(), id)) : null;
 	}
 
@@ -1499,15 +1499,15 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 									.findSqlEntityInfo(clfi.getChildEntityClass());
 							Query<? extends Entity> query = Query.of(clfi.getChildEntityClass());
 							if (clfi.isWithChildFkType()) {
-								query.addEquals(clfi.getChildFkTypeField().getName(), tableName);
+								query.equals(clfi.getChildFkTypeField().getName(), tableName);
 							}
 
 							if (clfi.isWithChildCat()) {
-								query.addEquals(clfi.getChildCatField().getName(), clfi.getCategory());
+								query.equals(clfi.getChildCatField().getName(), clfi.getCategory());
 							}
 
-							query.addEquals(clfi.getChildFkIdField().getName(), id)
-									.addOrder(childSqlEntityInfo.getIdFieldInfo().getName());
+							query.equals(clfi.getChildFkIdField().getName(), id)
+									.order(childSqlEntityInfo.getIdFieldInfo().getName());
 							List<? extends Entity> childList = null;
 							if (includeListOnly.isTrue()) {
 								childList = listAll(query);
@@ -1550,15 +1550,15 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 									.findSqlEntityInfo(clfi.getChildEntityClass());
 							Query<? extends Entity> query = Query.of(clfi.getChildEntityClass());
 							if (clfi.isWithChildFkType()) {
-								query.addEquals(clfi.getChildFkTypeField().getName(), tableName);
+								query.equals(clfi.getChildFkTypeField().getName(), tableName);
 							}
 
 							if (clfi.isWithChildCat()) {
-								query.addEquals(clfi.getChildCatField().getName(), clfi.getCategory());
+								query.equals(clfi.getChildCatField().getName(), clfi.getCategory());
 							}
 
-							query.addEquals(clfi.getChildFkIdField().getName(), id)
-									.addOrder(childSqlEntityInfo.getIdFieldInfo().getName());
+							query.equals(clfi.getChildFkIdField().getName(), id)
+									.order(childSqlEntityInfo.getIdFieldInfo().getName());
 							List<? extends Entity> childList = null;
 							if (childSqlEntityInfo.isMapped()) {
 								childList = childSqlEntityInfo.getMappedEntityRepository().findAll(query);
@@ -1953,14 +1953,14 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 	private void deleteChildRecords(OnDeleteCascadeInfo odci, String tableName, Object id) throws UnifyException {
 		Query<? extends Entity> query = Query.of(odci.getChildEntityClass());
 		if (odci.isWithChildFkType()) {
-			query.addEquals(odci.getChildFkTypeField().getName(), tableName);
+			query.equals(odci.getChildFkTypeField().getName(), tableName);
 		}
 
 		if (odci.isWithChildCat()) {
-			query.addEquals(odci.getChildCatField().getName(), odci.getCategory());
+			query.equals(odci.getChildCatField().getName(), odci.getCategory());
 		}
 
-		query.addEquals(odci.getChildFkIdField().getName(), id);
+		query.equals(odci.getChildFkIdField().getName(), id);
 
 		SqlEntityInfo childSqlEntityInfo = sqlDataSourceDialect.findSqlEntityInfo(odci.getChildEntityClass());
 		if (childSqlEntityInfo.isMapped()) {
@@ -1975,14 +1975,14 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 			throws UnifyException {
 		Query<? extends Entity> query = Query.of(odci.getChildEntityClass());
 		if (odci.isWithChildFkType()) {
-			query.addEquals(odci.getChildFkTypeField().getName(), tableName);
+			query.equals(odci.getChildFkTypeField().getName(), tableName);
 		}
 
 		if (odci.isWithChildCat()) {
-			query.addEquals(odci.getChildCatField().getName(), odci.getCategory());
+			query.equals(odci.getChildCatField().getName(), odci.getCategory());
 		}
 
-		query.addEquals(odci.getChildFkIdField().getName(), id);
+		query.equals(odci.getChildFkIdField().getName(), id);
 
 		SqlEntityInfo childSqlEntityInfo = sqlDataSourceDialect.findSqlEntityInfo(odci.getChildEntityClass());
 		if (childSqlEntityInfo.isMapped()) {
@@ -1996,7 +1996,7 @@ public class SqlDatabaseSessionImpl implements DatabaseSession {
 	private void deleteChildRecords(OnDeleteCascadeInfo odci, Collection<Object> targetIds) throws UnifyException {
 		if (!targetIds.isEmpty()) {
 			Query<? extends Entity> query = Query.of(odci.getChildEntityClass());
-			query.addAmongst("id", targetIds);
+			query.amongst("id", targetIds);
 			deleteAll(query);
 		}
 	}

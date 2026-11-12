@@ -32,14 +32,14 @@ public class ReportParameterQuery extends AbstractTestTableEntityQuery<ReportPar
     }
 
     public ReportParameterQuery reportId(Long reportId) {
-        return (ReportParameterQuery) addEquals("reportId", reportId);
+        return (ReportParameterQuery) equals("reportId", reportId);
     }
 
     public ReportParameterQuery scheduled(BooleanType scheduled) {
-        return (ReportParameterQuery) addEquals("scheduled", scheduled);
+        return (ReportParameterQuery) equals("scheduled", scheduled);
     }
 
     public ReportParameterQuery scheduledIn(Collection<BooleanType> scheduled) {
-        return (ReportParameterQuery) addAmongst("scheduled", scheduled);
+        return (ReportParameterQuery) amongst("scheduled", scheduled);
     }
 }

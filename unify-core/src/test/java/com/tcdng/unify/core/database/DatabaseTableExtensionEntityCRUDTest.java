@@ -187,7 +187,7 @@ public class DatabaseTableExtensionEntityCRUDTest extends AbstractUnifyComponent
             db.create(new Branch("101", "Palm Groove Branch", "221015101"));
             db.create(new Branch("102", "Lekki Phase I", "221015102"));
 
-            List<Branch> branchList = db.findAll(new BranchQuery().addOrder("code").ignoreEmptyCriteria(true));
+            List<Branch> branchList = db.findAll(new BranchQuery().order("code").ignoreEmptyCriteria(true));
             assertNotNull(branchList);
             assertEquals(3, branchList.size());
 
@@ -279,7 +279,7 @@ public class DatabaseTableExtensionEntityCRUDTest extends AbstractUnifyComponent
             db.create(new Branch("101", "Palm Groove Branch", "221015101"));
             db.create(new Branch("102", "Lekki Phase I", "221015102"));
 
-            List<Branch> branchList = db.listAll(new BranchQuery().addOrder("code").ignoreEmptyCriteria(true));
+            List<Branch> branchList = db.listAll(new BranchQuery().order("code").ignoreEmptyCriteria(true));
             assertNotNull(branchList);
             assertEquals(3, branchList.size());
 
@@ -366,9 +366,9 @@ public class DatabaseTableExtensionEntityCRUDTest extends AbstractUnifyComponent
         tm.beginTransaction();
         try {
             Long id = (Long) db.create(new Branch("100", "Head Office", "221015100"));
-            assertEquals(1, db.countAll(new BranchQuery().addEquals("id", id)));
+            assertEquals(1, db.countAll(new BranchQuery().equals("id", id)));
             db.delete(Branch.class, id);
-            assertEquals(0, db.countAll(new BranchQuery().addEquals("id", id)));
+            assertEquals(0, db.countAll(new BranchQuery().equals("id", id)));
         } catch (Exception e) {
             tm.setRollback();
             throw e;
@@ -442,7 +442,7 @@ public class DatabaseTableExtensionEntityCRUDTest extends AbstractUnifyComponent
                     BooleanType.TRUE);
             db.create(branchExt);
 
-            List<Branch> branchList = db.findAll(new BranchQuery().addOrder("code").ignoreEmptyCriteria(true));
+            List<Branch> branchList = db.findAll(new BranchQuery().order("code").ignoreEmptyCriteria(true));
             assertNotNull(branchList);
             assertEquals(3, branchList.size());
 
@@ -543,7 +543,7 @@ public class DatabaseTableExtensionEntityCRUDTest extends AbstractUnifyComponent
                     BooleanType.TRUE);
             db.create(branchExt);
 
-            List<Branch> branchList = db.listAll(new BranchQuery().addOrder("code").ignoreEmptyCriteria(true));
+            List<Branch> branchList = db.listAll(new BranchQuery().order("code").ignoreEmptyCriteria(true));
             assertNotNull(branchList);
             assertEquals(3, branchList.size());
 
@@ -637,9 +637,9 @@ public class DatabaseTableExtensionEntityCRUDTest extends AbstractUnifyComponent
             BranchExt branchExt = new BranchExt("100", "Head Office", "221015100", parklaneOfficeId, "Lagos", "Nigeria",
                     BooleanType.FALSE);
             Long id = (Long) db.create(branchExt);
-            assertEquals(1, db.countAll(new BranchQuery().addEquals("id", id)));
+            assertEquals(1, db.countAll(new BranchQuery().equals("id", id)));
             db.delete(Branch.class, id);
-            assertEquals(0, db.countAll(new BranchQuery().addEquals("id", id)));
+            assertEquals(0, db.countAll(new BranchQuery().equals("id", id)));
         } catch (Exception e) {
             tm.setRollback();
             throw e;

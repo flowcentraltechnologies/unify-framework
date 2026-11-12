@@ -178,12 +178,12 @@ public class Query<T extends Entity> implements Cloneable {
 				seconds >= 0 ? "{{g:nowaddsec_" + seconds + "}}" : "{{g:nowsubsec_" + -seconds + "}}");
 	}
 
-	public static ExpressionField expOfSelfWithOffset(int seconds) {
+	public static ExpressionField expOfWithOffset(int seconds) {
 		return new ExpressionField(
 				seconds >= 0 ? "{{g:fldaddsec_" + seconds + "}}" : "{{g:fldsubsec_" + -seconds + "}}");
 	}
 
-	public static ExpressionField expOfOtherWithOffset(String rfield, int seconds) {
+	public static ExpressionField expOfWithOffset(String rfield, int seconds) {
 		return new ExpressionField(seconds >= 0 ? "{{g:fldaddsec_" + seconds + "_" + rfield + "}}"
 				: "{{g:fldsubsec_" + -seconds + "_" + rfield + "}}");
 	}
@@ -192,202 +192,202 @@ public class Query<T extends Entity> implements Cloneable {
         return entityClass;
     }
 
-    public Query<T> addAmongst(String field, Collection<? extends Object> values) {
+    public Query<T> amongst(String field, Collection<? extends Object> values) {
         restrictions.add(new Amongst(field, values));
         return this;
     }
 
-    public Query<T> addBetween(String field, Object lowerValue, Object upperValue) {
+    public Query<T> between(String field, Object lowerValue, Object upperValue) {
         restrictions.add(new Between(field, lowerValue, upperValue));
         return this;
     }
 
-    public Query<T> addBetweenField(String field, String lowerField, String upperField) {
+    public Query<T> betweenf(String field, String lowerField, String upperField) {
         restrictions.add(new BetweenField(field, lowerField, upperField));
         return this;
     }
 
-    public Query<T> addEquals(String field, Object value) {
+    public Query<T> equals(String field, Object value) {
         restrictions.add(new Equals(field, value));
         return this;
     }
 
-    public Query<T> addIEquals(String field, String value) {
+    public Query<T> iequals(String field, String value) {
         restrictions.add(new IEquals(field, value));
         return this;
     }
 
-    public Query<T> addEqualsField(String field1, String field2) {
+    public Query<T> equalsf(String field1, String field2) {
         restrictions.add(new EqualsField(field1, field2));
         return this;
     }
 
-    public Query<T> addGreaterThan(String field, Object value) {
+    public Query<T> greater(String field, Object value) {
         restrictions.add(new Greater(field, value));
         return this;
     }
 
-    public Query<T> addGreaterThanField(String field1, String field2) {
+    public Query<T> greaterf(String field1, String field2) {
         restrictions.add(new GreaterField(field1, field2));
         return this;
     }
 
-    public Query<T> addGreaterThanEqual(String field, Object value) {
+    public Query<T> greatereq(String field, Object value) {
         restrictions.add(new GreaterOrEqual(field, value));
         return this;
     }
 
-    public Query<T> addGreaterThanEqualField(String field1, String field2) {
+    public Query<T> greatereqf(String field1, String field2) {
         restrictions.add(new GreaterOrEqualField(field1, field2));
         return this;
     }
 
-    public Query<T> addIsNotNull(String field) {
+    public Query<T> notnull(String field) {
         restrictions.add(new IsNotNull(field));
         return this;
     }
 
-    public Query<T> addIsNull(String field) {
+    public Query<T> isnull(String field) {
         restrictions.add(new IsNull(field));
         return this;
     }
 
-    public Query<T> addLessThan(String field, Object value) {
+    public Query<T> less(String field, Object value) {
         restrictions.add(new Less(field, value));
         return this;
     }
 
-    public Query<T> addLessThanField(String field1, String field2) {
+    public Query<T> lessf(String field1, String field2) {
         restrictions.add(new LessField(field1, field2));
         return this;
     }
 
-    public Query<T> addLessThanEqual(String field, Object value) {
+    public Query<T> lesseq(String field, Object value) {
         restrictions.add(new LessOrEqual(field, value));
         return this;
     }
 
-    public Query<T> addLessThanEqualField(String field1, String field2) {
+    public Query<T> lesseqf(String field1, String field2) {
         restrictions.add(new LessOrEqualField(field1, field2));
         return this;
     }
 
-    public Query<T> addLike(String field, String value) {
+    public Query<T> like(String field, String value) {
         restrictions.add(new Like(field, value));
         return this;
     }
 
-    public Query<T> addLikeField(String field1, String field2) {
+    public Query<T> likef(String field1, String field2) {
         restrictions.add(new LikeField(field1, field2));
         return this;
     }
 
-    public Query<T> addILike(String field, String value) {
+    public Query<T> ilike(String field, String value) {
         restrictions.add(new ILike(field, value));
         return this;
     }
 
-    public Query<T> addILikeField(String field1, String field2) {
+    public Query<T> ilikef(String field1, String field2) {
         restrictions.add(new ILikeField(field1, field2));
         return this;
     }
 
-    public Query<T> addBeginsWith(String field, String value) {
+    public Query<T> begins(String field, String value) {
         restrictions.add(new BeginsWith(field, value));
         return this;
     }
 
-    public Query<T> addBeginsWithField(String field1, String field2) {
+    public Query<T> beginsf(String field1, String field2) {
         restrictions.add(new BeginsWithField(field1, field2));
         return this;
     }
 
-    public Query<T> addIBeginsWith(String field, String value) {
+    public Query<T> ibegins(String field, String value) {
         restrictions.add(new IBeginsWith(field, value));
         return this;
     }
 
-    public Query<T> addIBeginsWithField(String field1, String field2) {
+    public Query<T> ibeginsf(String field1, String field2) {
         restrictions.add(new IBeginsWithField(field1, field2));
         return this;
     }
 
-    public Query<T> addEndsWith(String field, String value) {
+    public Query<T> ends(String field, String value) {
         restrictions.add(new EndsWith(field, value));
         return this;
     }
 
-    public Query<T> addEndsWithField(String field1, String field2) {
+    public Query<T> endsf(String field1, String field2) {
         restrictions.add(new EndsWithField(field1, field2));
         return this;
     }
 
-    public Query<T> addIEndsWith(String field, String value) {
+    public Query<T> iends(String field, String value) {
         restrictions.add(new IEndsWith(field, value));
         return this;
     }
 
-    public Query<T> addIEndsWithField(String field1, String field2) {
+    public Query<T> iendsf(String field1, String field2) {
         restrictions.add(new IEndsWithField(field1, field2));
         return this;
     }
 
-    public Query<T> addNotAmongst(String field, Collection<? extends Object> values) {
+    public Query<T> notamongst(String field, Collection<? extends Object> values) {
         restrictions.add(new NotAmongst(field, values));
         return this;
     }
 
-    public Query<T> addNotBetween(String field, Object lowerValue, Object upperValue) {
+    public Query<T> notbetween(String field, Object lowerValue, Object upperValue) {
         restrictions.add(new NotBetween(field, lowerValue, upperValue));
         return this;
     }
 
-    public Query<T> addNotEquals(String field, Object value) {
+    public Query<T> notequals(String field, Object value) {
         restrictions.add(new NotEquals(field, value));
         return this;
     }
 
-    public Query<T> addINotEquals(String field, String value) {
+    public Query<T> inotequals(String field, String value) {
         restrictions.add(new INotEquals(field, value));
         return this;
     }
 
-    public Query<T> addNotEqualsField(String field1, String field2) {
+    public Query<T> notequalsf(String field1, String field2) {
         restrictions.add(new NotEqualsField(field1, field2));
         return this;
     }
 
-    public Query<T> addNotLike(String field, String value) {
+    public Query<T> notlike(String field, String value) {
         restrictions.add(new NotLike(field, value));
         return this;
     }
 
-    public Query<T> addNotLikeField(String field1, String field2) {
+    public Query<T> notlikef(String field1, String field2) {
         restrictions.add(new NotLikeField(field1, field2));
         return this;
     }
 
-    public Query<T> addNotBeginWith(String field, String value) {
+    public Query<T> notbegins(String field, String value) {
         restrictions.add(new NotBeginWith(field, value));
         return this;
     }
 
-    public Query<T> addNotBeginWithField(String field1, String field2) {
+    public Query<T> notbeginsf(String field1, String field2) {
         restrictions.add(new NotBeginWithField(field1, field2));
         return this;
     }
 
-    public Query<T> addNotEndWith(String field, String value) {
+    public Query<T> notends(String field, String value) {
         restrictions.add(new NotEndWith(field, value));
         return this;
     }
 
-    public Query<T> addNotEndWithField(String field1, String field2) {
+    public Query<T> notendsf(String field1, String field2) {
         restrictions.add(new NotEndWithField(field1, field2));
         return this;
     }
 
-    public Query<T> addRestriction(Restriction restriction) {
+    public Query<T> restriction(Restriction restriction) {
         if (!restriction.isEmpty()) {
             restrictions.add(restriction);
         }
@@ -395,86 +395,86 @@ public class Query<T extends Entity> implements Cloneable {
         return this;
     }
 
-    public Query<T> addSelect(String field) {
+    public Query<T> select(String field) {
         innerGetSelect().add(field);
         return this;
     }
 
-    public Query<T> addSelect(String... fields) {
+    public Query<T> select(String... fields) {
         for (String field : fields) {
             innerGetSelect().add(field);
         }
         return this;
     }
 
-    public Query<T> addSelect(Collection<String> fields) {
+    public Query<T> select(Collection<String> fields) {
         for (String field : fields) {
             innerGetSelect().add(field);
         }
         return this;
     }
 
-    public Query<T> addSelect(Select select) {
+    public Query<T> select(Select select) {
         innerGetSelect().addAll(select.values());
         return this;
     }
     
-    public Query<T> addGroupBy(String field) {
+    public Query<T> groupby(String field) {
         innerGetGroupBy().add(field);
         return this;
     }
 
-    public Query<T> addGroupBy(Collection<String> fields) {
+    public Query<T> groupby(Collection<String> fields) {
         for (String field : fields) {
             innerGetGroupBy().add(field);
         }
         return this;
     }
 
-    public Query<T> addGroupBy(String... fields) {
+    public Query<T> groupby(String... fields) {
         for (String field : fields) {
             innerGetGroupBy().add(field);
         }
         return this;
     }
 
-    public Query<T> addOrder(String field) {
+    public Query<T> order(String field) {
         getOrder().add(field);
         return this;
     }
 
-    public Query<T> addOrder(Collection<String> fields) {
+    public Query<T> order(Collection<String> fields) {
         for (String field : fields) {
             getOrder().add(field);
         }
         return this;
     }
 
-    public Query<T> addOrder(String... fields) {
+    public Query<T> order(String... fields) {
         for (String field : fields) {
             getOrder().add(field);
         }
         return this;
     }
 
-    public Query<T> addOrder(OrderType type, String field) {
+    public Query<T> order(OrderType type, String field) {
         getOrder().add(field, type);
         return this;
     }
 
-    public Query<T> addOrder(OrderType type, String... fields) {
+    public Query<T> order(OrderType type, String... fields) {
         for (String field : fields) {
             getOrder().add(field, type);
         }
         return this;
     }
 
-    public Query<T> setMax(String field) {
+    public Query<T> max(String field) {
         maxProperty = field;
         return this;
     }
 
-    public String getMaxProperty() {
+    public String max() {
         return maxProperty;
     }
 
@@ -482,12 +482,12 @@ public class Query<T extends Entity> implements Cloneable {
         return maxProperty != null;
     }
 
-    public Query<T> setMin(String field) {
+    public Query<T> min(String field) {
         minProperty = field;
         return this;
     }
 
-    public String getMinProperty() {
+    public String min() {
         return minProperty;
     }
 
@@ -547,6 +547,7 @@ public class Query<T extends Entity> implements Cloneable {
         if (order == null) {
             order = new Order();
         }
+        
         return order;
     }
 
@@ -559,20 +560,20 @@ public class Query<T extends Entity> implements Cloneable {
         return order != null && order.isParts();
     }
 
-    public int getOffset() {
+    public int offset() {
         return offset;
     }
 
-    public Query<T> setOffset(int offset) {
+    public Query<T> offset(int offset) {
         this.offset = offset;
         return this;
     }
 
-    public int getLimit() {
+    public int limit() {
         return limit;
     }
 
-    public Query<T> setLimit(int limit) {
+    public Query<T> limit(int limit) {
         this.limit = limit;
         return this;
     }
@@ -629,20 +630,20 @@ public class Query<T extends Entity> implements Cloneable {
         return this;
     }
 
-	public boolean isLenient() {
+	public boolean lenient() {
 		return lenient;
 	}
 
-	public Query<T> setLenient(boolean lenient) {
+	public Query<T> lenient(boolean lenient) {
 		this.lenient = lenient;
         return this;
 	}
 
-	public boolean isDistinct() {
+	public boolean distinct() {
         return innerGetSelect().isDistinct();
     }
 
-    public Query<T> setDistinct(boolean distinct) {
+    public Query<T> distinct(boolean distinct) {
         innerGetSelect().setDistinct(distinct);
         return this;
     }

@@ -30,18 +30,18 @@ public class ClusterCommandParamQuery extends SequenceEntityQuery<ClusterCommand
     }
 
     public ClusterCommandParamQuery clusterCommandId(Long clusterCommandId) {
-        return (ClusterCommandParamQuery) addEquals("clusterCommandId", clusterCommandId);
+        return (ClusterCommandParamQuery) equals("clusterCommandId", clusterCommandId);
     }
 
     public ClusterCommandParamQuery clusterCommandIdIn(Collection<Long> clusterCommandId) {
-        return (ClusterCommandParamQuery) addAmongst("clusterCommandId", clusterCommandId);
+        return (ClusterCommandParamQuery) amongst("clusterCommandId", clusterCommandId);
     }
 
     public ClusterCommandParamQuery nodeId(String nodeId) {
-        return (ClusterCommandParamQuery) addEquals("nodeId", nodeId);
+        return (ClusterCommandParamQuery) equals("nodeId", nodeId);
     }
 
     public ClusterCommandParamQuery nodeIdIn(Collection<String> nodeId) {
-        return (ClusterCommandParamQuery) addAmongst("nodeId", nodeId);
+        return (ClusterCommandParamQuery) amongst("nodeId", nodeId);
     }
 }

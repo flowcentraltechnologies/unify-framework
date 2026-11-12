@@ -43,7 +43,7 @@ public class GenericServiceImpl extends AbstractBusinessService implements Gener
     @Override
     public <T extends Entity> T find(Class<T> clazz, Object id) throws UnifyException {
         Query<T> query = Query.of(clazz);
-        query.addEquals("id", id);
+        query.equals("id", id);
         return (T) db().list(query);
     }
 
@@ -55,7 +55,7 @@ public class GenericServiceImpl extends AbstractBusinessService implements Gener
     @Override
     public <T, U extends Entity> T listValue(Class<T> valueClazz, Class<U> recordClazz, Object id, String property)
             throws UnifyException {
-        return db().value(valueClazz, property, Query.of(recordClazz).addEquals("id", id));
+        return db().value(valueClazz, property, Query.of(recordClazz).equals("id", id));
     }
 
     @Override
