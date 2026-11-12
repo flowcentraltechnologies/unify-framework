@@ -36,4 +36,13 @@ public interface ClusterJobHandler extends UnifyComponent {
 	 * @throws UnifyException if an error occurs
 	 */
 	List<Job> getNewJobs() throws UnifyException;
+
+	/**
+	 * Performs job.
+	 * 
+	 * @param workItemId the work item ID
+	 * @throws UnifyException if an error occurs
+	 */
+	void performWork(Long workItemId) throws UnifyException;
+
 }

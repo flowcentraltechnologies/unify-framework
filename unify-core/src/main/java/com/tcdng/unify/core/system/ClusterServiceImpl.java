@@ -32,6 +32,8 @@ import com.tcdng.unify.core.annotation.PeriodicType;
 import com.tcdng.unify.core.annotation.TransactionAttribute;
 import com.tcdng.unify.core.annotation.Transactional;
 import com.tcdng.unify.core.business.AbstractBusinessService;
+import com.tcdng.unify.core.business.AbstractQueuedExec;
+import com.tcdng.unify.core.business.QueuedExec;
 import com.tcdng.unify.core.constant.JobStatus;
 import com.tcdng.unify.core.criterion.And;
 import com.tcdng.unify.core.criterion.Equals;
@@ -39,6 +41,7 @@ import com.tcdng.unify.core.criterion.Less;
 import com.tcdng.unify.core.criterion.Or;
 import com.tcdng.unify.core.criterion.Update;
 import com.tcdng.unify.core.data.Job;
+import com.tcdng.unify.core.data.JobExecInfo;
 import com.tcdng.unify.core.database.Query;
 import com.tcdng.unify.core.system.entities.ClusterCommand;
 import com.tcdng.unify.core.system.entities.ClusterCommandParam;
@@ -71,6 +74,10 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 	
 	private static final int JOB_PROCESSING_BATCH_SIZE = 32;
 	
+	private static final int MAX_JOB_PROCESSING_THREADS = 16;
+
+    private final QueuedExec<JobExecInfo> clusterJobQueuedExec;
+	
 	@Configurable("5")
 	private int jobExpirationMinutes;
 	
@@ -78,6 +85,21 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 	private int nodeExpirationMinutes;
 
 	private List<ClusterJobHandler> jobHandlers;
+	
+	public ClusterServiceImpl() {
+        this.clusterJobQueuedExec = new AbstractQueuedExec<JobExecInfo>(MAX_JOB_PROCESSING_THREADS)
+            {
+                @Override
+                protected void doExecute(JobExecInfo jobExecInfo) {
+                    try {
+                        performWork(jobExecInfo);
+                    } catch (Exception e) {
+                        logError(e);
+                    }
+                }
+
+            };
+	}
 	
 	@Override
 	public List<ClusterNode> findClusterNodes(ClusterNodeQuery query) throws UnifyException {
@@ -212,21 +234,48 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 
 	@Periodic(PeriodicType.NORMAL)
 	public void processJobs(TaskMonitor taskMonitor) throws UnifyException {
+		// Load
 		final List<Long> clusterJobIds = claimUnlockedRows(
 				new ClusterJobQuery()
-				.addLessThanField("attempts", "maxAttempts")
-				.addRestriction(new Or()
-						.add(new Equals("status", JobStatus.PENDING))
-						.add(new And()
-								.add(new Equals("status", JobStatus.RUNNING))
-								.add(new Less("lockedAt", Query.expOfNowWithOffset(-jobExpirationMinutes * 60)))))
-				.setLimit(JOB_PROCESSING_BATCH_SIZE),
+					.addLessThanField("attempts", "maxAttempts")
+					.addRestriction(new Or()
+								.add(new Equals("status", JobStatus.PENDING))
+								.add(new And()
+										.add(new Equals("status", JobStatus.RUNNING))
+										.add(new Less("lockedAt", Query.expOfNowWithOffset(-jobExpirationMinutes * 60)))))
+						.setLimit(JOB_PROCESSING_BATCH_SIZE),
 				new Update()
 					.addSetTo("status", JobStatus.RUNNING)
 					.addSetToNow("lockedAt")
 					.addSetTo("lockedBy", getNodeId())
-					.addSetToSelfAddition("attempts", 1), CLUSTER_PROCESS_JOB_LOCK);
-		
+					.addSetToSelfAddition("attempts", 1),
+				CLUSTER_PROCESS_JOB_LOCK);
+		if (!DataUtils.isBlank(clusterJobIds)) {
+			for (ClusterJob clusterJob : db().findAll(new ClusterJobQuery().idIn(clusterJobIds))) {
+				clusterJobQueuedExec
+						.execute(new JobExecInfo(clusterJob.getHandler(), clusterJob.getPayloadId(), clusterJob.getId()));
+			}
+		}
+	}
+	
+	public void performWork(JobExecInfo jobExecInfo) throws UnifyException {
+		try {
+			final ClusterJobHandler handler = getComponent(ClusterJobHandler.class, jobExecInfo.getHandler());
+			handler.performWork(jobExecInfo.getPayloadId());
+			
+			// Finish
+			db().updateAll(new ClusterJobQuery()
+						.addEquals("id", jobExecInfo.getClusterJobId())
+						.addEquals("lockedBy", getNodeId())
+						.addEquals("status", JobStatus.RUNNING)
+					, new Update()
+						.addSetTo("status", JobStatus.COMPLETED)
+						.addSetToNull("lockedAt"));			
+		} catch (UnifyException e) {
+			throw e;
+		} catch (Exception e) {
+			throwOperationErrorException(e);
+		}
 	}
 	
 	@Override

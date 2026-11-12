@@ -63,6 +63,10 @@ public class Update extends FluentMap<String, Object> {
 	public Update addSetTo(String field, Object value) {
 		return (Update) super.add(field, value);
 	}
+	
+	public Update addSetToNull(String field) {
+		return (Update) super.add(field, null);
+	}
 
 	public Update addSetToSelfAddition(String lfield, Number value) {
 		return (Update) super.add(lfield, new AdditionExpression(value));
