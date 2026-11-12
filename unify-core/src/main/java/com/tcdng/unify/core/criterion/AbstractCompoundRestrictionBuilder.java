@@ -48,7 +48,7 @@ public abstract class AbstractCompoundRestrictionBuilder {
         return this;
     }
 
-    public AbstractCompoundRestrictionBuilder greaterEqual(String propertyName, Object value) {
+    public AbstractCompoundRestrictionBuilder greatereq(String propertyName, Object value) {
         getCompoundRestriction().add(new GreaterOrEqual(propertyName, value));
         return this;
     }
