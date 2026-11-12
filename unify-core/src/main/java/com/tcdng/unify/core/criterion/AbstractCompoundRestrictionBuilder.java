@@ -53,12 +53,12 @@ public abstract class AbstractCompoundRestrictionBuilder {
         return this;
     }
 
-    public AbstractCompoundRestrictionBuilder isNotNull(String propertyName) {
+    public AbstractCompoundRestrictionBuilder notnull(String propertyName) {
         getCompoundRestriction().add(new IsNotNull(propertyName));
         return this;
     }
 
-    public AbstractCompoundRestrictionBuilder isNull(String propertyName) {
+    public AbstractCompoundRestrictionBuilder isnull(String propertyName) {
         getCompoundRestriction().add(new IsNull(propertyName));
         return this;
     }
@@ -68,7 +68,7 @@ public abstract class AbstractCompoundRestrictionBuilder {
         return this;
     }
 
-    public AbstractCompoundRestrictionBuilder lessEqual(String propertyName, Object value) {
+    public AbstractCompoundRestrictionBuilder lesseq(String propertyName, Object value) {
         getCompoundRestriction().add(new LessOrEqual(propertyName, value));
         return this;
     }
@@ -78,47 +78,47 @@ public abstract class AbstractCompoundRestrictionBuilder {
         return this;
     }
 
-    public AbstractCompoundRestrictionBuilder likeBegin(String propertyName, String value) {
+    public AbstractCompoundRestrictionBuilder begins(String propertyName, String value) {
         getCompoundRestriction().add(new BeginsWith(propertyName, value));
         return this;
     }
 
-    public AbstractCompoundRestrictionBuilder likeEnd(String propertyName, String value) {
+    public AbstractCompoundRestrictionBuilder ends(String propertyName, String value) {
         getCompoundRestriction().add(new EndsWith(propertyName, value));
         return this;
     }
 
-    public AbstractCompoundRestrictionBuilder notAmongst(String propertyName, Collection<Object> values) {
+    public AbstractCompoundRestrictionBuilder notamongst(String propertyName, Collection<Object> values) {
         getCompoundRestriction().add(new NotAmongst(propertyName, values));
         return this;
     }
 
-    public AbstractCompoundRestrictionBuilder notBetween(String propertyName, Object lowerValue, Object upperValue) {
+    public AbstractCompoundRestrictionBuilder notbetween(String propertyName, Object lowerValue, Object upperValue) {
         getCompoundRestriction().add(new NotBetween(propertyName, lowerValue, upperValue));
         return this;
     }
 
-    public AbstractCompoundRestrictionBuilder notEqual(String propertyName, Object value) {
+    public AbstractCompoundRestrictionBuilder notequal(String propertyName, Object value) {
         getCompoundRestriction().add(new NotEquals(propertyName, value));
         return this;
     }
 
-    public AbstractCompoundRestrictionBuilder notLike(String propertyName, String value) {
+    public AbstractCompoundRestrictionBuilder notlike(String propertyName, String value) {
         getCompoundRestriction().add(new NotLike(propertyName, value));
         return this;
     }
 
-    public AbstractCompoundRestrictionBuilder notLikeBegin(String propertyName, String value) {
+    public AbstractCompoundRestrictionBuilder notbegins(String propertyName, String value) {
         getCompoundRestriction().add(new NotBeginWith(propertyName, value));
         return this;
     }
 
-    public AbstractCompoundRestrictionBuilder notLikeEnd(String propertyName, String value) {
+    public AbstractCompoundRestrictionBuilder notends(String propertyName, String value) {
         getCompoundRestriction().add(new NotEndWith(propertyName, value));
         return this;
     }
 
-    public AbstractCompoundRestrictionBuilder addCompound(CompoundRestriction compoundRestriction) {
+    public AbstractCompoundRestrictionBuilder compound(CompoundRestriction compoundRestriction) {
         getCompoundRestriction().add(compoundRestriction);
         return this;
     }
