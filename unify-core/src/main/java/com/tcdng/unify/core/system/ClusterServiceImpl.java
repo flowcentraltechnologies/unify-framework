@@ -243,7 +243,7 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 		db().updateAll(
 				new ClusterJobQuery()
 					.equals("status", JobStatus.RUNNING)
-					.greatereqf("attempts ", "maxAttempts")
+					.greatereqf("attempts", "maxAttempts")
 					.less("lockedAt", Query.expOfNowWithOffset(-jobExpirationMinutes * 60)),
 				new Update()
 					.set("status", JobStatus.DEAD));
