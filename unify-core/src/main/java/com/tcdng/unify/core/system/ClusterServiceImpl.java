@@ -197,6 +197,7 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 			try {
 				if (jobHandlers == null) {
 					jobHandlers = getComponents(ClusterJobHandler.class);
+					logInfo("Total of [{0}] job handlers detected...", jobHandlers.size());
 				}
 
 				for (ClusterJobHandler handler: jobHandlers) {
