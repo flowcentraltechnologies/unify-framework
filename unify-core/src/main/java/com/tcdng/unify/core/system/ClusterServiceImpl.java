@@ -286,7 +286,7 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 		}
 	}
 
-	@Periodic(PeriodicType.FASTER)
+	@Periodic(PeriodicType.FAST)
 	public void processJobs(TaskMonitor taskMonitor) throws UnifyException {
 		final List<Long> clusterJobIds = claimUnlockedRows(
 				new ClusterJobQuery()
