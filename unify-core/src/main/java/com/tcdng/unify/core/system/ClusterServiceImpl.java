@@ -72,10 +72,12 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 	private static final String CLUSTER_NEW_JOB_LOCK = "lock:clustenewjobs";
 
 	private static final String CLUSTER_PROCESS_JOB_LOCK = "lock:clusteprocessjobs";
+
+	private static final String CLUSTER_PROCESS_DEAD_LOCK = "lock:clusteprocessdead";
 	
-	private static final int JOB_PROCESSING_BATCH_SIZE = 32;
+	private static final int JOB_PROCESSING_BATCH_SIZE = 64;
 	
-	private static final int MAX_JOB_PROCESSING_THREADS = 64;
+	private static final int MAX_JOB_PROCESSING_THREADS = 16;
 
     private final QueuedExec<JobExecInfo> clusterJobQueuedExec;
 	
@@ -249,10 +251,23 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 					.set("status", JobStatus.DEAD));
 	}
 
+	@Periodic(PeriodicType.SLOW)
+	public void performNotifyDead(TaskMonitor taskMonitor) throws UnifyException {
+		final List<Long> deadJobIds = claimUnlockedRows(
+				new ClusterJobQuery().equals("status", JobStatus.DEAD).limit(JOB_PROCESSING_BATCH_SIZE),
+				new Update().set("status", JobStatus.DEAD_ACK), CLUSTER_PROCESS_DEAD_LOCK);
+		if (!DataUtils.isBlank(deadJobIds)) {
+			for (ClusterJob deadClusterJob : db().findAll(new ClusterJobQuery().idIn(deadJobIds))) {
+				ClusterJobHandler handler = getComponent(ClusterJobHandler.class, deadClusterJob.getHandler());
+				handler.notifyFail(deadClusterJob.getPayloadId());
+			}
+		}
+	}
+
 	@Transactional(TransactionAttribute.REQUIRES_NEW)
 	public void loadNewJob(ClusterJobHandler handler) throws UnifyException {
 		try {
-			final List<Job> newjobs = handler.getNewJobs();
+			final List<Job> newjobs = handler.claimNewWorkItems();
 			if (!DataUtils.isBlank(newjobs)) {
 				final String handlerName = handler.getName();
 				for (Job job : newjobs) {
@@ -271,7 +286,7 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 		}
 	}
 
-	@Periodic(PeriodicType.FAST)
+	@Periodic(PeriodicType.FASTER)
 	public void processJobs(TaskMonitor taskMonitor) throws UnifyException {
 		final List<Long> clusterJobIds = claimUnlockedRows(
 				new ClusterJobQuery()

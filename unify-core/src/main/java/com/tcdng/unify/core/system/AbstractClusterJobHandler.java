@@ -34,7 +34,7 @@ import com.tcdng.unify.core.util.DataUtils;
 public abstract class AbstractClusterJobHandler extends AbstractBusinessService implements ClusterJobHandler {
 
 	@Override
-	public List<Job> getNewJobs() throws UnifyException {
+	public List<Job> claimNewWorkItems() throws UnifyException {
 		final JobFetchInfo jobFetchInfo = getJobFetchInfo();
 		final List<Long> workItemIds = claimUnlockedRows(
 				jobFetchInfo.getClaimQuery().limit(jobFetchInfo.getFetchBatchSize()), jobFetchInfo.getClaimUpdate(),

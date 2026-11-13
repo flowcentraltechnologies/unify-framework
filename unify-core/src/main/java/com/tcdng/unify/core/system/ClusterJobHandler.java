@@ -30,12 +30,12 @@ import com.tcdng.unify.core.data.Job;
 public interface ClusterJobHandler extends BusinessService {
 
 	/**
-	 * Gets a list of new jobs.
+	 * Claims a list of new jobs.
 	 * 
 	 * @return the new jobs
 	 * @throws UnifyException if an error occurs
 	 */
-	List<Job> getNewJobs() throws UnifyException;
+	List<Job> claimNewWorkItems() throws UnifyException;
 
 	/**
 	 * Performs job.
@@ -44,5 +44,13 @@ public interface ClusterJobHandler extends BusinessService {
 	 * @throws UnifyException if an error occurs
 	 */
 	void performWork(Long workItemId) throws UnifyException;
+
+	/**
+	 * Notification on dead job.
+	 * 
+	 * @param workItemId the work item ID
+	 * @throws UnifyException if an error occurs
+	 */
+	void notifyFail(Long workItemId) throws UnifyException;
 
 }
