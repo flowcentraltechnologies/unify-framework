@@ -75,9 +75,9 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 
 	private static final String CLUSTER_PROCESS_DEAD_LOCK = "lock:clusteprocessdead";
 	
-	private static final int JOB_PROCESSING_BATCH_SIZE = 64;
+	private static final int JOB_PROCESSING_BATCH_SIZE = 40;
 	
-	private static final int MAX_JOB_PROCESSING_THREADS = 16;
+	private static final int MAX_JOB_PROCESSING_THREADS = 10;
 
     private final QueuedExec<JobExecInfo> clusterJobQueuedExec;
 	
@@ -193,8 +193,6 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 
 	@Periodic(PeriodicType.FAST)
 	public void loadNewJobs(TaskMonitor taskMonitor) throws UnifyException {
-		final long start = System.currentTimeMillis();
-		int jobs = 0;
 		if (tryGrabLock(CLUSTER_NEW_JOB_LOCK)) {
 			try {
 				if (jobHandlers == null) {
@@ -203,14 +201,12 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 				}
 
 				for (ClusterJobHandler handler: jobHandlers) {
-					jobs += loadNewJob(handler);
+					loadNewJob(handler);
 				}
 			} finally {
 				releaseLock(CLUSTER_NEW_JOB_LOCK);
 			}
 		}
-		
-		System.out.println(jobs + " new jobs loaded in " + (System.currentTimeMillis() - start) / 1000 + "ms.");
 	}
 
 	@Periodic(PeriodicType.SLOW)
@@ -254,6 +250,11 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 					.less("lockedAt", Query.expOfNowWithOffset(-jobExpirationMinutes * 60)),
 				new Update()
 					.set("status", JobStatus.DEAD));
+		
+		// Delete completed jobs
+		db().deleteAll(
+				new ClusterJobQuery()
+					.equals("status", JobStatus.COMPLETED));
 	}
 
 	@Periodic(PeriodicType.SLOW)
