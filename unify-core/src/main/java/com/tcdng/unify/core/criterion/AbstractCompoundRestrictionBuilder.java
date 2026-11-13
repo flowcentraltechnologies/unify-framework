@@ -118,8 +118,8 @@ public abstract class AbstractCompoundRestrictionBuilder {
         return this;
     }
 
-    public AbstractCompoundRestrictionBuilder compound(CompoundRestriction compoundRestriction) {
-        getCompoundRestriction().add(compoundRestriction);
+    public AbstractCompoundRestrictionBuilder restriction(Restriction restriction) {
+        getCompoundRestriction().add(restriction);
         return this;
     }
     

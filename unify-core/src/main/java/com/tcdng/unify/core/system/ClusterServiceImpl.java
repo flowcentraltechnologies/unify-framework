@@ -191,8 +191,10 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 		}
 	}
 
-	@Periodic(PeriodicType.NORMAL)
+	@Periodic(PeriodicType.FAST)
 	public void loadNewJobs(TaskMonitor taskMonitor) throws UnifyException {
+		final long start = System.currentTimeMillis();
+		int jobs = 0;
 		if (tryGrabLock(CLUSTER_NEW_JOB_LOCK)) {
 			try {
 				if (jobHandlers == null) {
@@ -201,12 +203,14 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 				}
 
 				for (ClusterJobHandler handler: jobHandlers) {
-					loadNewJob(handler);
+					jobs += loadNewJob(handler);
 				}
 			} finally {
 				releaseLock(CLUSTER_NEW_JOB_LOCK);
 			}
 		}
+		
+		System.out.println(jobs + " new jobs loaded in " + (System.currentTimeMillis() - start) / 1000 + "ms.");
 	}
 
 	@Periodic(PeriodicType.SLOW)
@@ -266,7 +270,7 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 	}
 
 	@Transactional(TransactionAttribute.REQUIRES_NEW)
-	public void loadNewJob(ClusterJobHandler handler) throws UnifyException {
+	public int loadNewJob(ClusterJobHandler handler) throws UnifyException {
 		try {
 			final List<Job> newjobs = handler.claimNewWorkItems();
 			if (!DataUtils.isBlank(newjobs)) {
@@ -281,13 +285,17 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 					clusterJob.setStatus(JobStatus.PENDING);
 					db().create(clusterJob);
 				}
+				
+				return newjobs.size();
 			}
 		} catch (Exception e) {
 			logSevere(e);
 		}
+		
+		return 0;
 	}
 
-	@Periodic(PeriodicType.FAST)
+	@Periodic(PeriodicType.FASTER)
 	public void processJobs(TaskMonitor taskMonitor) throws UnifyException {
 		final List<Long> clusterJobIds = claimUnlockedRows(
 				new ClusterJobQuery()
