@@ -28,7 +28,7 @@ import com.tcdng.unify.core.data.Job;
  * @since 4.1
  */
 public interface ClusterJobHandler extends BusinessService {
-
+	
 	/**
 	 * Claims a list of new jobs.
 	 * 
