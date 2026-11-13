@@ -185,6 +185,15 @@ public class HSqlDbDialect extends AbstractSqlDataSourceDialect {
 	}
 
 	@Override
+	protected void appendTodayOffsetSQL(StringBuilder sb, int days, boolean neg) throws UnifyException {
+		sb.append("CURRENT_DATE ");
+		sb.append(neg ? '-' : '+');
+		sb.append(" INTERVAL '");
+		sb.append(days);
+		sb.append("' DAY");
+	}
+
+	@Override
 	protected void appendTimestampOffsetSQL(StringBuilder sb, String preferredColumnName, int seconds, boolean neg)
 			throws UnifyException {
 		sb.append(preferredColumnName).append(" ");

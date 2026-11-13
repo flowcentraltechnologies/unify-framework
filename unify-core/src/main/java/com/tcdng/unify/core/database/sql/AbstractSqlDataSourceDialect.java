@@ -1793,20 +1793,20 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 					case "now":
 						sb.append(getNowSQL());
 						break;
-					case "nowaddsec":
-					case "nowsubsec": {
+					case "nowadd":
+					case "nowsub": {
 						if (prm == null) {
 							throwIllegalArgumentException("Illegal expression parameter required for [" + func + "].");
 						}
 
 						final int seconds = Integer.parseInt(prm);
 						sb.append('(');
-						appendNowOffsetSQL(sb, seconds, func.equals("nowsubsec"));
+						appendNowOffsetSQL(sb, seconds, func.equals("nowsub"));
 						sb.append(')');
 					}
 						break;
-					case "fldaddsec":
-					case "fldsubsec": {
+					case "fldadd":
+					case "fldsub": {
 						if (prm == null) {
 							throwIllegalArgumentException("Expression parameter required for [" + func + "].");
 						}
@@ -1817,19 +1817,31 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 							final SqlFieldInfo prmSqlFieldInfo = sqlEntityInfo.getFieldInfo(prm.substring(fIndex + 1));
 							sb.append('(');
 							appendTimestampOffsetSQL(sb, prmSqlFieldInfo.getPreferredColumnName(), seconds,
-									func.equals("fldsubsec"));
+									func.equals("fldsub"));
 							sb.append(')');
 						} else {
 							final int seconds = Integer.parseInt(prm);
 							sb.append('(');
 							appendTimestampOffsetSQL(sb, toSqlFieldInfo.getPreferredColumnName(), seconds,
-									func.equals("fldsubsec"));
+									func.equals("fldsub"));
 							sb.append(')');
 						}
 					}
 						break;
 					case "today":
 						sb.append(getTodaySQL());
+						break;
+					case "todayadd":
+					case "todaysub": {
+						if (prm == null) {
+							throwIllegalArgumentException("Illegal expression parameter required for [" + func + "].");
+						}
+
+						final int days = Integer.parseInt(prm);
+						sb.append('(');
+						appendTodayOffsetSQL(sb, days, func.equals("todaysub"));
+						sb.append(')');
+					}
 						break;
 					default:
 						throwIllegalArgumentException("Illegal expression token type [" + token.getToken() + "].");
@@ -2921,6 +2933,8 @@ public abstract class AbstractSqlDataSourceDialect extends AbstractUnifyComponen
 	}
 
 	protected abstract void appendNowOffsetSQL(StringBuilder sb, int seconds, boolean neg) throws UnifyException;
+
+	protected abstract void appendTodayOffsetSQL(StringBuilder sb, int days, boolean neg) throws UnifyException;
 
 	protected abstract void appendTimestampOffsetSQL(StringBuilder sb, String preferredColumnName, int seconds,
 			boolean neg) throws UnifyException;

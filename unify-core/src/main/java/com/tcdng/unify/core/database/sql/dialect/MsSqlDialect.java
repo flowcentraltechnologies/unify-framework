@@ -155,6 +155,14 @@ public class MsSqlDialect extends AbstractSqlDataSourceDialect {
 	}
 
 	@Override
+	protected void appendTodayOffsetSQL(StringBuilder sb, int days, boolean neg) throws UnifyException {
+		sb.append("DATEADD(DAY, ");
+		sb.append(neg ? '-' : '+');
+		sb.append(days);
+		sb.append(", CAST(GETDATE() AS date))");
+	}
+
+	@Override
 	protected void appendTimestampOffsetSQL(StringBuilder sb, String preferredColumnName, int seconds, boolean neg)
 			throws UnifyException {
 		sb.append("DATEADD(SECOND, ");

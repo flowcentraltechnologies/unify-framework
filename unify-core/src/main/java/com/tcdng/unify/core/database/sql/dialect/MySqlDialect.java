@@ -238,6 +238,15 @@ public class MySqlDialect extends AbstractSqlDataSourceDialect {
 	}
 
 	@Override
+	protected void appendTodayOffsetSQL(StringBuilder sb, int days, boolean neg) throws UnifyException {
+		sb.append("CURDATE() ");
+		sb.append(neg ? '-' : '+');
+		sb.append(" INTERVAL ");
+		sb.append(days);
+		sb.append(" DAY");
+	}
+
+	@Override
 	protected void appendTimestampOffsetSQL(StringBuilder sb, String preferredColumnName, int seconds, boolean neg)
 			throws UnifyException {
 		sb.append(preferredColumnName).append(" ");

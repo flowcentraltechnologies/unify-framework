@@ -217,6 +217,13 @@ public class OracleDialect extends AbstractSqlDataSourceDialect {
 	}
 
 	@Override
+	protected void appendTodayOffsetSQL(StringBuilder sb, int days, boolean neg) throws UnifyException {
+		sb.append("TRUNC(SYSDATE) ");
+		sb.append(neg ? '-' : '+');
+		sb.append(days);
+	}
+
+	@Override
 	protected void appendTimestampOffsetSQL(StringBuilder sb, String preferredColumnName, int seconds, boolean neg)
 			throws UnifyException {
 		sb.append(preferredColumnName).append(" ");

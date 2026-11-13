@@ -81,6 +81,10 @@ import com.tcdng.unify.core.util.DataUtils;
  */
 public class Query<T extends Entity> implements Cloneable {
 
+	private static final ExpressionField NOW_EXPRESSION = new ExpressionField("{{g:now}}");
+
+	private static final ExpressionField TODAY_EXPRESSION = new ExpressionField("{{g:today}}");
+	
     private Class<T> entityClass;
 
     private CompoundRestriction restrictions;
@@ -170,22 +174,28 @@ public class Query<T extends Entity> implements Cloneable {
 	}
 
 	public static ExpressionField expOfNow() {
-		return new ExpressionField("{{g:now}}");
+		return NOW_EXPRESSION;
+	}
+
+	public static ExpressionField expOfToday() {
+		return TODAY_EXPRESSION;
 	}
 
 	public static ExpressionField expOfNowWithOffset(int seconds) {
-		return new ExpressionField(
-				seconds >= 0 ? "{{g:nowaddsec_" + seconds + "}}" : "{{g:nowsubsec_" + -seconds + "}}");
+		return new ExpressionField(seconds >= 0 ? "{{g:nowadd_" + seconds + "}}" : "{{g:nowsub_" + -seconds + "}}");
+	}
+
+	public static ExpressionField expOfTodayWithOffset(int days) {
+		return new ExpressionField(days >= 0 ? "{{g:todayadd_" + days + "}}" : "{{g:todaysub_" + -days + "}}");
 	}
 
 	public static ExpressionField expOfWithOffset(int seconds) {
-		return new ExpressionField(
-				seconds >= 0 ? "{{g:fldaddsec_" + seconds + "}}" : "{{g:fldsubsec_" + -seconds + "}}");
+		return new ExpressionField(seconds >= 0 ? "{{g:fldadd_" + seconds + "}}" : "{{g:fldsub_" + -seconds + "}}");
 	}
 
 	public static ExpressionField expOfWithOffset(String rfield, int seconds) {
-		return new ExpressionField(seconds >= 0 ? "{{g:fldaddsec_" + seconds + "_" + rfield + "}}"
-				: "{{g:fldsubsec_" + -seconds + "_" + rfield + "}}");
+		return new ExpressionField(seconds >= 0 ? "{{g:fldadd_" + seconds + "_" + rfield + "}}"
+				: "{{g:fldsub_" + -seconds + "_" + rfield + "}}");
 	}
     
     public Class<T> getEntityClass() {

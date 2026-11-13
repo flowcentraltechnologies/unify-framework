@@ -32,6 +32,10 @@ import com.tcdng.unify.core.expression.SubtractionExpression;
  */
 public class Update extends FluentMap<String, Object> {
 
+	private static final CustomUpdateExpression NOW_EXPRESSION = new CustomUpdateExpression("{{g:now}}");
+
+	private static final CustomUpdateExpression TODAY_EXPRESSION = new CustomUpdateExpression("{{g:today}}");
+
 	public Update() {
 
 	}
@@ -59,11 +63,11 @@ public class Update extends FluentMap<String, Object> {
 	public Update clear() {
 		return (Update) super.clear();
 	}
-	
+
 	public Update set(String field, Object val) {
 		return (Update) super.add(field, val);
 	}
-	
+
 	public Update setNull(String field) {
 		return (Update) super.add(field, null);
 	}
@@ -109,22 +113,31 @@ public class Update extends FluentMap<String, Object> {
 	}
 
 	public Update setNow(String lfield) {
-		return (Update) super.add(lfield, new CustomUpdateExpression("{{g:now}}"));
+		return (Update) super.add(lfield, NOW_EXPRESSION);
+	}
+
+	public Update setToday(String lfield) {
+		return (Update) super.add(lfield, TODAY_EXPRESSION);
 	}
 
 	public Update setNowWithOffset(String lfield, int seconds) {
 		return (Update) super.add(lfield, new CustomUpdateExpression(
-				seconds >= 0 ? "{{g:nowaddsec_" + seconds + "}}" : "{{g:nowsubsec_" + -seconds + "}}"));
+				seconds >= 0 ? "{{g:nowadd_" + seconds + "}}" : "{{g:nowsub_" + -seconds + "}}"));
+	}
+
+	public Update setTodayWithOffset(String lfield, int days) {
+		return (Update) super.add(lfield, new CustomUpdateExpression(
+				days >= 0 ? "{{g:todayadd_" + days + "}}" : "{{g:todaysub_" + -days + "}}"));
 	}
 
 	public Update setWithOffset(String lfield, int seconds) {
 		return (Update) super.add(lfield, new CustomUpdateExpression(
-				seconds >= 0 ? "{{g:fldaddsec_" + seconds + "}}" : "{{g:fldsubsec_" + -seconds + "}}"));
+				seconds >= 0 ? "{{g:fldadd_" + seconds + "}}" : "{{g:fldsub_" + -seconds + "}}"));
 	}
 
 	public Update setWithOffset(String lfield, String rfield, int seconds) {
-		return (Update) super.add(lfield, new CustomUpdateExpression(
-				seconds >= 0 ? "{{g:fldaddsec_" + seconds + "_" + rfield + "}}"
-						: "{{g:fldsubsec_" + -seconds + "_" + rfield + "}}"));
+		return (Update) super.add(lfield,
+				new CustomUpdateExpression(seconds >= 0 ? "{{g:fldadd_" + seconds + "_" + rfield + "}}"
+						: "{{g:fldsub_" + -seconds + "_" + rfield + "}}"));
 	}
 }
