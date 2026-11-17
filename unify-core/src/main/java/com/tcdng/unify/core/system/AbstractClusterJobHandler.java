@@ -35,17 +35,19 @@ public abstract class AbstractClusterJobHandler extends AbstractBusinessService 
 
 	@Override
 	public List<Job> claimNewWorkItems() throws UnifyException {
-		final JobFetchInfo jobFetchInfo = getJobFetchInfo();
-		final List<Long> workItemIds = claimUnlockedRows(
-				jobFetchInfo.getClaimQuery().limit(jobFetchInfo.getFetchBatchSize()), jobFetchInfo.getClaimUpdate(),
-				"jobhdl::" + getName());
-		if (!DataUtils.isBlank(workItemIds)) {
-			final List<Job> jobs = new ArrayList<Job>();
-			for (Long workItemId : workItemIds) {
-				jobs.add(new Job(workItemId, jobFetchInfo.getTitle(), jobFetchInfo.getJobMaxAttempts()));
-			}
+		if (ready()) {
+			final JobFetchInfo jobFetchInfo = getJobFetchInfo();
+			final List<Long> workItemIds = claimUnlockedRows(
+					jobFetchInfo.getClaimQuery().limit(jobFetchInfo.getFetchBatchSize()), jobFetchInfo.getClaimUpdate(),
+					"jobhdl::" + getName());
+			if (!DataUtils.isBlank(workItemIds)) {
+				final List<Job> jobs = new ArrayList<Job>();
+				for (Long workItemId : workItemIds) {
+					jobs.add(new Job(workItemId, jobFetchInfo.getTitle(), jobFetchInfo.getJobMaxAttempts()));
+				}
 
-			return jobs;
+				return jobs;
+			}
 		}
 
 		return Collections.emptyList();
@@ -62,6 +64,8 @@ public abstract class AbstractClusterJobHandler extends AbstractBusinessService 
 	}
 
 
+	protected abstract boolean ready() throws UnifyException;
+	
 	protected abstract JobFetchInfo getJobFetchInfo() throws UnifyException;
 	
 }
