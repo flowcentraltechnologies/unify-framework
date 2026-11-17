@@ -34,20 +34,18 @@ import com.tcdng.unify.core.util.DataUtils;
 public abstract class AbstractClusterJobHandler extends AbstractBusinessService implements ClusterJobHandler {
 
 	@Override
-	public final List<Job> claimNewWorkItems() throws UnifyException {
-		if (ready()) {
-			final JobFetchInfo jobFetchInfo = getJobFetchInfo();
-			final List<Long> workItemIds = claimUnlockedRows(
-					jobFetchInfo.getClaimQuery().limit(jobFetchInfo.getFetchBatchSize()), jobFetchInfo.getClaimUpdate(),
-					"jobhdl::" + getName());
-			if (!DataUtils.isBlank(workItemIds)) {
-				final List<Job> jobs = new ArrayList<Job>();
-				for (Long workItemId : workItemIds) {
-					jobs.add(new Job(workItemId, jobFetchInfo.getTitle(), jobFetchInfo.getJobMaxAttempts()));
-				}
-
-				return jobs;
+	public List<Job> claimNewWorkItems() throws UnifyException {
+		final JobFetchInfo jobFetchInfo = getJobFetchInfo();
+		final List<Long> workItemIds = claimUnlockedRows(
+				jobFetchInfo.getClaimQuery().limit(jobFetchInfo.getFetchBatchSize()), jobFetchInfo.getClaimUpdate(),
+				"jobhdl::" + getName());
+		if (!DataUtils.isBlank(workItemIds)) {
+			final List<Job> jobs = new ArrayList<Job>();
+			for (Long workItemId : workItemIds) {
+				jobs.add(new Job(workItemId, jobFetchInfo.getTitle(), jobFetchInfo.getJobMaxAttempts()));
 			}
+
+			return jobs;
 		}
 
 		return Collections.emptyList();
@@ -63,13 +61,6 @@ public abstract class AbstractClusterJobHandler extends AbstractBusinessService 
 
 	}
 
-	/**
-	 * Checks if job handler is ready
-	 * 
-	 * @return true if handler is ready to claim new work items
-	 * @throws UnifyException if an error occurs
-	 */
-	protected abstract boolean ready() throws UnifyException;
 
 	protected abstract JobFetchInfo getJobFetchInfo() throws UnifyException;
 	

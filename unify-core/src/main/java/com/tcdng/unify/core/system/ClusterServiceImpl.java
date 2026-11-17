@@ -195,11 +195,6 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 	public void loadNewJobs(TaskMonitor taskMonitor) throws UnifyException {
 		if (tryGrabLock(CLUSTER_NEW_JOB_LOCK)) {
 			try {
-				if (jobHandlers == null) {
-					jobHandlers = getComponents(ClusterJobHandler.class);
-					logInfo("Total of [{0}] job handlers detected...", jobHandlers.size());
-				}
-
 				for (ClusterJobHandler handler: jobHandlers) {
 					loadNewJob(handler);
 				}
@@ -352,7 +347,7 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 	
 	@Override
 	protected void onInitialize() throws UnifyException {
-
+		jobHandlers = getComponents(ClusterJobHandler.class);
 	}
 
 	@Override
