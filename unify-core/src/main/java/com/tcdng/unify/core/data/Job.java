@@ -23,20 +23,20 @@ package com.tcdng.unify.core.data;
  */
 public class Job {
 
-	private Long workItemId;
+	private String payloadId;
 	
 	private String title;
 
 	private int maxAttempts;
 	
-	public Job(Long workItemId, String title, int maxAttempts) {
-		this.workItemId = workItemId;
+	public Job(String payloadId, String title, int maxAttempts) {
+		this.payloadId = payloadId;
 		this.title = title;
 		this.maxAttempts = maxAttempts > 0 ? maxAttempts : 1;
 	}
 
-	public Long getWorkItemId() {
-		return workItemId;
+	public String getPayloadId() {
+		return payloadId;
 	}
 
 	public String getTitle() {

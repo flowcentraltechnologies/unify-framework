@@ -42,8 +42,8 @@ public abstract class AbstractClusterJobHandler extends AbstractBusinessService 
 					"jobhdl::" + getName());
 			if (!DataUtils.isBlank(workItemIds)) {
 				final List<Job> jobs = new ArrayList<Job>();
-				for (Long workItemId : workItemIds) {
-					jobs.add(new Job(workItemId, jobFetchInfo.getTitle(), jobFetchInfo.getJobMaxAttempts()));
+				for (String payloadId : getPayloadIds(workItemIds)) {
+					jobs.add(new Job(payloadId, jobFetchInfo.getTitle(), jobFetchInfo.getJobMaxAttempts()));
 				}
 
 				return jobs;
@@ -63,9 +63,10 @@ public abstract class AbstractClusterJobHandler extends AbstractBusinessService 
 
 	}
 
-
 	protected abstract boolean ready() throws UnifyException;
-	
+
+	protected abstract List<String> getPayloadIds(List<Long> workItemIds) throws UnifyException;
+
 	protected abstract JobFetchInfo getJobFetchInfo() throws UnifyException;
-	
+
 }

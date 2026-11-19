@@ -40,17 +40,17 @@ public interface ClusterJobHandler extends BusinessService {
 	/**
 	 * Performs job.
 	 * 
-	 * @param workItemId the work item ID
+	 * @param payloadId the payload ID
 	 * @throws UnifyException if an error occurs
 	 */
-	void performWork(Long workItemId) throws UnifyException;
+	void performWork(String payloadId) throws UnifyException;
 
 	/**
 	 * Notification on dead job.
 	 * 
-	 * @param workItemId the work item ID
+	 * @param payloadId the payload ID
 	 * @throws UnifyException if an error occurs
 	 */
-	void notifyFail(Long workItemId) throws UnifyException;
+	void notifyFail(String payloadId) throws UnifyException;
 
 }

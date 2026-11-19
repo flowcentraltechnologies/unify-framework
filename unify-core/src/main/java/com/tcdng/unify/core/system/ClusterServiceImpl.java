@@ -275,7 +275,7 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 					ClusterJob clusterJob = new ClusterJob();
 					clusterJob.setHandler(handlerName);
 					clusterJob.setTitle(job.getTitle());
-					clusterJob.setPayloadId(job.getWorkItemId());
+					clusterJob.setPayloadId(job.getPayloadId());
 					clusterJob.setMaxAttempts(job.getMaxAttempts());
 					clusterJob.setAttempts(0);
 					clusterJob.setStatus(JobStatus.PENDING);

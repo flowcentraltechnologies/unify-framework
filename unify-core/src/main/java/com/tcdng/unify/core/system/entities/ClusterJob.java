@@ -51,8 +51,8 @@ public class ClusterJob extends AbstractSequenceEntity {
     @Column(length = 2048, nullable = true)
     private String error;
 
-    @Column
-    private Long payloadId;
+    @Column(length = 128, nullable = true)
+    private String payloadId;
 
     @Column
     private int attempts;
@@ -113,11 +113,11 @@ public class ClusterJob extends AbstractSequenceEntity {
 		this.error = error;
 	}
 
-	public Long getPayloadId() {
+	public String getPayloadId() {
 		return payloadId;
 	}
 
-	public void setPayloadId(Long payloadId) {
+	public void setPayloadId(String payloadId) {
 		this.payloadId = payloadId;
 	}
 

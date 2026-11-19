@@ -29,8 +29,8 @@ public class ClusterJobQuery extends SequenceEntityQuery<ClusterJob> {
 		super(ClusterJob.class);
 	}
 
-	public ClusterJobQuery workerId(String workerId) {
-		return (ClusterJobQuery) equals("workerId", workerId);
+	public ClusterJobQuery lockedBy(String lockedBy) {
+		return (ClusterJobQuery) equals("lockedBy", lockedBy);
 	}
 
 	public ClusterJobQuery status(JobStatus status) {

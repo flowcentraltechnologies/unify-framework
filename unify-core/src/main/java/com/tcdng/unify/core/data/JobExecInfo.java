@@ -25,11 +25,11 @@ public class JobExecInfo {
 	
 	private String handler;
 
-	private Long payloadId;
+	private String payloadId;
 
 	private Long clusterJobId;
 
-	public JobExecInfo(String handler, Long payloadId, Long clusterJobId) {
+	public JobExecInfo(String handler, String payloadId, Long clusterJobId) {
 		this.handler = handler;
 		this.payloadId = payloadId;
 		this.clusterJobId = clusterJobId;
@@ -39,7 +39,7 @@ public class JobExecInfo {
 		return handler;
 	}
 
-	public Long getPayloadId() {
+	public String getPayloadId() {
 		return payloadId;
 	}
 
