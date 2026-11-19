@@ -63,9 +63,13 @@ public abstract class AbstractClusterJobHandler extends AbstractBusinessService 
 
 	}
 
-	protected abstract boolean ready() throws UnifyException;
+	@SuppressWarnings("unchecked")
+	protected List<String> getPayloadIds(List<Long> workItemIds) throws UnifyException {
+		return workItemIds != null ? (List<String>) DataUtils.convert(List.class, String.class, workItemIds)
+				: Collections.emptyList();
+	}
 
-	protected abstract List<String> getPayloadIds(List<Long> workItemIds) throws UnifyException;
+	protected abstract boolean ready() throws UnifyException;
 
 	protected abstract JobFetchInfo getJobFetchInfo() throws UnifyException;
 
