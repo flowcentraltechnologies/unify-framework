@@ -61,6 +61,14 @@ public interface Control extends DataTransferWidget {
      */
     String getNotificationId() throws UnifyException;
 
+	/**
+	 * Gets control's paper value for response writer in paper mode.
+	 * 
+	 * @return the paper value
+	 * @throws UnifyException if an error occurs
+	 */
+	String getPaperValue() throws UnifyException;
+    
     /**
      * Sets focus on this control.
      * 

@@ -34,6 +34,11 @@ import com.tcdng.unify.web.ui.widget.control.Bell;
 public class BellWriter extends AbstractWidgetWriter {
 
     @Override
+	protected void doWritePaperStructureAndContent(ResponseWriter writer, Widget widget) throws UnifyException {
+    	doWriteStructureAndContent(writer, widget);
+	}
+
+    @Override
     protected void doWriteStructureAndContent(ResponseWriter writer, Widget widget) throws UnifyException {
         Bell bell = (Bell) widget;
         writer.write("<div ");

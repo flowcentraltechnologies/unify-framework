@@ -81,6 +81,11 @@ public class UploadedFilePreviewWriter extends AbstractWidgetWriter {
 	@Configurable
 	private ResponseWriterPool responseWriterPool;
 
+    @Override
+	protected void doWritePaperStructureAndContent(ResponseWriter writer, Widget widget) throws UnifyException {
+    	doWriteStructureAndContent(writer, widget);
+	}
+
 	@Override
 	protected void doWriteStructureAndContent(ResponseWriter writer, Widget widget) throws UnifyException {
 		final UploadedFilePreviewWidget previewWidget = (UploadedFilePreviewWidget) widget;
