@@ -22,7 +22,7 @@ import com.tcdng.unify.core.annotation.Writes;
 import com.tcdng.unify.web.ui.widget.ResponseWriter;
 import com.tcdng.unify.web.ui.widget.Widget;
 import com.tcdng.unify.web.ui.widget.control.ListLabel;
-import com.tcdng.unify.web.ui.widget.writer.AbstractControlWriter;
+import com.tcdng.unify.web.ui.widget.writer.AbstractListControlWriter;
 
 /**
  * List area label writer.
@@ -32,7 +32,7 @@ import com.tcdng.unify.web.ui.widget.writer.AbstractControlWriter;
  */
 @Writes(ListLabel.class)
 @Component("listlabel-writer")
-public class ListLabelWriter extends AbstractControlWriter {
+public class ListLabelWriter extends AbstractListControlWriter {
 
     @Override
     protected void doWriteStructureAndContent(ResponseWriter writer, Widget widget) throws UnifyException {

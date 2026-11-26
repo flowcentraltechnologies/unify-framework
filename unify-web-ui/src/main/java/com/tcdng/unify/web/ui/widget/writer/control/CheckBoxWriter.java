@@ -22,6 +22,7 @@ import com.tcdng.unify.web.ui.widget.EventHandler;
 import com.tcdng.unify.web.ui.widget.ResponseWriter;
 import com.tcdng.unify.web.ui.widget.Widget;
 import com.tcdng.unify.web.ui.widget.control.CheckBox;
+import com.tcdng.unify.web.ui.widget.data.PaperValue;
 import com.tcdng.unify.web.ui.widget.writer.AbstractControlWriter;
 
 /**
@@ -35,9 +36,16 @@ import com.tcdng.unify.web.ui.widget.writer.AbstractControlWriter;
 public class CheckBoxWriter extends AbstractControlWriter {
 
 	@Override
+	protected PaperValue getPaperValue(Widget widget) throws UnifyException {
+		final CheckBox checkBox = (CheckBox) widget;
+		final boolean checked = checkBox.getValue(boolean.class);
+		return new PaperValue(resolveSessionMessage(checked ? "$m{label.yes}" : "$m{label.no}"));
+	}
+
+	@Override
 	protected void doWriteStructureAndContent(ResponseWriter writer, Widget widget) throws UnifyException {
-		CheckBox checkBox = (CheckBox) widget;
-		boolean checked = checkBox.getValue(boolean.class);
+		final CheckBox checkBox = (CheckBox) widget;
+		final boolean checked = checkBox.getValue(boolean.class);
 		writer.write("<span ");
 		writeTagId(writer, checkBox.getFacadeId());
 		if (checked) {

@@ -37,7 +37,7 @@ import com.tcdng.unify.web.ui.widget.control.SingleSelect;
  */
 @Writes(SingleSelect.class)
 @Component("singleselect-writer")
-public class SingleSelectWriter extends AbstractPopupTextFieldWriter {
+public class SingleSelectWriter extends AbstractListPopupTextFieldWriter {
 
     @Override
 	protected void writePopupContent(ResponseWriter writer, AbstractPopupTextField popupTextField)

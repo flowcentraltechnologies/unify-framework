@@ -62,6 +62,11 @@ public abstract class AbstractListControl extends AbstractControl implements Lis
     }
 
     @Override
+    public List<? extends Listable> getListablesByKeys() throws UnifyException {
+        return getListControlUtils().getListablesByKeys(this);
+    }
+
+    @Override
     public Map<String, Listable> getListMap() throws UnifyException {
         return getListControlUtils().getListMap(this);
     }

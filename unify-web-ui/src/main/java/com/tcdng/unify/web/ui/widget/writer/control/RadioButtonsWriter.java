@@ -26,7 +26,7 @@ import com.tcdng.unify.web.ui.widget.PushType;
 import com.tcdng.unify.web.ui.widget.ResponseWriter;
 import com.tcdng.unify.web.ui.widget.Widget;
 import com.tcdng.unify.web.ui.widget.control.RadioButtons;
-import com.tcdng.unify.web.ui.widget.writer.AbstractControlWriter;
+import com.tcdng.unify.web.ui.widget.writer.AbstractListControlWriter;
 
 /**
  * Radio buttons writer.
@@ -36,7 +36,7 @@ import com.tcdng.unify.web.ui.widget.writer.AbstractControlWriter;
  */
 @Writes(RadioButtons.class)
 @Component("radiobuttons-writer")
-public class RadioButtonsWriter extends AbstractControlWriter {
+public class RadioButtonsWriter extends AbstractListControlWriter {
 
 	@Override
 	protected void doWriteStructureAndContent(ResponseWriter writer, Widget widget) throws UnifyException {

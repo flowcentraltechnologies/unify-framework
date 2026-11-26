@@ -51,6 +51,17 @@ public interface ListControl extends Control {
     List<? extends Listable> getListables() throws UnifyException;
 
     /**
+     * Returns listables for a list control by keys.
+     * 
+     * @param listControl
+     *            the supplied list control
+     * @return listables
+     * @throws UnifyException
+     *             if an error occurs
+     */
+    List<? extends Listable> getListablesByKeys() throws UnifyException;
+
+    /**
      * Returns key/description pairs for a list control.
      * 
      * @return the pair map

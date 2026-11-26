@@ -27,7 +27,7 @@ import com.tcdng.unify.web.ui.widget.ListControlInfo;
 import com.tcdng.unify.web.ui.widget.ResponseWriter;
 import com.tcdng.unify.web.ui.widget.Widget;
 import com.tcdng.unify.web.ui.widget.control.MultiSelect;
-import com.tcdng.unify.web.ui.widget.writer.AbstractControlWriter;
+import com.tcdng.unify.web.ui.widget.writer.AbstractListControlWriter;
 
 /**
  * Multi-select writer.
@@ -37,7 +37,7 @@ import com.tcdng.unify.web.ui.widget.writer.AbstractControlWriter;
  */
 @Writes(MultiSelect.class)
 @Component("multiselect-writer")
-public class MultiSelectWriter extends AbstractControlWriter {
+public class MultiSelectWriter extends AbstractListControlWriter {
 
 	@SuppressWarnings("unchecked")
 	@Override

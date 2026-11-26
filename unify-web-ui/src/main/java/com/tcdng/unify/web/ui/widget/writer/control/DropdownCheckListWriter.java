@@ -37,7 +37,7 @@ import com.tcdng.unify.web.ui.widget.control.DropdownCheckList;
  */
 @Writes(DropdownCheckList.class)
 @Component("dropdownchecklist-writer")
-public class DropdownCheckListWriter extends AbstractPopupTextFieldWriter {
+public class DropdownCheckListWriter extends AbstractListPopupTextFieldWriter {
 
 	@Override
 	protected void writePopupContent(ResponseWriter writer, AbstractPopupTextField popupTextField)

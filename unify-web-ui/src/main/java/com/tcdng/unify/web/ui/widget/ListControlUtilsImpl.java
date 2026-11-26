@@ -184,6 +184,14 @@ public class ListControlUtilsImpl extends AbstractUnifyComponent implements List
 		return getListMap(LocaleType.SESSION, listControl.getList(), resolveParams(listControl));
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Listable> getListablesByKeys(ListControl listControl) throws UnifyException {
+		final List<String> keys = (List<String>) listControl.getValue(List.class, String.class);
+		return getListItemsByKeys(getLocale(LocaleType.SESSION), listControl.getList(), keys,
+				resolveParams(listControl));
+	}
+
 	@Override
 	protected void onInitialize() throws UnifyException {
 

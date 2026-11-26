@@ -74,6 +74,23 @@ public interface ResponseWriter extends HtmlTextWriter {
 	 * @throws UnifyException if an error occurs
 	 */
 	boolean isAutoStretch() throws UnifyException;
+
+	/**
+	 * Sets this response writer paper mode.
+	 * 
+	 * @param paperMode the paper mode to set
+	 * @return old paper mode
+	 * @throws UnifyException if an error occurs
+	 */
+	boolean setPaperMode(boolean paperMode) throws UnifyException;
+
+	/**
+	 * Checks if response writer is in paper mode
+	 * 
+	 * @return true if paper mode otherwise false
+	 * @throws UnifyException if an error occurs
+	 */
+	boolean isPaperMode() throws UnifyException;
 	
     /**
      * Writes a message using application locale.

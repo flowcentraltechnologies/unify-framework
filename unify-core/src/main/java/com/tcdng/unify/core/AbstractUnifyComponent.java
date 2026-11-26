@@ -2032,7 +2032,7 @@ public abstract class AbstractUnifyComponent implements UnifyComponent {
 	 */
 	protected abstract void onTerminate() throws UnifyException;
 
-	private Locale getLocale(LocaleType localeType) throws UnifyException {
+	protected Locale getLocale(LocaleType localeType) throws UnifyException {
 		if (isInitialized()) {
 			if (LocaleType.SESSION.equals(localeType)) {
 				return unifyComponentContext.getRequestContext().getLocale();

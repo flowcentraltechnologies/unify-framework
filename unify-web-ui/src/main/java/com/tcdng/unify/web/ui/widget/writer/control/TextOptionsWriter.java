@@ -25,7 +25,7 @@ import com.tcdng.unify.web.ui.widget.EventHandler;
 import com.tcdng.unify.web.ui.widget.ResponseWriter;
 import com.tcdng.unify.web.ui.widget.Widget;
 import com.tcdng.unify.web.ui.widget.control.TextOptions;
-import com.tcdng.unify.web.ui.widget.writer.AbstractControlWriter;
+import com.tcdng.unify.web.ui.widget.writer.AbstractListControlWriter;
 
 /**
  * Text options writer.
@@ -35,7 +35,7 @@ import com.tcdng.unify.web.ui.widget.writer.AbstractControlWriter;
  */
 @Writes(TextOptions.class)
 @Component("textoptions-writer")
-public class TextOptionsWriter extends AbstractControlWriter {
+public class TextOptionsWriter extends AbstractListControlWriter {
 
 	@Override
 	protected void doWriteStructureAndContent(ResponseWriter writer, Widget widget) throws UnifyException {

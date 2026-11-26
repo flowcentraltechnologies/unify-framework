@@ -110,6 +110,11 @@ public abstract class AbstractListPopupTextField extends AbstractPopupTextField 
     }
 
     @Override
+	public List<? extends Listable> getListablesByKeys() throws UnifyException {
+		return getListControlUtils().getListablesByKeys(this);
+	}
+
+	@Override
     public boolean isPopupOnEditableOnly() {
         return false;
     }

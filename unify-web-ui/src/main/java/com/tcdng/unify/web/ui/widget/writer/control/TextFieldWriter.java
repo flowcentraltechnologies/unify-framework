@@ -25,6 +25,7 @@ import com.tcdng.unify.web.ui.widget.EventHandler;
 import com.tcdng.unify.web.ui.widget.ResponseWriter;
 import com.tcdng.unify.web.ui.widget.Widget;
 import com.tcdng.unify.web.ui.widget.control.TextField;
+import com.tcdng.unify.web.ui.widget.data.PaperValue;
 import com.tcdng.unify.web.ui.widget.writer.AbstractControlWriter;
 
 /**
@@ -38,15 +39,19 @@ import com.tcdng.unify.web.ui.widget.writer.AbstractControlWriter;
 public class TextFieldWriter extends AbstractControlWriter {
 
 	@Override
+	protected PaperValue getPaperValue(Widget widget) throws UnifyException {
+		return new PaperValue(resolveValue((TextField) widget));
+	}
+
+	@Override
 	protected void doWriteStructureAndContent(ResponseWriter writer, Widget widget) throws UnifyException {
-		TextField textField = (TextField) widget;
-		writeTextField(writer, textField, "text");
+		writeTextField(writer, (TextField) widget, "text");
 	}
 
 	@Override
 	protected void doWriteBehavior(ResponseWriter writer, Widget widget, EventHandler[] handlers)
 			throws UnifyException {
-		TextField textField = (TextField) widget;
+		final TextField textField = (TextField) widget;
 		super.doWriteBehavior(writer, textField, handlers);
 
 		writer.beginFunction("ux.setTextRegexFormatting");
@@ -59,7 +64,7 @@ public class TextFieldWriter extends AbstractControlWriter {
 		if (!StringUtils.isBlank(textField.getOptions())) {
 			writer.writeParam("pOpts", textField.getOptions());
 		}
-		
+
 		writer.writeParam("pHid", textField.getId());
 		writer.writeParam("pMimic", textField.isHiddenMimic());
 		writer.writeResolvedParam("pRegex", "\"" + getFormatRegex(textField) + "\"");
@@ -87,7 +92,7 @@ public class TextFieldWriter extends AbstractControlWriter {
 	}
 
 	protected void writeTextField(ResponseWriter writer, TextField textField, String type) throws UnifyException {
-		writeTextField(writer, textField, type, textField.getExtensionType());
+		localWriteTextField(writer, textField, type);
 	}
 
 	protected void writeLeadingAddOn(ResponseWriter writer, Widget widget) throws UnifyException {
@@ -106,8 +111,8 @@ public class TextFieldWriter extends AbstractControlWriter {
 		return "";
 	}
 
-	private void writeTextField(ResponseWriter writer, TextField textField, String type, ExtensionType extensionType)
-			throws UnifyException {
+	private void localWriteTextField(ResponseWriter writer, TextField textField, String type) throws UnifyException {
+		final ExtensionType extensionType = textField.getExtensionType();
 		if (extensionType.isExtended()) {
 			writer.write("<div ");
 			writeTagId(writer, textField.getBorderId());
@@ -133,7 +138,7 @@ public class TextFieldWriter extends AbstractControlWriter {
 				writer.write("/>");
 			}
 
-			writeTextInput(writer, textField, type, extensionType);
+			writeTextInput(writer, textField, type);
 
 			writeTrailingAddOn(writer, textField);
 			writer.write("</div>");
@@ -141,25 +146,21 @@ public class TextFieldWriter extends AbstractControlWriter {
 			writeBaseAddOn(writer, textField);
 			writer.write("</div>");
 		} else {
-			writeTextInput(writer, textField, type, extensionType);
+			writeTextInput(writer, textField, type);
 		}
 	}
 
-	private void writeTextInput(ResponseWriter writer, TextField textField, String type, ExtensionType extensionType)
-			throws UnifyException {
+	private void writeTextInput(ResponseWriter writer, TextField textField, String type) throws UnifyException {
 		writer.write("<input type=\"").write(type).write("\"");
 
-		String value = null;
+		final ExtensionType extensionType = textField.getExtensionType();
+		final String value = resolveValue(textField);
 		if (extensionType.isExtended()) {
 			if (extensionType.isFacade()) {
 				writeTagId(writer, textField.getFacadeId());
-				if (extensionType.isFacadeStringValue()) {
-					value = textField.getFacadeStringValue();
-				}
 			} else {
 				writeTagId(writer, textField);
 				writeTagName(writer, textField);
-				value = textField.getStringValue();
 			}
 
 			if (textField.isHiddenMimic()) {
@@ -176,7 +177,6 @@ public class TextFieldWriter extends AbstractControlWriter {
 			}
 		} else {
 			writeTagAttributes(writer, textField);
-			value = textField.getStringValue();
 
 			int size = textField.getUplAttribute(int.class, "size");
 			if (size > 0) {
@@ -219,5 +219,23 @@ public class TextFieldWriter extends AbstractControlWriter {
 			writer.write(" tabindex=\"").write(textField.getTabIndex()).write("\"");
 		}
 		writer.write("/>");
+	}
+
+	private String resolveValue(TextField textField) throws UnifyException {
+		final ExtensionType extensionType = textField.getExtensionType();
+		String value = null;
+		if (extensionType.isExtended()) {
+			if (extensionType.isFacade()) {
+				if (extensionType.isFacadeStringValue()) {
+					value = textField.getFacadeStringValue();
+				}
+			} else {
+				value = textField.getStringValue();
+			}
+		} else {
+			value = textField.getStringValue();
+		}
+
+		return value;
 	}
 }

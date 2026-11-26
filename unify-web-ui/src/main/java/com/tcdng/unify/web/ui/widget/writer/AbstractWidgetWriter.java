@@ -37,6 +37,7 @@ import com.tcdng.unify.web.ui.widget.PageManager;
 import com.tcdng.unify.web.ui.widget.ResponseWriter;
 import com.tcdng.unify.web.ui.widget.Widget;
 import com.tcdng.unify.web.ui.widget.data.Hint;
+import com.tcdng.unify.web.ui.widget.data.PaperValue;
 
 /**
  * Abstract base class for widget writers.
@@ -110,8 +111,8 @@ public abstract class AbstractWidgetWriter extends AbstractDhtmlWriter implement
         doWriteSectionBehavior(writer, widget, sectionId);
     }
 
-    protected abstract void doWriteStructureAndContent(ResponseWriter writer, Widget widget) throws UnifyException;
-
+	protected abstract void doWriteStructureAndContent(ResponseWriter writer, Widget widget) throws UnifyException;
+	
 	protected Listable getListItemByKey(String listName, String itemKey) throws UnifyException {
 		return listManager.getListItemByKey(Locale.getDefault(), listName, itemKey);
 	}
@@ -295,6 +296,10 @@ public abstract class AbstractWidgetWriter extends AbstractDhtmlWriter implement
 
         return classBase;
     }
+	
+	protected PaperValue getPaperValue(Widget widget) throws UnifyException {
+		return null;
+	}
 
 	private void doWriteStructureContentWithUpdate(ResponseWriter writer, Widget widget) throws UnifyException {
 		widget.updateInternalState();
@@ -306,7 +311,21 @@ public abstract class AbstractWidgetWriter extends AbstractDhtmlWriter implement
 			}
 		}
 
-		doWriteStructureAndContent(writer, widget);
+		if (writer.isPaperMode()) {
+			final PaperValue paperValue = getPaperValue(widget);
+			if (paperValue != null) {
+				writer.write("<span class=\"paper\">");
+				if (paperValue.isPresent()) {
+					writer.writeWithHtmlEscape(StringUtils.buildCommaSeparatedString(paperValue.getVals()));
+				}
+
+				writer.write("</span>");
+			} else {
+				doWriteStructureAndContent(writer, widget);
+			}
+		} else {
+			doWriteStructureAndContent(writer, widget);
+		}
 
 		if (widget.isRefreshesContainer()) {
 			writer.write("</div>");
@@ -314,11 +333,13 @@ public abstract class AbstractWidgetWriter extends AbstractDhtmlWriter implement
 
 		widget.addPageAliases();
 	}
-
+	
 	private void doWriteWriteBehaviorWithUpdate(ResponseWriter writer, Widget widget, EventHandler[] eventHandlers)
 			throws UnifyException {
 		widget.updateInternalState();
-		doWriteBehavior(writer, widget, eventHandlers);
+		if (!writer.isPaperMode()) {
+			doWriteBehavior(writer, widget, eventHandlers);
+		}
 	}
 
 }

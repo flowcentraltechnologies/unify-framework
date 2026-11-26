@@ -33,7 +33,7 @@ import com.tcdng.unify.web.ui.widget.control.SearchField;
  */
 @Writes(SearchField.class)
 @Component("searchfield-writer")
-public class SearchFieldWriter extends AbstractPopupTextFieldWriter {
+public class SearchFieldWriter extends AbstractListPopupTextFieldWriter {
 
     @Override
     protected void writePopupContent(ResponseWriter writer, AbstractPopupTextField popupTextField)

@@ -41,7 +41,7 @@ import com.tcdng.unify.web.ui.widget.control.TextField;
  */
 @Writes(PeriodField.class)
 @Component("periodfield-writer")
-public class PeriodFieldWriter extends AbstractPopupTextFieldWriter {
+public class PeriodFieldWriter extends AbstractListPopupTextFieldWriter {
 
     @Override
 	protected void writePopupContent(ResponseWriter writer, AbstractPopupTextField popupTextField)

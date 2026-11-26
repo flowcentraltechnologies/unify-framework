@@ -40,7 +40,7 @@ import com.tcdng.unify.web.ui.widget.control.TextField;
  */
 @Writes(MoneyField.class)
 @Component("moneyfield-writer")
-public class MoneyFieldWriter extends AbstractPopupTextFieldWriter {
+public class MoneyFieldWriter extends AbstractListPopupTextFieldWriter {
 
     @Override
 	protected void writePopupContent(ResponseWriter writer, AbstractPopupTextField popupTextField)
