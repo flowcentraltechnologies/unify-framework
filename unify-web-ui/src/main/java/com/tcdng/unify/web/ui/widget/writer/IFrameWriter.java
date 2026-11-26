@@ -33,11 +33,6 @@ import com.tcdng.unify.web.ui.widget.Widget;
 @Component("iframe-writer")
 public class IFrameWriter extends AbstractWidgetWriter {
 
-    @Override
-	protected void doWritePaperStructureAndContent(ResponseWriter writer, Widget widget) throws UnifyException {
-    	doWriteStructureAndContent(writer, widget);
-	}
-
 	@Override
 	protected void doWriteStructureAndContent(ResponseWriter writer, Widget widget) throws UnifyException {
 		final IFrameWidget iFrameWidget = (IFrameWidget) widget;

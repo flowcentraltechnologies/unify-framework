@@ -42,23 +42,6 @@ import com.tcdng.unify.core.util.json.JsonWriter;
 public interface ResponseWriter extends HtmlTextWriter { 
 
 	/**
-	 * Sets this response writer paper mode.
-	 * 
-	 * @param paperMode the paper mode
-	 * @return old paper mode
-	 * @throws UnifyException if an error occurs
-	 */
-	boolean setPaperMode(boolean paperMode) throws UnifyException;
-
-	/**
-	 * Checks if response writer is in paper mode
-	 * 
-	 * @return true if paper mode otherwise false
-	 * @throws UnifyException if an error occurs
-	 */
-	boolean isPaperMode() throws UnifyException;
-
-	/**
 	 * Sets this response writer direct function call mode.
 	 * 
 	 * @param directFuncCall the direct function call mode

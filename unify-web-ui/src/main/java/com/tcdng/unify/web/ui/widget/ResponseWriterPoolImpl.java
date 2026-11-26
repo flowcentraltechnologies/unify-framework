@@ -44,7 +44,7 @@ public class ResponseWriterPoolImpl extends AbstractUnifyComponent implements Re
 	@Configurable("4000") // 4 seconds
 	private long getTimeout;
 
-	@Configurable("128")
+	@Configurable("256")
 	private int maxSize;
 
 	@Configurable("8")

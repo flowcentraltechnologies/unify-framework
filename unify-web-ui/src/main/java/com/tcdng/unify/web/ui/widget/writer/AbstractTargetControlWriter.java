@@ -31,11 +31,6 @@ import com.tcdng.unify.web.ui.widget.Widget;
 public abstract class AbstractTargetControlWriter extends AbstractControlWriter {
 
 	@Override
-	protected void doWritePaperStructureAndContent(ResponseWriter writer, Widget widget) throws UnifyException {
-		doWriteStructureAndContent(writer, widget);
-	}
-
-	@Override
 	protected void doWriteStructureAndContent(ResponseWriter writer, Widget widget) throws UnifyException {
 		TargetControl targetControl = (TargetControl) widget;
 		writer.write("<input type=\"hidden\"");

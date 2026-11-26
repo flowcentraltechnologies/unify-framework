@@ -32,11 +32,6 @@ import com.tcdng.unify.web.ui.widget.Widget;
 public abstract class AbstractContainerWriter extends AbstractWidgetWriter implements ContainerWriter {
 
     @Override
-	protected void doWritePaperStructureAndContent(ResponseWriter writer, Widget widget) throws UnifyException {
-    	doWriteStructureAndContent(writer, widget);
-	}
-
-	@Override
     protected void doWriteStructureAndContent(ResponseWriter writer, Widget widget) throws UnifyException {
         Container container = (Container) widget;
         writer.write("<div");

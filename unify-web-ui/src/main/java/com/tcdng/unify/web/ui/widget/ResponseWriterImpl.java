@@ -100,8 +100,6 @@ public class ResponseWriterImpl extends AbstractUnifyComponent implements Respon
 
 	private boolean autoStretch;
 
-	private boolean paperMode;
-
 	private boolean directFuncCall;
 
 	public ResponseWriterImpl() {
@@ -146,18 +144,6 @@ public class ResponseWriterImpl extends AbstractUnifyComponent implements Respon
 	public boolean setAutoStretch(boolean autoStretch) {
 		final boolean current = this.autoStretch;
 		this.autoStretch = autoStretch;
-		return current;
-	}
-
-	@Override
-	public boolean isPaperMode() throws UnifyException {
-		return paperMode;
-	}
-
-	@Override
-	public boolean setPaperMode(boolean paperMode) throws UnifyException {
-		final boolean current = this.paperMode;
-		this.paperMode = paperMode;
 		return current;
 	}
 
@@ -272,10 +258,7 @@ public class ResponseWriterImpl extends AbstractUnifyComponent implements Respon
 
 	@Override
 	public ResponseWriter writeWithHtmlEscape(String string) {
-		if (string != null) {
-			buf.appendHtmlEscaped(string);
-		}
-		
+		buf.appendHtmlEscaped(string);
 		return this;
 	}
 

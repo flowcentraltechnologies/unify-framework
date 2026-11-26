@@ -31,15 +31,7 @@ import com.tcdng.unify.web.ui.widget.Widget;
  */
 public abstract class AbstractControlWriter extends AbstractWidgetWriter implements ControlWriter {
 
-	@Override
-	protected void doWritePaperStructureAndContent(ResponseWriter writer, Widget widget) throws UnifyException {
-		final Control control = (Control) widget;
-		writer.write("<span class=\"paper\">");
-		writer.writeWithHtmlEscape(control.getPaperValue());
-		writer.write("</span>");
-	}
-
-	@Override
+    @Override
     protected void doWriteBehavior(ResponseWriter writer, Widget widget, EventHandler[] handlers) throws UnifyException {
         super.doWriteBehavior(writer, widget, handlers);
         final Control control = (Control) widget;

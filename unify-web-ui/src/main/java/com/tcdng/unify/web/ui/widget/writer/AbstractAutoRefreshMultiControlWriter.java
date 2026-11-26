@@ -31,11 +31,6 @@ import com.tcdng.unify.web.ui.widget.Widget;
 public abstract class AbstractAutoRefreshMultiControlWriter extends AbstractControlWriter {
 
 	@Override
-	protected void doWritePaperStructureAndContent(ResponseWriter writer, Widget widget) throws UnifyException {
-		doWriteStructureAndContent(writer, widget);
-	}
-
-	@Override
 	protected void doWriteBehavior(ResponseWriter writer, Widget widget, EventHandler[] handlers)
 			throws UnifyException {
 		AbstractAutoRefreshMultiControl control = (AbstractAutoRefreshMultiControl) widget;

@@ -112,8 +112,6 @@ public abstract class AbstractWidgetWriter extends AbstractDhtmlWriter implement
 
     protected abstract void doWriteStructureAndContent(ResponseWriter writer, Widget widget) throws UnifyException;
 
-    protected abstract void doWritePaperStructureAndContent(ResponseWriter writer, Widget widget) throws UnifyException;
-
 	protected Listable getListItemByKey(String listName, String itemKey) throws UnifyException {
 		return listManager.getListItemByKey(Locale.getDefault(), listName, itemKey);
 	}
@@ -308,11 +306,7 @@ public abstract class AbstractWidgetWriter extends AbstractDhtmlWriter implement
 			}
 		}
 
-		if (writer.isPaperMode()) {
-			doWritePaperStructureAndContent(writer, widget);
-		} else {
-			doWriteStructureAndContent(writer, widget);
-		}
+		doWriteStructureAndContent(writer, widget);
 
 		if (widget.isRefreshesContainer()) {
 			writer.write("</div>");

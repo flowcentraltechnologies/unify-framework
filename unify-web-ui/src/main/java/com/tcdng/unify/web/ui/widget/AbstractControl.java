@@ -83,11 +83,6 @@ public abstract class AbstractControl extends AbstractDataTransferWidget impleme
     }
 
     @Override
-	public String getPaperValue() throws UnifyException {
-		return getStringValue();
-	}
-
-	@Override
     public void populate(DataTransferBlock transferBlock) throws UnifyException {
         String binding = getBinding();
         if (binding != null) {
