@@ -36,9 +36,6 @@ public class ClusterJob extends AbstractSequenceEntity {
     @ForeignKey(name = "REC_ST")
     private JobStatus status;
 
-    @Column(length = 128)
-    private String title;
-
     @Column(length = 64)
     private String handler;
 
@@ -47,6 +44,9 @@ public class ClusterJob extends AbstractSequenceEntity {
 
     @Column(type = ColumnType.TIMESTAMP, nullable = true)
     private Date lockedAt;
+
+    @Column(type = ColumnType.TIMESTAMP, nullable = true)
+    private Date completedOn;
 
     @Column(length = 2048, nullable = true)
     private String error;
@@ -62,7 +62,7 @@ public class ClusterJob extends AbstractSequenceEntity {
 
     @Override
 	public String getDescription() {
-		return title;
+		return handler;
 	}
 
 	public JobStatus getStatus() {
@@ -71,14 +71,6 @@ public class ClusterJob extends AbstractSequenceEntity {
 
 	public void setStatus(JobStatus status) {
 		this.status = status;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
 	}
 
 	public String getHandler() {
@@ -103,6 +95,14 @@ public class ClusterJob extends AbstractSequenceEntity {
 
 	public void setLockedAt(Date lockedAt) {
 		this.lockedAt = lockedAt;
+	}
+
+	public Date getCompletedOn() {
+		return completedOn;
+	}
+
+	public void setCompletedOn(Date completedOn) {
+		this.completedOn = completedOn;
 	}
 
 	public String getError() {

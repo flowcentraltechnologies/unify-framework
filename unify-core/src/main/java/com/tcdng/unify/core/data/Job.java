@@ -24,23 +24,16 @@ package com.tcdng.unify.core.data;
 public class Job {
 
 	private String payloadId;
-	
-	private String title;
 
 	private int maxAttempts;
 	
-	public Job(String payloadId, String title, int maxAttempts) {
+	public Job(String payloadId, int maxAttempts) {
 		this.payloadId = payloadId;
-		this.title = title;
 		this.maxAttempts = maxAttempts > 0 ? maxAttempts : 1;
 	}
 
 	public String getPayloadId() {
 		return payloadId;
-	}
-
-	public String getTitle() {
-		return title;
 	}
 
 	public int getMaxAttempts() {

@@ -17,7 +17,6 @@ package com.tcdng.unify.core.data;
 
 import com.tcdng.unify.core.criterion.Update;
 import com.tcdng.unify.core.database.Query;
-import com.tcdng.unify.core.util.StringUtils;
 
 /**
  * Job fetch information.
@@ -27,8 +26,6 @@ import com.tcdng.unify.core.util.StringUtils;
  */
 public class JobFetchInfo {
 
-	private String title;
-
 	private Query<?> claimQuery;
 
 	private Update claimUpdate;
@@ -37,17 +34,12 @@ public class JobFetchInfo {
 
 	private int jobMaxAttempts;
 
-	private JobFetchInfo(String title, Query<?> claimQuery, Update claimUpdate, int fetchBatchSize,
+	private JobFetchInfo(Query<?> claimQuery, Update claimUpdate, int fetchBatchSize,
 			int jobMaxAttempts) {
-		this.title = title;
 		this.claimQuery = claimQuery;
 		this.claimUpdate = claimUpdate;
 		this.fetchBatchSize = fetchBatchSize;
 		this.jobMaxAttempts = jobMaxAttempts;
-	}
-
-	public String getTitle() {
-		return title;
 	}
 
 	public Query<?> getClaimQuery() {
@@ -72,8 +64,6 @@ public class JobFetchInfo {
 	
 	public static class Builder {
 
-		private String title;
-
 		private Query<?> claimQuery;
 
 		private Update claimUpdate;
@@ -85,11 +75,6 @@ public class JobFetchInfo {
 		public Builder() {
 			this.fetchBatchSize = 20;
 			this.jobMaxAttempts = 5;
-		}
-
-		public Builder title(String title) {
-			this.title = title;
-			return this;
 		}
 
 		public Builder claimQuery(Query<?> claimQuery) {
@@ -113,10 +98,6 @@ public class JobFetchInfo {
 		}
 
 		public JobFetchInfo build() {
-			if (StringUtils.isBlank(title)) {
-				throw new IllegalArgumentException("Title is required.");
-			}
-
 			if (claimQuery == null) {
 				throw new IllegalArgumentException("Claim query is required.");
 			}
@@ -125,7 +106,7 @@ public class JobFetchInfo {
 				throw new IllegalArgumentException("Claim update is required.");
 			}
 
-			return new JobFetchInfo(title, claimQuery, claimUpdate, fetchBatchSize, jobMaxAttempts);
+			return new JobFetchInfo(claimQuery, claimUpdate, fetchBatchSize, jobMaxAttempts);
 		}
 	}
 }

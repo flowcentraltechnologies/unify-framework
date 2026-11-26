@@ -44,6 +44,9 @@ public class ClusterNode extends AbstractSystemEntity implements Listable {
     @Column(nullable = true)
     private Integer commandPort;
 
+    @Column(name = "DEAD_FG")
+    private boolean dead;
+
     @Override
     public Object getId() {
         return nodeId;
@@ -90,4 +93,12 @@ public class ClusterNode extends AbstractSystemEntity implements Listable {
     public void setCommandPort(Integer commandPort) {
         this.commandPort = commandPort;
     }
+
+	public boolean isDead() {
+		return dead;
+	}
+
+	public void setDead(boolean dead) {
+		this.dead = dead;
+	}
 }

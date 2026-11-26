@@ -30,7 +30,6 @@ import com.tcdng.unify.core.annotation.Component;
 import com.tcdng.unify.core.annotation.Configurable;
 import com.tcdng.unify.core.annotation.Periodic;
 import com.tcdng.unify.core.annotation.PeriodicType;
-import com.tcdng.unify.core.annotation.TransactionAttribute;
 import com.tcdng.unify.core.annotation.Transactional;
 import com.tcdng.unify.core.business.AbstractBusinessService;
 import com.tcdng.unify.core.business.AbstractQueuedExec;
@@ -66,10 +65,6 @@ import com.tcdng.unify.core.util.NetworkUtils;
 @Transactional
 @Component(ApplicationComponents.APPLICATION_CLUSTERSERVICE)
 public class ClusterServiceImpl extends AbstractBusinessService implements ClusterService {
-
-	private static final String CLUSTER_NODE_HOUSEKEEP_LOCK = "lock:clusternodehousekeep";
-
-	private static final String CLUSTER_NEW_JOB_LOCK = "lock:clustenewjobs";
 
 	private static final String CLUSTER_PROCESS_JOB_LOCK = "lock:clusteprocessjobs";
 
@@ -174,32 +169,53 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 		return resultList;
 	}
 
-	@Periodic(PeriodicType.SLOWER)
+	@Periodic(PeriodicType.SLOWEST)
 	public void performNodeHouseKeeping(TaskMonitor taskMonitor) throws UnifyException {
-		if (tryGrabLock(CLUSTER_NODE_HOUSEKEEP_LOCK)) {
-			try {
-				List<String> deadNodeIds = db().valueList(String.class, "nodeId", new ClusterNodeQuery()
-						.lastHeartBeatOlderThan(getNewNodeExpiryDate()).nodeNotEqual(getRuntimeId()));
-				if (!deadNodeIds.isEmpty()) {
-					db().deleteAll(new ClusterCommandParamQuery().nodeIdIn(deadNodeIds));
-					db().deleteAll(new ClusterCommandQuery().nodeIdIn(deadNodeIds));
-					db().deleteAll(new ClusterNodeQuery().nodeIdIn(deadNodeIds));
-				}
-			} finally {
-				releaseLock(CLUSTER_NODE_HOUSEKEEP_LOCK);
-			}
+		// Nodes
+		List<String> deadNodeIds = db().claimUnlockedRows(String.class,
+				new ClusterNodeQuery()
+				.lastHeartBeatOlderThan(getNewNodeExpiryDate())
+				.nodeNotEqual(getRuntimeId())
+				.equals("dead", false),
+					new Update()
+						.set("dead", true));
+		if (!deadNodeIds.isEmpty()) {
+			db().deleteAll(new ClusterCommandParamQuery().nodeIdIn(deadNodeIds));
+			db().deleteAll(new ClusterCommandQuery().nodeIdIn(deadNodeIds));
+			db().deleteAll(new ClusterNodeQuery().nodeIdIn(deadNodeIds));
 		}
+		
+		commitTransactions();
+		
+		// Delete completed jobs
+		db().deleteAll(
+				new ClusterJobQuery()
+					.equals("status", JobStatus.COMPLETED));
+
 	}
 
 	@Periodic(PeriodicType.FAST)
 	public void loadNewJobs(TaskMonitor taskMonitor) throws UnifyException {
-		if (tryGrabLock(CLUSTER_NEW_JOB_LOCK)) {
+		for (ClusterJobHandler handler: jobHandlers) {
 			try {
-				for (ClusterJobHandler handler: jobHandlers) {
-					loadNewJob(handler);
+				final List<Job> newjobs = handler.claimNewWorkItems();
+				if (!DataUtils.isBlank(newjobs)) {
+					final String handlerName = handler.getName();
+					for (Job job : newjobs) {
+						ClusterJob clusterJob = new ClusterJob();
+						clusterJob.setHandler(handlerName);
+						clusterJob.setPayloadId(job.getPayloadId());
+						clusterJob.setMaxAttempts(job.getMaxAttempts());
+						clusterJob.setAttempts(0);
+						clusterJob.setStatus(JobStatus.PENDING);
+						db().create(clusterJob);
+					}
 				}
+			} catch (Exception e) {
+				logSevere(e);
+				clearRollbackTransactions();
 			} finally {
-				releaseLock(CLUSTER_NEW_JOB_LOCK);
+				commitTransactions();
 			}
 		}
 	}
@@ -245,17 +261,14 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 					.less("lockedAt", Query.expOfNowWithOffset(-jobExpirationMinutes * 60)),
 				new Update()
 					.set("status", JobStatus.DEAD));
-		
-		// Delete completed jobs
-		db().deleteAll(
-				new ClusterJobQuery()
-					.equals("status", JobStatus.COMPLETED));
 	}
 
 	@Periodic(PeriodicType.SLOW)
 	public void performNotifyDead(TaskMonitor taskMonitor) throws UnifyException {
 		final List<Long> deadJobIds = claimUnlockedRows(
-				new ClusterJobQuery().equals("status", JobStatus.DEAD).limit(JOB_PROCESSING_BATCH_SIZE),
+				new ClusterJobQuery()
+					.equals("status", JobStatus.DEAD)
+					.limit(JOB_PROCESSING_BATCH_SIZE),
 				new Update().set("status", JobStatus.DEAD_ACK), CLUSTER_PROCESS_DEAD_LOCK);
 		if (!DataUtils.isBlank(deadJobIds)) {
 			for (ClusterJob deadClusterJob : db().findAll(new ClusterJobQuery().idIn(deadJobIds))) {
@@ -263,32 +276,6 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 				handler.notifyFail(deadClusterJob.getPayloadId());
 			}
 		}
-	}
-
-	@Transactional(TransactionAttribute.REQUIRES_NEW)
-	public int loadNewJob(ClusterJobHandler handler) throws UnifyException {
-		try {
-			final List<Job> newjobs = handler.claimNewWorkItems();
-			if (!DataUtils.isBlank(newjobs)) {
-				final String handlerName = handler.getName();
-				for (Job job : newjobs) {
-					ClusterJob clusterJob = new ClusterJob();
-					clusterJob.setHandler(handlerName);
-					clusterJob.setTitle(job.getTitle());
-					clusterJob.setPayloadId(job.getPayloadId());
-					clusterJob.setMaxAttempts(job.getMaxAttempts());
-					clusterJob.setAttempts(0);
-					clusterJob.setStatus(JobStatus.PENDING);
-					db().create(clusterJob);
-				}
-				
-				return newjobs.size();
-			}
-		} catch (Exception e) {
-			logSevere(e);
-		}
-		
-		return 0;
 	}
 
 	@Periodic(PeriodicType.FASTER)

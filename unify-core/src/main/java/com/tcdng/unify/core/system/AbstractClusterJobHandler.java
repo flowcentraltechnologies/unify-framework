@@ -43,7 +43,7 @@ public abstract class AbstractClusterJobHandler extends AbstractBusinessService 
 			if (!DataUtils.isBlank(workItemIds)) {
 				final List<Job> jobs = new ArrayList<Job>();
 				for (String payloadId : getPayloadIds(workItemIds)) {
-					jobs.add(new Job(payloadId, jobFetchInfo.getTitle(), jobFetchInfo.getJobMaxAttempts()));
+					jobs.add(new Job(payloadId, jobFetchInfo.getJobMaxAttempts()));
 				}
 
 				return jobs;
