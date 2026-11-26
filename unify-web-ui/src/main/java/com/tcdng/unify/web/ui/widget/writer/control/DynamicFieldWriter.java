@@ -23,6 +23,7 @@ import com.tcdng.unify.web.ui.widget.EventHandler;
 import com.tcdng.unify.web.ui.widget.ResponseWriter;
 import com.tcdng.unify.web.ui.widget.Widget;
 import com.tcdng.unify.web.ui.widget.control.DynamicField;
+import com.tcdng.unify.web.ui.widget.data.PaperValue;
 import com.tcdng.unify.web.ui.widget.writer.AbstractControlWriter;
 
 /**
@@ -35,7 +36,13 @@ import com.tcdng.unify.web.ui.widget.writer.AbstractControlWriter;
 @Component("dynamicfield-writer")
 public class DynamicFieldWriter extends AbstractControlWriter {
 
-    @Override
+	@Override
+	protected PaperValue getPaperValue(Widget widget) throws UnifyException {
+		final DynamicField dynamicField = (DynamicField) widget;
+		return getPaperValue(dynamicField.getControl());
+	}
+
+	@Override
     protected void doWriteStructureAndContent(ResponseWriter writer, Widget widget) throws UnifyException {
         DynamicField dynamicField = (DynamicField) widget;
         Control ctrl = dynamicField.getControl();

@@ -16,6 +16,7 @@
 package com.tcdng.unify.web.ui.widget.data;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -31,7 +32,7 @@ public class PaperValue {
 	private List<String> vals;
 
 	public PaperValue(String val) {
-		this.vals = Arrays.asList(val);
+		this.vals = val != null ? Arrays.asList(val) : Collections.emptyList();
 	}
 
 	public PaperValue(List<String> vals) {
@@ -47,7 +48,7 @@ public class PaperValue {
 	}
 
 	public boolean isPresent() {
-		return vals != null;
+		return vals != null && !vals.isEmpty();
 	}
 
 }

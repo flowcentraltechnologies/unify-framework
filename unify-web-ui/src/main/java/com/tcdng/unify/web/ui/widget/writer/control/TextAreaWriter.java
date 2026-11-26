@@ -25,6 +25,7 @@ import com.tcdng.unify.web.ui.widget.EventHandler;
 import com.tcdng.unify.web.ui.widget.ResponseWriter;
 import com.tcdng.unify.web.ui.widget.Widget;
 import com.tcdng.unify.web.ui.widget.control.TextArea;
+import com.tcdng.unify.web.ui.widget.data.PaperValue;
 import com.tcdng.unify.web.ui.widget.writer.AbstractControlWriter;
 
 /**
@@ -36,6 +37,31 @@ import com.tcdng.unify.web.ui.widget.writer.AbstractControlWriter;
 @Writes(TextArea.class)
 @Component("textarea-writer")
 public class TextAreaWriter extends AbstractControlWriter {
+
+	@SuppressWarnings("unchecked")
+	@Override
+	protected PaperValue getPaperValue(Widget widget) throws UnifyException {
+		StringBuilder sb = new StringBuilder();
+		TextArea textArea = (TextArea) widget;
+		Object value = textArea.getValue();
+		if (value != null) {
+			if (value instanceof String[]) {
+				for (String line : (String[]) value) {
+					sb.append(line);
+					sb.append("\n");
+				}
+			} else if (value instanceof Collection) {
+				for (Object obj : (Collection<Object>) value) {
+					sb.append(String.valueOf(obj));
+					sb.append("\n");
+				}
+			} else {
+				sb.append(textArea.getStringValue());
+			}
+		}
+
+		return new PaperValue(sb.toString());
+	}
 
 	@Override
 	protected void doWriteStructureAndContent(ResponseWriter writer, Widget widget) throws UnifyException {

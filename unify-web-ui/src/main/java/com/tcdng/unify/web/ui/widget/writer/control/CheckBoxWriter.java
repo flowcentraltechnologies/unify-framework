@@ -37,9 +37,8 @@ public class CheckBoxWriter extends AbstractControlWriter {
 
 	@Override
 	protected PaperValue getPaperValue(Widget widget) throws UnifyException {
-		final CheckBox checkBox = (CheckBox) widget;
-		final boolean checked = checkBox.getValue(boolean.class);
-		return new PaperValue(resolveSessionMessage(checked ? "$m{label.yes}" : "$m{label.no}"));
+		return new PaperValue(
+				resolveSessionMessage(((CheckBox) widget).getValue(boolean.class) ? "$m{label.yes}" : "$m{label.no}"));
 	}
 
 	@Override
