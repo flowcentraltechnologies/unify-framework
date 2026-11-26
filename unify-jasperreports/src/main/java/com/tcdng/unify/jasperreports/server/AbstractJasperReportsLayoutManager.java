@@ -132,6 +132,16 @@ public abstract class AbstractJasperReportsLayoutManager extends AbstractUnifyCo
 			jasperDesign.addStyle(columnStyles.getBoldStyle());
 			jasperDesign.addStyle(columnStyles.getBoldLargeStyle());
 
+			ColumnStyles headerStyles = null;
+			if (report.isShowParameterHeader()) {
+				headerStyles = new ColumnStyles("Arial", 8, 12);
+				jasperDesign.addStyle(headerStyles.getParentStyle());
+				jasperDesign.addStyle(headerStyles.getNormalStyle());
+				jasperDesign.addStyle(headerStyles.getNormalLargeStyle());
+				jasperDesign.addStyle(headerStyles.getBoldStyle());
+				jasperDesign.addStyle(headerStyles.getBoldLargeStyle());
+			}
+
 			boolean isQuery = !report.isWithBeanCollection();
 			for (ReportColumn reportColumn : report.getColumns()) {
 				jasperDesign.addField(newJRDesignField(reportColumn, isQuery));
@@ -145,7 +155,7 @@ public abstract class AbstractJasperReportsLayoutManager extends AbstractUnifyCo
 
 			jasperDesign.setProperty("net.sf.jasperreports.awt.ignore.missing.font", "true");
 
-			doApplyLayout(jasperDesign, columnStyles, report);
+			doApplyLayout(jasperDesign, columnStyles, headerStyles, report);
 		} catch (JRException e) {
 			throwOperationErrorException(e);
 		}
@@ -161,8 +171,8 @@ public abstract class AbstractJasperReportsLayoutManager extends AbstractUnifyCo
 
 	}
 
-	protected abstract void doApplyLayout(JasperDesign jasperDesign, ColumnStyles columnStyles, Report report)
-			throws UnifyException;
+	protected abstract void doApplyLayout(JasperDesign jasperDesign, ColumnStyles columnStyles,
+			ColumnStyles headerStyles, Report report) throws UnifyException;
 
 	protected HorizontalTextAlignEnum getHorizontalAlign(HAlignType hAlignType) {
 		return hAlignMap.get(hAlignType);
@@ -255,7 +265,7 @@ public abstract class AbstractJasperReportsLayoutManager extends AbstractUnifyCo
 				// Label
 				String paramLabel = StringUtils.concatenate(reportParameter.getDescription(), " :");
 				JRDesignElement paramLabelJRDesignElement = newJRDesignStaticText(columnStyles, fontColor, null,
-						HorizontalTextAlignEnum.LEFT, paramLabel);
+						HorizontalTextAlignEnum.RIGHT, paramLabel);
 				paramLabelJRDesignElement.setX(penX + 2);
 				paramLabelJRDesignElement.setY(penY + 2);
 				paramLabelJRDesignElement.setWidth(sectionWidth - 4);
@@ -265,6 +275,7 @@ public abstract class AbstractJasperReportsLayoutManager extends AbstractUnifyCo
 					paramLabelJRDesignElement.addPropertyExpression(
 							newJRDesignPropertyExpression("net.sf.jasperreports.print.keep.full.text", true));
 				}
+				
 				jrDesignBand.addElement(paramLabelJRDesignElement);
 
 				// Value

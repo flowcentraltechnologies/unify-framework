@@ -209,7 +209,7 @@ public class ReportTheme {
             detailImageWidth = DEFAULT_DETAIL_IMAGE_WIDTH;
             detailImageHeight = DEFAULT_DETAIL_IMAGE_HEIGHT;
 
-            paramTheme = new ThemeColors(Color.decode("#000000"), Color.decode("#EEEEEE"), Color.decode("#EEEEEE"));
+            paramTheme = new ThemeColors(Color.decode("#000000"), Color.decode("#FFFFFF"), Color.decode("#FFFFFF"));
             columnTheme = new ThemeColors(Color.decode("#FFFFFF"), Color.decode("#C0C0C0"), Color.decode("#C0C0C0"));
             detailTheme = new ThemeColors(Color.decode("#000000"), Color.decode("#FFFFFF"), Color.decode("#FFFFFF"));
             shadeTheme = new ThemeColors(Color.decode("#000000"), Color.decode("#EEEEEE"), Color.decode("#EEEEEE"));

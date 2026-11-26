@@ -46,8 +46,8 @@ import net.sf.jasperreports.engine.type.HorizontalTextAlignEnum;
 public class JasperReportsColumnarLayoutManager extends AbstractJasperReportsLayoutManager {
 
 	@Override
-	protected void doApplyLayout(JasperDesign jasperDesign, ColumnStyles columnStyles, Report report)
-			throws UnifyException {
+	protected void doApplyLayout(JasperDesign jasperDesign, ColumnStyles columnStyles, ColumnStyles headerStyles,
+			Report report) throws UnifyException {
 		ReportTheme theme = report.getReportTheme();
 		List<ReportColumn> reportColumnList = report.getColumns();
 		boolean isListFormat = isListFormat(report.getFormat());

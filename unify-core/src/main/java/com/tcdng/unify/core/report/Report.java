@@ -796,7 +796,7 @@ public class Report {
 		}
 
 		public Builder addParameter(String name, String description, Object value) {
-			return addParameter(name, description, null, value, false, false);
+			return addParameter(name, description, null, value, true, false);
 		}
 
 		public Builder addParameter(String name, String description, String formatter, Object value,

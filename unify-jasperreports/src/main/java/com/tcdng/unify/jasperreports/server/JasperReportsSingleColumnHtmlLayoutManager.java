@@ -37,8 +37,8 @@ import net.sf.jasperreports.engine.type.BreakTypeEnum;
 public class JasperReportsSingleColumnHtmlLayoutManager extends AbstractJasperReportsLayoutManager {
 
 	@Override
-	protected void doApplyLayout(JasperDesign jasperDesign, ColumnStyles columnStyles, Report report)
-			throws UnifyException {
+	protected void doApplyLayout(JasperDesign jasperDesign, ColumnStyles columnStyles, ColumnStyles headerStyles,
+			Report report) throws UnifyException {
 		ReportTheme theme = report.getReportTheme();
 		ThemeColors detailColors = theme.getDetailTheme();
 		

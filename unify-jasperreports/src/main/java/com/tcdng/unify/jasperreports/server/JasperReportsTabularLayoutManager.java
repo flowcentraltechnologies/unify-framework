@@ -55,8 +55,8 @@ import net.sf.jasperreports.engine.type.StretchTypeEnum;
 public class JasperReportsTabularLayoutManager extends AbstractJasperReportsLayoutManager {
 
 	@Override
-	protected void doApplyLayout(JasperDesign jasperDesign, ColumnStyles columnStyles, Report report)
-			throws UnifyException {
+	protected void doApplyLayout(JasperDesign jasperDesign, ColumnStyles columnStyles, ColumnStyles headerStyles,
+			Report report) throws UnifyException {
 		ReportTheme theme = report.getReportTheme();
 		boolean isListFormat = isListFormat(report.getFormat());
 		final int actualColumnWidth = jasperDesign.getColumnWidth();
@@ -130,7 +130,7 @@ public class JasperReportsTabularLayoutManager extends AbstractJasperReportsLayo
 			ReportParameters reportParameters = report.getReportParameters();
 			if (reportParameters != null && reportParameters.isWithShowInHeader()) {
 				JRDesignBand titleBand = (JRDesignBand) jasperDesign.getTitle();
-				constructParamHeaderToBand(jasperDesign, titleBand, theme.getParamTheme(), columnStyles,
+				constructParamHeaderToBand(jasperDesign, titleBand, theme.getParamTheme(), headerStyles,
 						reportParameters, actualColumnWidth, theme.getDetailHeight(), isListFormat);
 			}
 		}

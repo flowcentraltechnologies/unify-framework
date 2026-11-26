@@ -49,8 +49,8 @@ import net.sf.jasperreports.engine.type.PositionTypeEnum;
 public class JasperReportsTabularThumbnailImagesOnlyLayoutManager extends AbstractJasperReportsLayoutManager {
 
 	@Override
-	protected void doApplyLayout(JasperDesign jasperDesign, ColumnStyles columnStyles, Report report)
-			throws UnifyException {
+	protected void doApplyLayout(JasperDesign jasperDesign, ColumnStyles columnStyles, ColumnStyles headerStyles,
+			Report report) throws UnifyException {
 		ReportTheme theme = report.getReportTheme();
 		boolean isListFormat = isListFormat(report.getFormat());
 		int actualColumnWidth = jasperDesign.getColumnWidth();
