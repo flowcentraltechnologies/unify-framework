@@ -29,7 +29,6 @@ import com.tcdng.unify.core.constant.JobItemStatus;
 import com.tcdng.unify.core.constant.JobStatus;
 import com.tcdng.unify.core.criterion.Update;
 import com.tcdng.unify.core.data.JobFetchInfo;
-import com.tcdng.unify.core.database.Query;
 import com.tcdng.unify.core.system.entities.ClusterJob;
 import com.tcdng.unify.core.system.entities.ClusterJobItem;
 import com.tcdng.unify.core.system.entities.ClusterJobItemQuery;
@@ -44,40 +43,40 @@ import com.tcdng.unify.core.util.StringUtils;
  * @since 4.1
  */
 @Transactional
-public abstract class AbstractClusterJobHandler<T extends Entity> extends AbstractBusinessService
+public abstract class AbstractClusterJobHandler extends AbstractBusinessService
 		implements ClusterJobHandler {
 
-	private final Class<T> payloadEntityClass;
+	private final Class<? extends Entity> payloadEntityClass;
 
-	public AbstractClusterJobHandler(Class<T> payloadEntityClass) {
+	public AbstractClusterJobHandler(Class<? extends Entity> payloadEntityClass) {
 		this.payloadEntityClass = payloadEntityClass;
 	}
 
 	@Periodic(PeriodicType.FAST)
 	public final void performWork(TaskMonitor tm) throws UnifyException {
 		final JobFetchInfo jobFetchInfo = getJobFetchInfo();
-		Batch<T> batch = claimOldBatch(jobFetchInfo);
+		Batch batch = claimOldBatch(jobFetchInfo);
 		if (!batch.isPresent()) {
 			batch = claimNewBatch(jobFetchInfo);
 		}
 
 		if (batch.isPresent()) {
 			final Long clusterJobId = batch.getClusterJobId();
-			for (T inst : batch.getItems()) {
+			for (Long payloadId : batch.getPayloadIds()) {
 				Update payloadUpdate = jobFetchInfo.getPassUpdate();
 				JobItemStatus itemStatus = JobItemStatus.COMPLETED;
 				String err = null;
 				try {
-					process(inst);
+					process(payloadId);
 				} catch (Exception e) {
 					payloadUpdate = jobFetchInfo.getFailUpdate();
 					itemStatus = JobItemStatus.ERROR;
 					err = e.getMessage();
 				}
 
-				db(payloadEntityClass).updateById(payloadEntityClass, inst.getId(), payloadUpdate);
+				db(payloadEntityClass).updateById(payloadEntityClass, payloadId, payloadUpdate);
 				db().updateAll(
-						new ClusterJobItemQuery().clusterJobId(clusterJobId).payloadId((Long) inst.getId())
+						new ClusterJobItemQuery().clusterJobId(clusterJobId).payloadId(payloadId)
 								.status(JobItemStatus.PENDING),
 						itemStatus.isError()
 								? new Update().set("status", itemStatus).set("error",
@@ -103,11 +102,10 @@ public abstract class AbstractClusterJobHandler<T extends Entity> extends Abstra
 
 	protected abstract JobFetchInfo getJobFetchInfo() throws UnifyException;
 
-	protected abstract void process(T item) throws UnifyException;
+	protected abstract void process(Long payloadId) throws UnifyException;
 
-	@SuppressWarnings("unchecked")
-	private Batch<T> claimNewBatch(final JobFetchInfo jobFetchInfo) throws UnifyException {
-		Batch<T> result = (Batch<T>) Batch.BLANK;
+	private Batch claimNewBatch(final JobFetchInfo jobFetchInfo) throws UnifyException {
+		Batch result = Batch.BLANK;
 		try {
 			final List<Long> payloadIds = claimUnlockedRows(
 					jobFetchInfo.getClaimQuery().limit(jobFetchInfo.getFetchBatchSize()), jobFetchInfo.getClaimUpdate(),
@@ -119,19 +117,18 @@ public abstract class AbstractClusterJobHandler<T extends Entity> extends Abstra
 				clusterJob.setClaimedAt(getNow());
 				clusterJob.setStatus(JobStatus.RUNNING);
 
-				final List<ClusterJobItem> itemList = new ArrayList<ClusterJobItem>();
+				final List<ClusterJobItem> jobItemList = new ArrayList<ClusterJobItem>();
 				for (Long payloadId : payloadIds) {
 					ClusterJobItem item = new ClusterJobItem();
 					item.setPayloadId(payloadId);
 					item.setStatus(JobItemStatus.PENDING);
-					itemList.add(item);
+					jobItemList.add(item);
 				}
 
-				clusterJob.setItemList(itemList);
+				clusterJob.setItemList(jobItemList);
 
 				final Long clusterJobId = (Long) db().create(clusterJob);
-				result = new Batch<T>(clusterJobId, db(payloadEntityClass)
-						.listAll(Query.of(payloadEntityClass).amongst("id", payloadIds).order("id")));
+				result = new Batch(clusterJobId, payloadIds);
 			}
 		} finally {
 			commitTransactions();
@@ -140,9 +137,8 @@ public abstract class AbstractClusterJobHandler<T extends Entity> extends Abstra
 		return result;
 	}
 
-	@SuppressWarnings("unchecked")
-	private Batch<T> claimOldBatch(final JobFetchInfo jobFetchInfo) throws UnifyException {
-		Batch<T> result = (Batch<T>) Batch.BLANK;
+	private Batch claimOldBatch(final JobFetchInfo jobFetchInfo) throws UnifyException {
+		Batch result = Batch.BLANK;
 		try {
 			final List<Long> clusterjobId = claimUnlockedRows(
 					new ClusterJobQuery().handler(getName()).status(JobStatus.RUNNING).isnull("claimedBy").limit(1),
@@ -158,8 +154,7 @@ public abstract class AbstractClusterJobHandler<T extends Entity> extends Abstra
 				}
 
 				if (!payloadIds.isEmpty()) {
-					result = new Batch<T>(clusterJobId, db(payloadEntityClass)
-							.listAll(Query.of(payloadEntityClass).amongst("id", payloadIds).order("id")));
+					result = new Batch(clusterJobId, payloadIds);
 				} else {
 					db().updateById(ClusterJob.class, clusterJobId,
 							new Update().set("status", JobStatus.COMPLETED).setNow("completedAt"));
@@ -172,31 +167,30 @@ public abstract class AbstractClusterJobHandler<T extends Entity> extends Abstra
 		return result;
 	}
 
-	private static class Batch<T extends Entity> {
+	private static class Batch {
 
-		@SuppressWarnings("rawtypes")
-		public static final Batch<?> BLANK = new Batch();
+		public static final Batch BLANK = new Batch();
 
 		private final Long clusterJobId;
 
-		private final List<T> items;
+		private final List<Long> payloadIds;
 
-		public Batch(Long clusterJobId, List<T> items) {
+		public Batch(Long clusterJobId, List<Long> payloadIds) {
 			this.clusterJobId = clusterJobId;
-			this.items = items;
+			this.payloadIds = payloadIds;
 		}
 
 		private Batch() {
 			this.clusterJobId = null;
-			this.items = Collections.emptyList();
+			this.payloadIds = Collections.emptyList();
 		}
 
 		public Long getClusterJobId() {
 			return clusterJobId;
 		}
 
-		public List<T> getItems() {
-			return items;
+		public List<Long> getPayloadIds() {
+			return payloadIds;
 		}
 
 		public boolean isPresent() {
