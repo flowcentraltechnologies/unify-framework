@@ -30,16 +30,19 @@ public class JobFetchInfo {
 
 	private Update claimUpdate;
 
+	private Update passUpdate;
+
+	private Update failUpdate;
+
 	private int fetchBatchSize;
 
-	private int jobMaxAttempts;
-
-	private JobFetchInfo(Query<?> claimQuery, Update claimUpdate, int fetchBatchSize,
-			int jobMaxAttempts) {
+	private JobFetchInfo(Query<?> claimQuery, Update claimUpdate, Update passUpdate, Update failUpdate,
+			int fetchBatchSize) {
 		this.claimQuery = claimQuery;
 		this.claimUpdate = claimUpdate;
+		this.passUpdate = passUpdate;
+		this.failUpdate = failUpdate;
 		this.fetchBatchSize = fetchBatchSize;
-		this.jobMaxAttempts = jobMaxAttempts;
 	}
 
 	public Query<?> getClaimQuery() {
@@ -50,31 +53,36 @@ public class JobFetchInfo {
 		return claimUpdate;
 	}
 
-	public int getFetchBatchSize() {
-		return fetchBatchSize;
+	public Update getPassUpdate() {
+		return passUpdate;
 	}
 
-	public int getJobMaxAttempts() {
-		return jobMaxAttempts;
+	public Update getFailUpdate() {
+		return failUpdate;
+	}
+
+	public int getFetchBatchSize() {
+		return fetchBatchSize;
 	}
 
 	public static Builder newBuilder() {
 		return new Builder();
 	}
-	
+
 	public static class Builder {
 
 		private Query<?> claimQuery;
 
 		private Update claimUpdate;
 
-		private int fetchBatchSize;
+		private Update passUpdate;
 
-		private int jobMaxAttempts;
+		private Update failUpdate;
+
+		private int fetchBatchSize;
 
 		public Builder() {
 			this.fetchBatchSize = 20;
-			this.jobMaxAttempts = 5;
 		}
 
 		public Builder claimQuery(Query<?> claimQuery) {
@@ -87,13 +95,18 @@ public class JobFetchInfo {
 			return this;
 		}
 
-		public Builder fetchBatchSize(int fetchBatchSize) {
-			this.fetchBatchSize = fetchBatchSize;
+		public Builder passUpdate(Update passUpdate) {
+			this.passUpdate = passUpdate;
 			return this;
 		}
 
-		public Builder jobMaxAttempts(int jobMaxAttempts) {
-			this.jobMaxAttempts = jobMaxAttempts;
+		public Builder failUpdate(Update failUpdate) {
+			this.failUpdate = failUpdate;
+			return this;
+		}
+
+		public Builder fetchBatchSize(int fetchBatchSize) {
+			this.fetchBatchSize = fetchBatchSize;
 			return this;
 		}
 
@@ -106,7 +119,15 @@ public class JobFetchInfo {
 				throw new IllegalArgumentException("Claim update is required.");
 			}
 
-			return new JobFetchInfo(claimQuery, claimUpdate, fetchBatchSize, jobMaxAttempts);
+			if (passUpdate == null) {
+				throw new IllegalArgumentException("Pass update is required.");
+			}
+
+			if (failUpdate == null) {
+				throw new IllegalArgumentException("Fail update is required.");
+			}
+
+			return new JobFetchInfo(claimQuery, claimUpdate, passUpdate, failUpdate, fetchBatchSize);
 		}
 	}
 }

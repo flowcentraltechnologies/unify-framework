@@ -19,11 +19,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.tcdng.unify.common.database.Entity;
 import com.tcdng.unify.core.UnifyException;
+import com.tcdng.unify.core.annotation.Periodic;
+import com.tcdng.unify.core.annotation.PeriodicType;
+import com.tcdng.unify.core.annotation.Transactional;
 import com.tcdng.unify.core.business.AbstractBusinessService;
-import com.tcdng.unify.core.data.Job;
+import com.tcdng.unify.core.constant.JobStatus;
 import com.tcdng.unify.core.data.JobFetchInfo;
-import com.tcdng.unify.core.util.DataUtils;
+import com.tcdng.unify.core.database.Query;
+import com.tcdng.unify.core.system.entities.ClusterJob;
+import com.tcdng.unify.core.system.entities.ClusterJobItem;
+import com.tcdng.unify.core.task.TaskMonitor;
 
 /**
  * Abstract base class for cluster job handlers.
@@ -31,26 +38,25 @@ import com.tcdng.unify.core.util.DataUtils;
  * @author The Code Department
  * @since 4.1
  */
-public abstract class AbstractClusterJobHandler extends AbstractBusinessService implements ClusterJobHandler {
+@Transactional
+public abstract class AbstractClusterJobHandler<T extends Entity> extends AbstractBusinessService implements ClusterJobHandler {
 
-	@Override
-	public List<Job> claimNewWorkItems() throws UnifyException {
-		if (ready()) {
-			final JobFetchInfo jobFetchInfo = getJobFetchInfo();
-			final List<Long> workItemIds = claimUnlockedRows(
-					jobFetchInfo.getClaimQuery().limit(jobFetchInfo.getFetchBatchSize()), jobFetchInfo.getClaimUpdate(),
-					"jobhdl::" + getName());
-			if (!DataUtils.isBlank(workItemIds)) {
-				final List<Job> jobs = new ArrayList<Job>();
-				for (String payloadId : getPayloadIds(workItemIds)) {
-					jobs.add(new Job(payloadId, jobFetchInfo.getJobMaxAttempts()));
-				}
-
-				return jobs;
-			}
+	private final Class<T> entityClass;
+	
+	public AbstractClusterJobHandler(Class<T> entityClass) {
+		this.entityClass = entityClass;
+	}
+	
+	@Periodic(PeriodicType.FAST)
+	public final void performWork(TaskMonitor tm) throws UnifyException {
+		Batch<T> batch = claimOldBatch();
+		if (!batch.isPresent()) {
+			batch = claimNewBatch();
 		}
-
-		return Collections.emptyList();
+		
+		if (batch.isPresent()) {
+			
+		}
 	}
 
 	@Override
@@ -63,14 +69,81 @@ public abstract class AbstractClusterJobHandler extends AbstractBusinessService 
 
 	}
 
-	@SuppressWarnings("unchecked")
-	protected List<String> getPayloadIds(List<Long> workItemIds) throws UnifyException {
-		return workItemIds != null ? (List<String>) DataUtils.convert(List.class, String.class, workItemIds)
-				: Collections.emptyList();
-	}
-
-	protected abstract boolean ready() throws UnifyException;
-
 	protected abstract JobFetchInfo getJobFetchInfo() throws UnifyException;
+	
+	protected abstract void process(T item) throws UnifyException;
+	
+	@SuppressWarnings("unchecked")
+	private Batch<T> claimNewBatch() throws UnifyException {
+		Batch<T> result = (Batch<T>) Batch.BLANK;
+		try {
+			final JobFetchInfo jobFetchInfo = getJobFetchInfo();
+			final List<Long> payloadIds = claimUnlockedRows(jobFetchInfo.getClaimQuery(), jobFetchInfo.getClaimUpdate(),
+					"job::" + getName());
+			if (!payloadIds.isEmpty()) {
+				ClusterJob clusterJob = new ClusterJob();
+				clusterJob.setHandler(getName());
+				clusterJob.setClaimedBy(getRuntimeId());
+				clusterJob.setClaimedAt(getNow());
+				clusterJob.setStatus(JobStatus.RUNNING);
 
+				final List<ClusterJobItem> itemList = new ArrayList<ClusterJobItem>();
+				for (Long payloadId : payloadIds) {
+					ClusterJobItem item = new ClusterJobItem();
+					item.setPayloadId(payloadId);
+					itemList.add(item);
+				}
+
+				clusterJob.setItemList(itemList);
+
+				final Long clusterJobId = (Long) db().create(clusterJob);
+				result = new Batch<T>(clusterJobId,
+						db(entityClass).listAll(Query.of(entityClass).amongst("id", payloadIds).order("id")));
+			}
+		} finally {
+			commitTransactions();
+		}
+
+		return result;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private Batch<T> claimOldBatch() throws UnifyException {
+		Batch<T> result = (Batch<T>) Batch.BLANK;
+		// TODO
+
+		return result;
+	}
+	
+	private static class Batch<T extends Entity> {
+
+		@SuppressWarnings("rawtypes")
+		public static final Batch<?> BLANK = new Batch();
+
+		private final Long clusterJobId;
+
+		private final List<T> items;
+
+		public Batch(Long clusterJobId, List<T> items) {
+			this.clusterJobId = clusterJobId;
+			this.items = items;
+		}
+
+		private Batch() {
+			this.clusterJobId = null;
+			this.items = Collections.emptyList();
+		}
+
+		public Long getClusterJobId() {
+			return clusterJobId;
+		}
+
+		public List<T> getItems() {
+			return items;
+		}
+
+		public boolean isPresent() {
+			return clusterJobId != null;
+		}
+	}
 }

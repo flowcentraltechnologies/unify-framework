@@ -16,10 +16,12 @@
 package com.tcdng.unify.core.system.entities;
 
 import java.util.Date;
+import java.util.List;
 
 import com.tcdng.unify.common.annotation.ColumnType;
 import com.tcdng.unify.common.annotation.Index;
 import com.tcdng.unify.common.annotation.Table;
+import com.tcdng.unify.core.annotation.ChildList;
 import com.tcdng.unify.core.annotation.Column;
 import com.tcdng.unify.core.annotation.ForeignKey;
 import com.tcdng.unify.core.constant.JobStatus;
@@ -30,7 +32,10 @@ import com.tcdng.unify.core.constant.JobStatus;
  * @author The Code Department
  * @since 4.1
  */
-@Table(name = "UNCLUSTERJOB", indexes = {@Index({"status"})})
+@Table(name = "UNCLUSTERJOB",
+	indexes = {
+			@Index({"handler"}),
+			@Index({"status"})})
 public class ClusterJob extends AbstractSequenceEntity {
 
     @ForeignKey(name = "REC_ST")
@@ -40,27 +45,18 @@ public class ClusterJob extends AbstractSequenceEntity {
     private String handler;
 
     @Column(length = 32, nullable = true)
-    private String lockedBy;
+    private String claimedBy;
 
     @Column(type = ColumnType.TIMESTAMP, nullable = true)
-    private Date lockedAt;
+    private Date claimedAt;
 
     @Column(type = ColumnType.TIMESTAMP, nullable = true)
     private Date completedOn;
 
-    @Column(length = 2048, nullable = true)
-    private String error;
-
-    @Column(length = 128, nullable = true)
-    private String payloadId;
-
-    @Column
-    private int attempts;
-
-    @Column
-    private int maxAttempts;
-
-    @Override
+    @ChildList
+    private List<ClusterJobItem> itemList;
+    
+	@Override
 	public String getDescription() {
 		return handler;
 	}
@@ -81,20 +77,20 @@ public class ClusterJob extends AbstractSequenceEntity {
 		this.handler = handler;
 	}
 
-	public String getLockedBy() {
-		return lockedBy;
+	public String getClaimedBy() {
+		return claimedBy;
 	}
 
-	public void setLockedBy(String lockedBy) {
-		this.lockedBy = lockedBy;
+	public void setClaimedBy(String claimedBy) {
+		this.claimedBy = claimedBy;
 	}
 
-	public Date getLockedAt() {
-		return lockedAt;
+	public Date getClaimedAt() {
+		return claimedAt;
 	}
 
-	public void setLockedAt(Date lockedAt) {
-		this.lockedAt = lockedAt;
+	public void setClaimedAt(Date claimedAt) {
+		this.claimedAt = claimedAt;
 	}
 
 	public Date getCompletedOn() {
@@ -105,36 +101,12 @@ public class ClusterJob extends AbstractSequenceEntity {
 		this.completedOn = completedOn;
 	}
 
-	public String getError() {
-		return error;
+	public List<ClusterJobItem> getItemList() {
+		return itemList;
 	}
 
-	public void setError(String error) {
-		this.error = error;
-	}
-
-	public String getPayloadId() {
-		return payloadId;
-	}
-
-	public void setPayloadId(String payloadId) {
-		this.payloadId = payloadId;
-	}
-
-	public int getAttempts() {
-		return attempts;
-	}
-
-	public void setAttempts(int attempts) {
-		this.attempts = attempts;
-	}
-
-	public int getMaxAttempts() {
-		return maxAttempts;
-	}
-
-	public void setMaxAttempts(int maxAttempts) {
-		this.maxAttempts = maxAttempts;
+	public void setItemList(List<ClusterJobItem> itemList) {
+		this.itemList = itemList;
 	}
 
 }

@@ -29,20 +29,12 @@ public class ClusterJobQuery extends SequenceEntityQuery<ClusterJob> {
 		super(ClusterJob.class);
 	}
 
-	public ClusterJobQuery lockedBy(String lockedBy) {
-		return (ClusterJobQuery) equals("lockedBy", lockedBy);
+	public ClusterJobQuery claimedBy(String claimedBy) {
+		return (ClusterJobQuery) equals("claimedBy", claimedBy);
 	}
 
 	public ClusterJobQuery status(JobStatus status) {
 		return (ClusterJobQuery) equals("status", status);
-	}
-
-	public ClusterJobQuery error() {
-		return (ClusterJobQuery) notnull("error");
-	}
-
-	public ClusterJobQuery notError() {
-		return (ClusterJobQuery) isnull("error");
 	}
 
 }

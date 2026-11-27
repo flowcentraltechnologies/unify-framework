@@ -20,7 +20,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.tcdng.unify.core.ApplicationComponents;
 import com.tcdng.unify.core.UnifyContainerInterface;
@@ -32,27 +31,16 @@ import com.tcdng.unify.core.annotation.Periodic;
 import com.tcdng.unify.core.annotation.PeriodicType;
 import com.tcdng.unify.core.annotation.Transactional;
 import com.tcdng.unify.core.business.AbstractBusinessService;
-import com.tcdng.unify.core.business.AbstractQueuedExec;
-import com.tcdng.unify.core.business.QueuedExec;
 import com.tcdng.unify.core.constant.JobStatus;
-import com.tcdng.unify.core.criterion.And;
-import com.tcdng.unify.core.criterion.Equals;
-import com.tcdng.unify.core.criterion.Less;
-import com.tcdng.unify.core.criterion.Or;
 import com.tcdng.unify.core.criterion.Update;
-import com.tcdng.unify.core.data.Job;
-import com.tcdng.unify.core.data.JobExecInfo;
-import com.tcdng.unify.core.database.Query;
 import com.tcdng.unify.core.system.entities.ClusterCommand;
 import com.tcdng.unify.core.system.entities.ClusterCommandParam;
 import com.tcdng.unify.core.system.entities.ClusterCommandParamQuery;
 import com.tcdng.unify.core.system.entities.ClusterCommandQuery;
-import com.tcdng.unify.core.system.entities.ClusterJob;
 import com.tcdng.unify.core.system.entities.ClusterJobQuery;
 import com.tcdng.unify.core.system.entities.ClusterNode;
 import com.tcdng.unify.core.system.entities.ClusterNodeQuery;
 import com.tcdng.unify.core.task.TaskMonitor;
-import com.tcdng.unify.core.util.DataUtils;
 import com.tcdng.unify.core.util.NetworkUtils;
 
 /**
@@ -65,51 +53,12 @@ import com.tcdng.unify.core.util.NetworkUtils;
 @Transactional
 @Component(ApplicationComponents.APPLICATION_CLUSTERSERVICE)
 public class ClusterServiceImpl extends AbstractBusinessService implements ClusterService {
-
-	private static final String CLUSTER_PROCESS_JOB_LOCK = "lock:clusteprocessjobs";
-
-	private static final String CLUSTER_PROCESS_DEAD_LOCK = "lock:clusteprocessdead";
-	
-	private static final int JOB_PROCESSING_BATCH_SIZE = 40;
-	
-	private static final int MAX_JOB_PROCESSING_THREADS = 10;
-
-    private final QueuedExec<JobExecInfo> clusterJobQueuedExec;
 	
 	@Configurable("5")
 	private int jobExpirationMinutes;
 	
 	@Configurable("1")
 	private int nodeExpirationMinutes;
-
-	private List<ClusterJobHandler> jobHandlers;
-	
-	private List<Long> runningClusterJobIds;
-	
-	public ClusterServiceImpl() {
-		this.runningClusterJobIds = new CopyOnWriteArrayList<Long>();
-        this.clusterJobQueuedExec = new AbstractQueuedExec<JobExecInfo>(MAX_JOB_PROCESSING_THREADS)
-            {
-                @Override
-                protected void doExecute(JobExecInfo jobExecInfo) {
-                	runningClusterJobIds.add(jobExecInfo.getClusterJobId());
-                	
-                    try {
-                        performWork(jobExecInfo);
-                    } catch (Exception e) {
-                        logError(e);
-                        
-                        try {
-							failWork(jobExecInfo, e.getMessage());
-						} catch (Exception e1) {
-						}
-                    } finally {
-                    	runningClusterJobIds.remove(jobExecInfo.getClusterJobId());
-                    }
-                }
-
-            };
-	}
 	
 	@Override
 	public List<ClusterNode> findClusterNodes(ClusterNodeQuery query) throws UnifyException {
@@ -194,32 +143,6 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 
 	}
 
-	@Periodic(PeriodicType.FAST)
-	public void loadNewJobs(TaskMonitor taskMonitor) throws UnifyException {
-		for (ClusterJobHandler handler: jobHandlers) {
-			try {
-				final List<Job> newjobs = handler.claimNewWorkItems();
-				if (!DataUtils.isBlank(newjobs)) {
-					final String handlerName = handler.getName();
-					for (Job job : newjobs) {
-						ClusterJob clusterJob = new ClusterJob();
-						clusterJob.setHandler(handlerName);
-						clusterJob.setPayloadId(job.getPayloadId());
-						clusterJob.setMaxAttempts(job.getMaxAttempts());
-						clusterJob.setAttempts(0);
-						clusterJob.setStatus(JobStatus.PENDING);
-						db().create(clusterJob);
-					}
-				}
-			} catch (Exception e) {
-				logSevere(e);
-				clearRollbackTransactions();
-			} finally {
-				commitTransactions();
-			}
-		}
-	}
-
 	@Periodic(PeriodicType.SLOW)
 	public void performHeartBeat(TaskMonitor taskMonitor) throws UnifyException {
 		final String runtimeId = getRuntimeId();
@@ -238,103 +161,11 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 		}
 		
 		commitTransactions();
-		
-		//Long jobs
-		List<Long> running = new ArrayList<Long>(runningClusterJobIds);
-		if (!running.isEmpty()) {
-			db().updateAll(
-					new ClusterJobQuery()
-						.amongst("id", running)
-						.equals("lockedBy", getRuntimeId())
-						.equals("status", JobStatus.RUNNING),
-					new Update()
-						.setNow("lockedAt"));
-		}
-		
-		commitTransactions();
-
-		// Dead jobs
-		db().updateAll(
-				new ClusterJobQuery()
-					.equals("status", JobStatus.RUNNING)
-					.greatereqf("attempts", "maxAttempts")
-					.less("lockedAt", Query.expOfNowWithOffset(-jobExpirationMinutes * 60)),
-				new Update()
-					.set("status", JobStatus.DEAD));
-	}
-
-	@Periodic(PeriodicType.SLOW)
-	public void performNotifyDead(TaskMonitor taskMonitor) throws UnifyException {
-		final List<Long> deadJobIds = claimUnlockedRows(
-				new ClusterJobQuery()
-					.equals("status", JobStatus.DEAD)
-					.limit(JOB_PROCESSING_BATCH_SIZE),
-				new Update().set("status", JobStatus.DEAD_ACK), CLUSTER_PROCESS_DEAD_LOCK);
-		if (!DataUtils.isBlank(deadJobIds)) {
-			for (ClusterJob deadClusterJob : db().findAll(new ClusterJobQuery().idIn(deadJobIds))) {
-				ClusterJobHandler handler = getComponent(ClusterJobHandler.class, deadClusterJob.getHandler());
-				handler.notifyFail(deadClusterJob.getPayloadId());
-			}
-		}
-	}
-
-	@Periodic(PeriodicType.FASTER)
-	public void processJobs(TaskMonitor taskMonitor) throws UnifyException {
-		final List<Long> clusterJobIds = claimUnlockedRows(
-				new ClusterJobQuery()
-					.lessf("attempts", "maxAttempts")
-					.restriction(new Or()
-								.add(new Equals("status", JobStatus.PENDING))
-								.add(new And()
-										.add(new Equals("status", JobStatus.RUNNING))
-										.add(new Less("lockedAt", Query.expOfNowWithOffset(-jobExpirationMinutes * 60)))))
-						.limit(JOB_PROCESSING_BATCH_SIZE),
-				new Update()
-					.set("status", JobStatus.RUNNING)
-					.setNow("lockedAt")
-					.set("lockedBy", getRuntimeId())
-					.setAddition("attempts", 1),
-				CLUSTER_PROCESS_JOB_LOCK);
-		if (!DataUtils.isBlank(clusterJobIds)) {
-			for (ClusterJob clusterJob : db().findAll(new ClusterJobQuery().idIn(clusterJobIds))) {
-				clusterJobQueuedExec
-						.execute(new JobExecInfo(clusterJob.getHandler(), clusterJob.getPayloadId(), clusterJob.getId()));
-			}
-		}
-	}
-	
-	public void performWork(JobExecInfo jobExecInfo) throws UnifyException {
-		try {
-			final ClusterJobHandler handler = getComponent(ClusterJobHandler.class, jobExecInfo.getHandler());
-			handler.performWork(jobExecInfo.getPayloadId());
-			db().updateAll(new ClusterJobQuery()
-						.equals("id", jobExecInfo.getClusterJobId())
-						.equals("lockedBy", getRuntimeId())
-						.equals("status", JobStatus.RUNNING)
-					, new Update()
-						.set("status", JobStatus.COMPLETED)
-						.setNull("lockedAt"));			
-		} catch (UnifyException e) {
-			throw e;
-		} catch (Exception e) {
-			throwOperationErrorException(e);
-		}
-	}
-
-	public void failWork(JobExecInfo jobExecInfo, String message) throws UnifyException{
-		db().updateAll(new ClusterJobQuery()
-				.equals("id", jobExecInfo.getClusterJobId())
-				.equals("lockedBy", getRuntimeId())
-				.equals("status", JobStatus.RUNNING)
-			, new Update()
-				.set("status", JobStatus.ERROR)
-				.set("error", message)
-				.setNull("lockedAt"));			
 	}
 	
 	@Override
 	protected void onInitialize() throws UnifyException {
-		jobHandlers = getComponents(ClusterJobHandler.class);
+
 	}
 
 	@Override

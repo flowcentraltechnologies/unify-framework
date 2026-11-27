@@ -15,11 +15,7 @@
  */
 package com.tcdng.unify.core.system;
 
-import java.util.List;
-
-import com.tcdng.unify.core.UnifyException;
 import com.tcdng.unify.core.business.BusinessService;
-import com.tcdng.unify.core.data.Job;
 
 /**
  * Cluster job handler interface.
@@ -28,29 +24,5 @@ import com.tcdng.unify.core.data.Job;
  * @since 4.1
  */
 public interface ClusterJobHandler extends BusinessService {
-	
-	/**
-	 * Claims a list of new jobs.
-	 * 
-	 * @return the new jobs
-	 * @throws UnifyException if an error occurs
-	 */
-	List<Job> claimNewWorkItems() throws UnifyException;
-
-	/**
-	 * Performs job.
-	 * 
-	 * @param payloadId the payload ID
-	 * @throws UnifyException if an error occurs
-	 */
-	void performWork(String payloadId) throws UnifyException;
-
-	/**
-	 * Notification on dead job.
-	 * 
-	 * @param payloadId the payload ID
-	 * @throws UnifyException if an error occurs
-	 */
-	void notifyFail(String payloadId) throws UnifyException;
 
 }
