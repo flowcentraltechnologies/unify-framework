@@ -51,7 +51,7 @@ public class ClusterJob extends AbstractSequenceEntity {
     private Date claimedAt;
 
     @Column(type = ColumnType.TIMESTAMP, nullable = true)
-    private Date completedOn;
+    private Date completedAt;
 
     @ChildList
     private List<ClusterJobItem> itemList;
@@ -93,12 +93,12 @@ public class ClusterJob extends AbstractSequenceEntity {
 		this.claimedAt = claimedAt;
 	}
 
-	public Date getCompletedOn() {
-		return completedOn;
+	public Date getCompletedAt() {
+		return completedAt;
 	}
 
-	public void setCompletedOn(Date completedOn) {
-		this.completedOn = completedOn;
+	public void setCompletedAt(Date completedAt) {
+		this.completedAt = completedAt;
 	}
 
 	public List<ClusterJobItem> getItemList() {

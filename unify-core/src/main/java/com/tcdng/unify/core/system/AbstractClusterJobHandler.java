@@ -33,6 +33,7 @@ import com.tcdng.unify.core.database.Query;
 import com.tcdng.unify.core.system.entities.ClusterJob;
 import com.tcdng.unify.core.system.entities.ClusterJobItem;
 import com.tcdng.unify.core.system.entities.ClusterJobItemQuery;
+import com.tcdng.unify.core.system.entities.ClusterJobQuery;
 import com.tcdng.unify.core.task.TaskMonitor;
 
 /**
@@ -60,6 +61,7 @@ public abstract class AbstractClusterJobHandler<T extends Entity> extends Abstra
 		}
 
 		if (batch.isPresent()) {
+			final Long clusterJobId = batch.getClusterJobId();
 			for (T inst : batch.getItems()) {
 				Update payloadUpdate = jobFetchInfo.getPassUpdate();
 				JobItemStatus itemStatus = JobItemStatus.COMPLETED;
@@ -74,12 +76,15 @@ public abstract class AbstractClusterJobHandler<T extends Entity> extends Abstra
 
 				db(payloadEntityClass).updateById(payloadEntityClass, inst.getId(), payloadUpdate);
 				db().updateAll(
-						new ClusterJobItemQuery().clusterJobId(batch.getClusterJobId()).payloadId((Long) inst.getId())
+						new ClusterJobItemQuery().clusterJobId(clusterJobId).payloadId((Long) inst.getId())
 								.status(JobItemStatus.PENDING),
 						itemStatus.isError() ? new Update().set("status", itemStatus).set("error", err)
 								: new Update().set("status", itemStatus));
 				commitTransactions();
 			}
+			
+			db().updateById(ClusterJob.class, clusterJobId,
+					new Update().set("status", JobStatus.COMPLETED).setNow("completedAt"));
 		}
 	}
 
@@ -135,7 +140,31 @@ public abstract class AbstractClusterJobHandler<T extends Entity> extends Abstra
 	@SuppressWarnings("unchecked")
 	private Batch<T> claimOldBatch(final JobFetchInfo jobFetchInfo) throws UnifyException {
 		Batch<T> result = (Batch<T>) Batch.BLANK;
-		// TODO
+		try {
+			final List<Long> clusterjobId = claimUnlockedRows(
+					new ClusterJobQuery().handler(getName()).status(JobStatus.RUNNING).isnull("claimedBy").limit(1),
+					new Update().set("claimedBy", getRuntimeId()).setNow("claimedAt"), "job::" + getName());
+			if (!clusterjobId.isEmpty()) {
+				final Long clusterJobId = clusterjobId.get(0);
+				ClusterJob clusterJob = db().find(ClusterJob.class, clusterJobId);
+				List<Long> payloadIds = new ArrayList<Long>();
+				for (ClusterJobItem clusterJobItem : clusterJob.getItemList()) {
+					if (clusterJobItem.getStatus().isPending()) {
+						payloadIds.add(clusterJobItem.getPayloadId());
+					}
+				}
+
+				if (!payloadIds.isEmpty()) {
+					result = new Batch<T>(clusterJobId, db(payloadEntityClass)
+							.listAll(Query.of(payloadEntityClass).amongst("id", payloadIds).order("id")));
+				} else {
+					db().updateById(ClusterJob.class, clusterJobId,
+							new Update().set("status", JobStatus.COMPLETED).setNow("completedAt"));
+				}
+			}
+		} finally {
+			commitTransactions();
+		}
 
 		return result;
 	}

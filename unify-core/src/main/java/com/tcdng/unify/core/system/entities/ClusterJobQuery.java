@@ -29,6 +29,10 @@ public class ClusterJobQuery extends SequenceEntityQuery<ClusterJob> {
 		super(ClusterJob.class);
 	}
 
+	public ClusterJobQuery handler(String handler) {
+		return (ClusterJobQuery) equals("handler", handler);
+	}
+
 	public ClusterJobQuery claimedBy(String claimedBy) {
 		return (ClusterJobQuery) equals("claimedBy", claimedBy);
 	}

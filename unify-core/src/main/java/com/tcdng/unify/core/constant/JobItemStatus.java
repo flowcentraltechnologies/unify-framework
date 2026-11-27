@@ -48,6 +48,14 @@ public enum JobItemStatus implements EnumConst {
         return PENDING.code;
     }
 
+    public boolean isPending() {
+    	return PENDING.equals(this);
+    }
+
+    public boolean isCompleted() {
+    	return COMPLETED.equals(this);
+    }
+
     public boolean isError() {
     	return ERROR.equals(this);
     }
