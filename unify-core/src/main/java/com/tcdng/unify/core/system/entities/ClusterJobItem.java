@@ -32,17 +32,19 @@ import com.tcdng.unify.core.constant.JobItemStatus;
 				@Index({"clusterJobId", "payloadId", "status"})})
 public class ClusterJobItem extends AbstractSequenceEntity {
 
-    @ForeignKey(ClusterJob.class)
-    private Long clusterJobId;
+	public static final int MAX_ERROR_LEN = 512;
 
-    @ForeignKey(name = "REC_ST")
-    private JobItemStatus status;
+	@ForeignKey(ClusterJob.class)
+	private Long clusterJobId;
 
-    @Column
-    private Long payloadId;
+	@ForeignKey(name = "REC_ST")
+	private JobItemStatus status;
 
-    @Column(name = "PRC_ERROR", length = 512, nullable = true)
-    private String error;
+	@Column
+	private Long payloadId;
+
+	@Column(name = "PRC_ERROR", length = MAX_ERROR_LEN, nullable = true)
+	private String error;
 
 	@Override
 	public String getDescription() {

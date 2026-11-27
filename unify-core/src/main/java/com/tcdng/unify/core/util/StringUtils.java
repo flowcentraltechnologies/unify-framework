@@ -1313,4 +1313,16 @@ public final class StringUtils {
 		}
 	}
 
+	public static String truncate(String str, int maxLen) {
+		if (str != null) {
+			if (maxLen < 0) {
+				throw new IllegalArgumentException("Truncation max length can not be less than zero.");
+			}
+			
+			return str.length() > maxLen ? str.substring(0, maxLen) : str;
+		}
+		
+		return null;
+	}
+
 }

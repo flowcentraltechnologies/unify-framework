@@ -35,6 +35,7 @@ import com.tcdng.unify.core.system.entities.ClusterJobItem;
 import com.tcdng.unify.core.system.entities.ClusterJobItemQuery;
 import com.tcdng.unify.core.system.entities.ClusterJobQuery;
 import com.tcdng.unify.core.task.TaskMonitor;
+import com.tcdng.unify.core.util.StringUtils;
 
 /**
  * Abstract base class for cluster job handlers.
@@ -78,11 +79,13 @@ public abstract class AbstractClusterJobHandler<T extends Entity> extends Abstra
 				db().updateAll(
 						new ClusterJobItemQuery().clusterJobId(clusterJobId).payloadId((Long) inst.getId())
 								.status(JobItemStatus.PENDING),
-						itemStatus.isError() ? new Update().set("status", itemStatus).set("error", err)
+						itemStatus.isError()
+								? new Update().set("status", itemStatus).set("error",
+										StringUtils.truncate(err, ClusterJobItem.MAX_ERROR_LEN))
 								: new Update().set("status", itemStatus));
 				commitTransactions();
 			}
-			
+
 			db().updateById(ClusterJob.class, clusterJobId,
 					new Update().set("status", JobStatus.COMPLETED).setNow("completedAt"));
 		}

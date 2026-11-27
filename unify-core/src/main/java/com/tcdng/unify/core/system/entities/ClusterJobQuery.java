@@ -37,6 +37,10 @@ public class ClusterJobQuery extends SequenceEntityQuery<ClusterJob> {
 		return (ClusterJobQuery) equals("claimedBy", claimedBy);
 	}
 
+	public ClusterJobQuery claimedByNot(String claimedBy) {
+		return (ClusterJobQuery) notequals("claimedBy", claimedBy);
+	}
+
 	public ClusterJobQuery status(JobStatus status) {
 		return (ClusterJobQuery) equals("status", status);
 	}

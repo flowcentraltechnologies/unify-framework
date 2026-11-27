@@ -33,6 +33,7 @@ import com.tcdng.unify.core.annotation.Transactional;
 import com.tcdng.unify.core.business.AbstractBusinessService;
 import com.tcdng.unify.core.constant.JobStatus;
 import com.tcdng.unify.core.criterion.Update;
+import com.tcdng.unify.core.database.Query;
 import com.tcdng.unify.core.system.entities.ClusterCommand;
 import com.tcdng.unify.core.system.entities.ClusterCommandParam;
 import com.tcdng.unify.core.system.entities.ClusterCommandParamQuery;
@@ -53,6 +54,10 @@ import com.tcdng.unify.core.util.NetworkUtils;
 @Transactional
 @Component(ApplicationComponents.APPLICATION_CLUSTERSERVICE)
 public class ClusterServiceImpl extends AbstractBusinessService implements ClusterService {
+
+	private static final int JOB_DELETION_SECONDS = 2 * 24 * 60 * 60; //2 days
+
+	private static final int JOB_RECOVERY_SECONDS = (60 * 5) / 2; // 2.5 minutes
 	
 	@Configurable("5")
 	private int jobExpirationMinutes;
@@ -136,19 +141,33 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 		
 		commitTransactions();
 		
-		// Delete completed jobs
+		// Delete old completed jobs
 		db().deleteAll(
 				new ClusterJobQuery()
-					.equals("status", JobStatus.COMPLETED));
+					.equals("status", JobStatus.COMPLETED).less("completedAt",
+							Query.expOfNowWithOffset(-JOB_DELETION_SECONDS)));
 
 	}
-
+	
 	@Periodic(PeriodicType.SLOW)
 	public void performHeartBeat(TaskMonitor taskMonitor) throws UnifyException {
 		final String runtimeId = getRuntimeId();
-		// Node
-		if (db().updateAll(new ClusterNodeQuery().nodeId(runtimeId),
-				new Update().setNow("lastHeartBeat")) == 0) {
+		// Jobs (Keep alive every 20 seconds (SLOW))
+		db().updateAll(new ClusterJobQuery().claimedBy(runtimeId).status(JobStatus.RUNNING),
+				new Update().setNow("claimedAt"));
+
+		commitTransactions();
+
+		// Recover (No heart beat for JOB_RECOVERY_SECONDS)
+		db().updateAll(
+				new ClusterJobQuery().claimedByNot(runtimeId).status(JobStatus.RUNNING).less("claimedAt",
+						Query.expOfNowWithOffset(-JOB_RECOVERY_SECONDS)),
+				new Update().setNull("claimedBy").setNull("claimedAt"));
+
+		commitTransactions();
+
+		// Nodes
+		if (db().updateAll(new ClusterNodeQuery().nodeId(runtimeId), new Update().setNow("lastHeartBeat")) == 0) {
 			// Register node
 			ClusterNode clusterNode = new ClusterNode();
 			clusterNode.setNodeId(runtimeId);
@@ -159,7 +178,7 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 			clusterNode.setCommandPort(Integer.valueOf(unifyContainerInterface.getPort()));
 			db().create(clusterNode);
 		}
-		
+
 		commitTransactions();
 	}
 	
