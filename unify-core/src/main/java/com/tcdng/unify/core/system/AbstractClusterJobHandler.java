@@ -54,39 +54,41 @@ public abstract class AbstractClusterJobHandler extends AbstractBusinessService
 
 	@Periodic(PeriodicType.FAST)
 	public final void performWork(TaskMonitor tm) throws UnifyException {
-		final JobFetchInfo jobFetchInfo = getJobFetchInfo();
-		Batch batch = claimOldBatch(jobFetchInfo);
-		if (!batch.isPresent()) {
-			batch = claimNewBatch(jobFetchInfo);
-		}
-
-		if (batch.isPresent()) {
-			final Long clusterJobId = batch.getClusterJobId();
-			for (Long payloadId : batch.getPayloadIds()) {
-				Update payloadUpdate = jobFetchInfo.getPassUpdate();
-				JobItemStatus itemStatus = JobItemStatus.COMPLETED;
-				String err = null;
-				try {
-					process(payloadId);
-				} catch (Exception e) {
-					payloadUpdate = jobFetchInfo.getFailUpdate();
-					itemStatus = JobItemStatus.ERROR;
-					err = e.getMessage();
-				}
-
-				db(payloadEntityClass).updateById(payloadEntityClass, payloadId, payloadUpdate);
-				db().updateAll(
-						new ClusterJobItemQuery().clusterJobId(clusterJobId).payloadId(payloadId)
-								.status(JobItemStatus.PENDING),
-						itemStatus.isError()
-								? new Update().set("status", itemStatus).set("error",
-										StringUtils.truncate(err, ClusterJobItem.MAX_ERROR_LEN))
-								: new Update().set("status", itemStatus));
-				commitTransactions();
+		if (ready()) {
+			final JobFetchInfo jobFetchInfo = getJobFetchInfo();
+			Batch batch = claimOldBatch(jobFetchInfo);
+			if (!batch.isPresent()) {
+				batch = claimNewBatch(jobFetchInfo);
 			}
 
-			db().updateById(ClusterJob.class, clusterJobId,
-					new Update().set("status", JobStatus.COMPLETED).setNow("completedAt"));
+			if (batch.isPresent()) {
+				final Long clusterJobId = batch.getClusterJobId();
+				for (Long payloadId : batch.getPayloadIds()) {
+					Update payloadUpdate = jobFetchInfo.getPassUpdate();
+					JobItemStatus itemStatus = JobItemStatus.COMPLETED;
+					String err = null;
+					try {
+						process(payloadId);
+					} catch (Exception e) {
+						payloadUpdate = jobFetchInfo.getFailUpdate();
+						itemStatus = JobItemStatus.ERROR;
+						err = e.getMessage();
+					}
+
+					db(payloadEntityClass).updateById(payloadEntityClass, payloadId, payloadUpdate);
+					db().updateAll(
+							new ClusterJobItemQuery().clusterJobId(clusterJobId).payloadId(payloadId)
+									.status(JobItemStatus.PENDING),
+							itemStatus.isError()
+									? new Update().set("status", itemStatus).set("error",
+											StringUtils.truncate(err, ClusterJobItem.MAX_ERROR_LEN))
+									: new Update().set("status", itemStatus));
+					commitTransactions();
+				}
+
+				db().updateById(ClusterJob.class, clusterJobId,
+						new Update().set("status", JobStatus.COMPLETED).setNow("completedAt"));
+			}
 		}
 	}
 
@@ -99,6 +101,10 @@ public abstract class AbstractClusterJobHandler extends AbstractBusinessService
 	protected void onTerminate() throws UnifyException {
 
 	}
+	
+    protected boolean ready() throws UnifyException {
+        return true;
+    }
 
 	protected abstract JobFetchInfo getJobFetchInfo() throws UnifyException;
 
