@@ -15,9 +15,11 @@
  */
 package com.tcdng.unify.core.system.entities;
 
+import com.tcdng.unify.common.annotation.Index;
 import com.tcdng.unify.common.annotation.Table;
 import com.tcdng.unify.core.annotation.Column;
 import com.tcdng.unify.core.annotation.ForeignKey;
+import com.tcdng.unify.core.constant.JobItemStatus;
 
 /**
  * Entity for storing job items for workers.
@@ -25,25 +27,22 @@ import com.tcdng.unify.core.annotation.ForeignKey;
  * @author The Code Department
  * @since 4.1
  */
-@Table("UNCLUSTERJOBITEM")
+@Table(name = "UNCLUSTERJOBITEM",
+		indexes = {
+				@Index({"clusterJobId", "payloadId", "status"})})
 public class ClusterJobItem extends AbstractSequenceEntity {
 
     @ForeignKey(ClusterJob.class)
     private Long clusterJobId;
 
+    @ForeignKey(name = "REC_ST")
+    private JobItemStatus status;
+
     @Column
     private Long payloadId;
 
-    @Column(name = "FAILED_FG")
-    boolean failed;
-
-	public ClusterJobItem(Long payloadId) {
-		this.payloadId = payloadId;
-	}
-
-	public ClusterJobItem() {
-
-	}
+    @Column(name = "PRC_ERROR", length = 512, nullable = true)
+    private String error;
 
 	@Override
 	public String getDescription() {
@@ -66,12 +65,20 @@ public class ClusterJobItem extends AbstractSequenceEntity {
 		this.payloadId = payloadId;
 	}
 
-	public boolean isFailed() {
-		return failed;
+	public JobItemStatus getStatus() {
+		return status;
 	}
 
-	public void setFailed(boolean failed) {
-		this.failed = failed;
+	public void setStatus(JobItemStatus status) {
+		this.status = status;
+	}
+
+	public String getError() {
+		return error;
+	}
+
+	public void setError(String error) {
+		this.error = error;
 	}
 
 }

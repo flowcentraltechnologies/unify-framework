@@ -25,11 +25,14 @@ import com.tcdng.unify.core.annotation.Periodic;
 import com.tcdng.unify.core.annotation.PeriodicType;
 import com.tcdng.unify.core.annotation.Transactional;
 import com.tcdng.unify.core.business.AbstractBusinessService;
+import com.tcdng.unify.core.constant.JobItemStatus;
 import com.tcdng.unify.core.constant.JobStatus;
+import com.tcdng.unify.core.criterion.Update;
 import com.tcdng.unify.core.data.JobFetchInfo;
 import com.tcdng.unify.core.database.Query;
 import com.tcdng.unify.core.system.entities.ClusterJob;
 import com.tcdng.unify.core.system.entities.ClusterJobItem;
+import com.tcdng.unify.core.system.entities.ClusterJobItemQuery;
 import com.tcdng.unify.core.task.TaskMonitor;
 
 /**
@@ -39,23 +42,44 @@ import com.tcdng.unify.core.task.TaskMonitor;
  * @since 4.1
  */
 @Transactional
-public abstract class AbstractClusterJobHandler<T extends Entity> extends AbstractBusinessService implements ClusterJobHandler {
+public abstract class AbstractClusterJobHandler<T extends Entity> extends AbstractBusinessService
+		implements ClusterJobHandler {
 
-	private final Class<T> entityClass;
-	
-	public AbstractClusterJobHandler(Class<T> entityClass) {
-		this.entityClass = entityClass;
+	private final Class<T> payloadEntityClass;
+
+	public AbstractClusterJobHandler(Class<T> payloadEntityClass) {
+		this.payloadEntityClass = payloadEntityClass;
 	}
-	
+
 	@Periodic(PeriodicType.FAST)
 	public final void performWork(TaskMonitor tm) throws UnifyException {
-		Batch<T> batch = claimOldBatch();
+		final JobFetchInfo jobFetchInfo = getJobFetchInfo();
+		Batch<T> batch = claimOldBatch(jobFetchInfo);
 		if (!batch.isPresent()) {
-			batch = claimNewBatch();
+			batch = claimNewBatch(jobFetchInfo);
 		}
-		
+
 		if (batch.isPresent()) {
-			
+			for (T inst : batch.getItems()) {
+				Update payloadUpdate = jobFetchInfo.getPassUpdate();
+				JobItemStatus itemStatus = JobItemStatus.COMPLETED;
+				String err = null;
+				try {
+					process(inst);
+				} catch (Exception e) {
+					payloadUpdate = jobFetchInfo.getFailUpdate();
+					itemStatus = JobItemStatus.ERROR;
+					err = e.getMessage();
+				}
+
+				db(payloadEntityClass).updateById(payloadEntityClass, inst.getId(), payloadUpdate);
+				db().updateAll(
+						new ClusterJobItemQuery().clusterJobId(batch.getClusterJobId()).payloadId((Long) inst.getId())
+								.status(JobItemStatus.PENDING),
+						itemStatus.isError() ? new Update().set("status", itemStatus).set("error", err)
+								: new Update().set("status", itemStatus));
+				commitTransactions();
+			}
 		}
 	}
 
@@ -70,15 +94,15 @@ public abstract class AbstractClusterJobHandler<T extends Entity> extends Abstra
 	}
 
 	protected abstract JobFetchInfo getJobFetchInfo() throws UnifyException;
-	
+
 	protected abstract void process(T item) throws UnifyException;
-	
+
 	@SuppressWarnings("unchecked")
-	private Batch<T> claimNewBatch() throws UnifyException {
+	private Batch<T> claimNewBatch(final JobFetchInfo jobFetchInfo) throws UnifyException {
 		Batch<T> result = (Batch<T>) Batch.BLANK;
 		try {
-			final JobFetchInfo jobFetchInfo = getJobFetchInfo();
-			final List<Long> payloadIds = claimUnlockedRows(jobFetchInfo.getClaimQuery(), jobFetchInfo.getClaimUpdate(),
+			final List<Long> payloadIds = claimUnlockedRows(
+					jobFetchInfo.getClaimQuery().limit(jobFetchInfo.getFetchBatchSize()), jobFetchInfo.getClaimUpdate(),
 					"job::" + getName());
 			if (!payloadIds.isEmpty()) {
 				ClusterJob clusterJob = new ClusterJob();
@@ -91,14 +115,15 @@ public abstract class AbstractClusterJobHandler<T extends Entity> extends Abstra
 				for (Long payloadId : payloadIds) {
 					ClusterJobItem item = new ClusterJobItem();
 					item.setPayloadId(payloadId);
+					item.setStatus(JobItemStatus.PENDING);
 					itemList.add(item);
 				}
 
 				clusterJob.setItemList(itemList);
 
 				final Long clusterJobId = (Long) db().create(clusterJob);
-				result = new Batch<T>(clusterJobId,
-						db(entityClass).listAll(Query.of(entityClass).amongst("id", payloadIds).order("id")));
+				result = new Batch<T>(clusterJobId, db(payloadEntityClass)
+						.listAll(Query.of(payloadEntityClass).amongst("id", payloadIds).order("id")));
 			}
 		} finally {
 			commitTransactions();
@@ -106,15 +131,15 @@ public abstract class AbstractClusterJobHandler<T extends Entity> extends Abstra
 
 		return result;
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	private Batch<T> claimOldBatch() throws UnifyException {
+	private Batch<T> claimOldBatch(final JobFetchInfo jobFetchInfo) throws UnifyException {
 		Batch<T> result = (Batch<T>) Batch.BLANK;
 		// TODO
 
 		return result;
 	}
-	
+
 	private static class Batch<T extends Entity> {
 
 		@SuppressWarnings("rawtypes")

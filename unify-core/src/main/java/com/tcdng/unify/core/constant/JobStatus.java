@@ -28,12 +28,9 @@ import com.tcdng.unify.core.util.EnumUtils;
 @StaticList(name = "jobstatuslist", description="$m{staticlist.jobstatuslist}")
 public enum JobStatus implements EnumConst {
 
-    PENDING("PND"),
     RUNNING("RNG"),
     COMPLETED("CMP"),
-    ERROR("ERR"),
-    DEAD("DED"),
-    DEAD_ACK("DEA");
+    ERROR("ERR");
 
     private final String code;
 
@@ -48,7 +45,7 @@ public enum JobStatus implements EnumConst {
 
     @Override
     public String defaultCode() {
-        return PENDING.code;
+        return RUNNING.code;
     }
 
     public static JobStatus fromCode(String code) {
