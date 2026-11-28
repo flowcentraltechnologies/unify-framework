@@ -126,26 +126,21 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 	@Periodic(PeriodicType.SLOWEST)
 	public void performNodeHouseKeeping(TaskMonitor taskMonitor) throws UnifyException {
 		// Nodes
-		List<String> deadNodeIds = db().claimUnlockedRows(String.class,
-				new ClusterNodeQuery()
-				.lastHeartBeatOlderThan(getNewNodeExpiryDate())
-				.nodeNotEqual(getRuntimeId())
-				.equals("dead", false),
-					new Update()
-						.set("dead", true));
+		List<String> deadNodeIds = claimUnlockedRows(
+				String.class, new ClusterNodeQuery().lastHeartBeatOlderThan(getNewNodeExpiryDate())
+						.nodeNotEqual(getRuntimeId()).equals("dead", false),
+				new Update().set("dead", true), "job::" + getName());
 		if (!deadNodeIds.isEmpty()) {
 			db().deleteAll(new ClusterCommandParamQuery().nodeIdIn(deadNodeIds));
 			db().deleteAll(new ClusterCommandQuery().nodeIdIn(deadNodeIds));
 			db().deleteAll(new ClusterNodeQuery().nodeIdIn(deadNodeIds));
 		}
-		
+
 		commitTransactions();
-		
+
 		// Delete old completed jobs
-		db().deleteAll(
-				new ClusterJobQuery()
-					.equals("status", JobStatus.COMPLETED).less("completedAt",
-							Query.expOfNowWithOffset(-JOB_DELETION_SECONDS)));
+		db().deleteAll(new ClusterJobQuery().equals("status", JobStatus.COMPLETED).less("completedAt",
+				Query.expOfNowWithOffset(-JOB_DELETION_SECONDS)));
 
 	}
 	

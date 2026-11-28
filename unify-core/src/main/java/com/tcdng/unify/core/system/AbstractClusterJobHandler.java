@@ -53,7 +53,7 @@ public abstract class AbstractClusterJobHandler extends AbstractBusinessService
 	}
 
 	@Periodic(PeriodicType.FAST)
-	public final void performWork(TaskMonitor tm) throws UnifyException {
+	public void performWork(TaskMonitor tm) throws UnifyException {
 		if (ready()) {
 			final JobFetchInfo jobFetchInfo = getJobFetchInfo();
 			Batch batch = claimOldBatch(jobFetchInfo);
@@ -113,7 +113,7 @@ public abstract class AbstractClusterJobHandler extends AbstractBusinessService
 	private Batch claimNewBatch(final JobFetchInfo jobFetchInfo) throws UnifyException {
 		Batch result = Batch.BLANK;
 		try {
-			final List<Long> payloadIds = claimUnlockedRows(
+			final List<Long> payloadIds = claimUnlockedRows(Long.class,
 					jobFetchInfo.getClaimQuery().limit(jobFetchInfo.getFetchBatchSize()), jobFetchInfo.getClaimUpdate(),
 					"job::" + getName());
 			if (!payloadIds.isEmpty()) {
@@ -146,7 +146,7 @@ public abstract class AbstractClusterJobHandler extends AbstractBusinessService
 	private Batch claimOldBatch(final JobFetchInfo jobFetchInfo) throws UnifyException {
 		Batch result = Batch.BLANK;
 		try {
-			final List<Long> clusterjobId = claimUnlockedRows(
+			final List<Long> clusterjobId = claimUnlockedRows(Long.class,
 					new ClusterJobQuery().handler(getName()).status(JobStatus.RUNNING).isnull("claimedBy").limit(1),
 					new Update().set("claimedBy", getRuntimeId()).setNow("claimedAt"), "job::" + getName());
 			if (!clusterjobId.isEmpty()) {
