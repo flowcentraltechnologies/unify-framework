@@ -127,7 +127,7 @@ public class ClusterServiceImpl extends AbstractBusinessService implements Clust
 	public void performNodeHouseKeeping(TaskMonitor taskMonitor) throws UnifyException {
 		// Nodes
 		List<String> deadNodeIds = claimUnlockedRows(
-				String.class, new ClusterNodeQuery().lastHeartBeatOlderThan(getNewNodeExpiryDate())
+				String.class, "nodeId", new ClusterNodeQuery().lastHeartBeatOlderThan(getNewNodeExpiryDate())
 						.nodeNotEqual(getRuntimeId()).equals("dead", false),
 				new Update().set("dead", true), "job::" + getName());
 		if (!deadNodeIds.isEmpty()) {

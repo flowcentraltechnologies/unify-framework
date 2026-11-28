@@ -113,7 +113,7 @@ public abstract class AbstractClusterJobHandler extends AbstractBusinessService
 	private Batch claimNewBatch(final JobFetchInfo jobFetchInfo) throws UnifyException {
 		Batch result = Batch.BLANK;
 		try {
-			final List<Long> payloadIds = claimUnlockedRows(Long.class,
+			final List<Long> payloadIds = claimUnlockedRows(Long.class, "id",
 					jobFetchInfo.getClaimQuery().limit(jobFetchInfo.getFetchBatchSize()), jobFetchInfo.getClaimUpdate(),
 					"job::" + getName());
 			if (!payloadIds.isEmpty()) {
@@ -146,7 +146,7 @@ public abstract class AbstractClusterJobHandler extends AbstractBusinessService
 	private Batch claimOldBatch(final JobFetchInfo jobFetchInfo) throws UnifyException {
 		Batch result = Batch.BLANK;
 		try {
-			final List<Long> clusterjobId = claimUnlockedRows(Long.class,
+			final List<Long> clusterjobId = claimUnlockedRows(Long.class, "id",
 					new ClusterJobQuery().handler(getName()).status(JobStatus.RUNNING).isnull("claimedBy").limit(1),
 					new Update().set("claimedBy", getRuntimeId()).setNow("claimedAt"), "job::" + getName());
 			if (!clusterjobId.isEmpty()) {

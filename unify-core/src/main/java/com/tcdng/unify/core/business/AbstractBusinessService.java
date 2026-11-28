@@ -214,23 +214,24 @@ public abstract class AbstractBusinessService extends AbstractUnifyComponent imp
 	/**
 	 * Claims unlocked rows.
 	 * 
+	 * @param idName 	the ID name.
 	 * @param query   the query object
 	 * @param update  the claim update
 	 * @param altLock the alternative lock. Used if row locking is no supported.
 	 * @return the claimed row IDs
 	 * @throws UnifyException if an error occurs
 	 */
-	protected <T> List<T> claimUnlockedRows(Class<T> idTypeClass, Query<?> query, Update update, String altLock)
-			throws UnifyException {
+	protected <T> List<T> claimUnlockedRows(Class<T> idTypeClass, String idName, Query<?> query, Update update,
+			String altLock) throws UnifyException {
 		if (db.isSupportsRowLocking()) {
 			return db.claimUnlockedRows(idTypeClass, query, update);
 		}
 
 		if (tryGrabLock(altLock)) {
 			try {
-				List<T> ids = db.valueList(idTypeClass, "id", query);
+				List<T> ids = db.valueList(idTypeClass, idName, query);
 				if (!DataUtils.isBlank(ids)) {
-					db.updateAll(Query.of(query.getEntityClass()).amongst("id", ids), update);
+					db.updateAll(Query.of(query.getEntityClass()).amongst(idName, ids), update);
 				}
 
 				return ids;
